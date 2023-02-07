@@ -1,6 +1,6 @@
 {
   "name": "@junobuild/cli",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "The Juno command-line interface",
   "author": "David Dal Busco (https://daviddalbusco.com)",
   "license": "MIT",
@@ -11,7 +11,8 @@
   "files": [
     "dist/index.js",
     "README.md",
-    "LICENSE"
+    "LICENSE",
+    "templates"
   ],
   "scripts": {
     "format": "prettier . --write",
