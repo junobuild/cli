@@ -1,4 +1,4 @@
-export const AUTH_URL = 'http://localhost:5173/cli';
+export const AUTH_URL = 'http://console.juno.build/cli';
 export const REDIRECT_URL = 'http://localhost:{port}';
 export const JUNO_CONFIG = 'juno.json';
 export const SOURCE = 'build';
