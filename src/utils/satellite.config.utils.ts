@@ -5,7 +5,7 @@ import {SatelliteConfig} from '../types/satellite.config';
 
 export const saveSatelliteConfig = async (satellite: SatelliteConfig): Promise<void> => {
   if (await junoConfigExist()) {
-    const existingConfig = await readSatelliteConfig();
+    const existingConfig = await readJunoConfig();
     await writeJunoConfig({
       ...existingConfig,
       satellite
