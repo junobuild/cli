@@ -7,6 +7,7 @@ import {lstatSync, readdirSync} from 'fs';
 import {readFile} from 'fs/promises';
 import mime from 'mime-types';
 import minimatch from 'minimatch';
+import ora from 'ora';
 import {basename, extname, join} from 'path';
 import {DAPP_COLLECTION, SOURCE} from '../constants/constants';
 import {SatelliteConfigHeaders} from '../types/satellite.config';
@@ -58,8 +59,14 @@ export const deploy = async () => {
     });
   };
 
-  const promises = sourceFiles.map(upload);
-  await Promise.all(promises);
+  const spinner = ora(`Uploading...`).start();
+
+  try {
+    const promises = sourceFiles.map(upload);
+    await Promise.all(promises);
+  } finally {
+    spinner.stop();
+  }
 };
 
 const configHeaders = ({
