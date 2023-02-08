@@ -17,7 +17,7 @@
   "scripts": {
     "format": "prettier . --write",
     "build": "node rmdir.mjs && node esbuild.mjs",
-    "dev": "node rmdir.mjs && NODE_ENV=development node esbuild.mjs && node ./dist/index.js"
+    "dev": "node rmdir.mjs && NODE_ENV=development node esbuild.mjs"
   },
   "dependencies": {
     "@dfinity/identity": "^0.15.3",
