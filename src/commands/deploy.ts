@@ -134,7 +134,7 @@ const fileNeedUpload = async ({
 
   const sha256 = await computeSha256(effectiveFilePath);
 
-  // TODO: current sha256 comparison (NodeJS vs Rust) is inaccurate. Therefore we re-upload compressed files only if their corresponding source files have been modified as well.
+  // TODO: current sha256 comparison (NodeJS vs Rust) with Gzip and BR is inaccurate. Therefore we re-upload compressed files only if their corresponding source files have been modified as well.
   // return {file, upload: sha256 !== asset.encodings[file.encoding ?? 'identity']?.sha256};
   // TODO: we also always assume the raw encoding is there
   return {file, upload: sha256 !== asset.encodings['identity']?.sha256};
