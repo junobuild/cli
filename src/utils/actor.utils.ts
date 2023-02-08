@@ -10,6 +10,7 @@ export const actorParameters = (): ActorParameters => {
     identity,
     // TODO: TypeScript incompatibility window.fetch vs nodejs.fetch vs agent-ts using typeof fetch
     // @ts-ignore
-    fetch
+    fetch,
+    env: process.env.NODE_ENV === 'development' ? 'dev' : 'prod'
   };
 };
