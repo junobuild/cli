@@ -107,8 +107,7 @@ const filterFilesToUpload = async ({
 
 const computeSha256 = async (file: string): Promise<string> => {
   const buffer = await readFile(file);
-  const key = buffer.toString('utf-8');
-  return crypto.createHash('sha256').update(key).digest('base64');
+  return crypto.createHash('sha256').update(buffer).digest('base64');
 };
 
 const fileNeedUpload = async ({
