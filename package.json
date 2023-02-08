@@ -16,7 +16,8 @@
   ],
   "scripts": {
     "format": "prettier . --write",
-    "build": "node rmdir.mjs && node esbuild.mjs"
+    "build": "node rmdir.mjs && node esbuild.mjs",
+    "dev": "node rmdir.mjs && NODE_ENV=development node esbuild.mjs && node ./dist/index.js"
   },
   "dependencies": {
     "@dfinity/identity": "^0.15.3",
@@ -37,6 +38,7 @@
     "@types/minimatch": "^5.1.2",
     "@types/prompts": "^2.4.2",
     "@types/semver": "^7.3.13",
+    "dotenv": "^16.0.3",
     "esbuild": "^0.17.5",
     "prettier": "^2.8.3",
     "prettier-plugin-organize-imports": "^3.2.2",
