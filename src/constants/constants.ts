@@ -5,3 +5,4 @@ export const SOURCE = 'build';
 export const DAPP_COLLECTION = '#dapp';
 export const SATELLITE_WASM_NAME = 'satellite';
 export const MISSION_CONTROL_WASM_NAME = 'mission_control';
+export const UPLOAD_BATCH_SIZE = 20;

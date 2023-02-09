@@ -5,11 +5,12 @@ import {fileTypeFromFile, MimeType} from 'file-type';
 import {FileExtension} from 'file-type/core';
 import {lstatSync, readdirSync} from 'fs';
 import {readFile} from 'fs/promises';
+import {green, grey} from 'kleur';
 import mime from 'mime-types';
 import minimatch from 'minimatch';
 import ora from 'ora';
 import {basename, extname, join} from 'path';
-import {DAPP_COLLECTION, SOURCE} from '../constants/constants';
+import {DAPP_COLLECTION, SOURCE, UPLOAD_BATCH_SIZE} from '../constants/constants';
 import {SatelliteConfigHeaders} from '../types/satellite.config';
 import {junoConfigExist, readSatelliteConfig} from '../utils/satellite.config.utils';
 import {satelliteParameters} from '../utils/satellite.utils';
@@ -41,8 +42,10 @@ export const deploy = async () => {
 
   const satellite = satelliteParameters(satelliteId);
 
+  const fileDetailsPath = (file: FileDetails): string => file.alternateFile ?? file.file;
+
   const upload = async (file: FileDetails): Promise<AssetKey> => {
-    const filePath = file.alternateFile ?? file.file;
+    const filePath = fileDetailsPath(file);
 
     return uploadBlob({
       satellite,
@@ -59,13 +62,25 @@ export const deploy = async () => {
     });
   };
 
-  const spinner = ora(`Uploading...`).start();
+  // Execute upload UPLOAD_BATCH_SIZE files at a time max preventively to not stress too much the network
+  for (let i = 0; i < sourceFiles.length; i += UPLOAD_BATCH_SIZE) {
+    const files = sourceFiles.slice(i, i + UPLOAD_BATCH_SIZE);
 
-  try {
-    const promises = sourceFiles.map(upload);
-    await Promise.all(promises);
-  } finally {
-    spinner.stop();
+    files.forEach((file) => console.log(`↗️  ${grey(fileDetailsPath(file))}...`));
+
+    const spinner = ora(`Uploading...`).start();
+
+    try {
+      const promises = files.map(upload);
+      await Promise.all(promises);
+
+      spinner.stop();
+
+      files.forEach((file) => console.log(`✅ ${green(fileDetailsPath(file))}.`));
+    } catch (err: unknown) {
+      spinner.stop();
+      throw err;
+    }
   }
 };
 
