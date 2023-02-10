@@ -1,5 +1,6 @@
 import {setConfig} from '@junobuild/admin';
 import {cyan, red} from 'kleur';
+import ora from 'ora';
 import {junoConfigExist, readSatelliteConfig} from '../utils/satellite.config.utils';
 import {satelliteParameters} from '../utils/satellite.utils';
 import {init} from './init';
@@ -21,12 +22,18 @@ export const config = async () => {
     return;
   }
 
-  await setConfig({
-    config: {
-      storage
-    },
-    satellite: satelliteParameters(satelliteId)
-  });
+  const spinner = ora(`Configuring...`).start();
 
-  console.log(`Run ${cyan('clear')} and ${cyan('deploy')} to apply the changes to your dapp.`);
+  try {
+    await setConfig({
+      config: {
+        storage
+      },
+      satellite: satelliteParameters(satelliteId)
+    });
+
+    console.log(`Run ${cyan('clear')} and ${cyan('deploy')} to apply the changes to your dapp.`);
+  } finally {
+    spinner.stop();
+  }
 };
