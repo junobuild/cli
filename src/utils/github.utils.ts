@@ -29,7 +29,7 @@ export interface GitHubRelease {
   body: string;
 }
 
-const GITHUB_API_URL = 'https://api.github.com/repos/peterpeterparker/dummy';
+const GITHUB_API_URL = 'https://api.github.com/repos/buildwithjuno/juno';
 const GITHUB_API_HEADERS: RequestInit = {
   headers: {
     accept: 'application/vnd.github+json',
