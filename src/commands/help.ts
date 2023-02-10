@@ -30,6 +30,7 @@ ${title}
 Usage: ${cyan('juno upgrade [options]')}
 
 Options:
+  ${cyan('-s, --src')}           a local wasm file to upgrade your satellite
   ${cyan('-h, --help')}          output usage information
 `;
 

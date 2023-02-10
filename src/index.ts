@@ -7,12 +7,12 @@ import {help, helpCommand, helpUpgrade} from './commands/help';
 import {init} from './commands/init';
 import {upgrade} from './commands/upgrade';
 import {version as versionCommand} from './commands/version';
+import {hasArgs} from './utils/args.utils';
 
 export const run = async () => {
-  const [cmd, ...rest] = process.argv.slice(2);
+  const [cmd, ...args] = process.argv.slice(2);
 
-  const helpArgs = ['-h', '--help'];
-  if (rest?.find((arg) => helpArgs.includes(arg)) !== undefined) {
+  if (hasArgs({args, options: ['-h', '--help']})) {
     switch (cmd) {
       case 'upgrade':
         console.log(helpUpgrade);
@@ -46,7 +46,7 @@ export const run = async () => {
       await versionCommand();
       break;
     case 'upgrade':
-      await upgrade();
+      await upgrade(args);
       break;
     default:
       console.log(`${red('Unknown command.')}`);
