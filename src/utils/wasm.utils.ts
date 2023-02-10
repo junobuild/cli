@@ -1,4 +1,5 @@
 import {createHash} from 'crypto';
+import {readFile} from 'fs/promises';
 import {cyan} from 'kleur';
 import ora from 'ora';
 import {downloadFromURL} from './download.utils';
@@ -7,11 +8,15 @@ import {confirmAndExit, NEW_CMD_LINE} from './prompt.utils';
 
 const executeUpgradeWasm = async ({
   upgrade,
-  wasm
+  wasm,
+  hash
 }: {
   wasm: Buffer;
+  hash: string;
   upgrade: ({wasm_module}: {wasm_module: Array<number>}) => Promise<void>;
 }) => {
+  await confirmAndExit(`Wasm hash is ${cyan(hash)}.${NEW_CMD_LINE}Start upgrade now?`);
+
   const spinner = ora('Upgrading Wasm...').start();
 
   try {
@@ -23,7 +28,37 @@ const executeUpgradeWasm = async ({
   }
 };
 
-export const upgradeWasm = async ({
+export const upgradeWasmLocal = async ({
+  src,
+  upgrade
+}: {
+  src: string;
+  upgrade: ({wasm_module}: {wasm_module: Array<number>}) => Promise<void>;
+}) => {
+  const loadWasm = async (file: string): Promise<{hash: string; wasm: Buffer}> => {
+    const wasm = await readFile(file);
+
+    return {
+      wasm,
+      hash: createHash('sha256').update(wasm).digest('hex')
+    };
+  };
+
+  const spinner = ora('Loading Wasm...').start();
+
+  try {
+    const {hash, wasm} = await loadWasm(src);
+
+    spinner.stop();
+
+    await executeUpgradeWasm({upgrade, wasm, hash});
+  } catch (err: unknown) {
+    spinner.stop();
+    throw err;
+  }
+};
+
+export const upgradeWasmGitHub = async ({
   asset,
   upgrade
 }: {
@@ -48,9 +83,7 @@ export const upgradeWasm = async ({
 
     spinner.stop();
 
-    await confirmAndExit(`Wasm hash is ${cyan(hash)}.${NEW_CMD_LINE}Start upgrade now?`);
-
-    await executeUpgradeWasm({upgrade, wasm});
+    await executeUpgradeWasm({upgrade, wasm, hash});
   } catch (err: unknown) {
     spinner.stop();
     throw err;

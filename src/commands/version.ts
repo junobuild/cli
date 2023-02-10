@@ -13,7 +13,7 @@ import {GitHubAsset, githubLastRelease} from '../utils/github.utils';
 import {confirm, NEW_CMD_LINE} from '../utils/prompt.utils';
 import {junoConfigExist, readSatelliteConfig} from '../utils/satellite.config.utils';
 import {satelliteKey, satelliteParameters} from '../utils/satellite.utils';
-import {upgradeWasm} from '../utils/wasm.utils';
+import {upgradeWasmGitHub} from '../utils/wasm.utils';
 
 export const version = async () => {
   await missionControlVersion();
@@ -59,7 +59,7 @@ const missionControlVersion = async () => {
       wasm_module
     });
 
-  await upgradeWasm({asset, upgrade: upgradeMissionControlWasm});
+  await upgradeWasmGitHub({asset, upgrade: upgradeMissionControlWasm});
 };
 
 const satelliteVersion = async () => {
@@ -98,7 +98,7 @@ const satelliteVersion = async () => {
       wasm_module
     });
 
-  await upgradeWasm({asset, upgrade: upgradeSatelliteWasm});
+  await upgradeWasmGitHub({asset, upgrade: upgradeSatelliteWasm});
 };
 
 const shouldUpgradeVersion = async ({

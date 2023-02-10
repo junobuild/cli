@@ -1,12 +1,13 @@
-import {satelliteVersion, upgradeSatellite} from '@junobuild/admin';
+import {SatelliteParameters, satelliteVersion, upgradeSatellite} from '@junobuild/admin';
 import {red} from 'kleur';
 import prompts from 'prompts';
 import {compare} from 'semver';
 import {SATELLITE_WASM_NAME} from '../constants/constants';
+import {hasArgs, nextArg} from '../utils/args.utils';
 import {GitHubAsset, GitHubRelease, githubReleases} from '../utils/github.utils';
 import {junoConfigExist, readSatelliteConfig} from '../utils/satellite.config.utils';
 import {satelliteParameters} from '../utils/satellite.utils';
-import {upgradeWasm} from '../utils/wasm.utils';
+import {upgradeWasmGitHub, upgradeWasmLocal} from '../utils/wasm.utils';
 
 const promptReleases = async (
   githubReleases: GitHubRelease[]
@@ -27,7 +28,7 @@ const promptReleases = async (
   return assets?.find(({name}) => name === SATELLITE_WASM_NAME);
 };
 
-export const upgrade = async () => {
+export const upgrade = async (args?: string[]) => {
   if (!(await junoConfigExist())) {
     console.log(`${red('No configuration found.')}`);
     return;
@@ -37,6 +38,15 @@ export const upgrade = async () => {
 
   const satellite = satelliteParameters(satelliteId);
 
+  if (hasArgs({args, options: ['-s', '--src']})) {
+    await upgradeCustom({satellite, args});
+    return;
+  }
+
+  await upgradeRelease(satellite);
+};
+
+const upgradeRelease = async (satellite: SatelliteParameters) => {
   const currentVersion = await satelliteVersion({
     satellite
   });
@@ -79,5 +89,28 @@ export const upgrade = async () => {
       wasm_module
     });
 
-  await upgradeWasm({asset, upgrade: upgradeSatelliteWasm});
+  await upgradeWasmGitHub({asset, upgrade: upgradeSatelliteWasm});
+};
+
+const upgradeCustom = async ({
+  satellite,
+  args
+}: {
+  satellite: SatelliteParameters;
+  args?: string[];
+}) => {
+  const src = nextArg({args, option: '-s'}) ?? nextArg({args, option: '--src'});
+
+  if (src === undefined) {
+    console.log(`${red('No source file provided.')}`);
+    return;
+  }
+
+  const upgradeSatelliteWasm = async ({wasm_module}: {wasm_module: Array<number>}) =>
+    upgradeSatellite({
+      satellite,
+      wasm_module
+    });
+
+  await upgradeWasmLocal({src, upgrade: upgradeSatelliteWasm});
 };
