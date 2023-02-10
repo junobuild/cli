@@ -3,13 +3,25 @@ import {login, logout} from './commands/auth';
 import {clear} from './commands/clear';
 import {config} from './commands/config';
 import {deploy} from './commands/deploy';
-import {help} from './commands/help';
+import {help, helpCommand, helpUpgrade} from './commands/help';
 import {init} from './commands/init';
 import {upgrade} from './commands/upgrade';
 import {version as versionCommand} from './commands/version';
 
 export const run = async () => {
   const [cmd, ...rest] = process.argv.slice(2);
+
+  const helpArgs = ['-h', '--help'];
+  if (rest?.find((arg) => helpArgs.includes(arg)) !== undefined) {
+    switch (cmd) {
+      case 'upgrade':
+        console.log(helpUpgrade);
+        break;
+      default:
+        console.log(helpCommand(cmd));
+    }
+    return;
+  }
 
   switch (cmd) {
     case 'login':
@@ -35,9 +47,6 @@ export const run = async () => {
       break;
     case 'upgrade':
       await upgrade();
-      break;
-    case 'help':
-      console.log(help);
       break;
     default:
       console.log(`${red('Unknown command.')}`);

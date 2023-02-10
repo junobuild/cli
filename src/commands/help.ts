@@ -5,8 +5,10 @@ const JUNO_LOGO = `  __  __ __  __  _  ____
 __) ||  |  ||  \\| |/    \\
 \\___/ \\___/ |_|\\__|\\____/`;
 
+const title = `${JUNO_LOGO} CLI ${grey(`v${version}`)}`;
+
 export const help = `
-${JUNO_LOGO} CLI ${grey(`v${version}`)}
+${title}
 
 Usage: ${cyan('juno [command]')}
 
@@ -20,4 +22,22 @@ Commands:
   ${cyan('logout')}              log out of the current device using the CLI
   ${cyan('upgrade')}             upgrade your satellite to a specific version code
   ${cyan('version')}             check the version of a satellite
+`;
+
+export const helpUpgrade = `
+${title}
+
+Usage: ${cyan('juno upgrade [options]')}
+
+Options:
+  ${cyan('-h, --help')}          output usage information
+`;
+
+export const helpCommand = (command: string) => `
+${title}
+
+Usage: ${cyan(`juno ${command}`)}
+
+Options:
+  ${cyan('-h, --help')}          output usage information
 `;
