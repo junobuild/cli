@@ -1,5 +1,6 @@
 import type {JsonnableEd25519KeyIdentity} from '@dfinity/identity/lib/cjs/identity/ed25519';
 import Conf, {Schema} from 'conf';
+import {AUTH_PROJECT_NAME} from '../constants/constants';
 
 interface AuthConfig {
   token: JsonnableEd25519KeyIdentity;
@@ -21,7 +22,7 @@ const schema: Schema<AuthConfig> = {
   }
 } as const;
 
-const config = new Conf<AuthConfig>({projectName: 'juno', schema});
+const config = new Conf<AuthConfig>({projectName: AUTH_PROJECT_NAME, schema});
 
 // Save in https://github.com/sindresorhus/env-paths#pathsconfig
 export const saveToken = (token: JsonnableEd25519KeyIdentity) => config.set('token', token);

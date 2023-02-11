@@ -1,5 +1,4 @@
 import {setConfig} from '@junobuild/admin';
-import {cyan, red} from 'kleur';
 import ora from 'ora';
 import {junoConfigExist, readSatelliteConfig} from '../utils/satellite.config.utils';
 import {satelliteParameters} from '../utils/satellite.utils';
