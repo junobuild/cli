@@ -12,27 +12,17 @@ export const config = async () => {
 
   const {satelliteId, storage} = await readSatelliteConfig();
 
-  if (!storage || !storage.trailingSlash) {
-    console.log('No config for the storage, satellite unchanged.');
-    return;
-  }
-
-  if (!['always', 'never'].includes(storage.trailingSlash)) {
-    console.log(`${red('Unknown configuration option.')}`);
-    return;
-  }
-
   const spinner = ora(`Configuring...`).start();
 
   try {
     await setConfig({
       config: {
-        storage
+        storage: {
+          headers: storage?.headers ?? []
+        }
       },
       satellite: satelliteParameters(satelliteId)
     });
-
-    console.log(`Run ${cyan('clear')} and ${cyan('deploy')} to apply the changes to your dapp.`);
   } finally {
     spinner.stop();
   }

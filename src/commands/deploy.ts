@@ -11,7 +11,6 @@ import minimatch from 'minimatch';
 import ora from 'ora';
 import {basename, extname, join} from 'path';
 import {DAPP_COLLECTION, SOURCE, UPLOAD_BATCH_SIZE} from '../constants/constants';
-import {SatelliteConfigHeaders} from '../types/satellite.config';
 import {junoConfigExist, readSatelliteConfig} from '../utils/satellite.config.utils';
 import {satelliteParameters} from '../utils/satellite.utils';
 import {init} from './init';
@@ -29,7 +28,7 @@ export const deploy = async () => {
     await init();
   }
 
-  const {satelliteId, source = SOURCE, ignore = [], headers = []} = await readSatelliteConfig();
+  const {satelliteId, source = SOURCE, ignore = []} = await readSatelliteConfig();
 
   const sourceAbsolutePath = join(process.cwd(), source);
 
@@ -55,7 +54,6 @@ export const deploy = async () => {
       data: new Blob([await readFile(file.file)]),
       collection: '#dapp',
       headers: [
-        ...configHeaders({headers, file: filePath}),
         ...(file.mime === undefined ? [] : ([['Content-Type', file.mime]] as [string, string][]))
       ],
       encoding: file.encoding
@@ -66,7 +64,7 @@ export const deploy = async () => {
   for (let i = 0; i < sourceFiles.length; i += UPLOAD_BATCH_SIZE) {
     const files = sourceFiles.slice(i, i + UPLOAD_BATCH_SIZE);
 
-    files.forEach((file) => console.log(`↗️  ${grey(fileDetailsPath(file))}...`));
+    files.forEach((file) => console.log(`↗️  ${grey(fileDetailsPath(file))}`));
 
     const spinner = ora(`Uploading...`).start();
 
@@ -76,24 +74,13 @@ export const deploy = async () => {
 
       spinner.stop();
 
-      files.forEach((file) => console.log(`✅ ${green(fileDetailsPath(file))}.`));
+      files.forEach((file) => console.log(`✅ ${green(fileDetailsPath(file))}`));
     } catch (err: unknown) {
       spinner.stop();
       throw err;
     }
   }
 };
-
-const configHeaders = ({
-  headers,
-  file
-}: {
-  headers: SatelliteConfigHeaders;
-  file: string;
-}): [string, string][] =>
-  headers
-    .filter(({source}) => minimatch(file, source))
-    .reduce((acc, {headers}) => [...acc, ...headers], [] as [string, string][]);
 
 const fullPath = ({file, sourceAbsolutePath}: {file: string; sourceAbsolutePath: string}): string =>
   file.replace(sourceAbsolutePath, '');
