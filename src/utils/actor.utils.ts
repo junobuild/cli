@@ -4,7 +4,13 @@ import fetch from 'node-fetch';
 import {getToken} from './auth.config.utils';
 
 export const actorParameters = (): ActorParameters => {
-  const identity = Ed25519KeyIdentity.fromParsedJson(getToken());
+  const token = getToken();
+
+  if (!token) {
+    throw new Error('No controller found. Are you logged in?');
+  }
+
+  const identity = Ed25519KeyIdentity.fromParsedJson(token);
 
   return {
     identity,

@@ -1,5 +1,5 @@
 import {red} from 'kleur';
-import {login, logout} from './commands/auth';
+import {login, logout, whoami} from './commands/auth';
 import {clear} from './commands/clear';
 import {config} from './commands/config';
 import {deploy} from './commands/deploy';
@@ -47,6 +47,9 @@ export const run = async () => {
       break;
     case 'upgrade':
       await upgrade(args);
+      break;
+    case 'whoami':
+      whoami();
       break;
     default:
       console.log(`${red('Unknown command.')}`);

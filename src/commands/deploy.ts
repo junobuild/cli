@@ -225,7 +225,7 @@ const listFiles = async ({
     return {
       file,
       alternateFile,
-      mime: typeof mimeType === "string" ? mimeType as MimeType : undefined,
+      mime: typeof mimeType === 'string' ? (mimeType as MimeType) : undefined,
       encoding: encodingType
     };
   };

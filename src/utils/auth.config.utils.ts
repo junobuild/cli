@@ -25,7 +25,7 @@ const config = new Conf<AuthConfig>({projectName: 'juno', schema});
 
 // Save in https://github.com/sindresorhus/env-paths#pathsconfig
 export const saveToken = (token: JsonnableEd25519KeyIdentity) => config.set('token', token);
-export const getToken = (): JsonnableEd25519KeyIdentity => config.get('token');
+export const getToken = (): JsonnableEd25519KeyIdentity | undefined => config.get('token');
 
 export const saveAuthSatellites = (satellites: AuthSatelliteConfig[]) =>
   config.set('satellites', satellites);
