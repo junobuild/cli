@@ -22,6 +22,7 @@ Commands:
   ${cyan('logout')}              log out of the current device using the CLI
   ${cyan('upgrade')}             upgrade your satellite to a specific version code
   ${cyan('version')}             check the version of a satellite
+  ${cyan('whoami')}              display the current controller 
 `;
 
 export const helpUpgrade = `
