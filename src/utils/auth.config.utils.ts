@@ -32,7 +32,7 @@ export const saveAuthSatellites = (satellites: AuthSatelliteConfig[]) =>
   config.set('satellites', satellites);
 export const getAuthSatellites = (): AuthSatelliteConfig[] => config.get('satellites');
 
-export const saveMissionControl = (missionControl: string | undefined) =>
+export const saveMissionControl = (missionControl: string) =>
   config.set('missionControl', missionControl);
 export const getMissionControl = (): string | undefined => config.get('missionControl');
 

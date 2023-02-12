@@ -118,5 +118,7 @@ const saveAuthConfig = ({
 
   saveAuthSatellites(JSON.parse(decodeURIComponent(satellites ?? '[]')));
 
-  saveMissionControl(missionControl ?? undefined);
+  if (missionControl !== null) {
+    saveMissionControl(missionControl);
+  }
 };
