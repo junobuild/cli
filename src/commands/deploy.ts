@@ -10,7 +10,7 @@ import mime from 'mime-types';
 import minimatch from 'minimatch';
 import ora from 'ora';
 import {basename, extname, join} from 'path';
-import {DAPP_COLLECTION, SOURCE, UPLOAD_BATCH_SIZE} from '../constants/constants';
+import {COLLECTION_DAPP, DAPP_COLLECTION, SOURCE, UPLOAD_BATCH_SIZE} from '../constants/constants';
 import {junoConfigExist, readSatelliteConfig} from '../utils/satellite.config.utils';
 import {satelliteParameters} from '../utils/satellite.utils';
 import {init} from './init';
@@ -52,7 +52,7 @@ export const deploy = async () => {
       fullPath: fullPath({file: filePath, sourceAbsolutePath}),
       // @ts-ignore type incompatibility NodeJS vs bundle
       data: new Blob([await readFile(file.file)]),
-      collection: '#dapp',
+      collection: COLLECTION_DAPP,
       headers: [
         ...(file.mime === undefined ? [] : ([['Content-Type', file.mime]] as [string, string][]))
       ],
