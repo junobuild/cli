@@ -1,7 +1,7 @@
 import {SatelliteParameters, satelliteVersion, upgradeSatellite} from '@junobuild/admin';
 import {red} from 'kleur';
 import prompts from 'prompts';
-import {compare} from 'semver';
+import {coerce, compare} from 'semver';
 import {SATELLITE_WASM_NAME} from '../constants/constants';
 import {hasArgs, nextArg} from '../utils/args.utils';
 import {GitHubAsset, GitHubRelease, githubReleases} from '../utils/github.utils';
@@ -12,20 +12,27 @@ import {upgradeWasmGitHub, upgradeWasmLocal} from '../utils/wasm.utils';
 const promptReleases = async (
   githubReleases: GitHubRelease[]
 ): Promise<GitHubAsset | undefined> => {
-  const {assets} = await prompts({
+  const choices = githubReleases.reduce((acc, {tag_name, assets}: GitHubRelease) => {
+    const asset = assets?.find(({name}) => name.includes(SATELLITE_WASM_NAME));
+    const title = `Juno ${tag_name} (${asset?.name ?? ''})`;
+
+    return [...acc, ...(asset !== undefined ? [{title, value: asset}] : [])];
+  }, [] as {title: string; value: GitHubAsset}[]);
+
+  const {asset} = await prompts({
     type: 'select',
-    name: 'assets',
+    name: 'asset',
     message: 'Which release should be used to upgrade your satellite?',
-    choices: [...githubReleases.map(({tag_name, assets}) => ({title: tag_name, value: assets}))],
+    choices,
     initial: 0
   });
 
   // In case of control+c
-  if (assets === undefined || assets.length === 0) {
+  if (asset === undefined) {
     process.exit(1);
   }
 
-  return assets?.find(({name}) => name === SATELLITE_WASM_NAME);
+  return asset;
 };
 
 export const upgrade = async (args?: string[]) => {
@@ -59,7 +66,7 @@ const upgradeRelease = async (satellite: SatelliteParameters) => {
   }
 
   const releasesWithAssets = releases.filter(
-    ({assets}) => assets?.find(({name}) => name === SATELLITE_WASM_NAME) !== undefined
+    ({assets}) => assets?.find(({name}) => name.includes(SATELLITE_WASM_NAME)) !== undefined
   );
 
   if (releasesWithAssets.length === 0) {
@@ -67,9 +74,21 @@ const upgradeRelease = async (satellite: SatelliteParameters) => {
     return;
   }
 
-  const newerReleases = releasesWithAssets.filter(
-    ({tag_name}) => compare(currentVersion, tag_name) === -1
-  );
+  const newerReleases = releasesWithAssets.filter(({assets}) => {
+    const asset = assets?.find(({name}) => name.includes(SATELLITE_WASM_NAME));
+
+    if (asset === undefined) {
+      return false;
+    }
+
+    const version = coerce(asset.name)?.format();
+
+    if (version === undefined) {
+      return false;
+    }
+
+    return compare(currentVersion, version) === -1;
+  });
 
   if (newerReleases.length === 0) {
     console.log(`No newer releases are available at the moment.`);
