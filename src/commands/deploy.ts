@@ -83,7 +83,7 @@ export const deploy = async () => {
 };
 
 const fullPath = ({file, sourceAbsolutePath}: {file: string; sourceAbsolutePath: string}): string =>
-  file.replace(sourceAbsolutePath, '');
+  file.replace(sourceAbsolutePath, '').replace(/\\/g, '/');
 
 const files = (source: string): string[] => {
   return readdirSync(source).flatMap((file) => {
