@@ -1,13 +1,17 @@
 import {
+  missionControlVersion,
   SatelliteParameters,
   satelliteVersion,
+  upgradeMissionControl as upgradeMissionControlAdmin,
   upgradeSatellite as upgradeSatelliteAdmin
 } from '@junobuild/admin';
 import {red, yellow} from 'kleur';
 import prompts from 'prompts';
 import {coerce, compare, major, minor, patch} from 'semver';
-import {SATELLITE_WASM_NAME} from '../constants/constants';
+import {MISSION_CONTROL_WASM_NAME, SATELLITE_WASM_NAME} from '../constants/constants';
+import {actorParameters} from '../utils/actor.utils';
 import {hasArgs, nextArg} from '../utils/args.utils';
+import {getMissionControl} from '../utils/auth.config.utils';
 import {GitHubAsset, GitHubRelease, githubReleases} from '../utils/github.utils';
 import {junoConfigExist, readSatelliteConfig} from '../utils/satellite.config.utils';
 import {satelliteKey, satelliteParameters} from '../utils/satellite.utils';
@@ -15,13 +19,20 @@ import {upgradeWasmGitHub, upgradeWasmLocal} from '../utils/wasm.utils';
 
 export const upgrade = async (args?: string[]) => {
   if (hasArgs({args, options: ['-m', '--mission-control']})) {
+    await upgradeMissionControl(args);
     return;
   }
 
   await upgradeSatellite(args);
 };
 
-const upgradeMissionControl = async (args?: string[]) => {};
+const upgradeMissionControl = async (args?: string[]) => {
+  if (hasArgs({args, options: ['-s', '--src']})) {
+    return;
+  }
+
+  await updateMissionControlRelease();
+};
 
 const upgradeSatellite = async (args?: string[]) => {
   if (!(await junoConfigExist())) {
@@ -105,61 +116,10 @@ const upgradeSatelliteRelease = async (satellite: SatelliteParameters) => {
     satellite
   });
 
-  const releases = await githubReleases();
-
-  if (releases === undefined) {
-    console.log(`${red('Cannot fetch GitHub repo releases 😢.')}`);
-    return;
-  }
-
-  const releasesWithAssets = releases.filter(
-    ({assets}) => assets?.find(({name}) => name.includes(SATELLITE_WASM_NAME)) !== undefined
-  );
-
-  if (releasesWithAssets.length === 0) {
-    console.log(`${red('No assets has been released. Reach out Juno❗')}`);
-    return;
-  }
-
-  const newerReleases = releasesWithAssets.filter(({assets}) => {
-    const asset = assets?.find(({name}) => name.includes(SATELLITE_WASM_NAME));
-
-    if (asset === undefined) {
-      return false;
-    }
-
-    const version = coerce(asset.name)?.format();
-
-    if (version === undefined) {
-      return false;
-    }
-
-    return compare(currentVersion, version) === -1;
-  });
-
-  if (newerReleases.length === 0) {
-    console.log(`No newer releases are available at the moment.`);
-    return;
-  }
-
-  const asset = await promptReleases(newerReleases);
+  const displayHint = `satellite "${satelliteKey(satellite.satelliteId ?? '')}"`;
+  const asset = await selectAsset({currentVersion, assetKey: SATELLITE_WASM_NAME, displayHint});
 
   if (asset === undefined) {
-    console.log(`${red('No asset has been released for the selected version. Reach out Juno❗️')}`);
-    return;
-  }
-
-  const selectedVersion = coerce(asset.name)?.format();
-
-  if (selectedVersion === undefined) {
-    console.log(`${red('No version can be extracted from the asset. Reach out Juno❗️')}`);
-    return;
-  }
-
-  const displayHint = `satellite "${satelliteKey(satellite.satelliteId ?? '')}"`;
-  const {canUpgrade} = checkVersion({displayHint, currentVersion, selectedVersion});
-
-  if (!canUpgrade) {
     return;
   }
 
@@ -193,4 +153,110 @@ const upgradeSatelliteCustom = async ({
     });
 
   await upgradeWasmLocal({src, upgrade: upgradeSatelliteWasm});
+};
+
+const updateMissionControlRelease = async () => {
+  const missionControl = getMissionControl();
+
+  if (!missionControl) {
+    console.log(`${red('No mission control found.')}`);
+    return;
+  }
+
+  const missionControlParameters = {
+    missionControlId: missionControl,
+    ...actorParameters()
+  };
+
+  const currentVersion = await missionControlVersion({
+    missionControl: missionControlParameters
+  });
+
+  const displayHint = `mission control`;
+  const asset = await selectAsset({
+    currentVersion,
+    assetKey: MISSION_CONTROL_WASM_NAME,
+    displayHint
+  });
+
+  if (asset === undefined) {
+    return;
+  }
+
+  const upgradeMissionControlWasm = async ({wasm_module}: {wasm_module: Array<number>}) =>
+    upgradeMissionControlAdmin({
+      missionControl: missionControlParameters,
+      wasm_module
+    });
+
+  await upgradeWasmGitHub({asset, upgrade: upgradeMissionControlWasm});
+};
+
+const selectAsset = async ({
+  currentVersion,
+  assetKey,
+  displayHint
+}: {
+  currentVersion: string;
+  assetKey: 'satellite' | 'mission_control';
+  displayHint: string;
+}): Promise<GitHubAsset | undefined> => {
+  const releases = await githubReleases();
+
+  if (releases === undefined) {
+    console.log(`${red('Cannot fetch GitHub repo releases 😢.')}`);
+    return undefined;
+  }
+
+  const releasesWithAssets = releases.filter(
+    ({assets}) => assets?.find(({name}) => name.includes(assetKey)) !== undefined
+  );
+
+  if (releasesWithAssets.length === 0) {
+    console.log(`${red('No assets has been released. Reach out Juno❗')}`);
+    return undefined;
+  }
+
+  const newerReleases = releasesWithAssets.filter(({assets}) => {
+    const asset = assets?.find(({name}) => name.includes(assetKey));
+
+    if (asset === undefined) {
+      return false;
+    }
+
+    const version = coerce(asset.name)?.format();
+
+    if (version === undefined) {
+      return false;
+    }
+
+    return compare(currentVersion, version) === -1;
+  });
+
+  if (newerReleases.length === 0) {
+    console.log(`No newer releases are available at the moment.`);
+    return undefined;
+  }
+
+  const asset = await promptReleases(newerReleases);
+
+  if (asset === undefined) {
+    console.log(`${red('No asset has been released for the selected version. Reach out Juno❗️')}`);
+    return undefined;
+  }
+
+  const selectedVersion = coerce(asset.name)?.format();
+
+  if (selectedVersion === undefined) {
+    console.log(`${red('No version can be extracted from the asset. Reach out Juno❗️')}`);
+    return undefined;
+  }
+
+  const {canUpgrade} = checkVersion({displayHint, currentVersion, selectedVersion});
+
+  if (!canUpgrade) {
+    return undefined;
+  }
+
+  return asset;
 };
