@@ -5,6 +5,7 @@ import {
   upgradeMissionControl as upgradeMissionControlAdmin,
   upgradeSatellite as upgradeSatelliteAdmin
 } from '@junobuild/admin';
+import {MissionControlParameters} from '@junobuild/admin/dist/types/types/actor.types';
 import {red, yellow} from 'kleur';
 import prompts from 'prompts';
 import {coerce, compare, major, minor, patch} from 'semver';
@@ -27,11 +28,24 @@ export const upgrade = async (args?: string[]) => {
 };
 
 const upgradeMissionControl = async (args?: string[]) => {
-  if (hasArgs({args, options: ['-s', '--src']})) {
+  const missionControl = getMissionControl();
+
+  if (!missionControl) {
+    console.log(`${red('No mission control found.')}`);
     return;
   }
 
-  await updateMissionControlRelease();
+  const missionControlParameters = {
+    missionControlId: missionControl,
+    ...actorParameters()
+  };
+
+  if (hasArgs({args, options: ['-s', '--src']})) {
+    await upgradeMissionControlCustom({args, missionControlParameters});
+    return;
+  }
+
+  await updateMissionControlRelease(missionControlParameters);
 };
 
 const upgradeSatellite = async (args?: string[]) => {
@@ -155,19 +169,7 @@ const upgradeSatelliteCustom = async ({
   await upgradeWasmLocal({src, upgrade: upgradeSatelliteWasm});
 };
 
-const updateMissionControlRelease = async () => {
-  const missionControl = getMissionControl();
-
-  if (!missionControl) {
-    console.log(`${red('No mission control found.')}`);
-    return;
-  }
-
-  const missionControlParameters = {
-    missionControlId: missionControl,
-    ...actorParameters()
-  };
-
+const updateMissionControlRelease = async (missionControlParameters: MissionControlParameters) => {
   const currentVersion = await missionControlVersion({
     missionControl: missionControlParameters
   });
@@ -190,6 +192,29 @@ const updateMissionControlRelease = async () => {
     });
 
   await upgradeWasmGitHub({asset, upgrade: upgradeMissionControlWasm});
+};
+
+const upgradeMissionControlCustom = async ({
+  missionControlParameters,
+  args
+}: {
+  missionControlParameters: MissionControlParameters;
+  args?: string[];
+}) => {
+  const src = nextArg({args, option: '-s'}) ?? nextArg({args, option: '--src'});
+
+  if (src === undefined) {
+    console.log(`${red('No source file provided.')}`);
+    return;
+  }
+
+  const upgradeMissionControlWasm = async ({wasm_module}: {wasm_module: Array<number>}) =>
+    upgradeMissionControlAdmin({
+      missionControl: missionControlParameters,
+      wasm_module
+    });
+
+  await upgradeWasmLocal({src, upgrade: upgradeMissionControlWasm});
 };
 
 const selectAsset = async ({
