@@ -1,13 +1,45 @@
-import {SatelliteParameters, satelliteVersion, upgradeSatellite} from '@junobuild/admin';
-import {red} from 'kleur';
+import {
+  SatelliteParameters,
+  satelliteVersion,
+  upgradeSatellite as upgradeSatelliteAdmin
+} from '@junobuild/admin';
+import {red, yellow} from 'kleur';
 import prompts from 'prompts';
-import {coerce, compare} from 'semver';
+import {coerce, compare, major, minor, patch} from 'semver';
 import {SATELLITE_WASM_NAME} from '../constants/constants';
 import {hasArgs, nextArg} from '../utils/args.utils';
 import {GitHubAsset, GitHubRelease, githubReleases} from '../utils/github.utils';
 import {junoConfigExist, readSatelliteConfig} from '../utils/satellite.config.utils';
-import {satelliteParameters} from '../utils/satellite.utils';
+import {satelliteKey, satelliteParameters} from '../utils/satellite.utils';
 import {upgradeWasmGitHub, upgradeWasmLocal} from '../utils/wasm.utils';
+
+export const upgrade = async (args?: string[]) => {
+  if (hasArgs({args, options: ['-m', '--mission-control']})) {
+    return;
+  }
+
+  await upgradeSatellite(args);
+};
+
+const upgradeMissionControl = async (args?: string[]) => {};
+
+const upgradeSatellite = async (args?: string[]) => {
+  if (!(await junoConfigExist())) {
+    console.log(`${red('No configuration found.')}`);
+    return;
+  }
+
+  const {satelliteId} = await readSatelliteConfig();
+
+  const satellite = satelliteParameters(satelliteId);
+
+  if (hasArgs({args, options: ['-s', '--src']})) {
+    await upgradeSatelliteCustom({satellite, args});
+    return;
+  }
+
+  await upgradeSatelliteRelease(satellite);
+};
 
 const promptReleases = async (
   githubReleases: GitHubRelease[]
@@ -35,25 +67,40 @@ const promptReleases = async (
   return asset;
 };
 
-export const upgrade = async (args?: string[]) => {
-  if (!(await junoConfigExist())) {
-    console.log(`${red('No configuration found.')}`);
-    return;
+const checkVersion = ({
+  currentVersion,
+  selectedVersion,
+  displayHint
+}: {
+  currentVersion: string;
+  selectedVersion: string;
+  displayHint: string;
+}): {canUpgrade: boolean} => {
+  const currentMajor = major(currentVersion);
+  const selectedMajor = major(selectedVersion);
+  const currentMinor = minor(currentVersion);
+  const selectedMinor = minor(selectedVersion);
+  const currentPath = patch(currentVersion);
+  const selectedPath = patch(selectedVersion);
+
+  if (
+    currentMajor < selectedMajor - 1 ||
+    currentMinor < selectedMinor - 1 ||
+    currentPath < selectedPath - 1
+  ) {
+    console.log(
+      `There may have been breaking changes your ${displayHint} ${yellow(
+        `v${currentVersion}`
+      )} and selected version ${yellow(`v${selectedVersion}`)}.\nPlease upgrade iteratively.`
+    );
+
+    return {canUpgrade: false};
   }
 
-  const {satelliteId} = await readSatelliteConfig();
-
-  const satellite = satelliteParameters(satelliteId);
-
-  if (hasArgs({args, options: ['-s', '--src']})) {
-    await upgradeCustom({satellite, args});
-    return;
-  }
-
-  await upgradeRelease(satellite);
+  return {canUpgrade: true};
 };
 
-const upgradeRelease = async (satellite: SatelliteParameters) => {
+const upgradeSatelliteRelease = async (satellite: SatelliteParameters) => {
   const currentVersion = await satelliteVersion({
     satellite
   });
@@ -102,8 +149,22 @@ const upgradeRelease = async (satellite: SatelliteParameters) => {
     return;
   }
 
+  const selectedVersion = coerce(asset.name)?.format();
+
+  if (selectedVersion === undefined) {
+    console.log(`${red('No version can be extracted from the asset. Reach out Juno❗️')}`);
+    return;
+  }
+
+  const displayHint = `satellite "${satelliteKey(satellite.satelliteId ?? '')}"`;
+  const {canUpgrade} = checkVersion({displayHint, currentVersion, selectedVersion});
+
+  if (!canUpgrade) {
+    return;
+  }
+
   const upgradeSatelliteWasm = async ({wasm_module}: {wasm_module: Array<number>}) =>
-    upgradeSatellite({
+    upgradeSatelliteAdmin({
       satellite,
       wasm_module
     });
@@ -111,7 +172,7 @@ const upgradeRelease = async (satellite: SatelliteParameters) => {
   await upgradeWasmGitHub({asset, upgrade: upgradeSatelliteWasm});
 };
 
-const upgradeCustom = async ({
+const upgradeSatelliteCustom = async ({
   satellite,
   args
 }: {
@@ -126,7 +187,7 @@ const upgradeCustom = async ({
   }
 
   const upgradeSatelliteWasm = async ({wasm_module}: {wasm_module: Array<number>}) =>
-    upgradeSatellite({
+    upgradeSatelliteAdmin({
       satellite,
       wasm_module
     });
