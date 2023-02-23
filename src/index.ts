@@ -1,5 +1,5 @@
 import {red} from 'kleur';
-import {login, logout, whoami} from './commands/auth';
+import {login, logout} from './commands/auth';
 import {clear} from './commands/clear';
 import {config} from './commands/config';
 import {deploy} from './commands/deploy';
@@ -7,6 +7,7 @@ import {help, helpCommand, helpUpgrade} from './commands/help';
 import {init} from './commands/init';
 import {upgrade} from './commands/upgrade';
 import {version as versionCommand} from './commands/version';
+import {whoami} from './commands/whoami';
 import {hasArgs} from './utils/args.utils';
 
 export const run = async () => {

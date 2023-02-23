@@ -8,7 +8,6 @@ import util from 'util';
 import {AUTH_URL} from '../constants/constants';
 import {
   clearAuthConfig,
-  getToken,
   saveAuthSatellites,
   saveMissionControl,
   saveToken
@@ -21,18 +20,6 @@ export const logout = async () => {
   clearAuthConfig();
 
   console.log(`${green('Logged out')}`);
-};
-
-export const whoami = () => {
-  const token = getToken();
-
-  if (!token) {
-    console.log(`No controller found.`);
-    return;
-  }
-
-  const identity = Ed25519KeyIdentity.fromParsedJson(token);
-  console.log(`${green(identity.getPrincipal().toText())}`);
 };
 
 export const login = async () => {
