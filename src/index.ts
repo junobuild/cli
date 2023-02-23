@@ -52,6 +52,9 @@ export const run = async () => {
     case 'whoami':
       whoami();
       break;
+    case 'help':
+      console.log(help);
+      break;
     default:
       console.log(`${red('Unknown command.')}`);
       console.log(help);
