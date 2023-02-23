@@ -31,8 +31,9 @@ ${title}
 Usage: ${cyan('juno upgrade [options]')}
 
 Options:
-  ${cyan('-s, --src')}           a local wasm file to upgrade your satellite
-  ${cyan('-h, --help')}          output usage information
+  ${cyan('-s, --src')}             a local wasm file for the upgrade
+  ${cyan('-m, --mission-control')} target a mission control instead of satellite (default)
+  ${cyan('-h, --help')}            output usage information
 `;
 
 export const helpCommand = (command: string) => `
