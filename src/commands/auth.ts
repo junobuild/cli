@@ -6,12 +6,8 @@ import {bold, green, underline} from 'kleur';
 import path from 'path';
 import util from 'util';
 import {AUTH_URL} from '../constants/constants';
-import {
-  clearAuthConfig,
-  saveAuthSatellites,
-  saveMissionControl,
-  saveToken
-} from '../utils/auth.config.utils';
+import {nextArg} from '../utils/args.utils';
+import {clearAuthConfig, saveAuthConfig} from '../utils/auth.config.utils';
 import {authUrl, requestUrl} from '../utils/auth.utils';
 import {openUrl} from '../utils/open.utils';
 import {getPort} from '../utils/port.utils';
@@ -22,7 +18,7 @@ export const logout = async () => {
   console.log(`${green('Logged out')}`);
 };
 
-export const login = async () => {
+export const login = async (args?: string[]) => {
   const port = await getPort();
   const nonce = Math.floor(Math.random() * (2 << 29) + 1);
 
@@ -30,6 +26,8 @@ export const login = async () => {
   // const principal =  key.getPublicKey().toDer(); // add to mission control center (maybe with expiration)
   const principal = key.getPrincipal().toText();
   const token = key.toJSON(); // save to ~/.my-key.json
+
+  const profile = nextArg({args, option: '-u'}) ?? nextArg({args, option: '--use'});
 
   return new Promise<void>((resolve, reject) => {
     const server = createServer(async (req, res) => {
@@ -46,7 +44,7 @@ export const login = async () => {
       }
 
       try {
-        saveAuthConfig({token, satellites, missionControl});
+        saveConfig({token, satellites, missionControl, profile});
         await respondWithFile(req, res, 200, '../templates/success.html');
         console.log(`${green('Success!')} Logged in`);
         resolve();
@@ -92,20 +90,21 @@ async function respondWithFile(
   req.socket.destroy();
 }
 
-const saveAuthConfig = ({
+const saveConfig = ({
   token,
   satellites,
-  missionControl
+  missionControl,
+  profile
 }: {
   token: JsonnableEd25519KeyIdentity;
   satellites: string | null;
   missionControl: string | null;
+  profile?: string;
 }) => {
-  saveToken(token);
-
-  saveAuthSatellites(JSON.parse(decodeURIComponent(satellites ?? '[]')));
-
-  if (missionControl !== null) {
-    saveMissionControl(missionControl);
-  }
+  saveAuthConfig({
+    token,
+    satellites: JSON.parse(decodeURIComponent(satellites ?? '[]')),
+    missionControl,
+    profile
+  });
 };

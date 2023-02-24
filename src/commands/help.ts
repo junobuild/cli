@@ -44,3 +44,23 @@ Usage: ${cyan(`juno ${command}`)}
 Options:
   ${cyan('-h, --help')}          output usage information
 `;
+
+export const helpLogin = `
+${title}
+
+Usage: ${cyan('juno login [options]')}
+
+Options:
+  ${cyan('-u, --use')}             an optional profile for the authentication
+  ${cyan('-h, --help')}            output usage information
+`;
+
+export const helpUse = `
+${title}
+
+Usage: ${cyan('juno use [options]')}
+
+Options:
+  ${cyan('-p, --profile')}         the profile that should be use
+  ${cyan('-h, --help')}            output usage information
+`;

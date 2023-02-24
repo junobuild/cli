@@ -3,9 +3,10 @@ import {login, logout} from './commands/auth';
 import {clear} from './commands/clear';
 import {config} from './commands/config';
 import {deploy} from './commands/deploy';
-import {help, helpCommand, helpUpgrade} from './commands/help';
+import {help, helpCommand, helpLogin, helpUpgrade, helpUse} from './commands/help';
 import {init} from './commands/init';
 import {upgrade} from './commands/upgrade';
+import {use} from './commands/use';
 import {version as versionCommand} from './commands/version';
 import {whoami} from './commands/whoami';
 import {hasArgs} from './utils/args.utils';
@@ -22,8 +23,14 @@ export const run = async () => {
 
   if (hasArgs({args, options: ['-h', '--help']})) {
     switch (cmd) {
+      case 'login':
+        console.log(helpLogin);
+        break;
       case 'upgrade':
         console.log(helpUpgrade);
+        break;
+      case 'use':
+        console.log(helpUse);
         break;
       default:
         console.log(helpCommand(cmd));
@@ -33,7 +40,7 @@ export const run = async () => {
 
   switch (cmd) {
     case 'login':
-      await login();
+      await login(args);
       break;
     case 'logout':
       await logout();
@@ -58,6 +65,9 @@ export const run = async () => {
       break;
     case 'whoami':
       whoami();
+      break;
+    case 'use':
+      use(args);
       break;
     case 'help':
       console.log(help);

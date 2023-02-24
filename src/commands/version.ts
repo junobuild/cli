@@ -20,7 +20,11 @@ const missionControlVersion = async () => {
   const missionControl = getMissionControl();
 
   if (!missionControl) {
-    console.log(`${red('No mission control found.')}`);
+    console.log(
+      `${red(
+        'No mission control found.'
+      )} Ignore this error if your controller does not control your mission control.`
+    );
     return;
   }
 
