@@ -44,19 +44,19 @@ export const saveAuthConfig = ({
   missionControl: string | null;
   profile?: AuthProfile;
 }) => {
-  if (profile !== undefined && profile !== 'default') {
+  if (!isDefaultProfile(profile)) {
     const profiles = getProfiles();
 
     saveProfiles({
       ...(profiles !== undefined ? profiles : {}),
-      [profile]: {
+      [profile!]: {
         token,
         satellites,
         ...(missionControl !== null && {missionControl})
       }
     });
 
-    saveUse(profile);
+    saveUse(profile!);
 
     return;
   }
