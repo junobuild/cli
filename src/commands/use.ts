@@ -1,4 +1,4 @@
-import {red} from 'kleur';
+import {green, red} from 'kleur';
 import {nextArg} from '../utils/args.utils';
 import {deleteUse, getProfiles, saveUse} from '../utils/auth.config.utils';
 
@@ -12,6 +12,8 @@ export const use = (args?: string[]) => {
 
   if (profile === 'default') {
     deleteUse();
+
+    console.log(`Now using ${green('default')}.`);
     return;
   }
 
@@ -23,4 +25,6 @@ export const use = (args?: string[]) => {
   }
 
   saveUse(profile);
+
+  console.log(`Now using ${green(profile)}.`);
 };
