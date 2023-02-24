@@ -12,7 +12,7 @@ import {
   saveMissionControl,
   saveToken
 } from '../utils/auth.config.utils';
-import {authUrl, requestUrl} from '../utils/env.utils';
+import {authUrl, requestUrl} from '../utils/auth.utils';
 import {openUrl} from '../utils/open.utils';
 import {getPort} from '../utils/port.utils';
 
