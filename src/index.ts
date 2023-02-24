@@ -9,8 +9,15 @@ import {upgrade} from './commands/upgrade';
 import {version as versionCommand} from './commands/version';
 import {whoami} from './commands/whoami';
 import {hasArgs} from './utils/args.utils';
+import {checkNodeVersion} from './utils/env.utils';
 
 export const run = async () => {
+  const {valid} = checkNodeVersion();
+
+  if (!valid) {
+    return;
+  }
+
   const [cmd, ...args] = process.argv.slice(2);
 
   if (hasArgs({args, options: ['-h', '--help']})) {
