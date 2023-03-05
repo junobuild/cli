@@ -24,7 +24,7 @@ export const login = async (args?: string[]) => {
 
   const key = Ed25519KeyIdentity.generate();
   const principal = key.getPrincipal().toText();
-  const token = key.toJSON(); // save to ~/.my-key.json
+  const token = key.toJSON(); // save to local
 
   const profile = nextArg({args, option: '-u'}) ?? nextArg({args, option: '--use'});
 
