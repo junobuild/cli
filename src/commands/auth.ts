@@ -23,7 +23,6 @@ export const login = async (args?: string[]) => {
   const nonce = Math.floor(Math.random() * (2 << 29) + 1);
 
   const key = Ed25519KeyIdentity.generate();
-  // const principal =  key.getPublicKey().toDer(); // add to mission control center (maybe with expiration)
   const principal = key.getPrincipal().toText();
   const token = key.toJSON(); // save to ~/.my-key.json
 
