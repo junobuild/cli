@@ -11,6 +11,11 @@ import {clearAuthConfig, saveAuthConfig} from '../utils/auth.config.utils';
 import {authUrl, requestUrl} from '../utils/auth.utils';
 import {openUrl} from '../utils/open.utils';
 import {getPort} from '../utils/port.utils';
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 export const logout = async () => {
   clearAuthConfig();
