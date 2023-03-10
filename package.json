@@ -4,6 +4,7 @@
   "description": "The Juno command-line interface",
   "author": "David Dal Busco (https://daviddalbusco.com)",
   "license": "MIT",
+  "type": "module",
   "bin": {
     "juno": "dist/index.js"
   },
@@ -21,8 +22,8 @@
   },
   "dependencies": {
     "@dfinity/identity": "^0.15.3",
-    "@junobuild/admin": "^0.0.4",
-    "@junobuild/core": "^0.0.5",
+    "@junobuild/admin": "^0.0.5",
+    "@junobuild/core": "^0.0.8",
     "conf": "^11.0.1",
     "file-type": "^18.2.1",
     "mime-types": "^2.1.35",
