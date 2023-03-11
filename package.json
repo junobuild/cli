@@ -1,6 +1,6 @@
 {
   "name": "@junobuild/cli",
-  "version": "0.0.17",
+  "version": "0.0.18",
   "description": "The Juno command-line interface",
   "author": "David Dal Busco (https://daviddalbusco.com)",
   "license": "MIT",
@@ -21,14 +21,14 @@
     "dev": "node rmdir.mjs && NODE_ENV=development node esbuild.mjs"
   },
   "dependencies": {
-    "@dfinity/identity": "^0.15.3",
-    "@junobuild/admin": "^0.0.5",
-    "@junobuild/core": "^0.0.8",
+    "@dfinity/identity": "^0.15.4",
+    "@junobuild/admin": "^0.0.6",
+    "@junobuild/core": "^0.0.9",
     "conf": "^11.0.1",
     "file-type": "^18.2.1",
     "mime-types": "^2.1.35",
-    "minimatch": "^7.1.1",
-    "node-fetch": "^3.3.0",
+    "minimatch": "^7.4.2",
+    "node-fetch": "^3.3.1",
     "open": "^8.4.2",
     "ora": "^6.1.2",
     "portfinder": "^1.0.32",
@@ -40,7 +40,7 @@
     "@types/prompts": "^2.4.2",
     "@types/semver": "^7.3.13",
     "dotenv": "^16.0.3",
-    "esbuild": "^0.17.10",
+    "esbuild": "^0.17.11",
     "prettier": "^2.8.4",
     "prettier-plugin-organize-imports": "^3.2.2",
     "typescript": "^4.9.5"
