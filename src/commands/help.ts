@@ -51,6 +51,7 @@ ${title}
 Usage: ${cyan('juno login [options]')}
 
 Options:
+  ${cyan('-b, --browser')}         a particular browser to open. supported: chrome|firefox|edge
   ${cyan('-u, --use')}             an optional profile for the authentication
   ${cyan('-h, --help')}            output usage information
 `;

@@ -3,7 +3,8 @@ import {JsonnableEd25519KeyIdentity} from '@dfinity/identity/lib/cjs/identity/ed
 import fs from 'fs';
 import http, {createServer} from 'http';
 import {bold, green, underline} from 'kleur';
-import path from 'path';
+import path, {dirname} from 'path';
+import {fileURLToPath} from 'url';
 import util from 'util';
 import {AUTH_URL} from '../constants/constants';
 import {nextArg} from '../utils/args.utils';
@@ -11,8 +12,6 @@ import {clearAuthConfig, saveAuthConfig} from '../utils/auth.config.utils';
 import {authUrl, requestUrl} from '../utils/auth.utils';
 import {openUrl} from '../utils/open.utils';
 import {getPort} from '../utils/port.utils';
-import { fileURLToPath } from 'url';
-import { dirname } from 'path';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -32,6 +31,7 @@ export const login = async (args?: string[]) => {
   const token = key.toJSON(); // save to local
 
   const profile = nextArg({args, option: '-u'}) ?? nextArg({args, option: '--use'});
+  const browser = nextArg({args, option: '-b'}) ?? nextArg({args, option: '--browser'});
 
   return new Promise<void>((resolve, reject) => {
     const server = createServer(async (req, res) => {
@@ -70,7 +70,7 @@ export const login = async (args?: string[]) => {
       console.log();
       console.log('Waiting for authentication...');
 
-      await openUrl(authUrl({port, nonce, principal}));
+      await openUrl({url: authUrl({port, nonce, principal}), browser});
     });
 
     server.on('error', (err) => {
