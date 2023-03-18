@@ -7,7 +7,7 @@ export const authUrl = ({
 }: {
   port: number;
   nonce: number;
-  principal;
+  principal: string;
 }): string => {
   const callbackUrl = authCallbackUrl({port, nonce});
 
