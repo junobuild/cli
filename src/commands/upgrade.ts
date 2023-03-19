@@ -70,11 +70,15 @@ const upgradeSatellite = async (args?: string[]) => {
   await upgradeSatelliteRelease(satellite);
 };
 
-const promptReleases = async (
-  githubReleases: GitHubRelease[]
-): Promise<GitHubAsset | undefined> => {
+const promptReleases = async ({
+  githubReleases,
+  assetKey
+}: {
+  githubReleases: GitHubRelease[];
+  assetKey: 'satellite' | 'mission_control';
+}): Promise<GitHubAsset | undefined> => {
   const choices = githubReleases.reduce((acc, {tag_name, assets}: GitHubRelease) => {
-    const asset = assets?.find(({name}) => name.includes(SATELLITE_WASM_NAME));
+    const asset = assets?.find(({name}) => name.includes(assetKey));
     const title = `Juno ${tag_name} (${asset?.name ?? ''})`;
 
     return [...acc, ...(asset !== undefined ? [{title, value: asset}] : [])];
@@ -276,7 +280,10 @@ const selectAsset = async ({
     return undefined;
   }
 
-  const asset = await promptReleases(newerReleases);
+  const asset = await promptReleases({
+    githubReleases: newerReleases,
+    assetKey
+  });
 
   if (asset === undefined) {
     console.log(`${red('No asset has been released for the selected version. Reach out Juno❗️')}`);
