@@ -144,7 +144,9 @@ const upgradeSatelliteRelease = async (satellite: SatelliteParameters) => {
   const upgradeSatelliteWasm = async ({wasm_module}: {wasm_module: Array<number>}) =>
     upgradeSatelliteAdmin({
       satellite,
-      wasm_module
+      wasm_module,
+      // TODO: option to be removed
+      deprecated: compare(currentVersion, '0.0.7') < 0
     });
 
   await upgradeWasmGitHub({asset, upgrade: upgradeSatelliteWasm});
@@ -164,10 +166,17 @@ const upgradeSatelliteCustom = async ({
     return;
   }
 
+  // TODO: option to be removed
+  const currentVersion = await satelliteVersion({
+    satellite
+  });
+
   const upgradeSatelliteWasm = async ({wasm_module}: {wasm_module: Array<number>}) =>
     upgradeSatelliteAdmin({
       satellite,
-      wasm_module
+      wasm_module,
+      // TODO: option to be removed
+      deprecated: compare(currentVersion, '0.0.7') < 0
     });
 
   await upgradeWasmLocal({src, upgrade: upgradeSatelliteWasm});
