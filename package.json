@@ -22,7 +22,7 @@
   },
   "dependencies": {
     "@dfinity/identity": "^0.15.4",
-    "@junobuild/admin": "^0.0.6",
+    "@junobuild/admin": "^0.0.7",
     "@junobuild/core": "^0.0.9",
     "conf": "^11.0.1",
     "file-type": "^18.2.1",
