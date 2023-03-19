@@ -42,7 +42,7 @@ export const saveAuthConfig = ({
   token: JsonnableEd25519KeyIdentity;
   satellites: AuthSatelliteConfig[];
   missionControl: string | null;
-  profile?: AuthProfile;
+  profile: AuthProfile | null;
 }) => {
   if (!isDefaultProfile(profile)) {
     const profiles = getProfiles();
@@ -79,7 +79,7 @@ export const saveProfiles = (profiles: Record<string, AuthConfigData>) =>
   config.set('profiles', profiles);
 export const getProfiles = (): Record<string, AuthConfigData> | undefined => config.get('profiles');
 
-export const isDefaultProfile = (use: AuthProfile | undefined): boolean =>
+export const isDefaultProfile = (use: AuthProfile | undefined | null): boolean =>
   use === null || use === undefined || use === 'default';
 
 const saveToken = (token: JsonnableEd25519KeyIdentity) => config.set('token', token);

@@ -30,7 +30,6 @@ export const login = async (args?: string[]) => {
   const principal = key.getPrincipal().toText();
   const token = key.toJSON(); // save to local
 
-  const profile = nextArg({args, option: '-u'}) ?? nextArg({args, option: '--use'});
   const browser = nextArg({args, option: '-b'}) ?? nextArg({args, option: '--browser'});
 
   return new Promise<void>((resolve, reject) => {
@@ -39,6 +38,7 @@ export const login = async (args?: string[]) => {
       const returnedNonce = url.searchParams.get('state');
       const satellites = url.searchParams.get('satellites');
       const missionControl = url.searchParams.get('mission_control');
+      const profile = url.searchParams.get('profile');
 
       if (returnedNonce !== `${nonce}`) {
         await respondWithFile(req, res, 400, '../templates/failure.html');
@@ -103,7 +103,7 @@ const saveConfig = ({
   token: JsonnableEd25519KeyIdentity;
   satellites: string | null;
   missionControl: string | null;
-  profile?: string;
+  profile: string | null;
 }) => {
   saveAuthConfig({
     token,
