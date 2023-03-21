@@ -1,10 +1,8 @@
 import type {ChildProcess} from 'child_process';
-import open from 'open';
+import open, {apps} from 'open';
 
 export const openUrl = ({url, browser}: {url: string; browser?: string}): Promise<ChildProcess> => {
-  const {
-    apps: {chrome, firefox, edge}
-  } = open;
+  const {chrome, firefox, edge} = apps;
 
   let app: string | readonly string[] | undefined = undefined;
   switch (browser?.toLowerCase()) {
