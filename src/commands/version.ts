@@ -124,7 +124,7 @@ const checkVersion = async ({
     `Your ${displayHint} (${yellow(`v${currentVersion}`)}) is behind the latest version (${green(
       `v${latestVersion}`
     )}) available. Run ${cyan(
-      `juno upgrade${assetKey === 'mission_control' ? '-m' : ''}`
+      `juno upgrade${assetKey === 'mission_control' ? ' -m' : ''}`
     )} to update it.`
   );
 };
