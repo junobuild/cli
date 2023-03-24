@@ -3,17 +3,44 @@ import {
   satelliteVersion as satelliteVersionLib
 } from '@junobuild/admin';
 import {cyan, green, red, yellow} from 'kleur';
-import {coerce, compare} from 'semver';
+import {clean, coerce, compare} from 'semver';
+import {version as cliCurrentVersion} from '../../package.json';
 import {MISSION_CONTROL_WASM_NAME, SATELLITE_WASM_NAME} from '../constants/constants';
 import {actorParameters} from '../utils/actor.utils';
 import {getMissionControl} from '../utils/auth.config.utils';
-import {githubLastRelease} from '../utils/github.utils';
+import {githubCliLastRelease, githubJunoLastRelease} from '../utils/github.utils';
 import {junoConfigExist, readSatelliteConfig} from '../utils/satellite.config.utils';
 import {satelliteKey, satelliteParameters} from '../utils/satellite.utils';
 
 export const version = async () => {
+  await cliVersion();
   await missionControlVersion();
   await satelliteVersion();
+};
+
+const cliVersion = async () => {
+  const githubRelease = await githubCliLastRelease();
+
+  if (githubRelease === undefined) {
+    console.log(`${red('Cannot fetch last release version of Juno on GitHub 😢.')}`);
+    return;
+  }
+
+  const {tag_name} = githubRelease;
+
+  const latestVersion = clean(tag_name);
+
+  if (!latestVersion) {
+    console.log(`${red(`Cannot extract version from release. Reach out Juno❗️`)}`);
+    return;
+  }
+
+  checkVersion({
+    currentVersion: cliCurrentVersion,
+    latestVersion,
+    displayHint: 'CLI',
+    commandLineHint: `npm i -g @junobuild/cli`
+  });
 };
 
 const missionControlVersion = async () => {
@@ -21,7 +48,7 @@ const missionControlVersion = async () => {
 
   if (!missionControl) {
     console.log(
-      `${red(
+      `${yellow(
         'No mission control found.'
       )} Ignore this error if your controller does not control your mission control.`
     );
@@ -39,7 +66,7 @@ const missionControlVersion = async () => {
 
   const displayHint = `mission control`;
 
-  await checkVersion({
+  await checkSegmentVersion({
     currentVersion,
     assetKey: MISSION_CONTROL_WASM_NAME,
     displayHint
@@ -48,7 +75,7 @@ const missionControlVersion = async () => {
 
 const satelliteVersion = async () => {
   if (!(await junoConfigExist())) {
-    console.log(`${red('No satellite configuration found.')}`);
+    console.log(`${yellow('No satellite configuration found.')}`);
     return;
   }
 
@@ -62,14 +89,14 @@ const satelliteVersion = async () => {
 
   const displayHint = `satellite "${satelliteKey(satelliteId)}"`;
 
-  await checkVersion({
+  await checkSegmentVersion({
     currentVersion,
     assetKey: SATELLITE_WASM_NAME,
     displayHint
   });
 };
 
-const checkVersion = async ({
+const checkSegmentVersion = async ({
   currentVersion,
   assetKey,
   displayHint
@@ -78,10 +105,10 @@ const checkVersion = async ({
   assetKey: 'satellite' | 'mission_control';
   displayHint: string;
 }): Promise<void> => {
-  const githubRelease = await githubLastRelease();
+  const githubRelease = await githubJunoLastRelease();
 
   if (githubRelease === undefined) {
-    console.log(`${red('Cannot fetch GitHub repo last release version 😢.')}`);
+    console.log(`${red('Cannot fetch last release version of Juno on GitHub 😢.')}`);
     return;
   }
 
@@ -106,6 +133,25 @@ const checkVersion = async ({
     return;
   }
 
+  checkVersion({
+    currentVersion,
+    latestVersion,
+    displayHint,
+    commandLineHint: `juno upgrade${assetKey === 'mission_control' ? ' -m' : ''}`
+  });
+};
+
+const checkVersion = ({
+  currentVersion,
+  latestVersion,
+  displayHint,
+  commandLineHint
+}: {
+  currentVersion: string;
+  latestVersion: string;
+  displayHint: string;
+  commandLineHint: string;
+}) => {
   const diff = compare(currentVersion, latestVersion);
 
   if (diff === 0) {
@@ -115,7 +161,7 @@ const checkVersion = async ({
 
   if (diff === 1) {
     console.log(
-      `${yellow(`'Your ${displayHint} version is more recent than the latest available 🤔.'`)}`
+      `${yellow(`Your ${displayHint} version is more recent than the latest available 🤔.`)}`
     );
     return;
   }
@@ -123,8 +169,6 @@ const checkVersion = async ({
   console.log(
     `Your ${displayHint} (${yellow(`v${currentVersion}`)}) is behind the latest version (${green(
       `v${latestVersion}`
-    )}) available. Run ${cyan(
-      `juno upgrade${assetKey === 'mission_control' ? ' -m' : ''}`
-    )} to update it.`
+    )}) available. Run ${cyan(commandLineHint)} to update it.`
   );
 };

@@ -29,7 +29,9 @@ export interface GitHubRelease {
   body: string;
 }
 
-const GITHUB_API_URL = 'https://api.github.com/repos/buildwithjuno/juno';
+const GITHUB_API_CLI_URL = 'https://api.github.com/repos/buildwithjuno/cli';
+const GITHUB_API_JUNO_URL = 'https://api.github.com/repos/buildwithjuno/juno';
+
 const GITHUB_API_HEADERS: RequestInit = {
   headers: {
     accept: 'application/vnd.github+json',
@@ -37,8 +39,8 @@ const GITHUB_API_HEADERS: RequestInit = {
   }
 };
 
-export const githubLastRelease = async (): Promise<GitHubRelease | undefined> => {
-  const response = await fetch(`${GITHUB_API_URL}/releases/latest`, GITHUB_API_HEADERS);
+const githubLastRelease = async (apiUrl: string): Promise<GitHubRelease | undefined> => {
+  const response = await fetch(`${apiUrl}/releases/latest`, GITHUB_API_HEADERS);
 
   if (!response.ok) {
     return undefined;
@@ -47,8 +49,14 @@ export const githubLastRelease = async (): Promise<GitHubRelease | undefined> =>
   return response.json();
 };
 
-export const githubReleases = async (): Promise<GitHubRelease[] | undefined> => {
-  const response = await fetch(`${GITHUB_API_URL}/releases`, GITHUB_API_HEADERS);
+export const githubCliLastRelease = (): Promise<GitHubRelease | undefined> =>
+  githubLastRelease(GITHUB_API_CLI_URL);
+
+export const githubJunoLastRelease = (): Promise<GitHubRelease | undefined> =>
+  githubLastRelease(GITHUB_API_JUNO_URL);
+
+export const githubJunoReleases = async (): Promise<GitHubRelease[] | undefined> => {
+  const response = await fetch(`${GITHUB_API_JUNO_URL}/releases`, GITHUB_API_HEADERS);
 
   if (!response.ok) {
     return undefined;
