@@ -22,28 +22,28 @@
   },
   "dependencies": {
     "@dfinity/identity": "^0.15.4",
-    "@junobuild/admin": "^0.0.8",
+    "@junobuild/admin": "^0.0.9",
     "@junobuild/core": "^0.0.9",
     "conf": "^11.0.1",
     "file-type": "^18.2.1",
     "mime-types": "^2.1.35",
-    "minimatch": "^7.4.2",
+    "minimatch": "^7.4.3",
     "node-fetch": "^3.3.1",
     "open": "^9.0.0",
-    "ora": "^6.1.2",
+    "ora": "^6.3.0",
     "portfinder": "^1.0.32",
     "prompts": "^2.4.2",
     "semver": "^7.3.8"
   },
   "devDependencies": {
     "@types/minimatch": "^5.1.2",
-    "@types/prompts": "^2.4.2",
+    "@types/prompts": "^2.4.3",
     "@types/semver": "^7.3.13",
     "dotenv": "^16.0.3",
-    "esbuild": "^0.17.11",
-    "prettier": "^2.8.4",
+    "esbuild": "^0.17.12",
+    "prettier": "^2.8.7",
     "prettier-plugin-organize-imports": "^3.2.2",
-    "typescript": "^4.9.5"
+    "typescript": "^5.0.2"
   },
   "repository": {
     "type": "git",
