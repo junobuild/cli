@@ -13,7 +13,7 @@ import {MISSION_CONTROL_WASM_NAME, SATELLITE_WASM_NAME} from '../constants/const
 import {actorParameters} from '../utils/actor.utils';
 import {hasArgs, nextArg} from '../utils/args.utils';
 import {getMissionControl} from '../utils/auth.config.utils';
-import {GitHubAsset, GitHubRelease, githubJunoReleases} from '../utils/github.utils';
+import {GitHubAsset, githubJunoReleases, GitHubRelease} from '../utils/github.utils';
 import {junoConfigExist, readSatelliteConfig} from '../utils/satellite.config.utils';
 import {satelliteKey, satelliteParameters} from '../utils/satellite.utils';
 import {upgradeWasmGitHub, upgradeWasmLocal} from '../utils/wasm.utils';
