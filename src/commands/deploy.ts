@@ -1,7 +1,7 @@
 import {AssetKey, Assets, ENCODING_TYPE, listAssets, uploadBlob} from '@junobuild/core';
 import {Blob} from 'buffer';
 import crypto from 'crypto';
-import {fileTypeFromFile, MimeType} from 'file-type';
+import {MimeType, fileTypeFromFile} from 'file-type';
 import {FileExtension} from 'file-type/core';
 import {lstatSync, readdirSync} from 'fs';
 import {readFile} from 'fs/promises';
