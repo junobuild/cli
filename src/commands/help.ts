@@ -21,6 +21,7 @@ Commands:
   ${cyan('login')}               generate an authentication for use in non-interactive environments
   ${cyan('logout')}              log out of the current device using the CLI
   ${cyan('upgrade')}             upgrade your satellite to a specific version code
+  ${cyan('use')}                 switch between multiple profiles
   ${cyan('version')}             check the version of a satellite, mission control and cli
   ${cyan('whoami')}              display the current controller 
 `;
@@ -62,5 +63,6 @@ Usage: ${cyan('juno use [options]')}
 
 Options:
   ${cyan('-p, --profile')}         the profile that should be use
+  ${cyan('-l, --list')}            what are the available profiles
   ${cyan('-h, --help')}            output usage information
 `;

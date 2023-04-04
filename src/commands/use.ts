@@ -1,8 +1,35 @@
 import {green, red} from 'kleur';
-import {nextArg} from '../utils/args.utils';
-import {deleteUse, getProfiles, saveUse} from '../utils/auth.config.utils';
+import {hasArgs, nextArg} from '../utils/args.utils';
+import {deleteUse, getProfiles, getUse, saveUse} from '../utils/auth.config.utils';
 
 export const use = (args?: string[]) => {
+  if (hasArgs({args, options: ['-l', '--list']})) {
+    listProfile();
+    return;
+  }
+
+  switchProfile(args);
+};
+
+const listProfile = () => {
+  const profiles = getProfiles();
+
+  if (profiles === undefined) {
+    console.log('No particular profiles available. Using default.');
+    return;
+  }
+
+  const use = getUse();
+
+  console.log('Available profiles:\n');
+  console.log(
+    Object.keys(profiles)
+      .map((profile) => (profile === use ? `${green(profile)} (currently selected)` : `${profile}`))
+      .join('\n')
+  );
+};
+
+const switchProfile = (args?: string[]) => {
   const profile = nextArg({args, option: '-p'}) ?? nextArg({args, option: '--profile'});
 
   if (profile === undefined) {
