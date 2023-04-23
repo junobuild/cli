@@ -8,7 +8,7 @@ import {
 import {MissionControlParameters} from '@junobuild/admin/dist/types/types/actor.types';
 import {red, yellow} from 'kleur';
 import prompts from 'prompts';
-import {coerce, compare, major, minor, patch} from 'semver';
+import {coerce, compare, eq, gt, lt, major, minor, patch, type SemVer} from 'semver';
 import {MISSION_CONTROL_WASM_NAME, SATELLITE_WASM_NAME} from '../constants/constants';
 import {actorParameters} from '../utils/actor.utils';
 import {hasArgs, nextArg} from '../utils/args.utils';
@@ -79,7 +79,10 @@ const promptReleases = async ({
 }): Promise<GitHubAsset | undefined> => {
   const choices = githubReleases.reduce((acc, {tag_name, assets}: GitHubRelease) => {
     const asset = assets?.find(({name}) => name.includes(assetKey));
-    const title = `Juno ${tag_name} (${asset?.name ?? ''})`;
+
+    const version = coerce(asset?.name ?? '');
+
+    const title = `v${version} (published in Juno ${tag_name})`;
 
     return [...acc, ...(asset !== undefined ? [{title, value: asset}] : [])];
   }, [] as {title: string; value: GitHubAsset}[]);
@@ -87,7 +90,7 @@ const promptReleases = async ({
   const {asset} = await prompts({
     type: 'select',
     name: 'asset',
-    message: 'Which release should be used to upgrade your satellite?',
+    message: `To which version should your ${assetKey.replace('_', ' ')} be upgraded?`,
     choices,
     initial: 0
   });
@@ -259,21 +262,65 @@ const selectAsset = async ({
     return undefined;
   }
 
-  const newerReleases = releasesWithAssets.filter(({assets}) => {
-    const asset = assets?.find(({name}) => name.includes(assetKey));
+  const newerReleases = releasesWithAssets
+    .filter(({assets}) => {
+      const asset = assets?.find(({name}) => name.includes(assetKey));
 
-    if (asset === undefined) {
-      return false;
-    }
+      if (asset === undefined) {
+        return false;
+      }
 
-    const version = coerce(asset.name)?.format();
+      const version = coerce(asset.name)?.format();
 
-    if (version === undefined) {
-      return false;
-    }
+      if (version === undefined) {
+        return false;
+      }
 
-    return compare(currentVersion, version) === -1;
-  });
+      return compare(currentVersion, version) === -1;
+    })
+    .reduce((acc, release) => {
+      const findAssetVersion = ({assets}: GitHubRelease): SemVer | null => {
+        const asset = assets?.find(({name}) => name.includes(assetKey));
+        return coerce(asset?.name ?? '');
+      };
+
+      // We want to display the asset release with the lowest global release!
+      // e.g. if satellite v0.0.2 is present in Juno v0.0.4 and v0.0.5, we want to present "Satellite v0.0.2 (Juno v0.0.4)"
+
+      // There is a release in the accumulator with a same asset version but a global version lower
+      // e.g. accumulator has satellite v0.0.2 in Juno v0.0.10 but release is Juno v0.0.11 with same satellite v0.0.2
+      if (
+        acc.find((existing) => {
+          const version = findAssetVersion(release);
+          const existingVersion = findAssetVersion(existing);
+
+          return (
+            eq(version?.raw ?? '', existingVersion?.raw ?? '') &&
+            lt(existing.tag_name, release.tag_name)
+          );
+        }) !== undefined
+      ) {
+        return acc;
+      }
+
+      // There is a release in the accumulator with a same asset version but a global version newer
+      // e.g. accumulator has satellite v0.0.2 in Juno v0.0.12 but release is Juno v0.0.11 with same satellite v0.0.2
+      const existingIndex = acc.findIndex((existing) => {
+        const version = findAssetVersion(release);
+        const existingVersion = findAssetVersion(existing);
+
+        return (
+          eq(version?.raw ?? '', existingVersion?.raw ?? '') &&
+          gt(existing.tag_name, release.tag_name)
+        );
+      });
+
+      if (existingIndex !== undefined) {
+        return [...acc.filter((_, index) => index !== existingIndex), release];
+      }
+
+      return [...acc, release];
+    }, [] as GitHubRelease[]);
 
   if (newerReleases.length === 0) {
     console.log(`No newer releases are available at the moment.`);
