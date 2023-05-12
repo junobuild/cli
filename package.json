@@ -1,6 +1,6 @@
 {
   "name": "@junobuild/cli",
-  "version": "0.0.25",
+  "version": "0.0.26",
   "description": "The Juno command-line interface",
   "author": "David Dal Busco (https://daviddalbusco.com)",
   "license": "MIT",
@@ -22,8 +22,8 @@
   },
   "dependencies": {
     "@dfinity/identity": "^0.15.5",
-    "@junobuild/admin": "^0.0.9",
-    "@junobuild/core": "^0.0.10",
+    "@junobuild/admin": "^0.0.15",
+    "@junobuild/core": "^0.0.16",
     "conf": "^11.0.1",
     "file-type": "^18.2.1",
     "mime-types": "^2.1.35",
