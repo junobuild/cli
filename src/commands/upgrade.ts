@@ -1,11 +1,11 @@
 import {
-  missionControlVersion,
   SatelliteParameters,
+  missionControlVersion,
   satelliteVersion,
   upgradeMissionControl as upgradeMissionControlAdmin,
-  upgradeSatellite as upgradeSatelliteAdmin
+  upgradeSatellite as upgradeSatelliteAdmin,
+  type MissionControlParameters
 } from '@junobuild/admin';
-import {MissionControlParameters} from '@junobuild/admin/dist/types/types/actor.types';
 import {red, yellow} from 'kleur';
 import prompts from 'prompts';
 import {coerce, compare, eq, gt, lt, major, minor, patch, type SemVer} from 'semver';
@@ -13,7 +13,7 @@ import {MISSION_CONTROL_WASM_NAME, SATELLITE_WASM_NAME} from '../constants/const
 import {actorParameters} from '../utils/actor.utils';
 import {hasArgs, nextArg} from '../utils/args.utils';
 import {getMissionControl} from '../utils/auth.config.utils';
-import {GitHubAsset, githubJunoReleases, GitHubRelease} from '../utils/github.utils';
+import {GitHubAsset, GitHubRelease, githubJunoReleases} from '../utils/github.utils';
 import {junoConfigExist, readSatelliteConfig} from '../utils/satellite.config.utils';
 import {satelliteKey, satelliteParameters} from '../utils/satellite.utils';
 import {upgradeWasmGitHub, upgradeWasmLocal} from '../utils/wasm.utils';
@@ -153,7 +153,8 @@ const upgradeSatelliteRelease = async (satellite: SatelliteParameters) => {
       satellite,
       wasm_module,
       // TODO: option to be removed
-      deprecated: compare(currentVersion, '0.0.7') < 0
+      deprecated: compare(currentVersion, '0.0.7') < 0,
+      deprecatedNoScope: compare(currentVersion, '0.0.9') < 0
     });
 
   await upgradeWasmGitHub({asset, upgrade: upgradeSatelliteWasm});
@@ -183,7 +184,8 @@ const upgradeSatelliteCustom = async ({
       satellite,
       wasm_module,
       // TODO: option to be removed
-      deprecated: compare(currentVersion, '0.0.7') < 0
+      deprecated: compare(currentVersion, '0.0.7') < 0,
+      deprecatedNoScope: compare(currentVersion, '0.0.9') < 0
     });
 
   await upgradeWasmLocal({src, upgrade: upgradeSatelliteWasm});
