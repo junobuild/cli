@@ -9,3 +9,4 @@ export const MISSION_CONTROL_WASM_NAME = 'mission_control';
 export const UPLOAD_BATCH_SIZE = 20;
 export const COLLECTION_DAPP = '#dapp';
 export const NODE_LTS = 18;
+export const CONSOLE_SATELLITE_URL = 'https://console.juno.build/satellite/?s=';

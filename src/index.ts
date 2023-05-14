@@ -3,8 +3,9 @@ import {login, logout} from './commands/auth';
 import {clear} from './commands/clear';
 import {config} from './commands/config';
 import {deploy} from './commands/deploy';
-import {help, helpCommand, helpLogin, helpUpgrade, helpUse} from './commands/help';
+import {help, helpCommand, helpLogin, helpOpen, helpUpgrade, helpUse} from './commands/help';
 import {init} from './commands/init';
+import {open} from './commands/open';
 import {upgrade} from './commands/upgrade';
 import {use} from './commands/use';
 import {version as versionCommand} from './commands/version';
@@ -28,6 +29,9 @@ export const run = async () => {
         break;
       case 'upgrade':
         console.log(helpUpgrade);
+        break;
+      case 'open':
+        console.log(helpOpen);
         break;
       case 'use':
         console.log(helpUse);
@@ -59,6 +63,9 @@ export const run = async () => {
       break;
     case 'version':
       await versionCommand();
+      break;
+    case 'open':
+      await open(args);
       break;
     case 'upgrade':
       await upgrade(args);
