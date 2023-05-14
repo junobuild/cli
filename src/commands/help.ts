@@ -20,6 +20,7 @@ Commands:
   ${cyan('help')}                display help information
   ${cyan('login')}               generate an authentication for use in non-interactive environments
   ${cyan('logout')}              log out of the current device using the CLI
+  ${cyan('open')}                open your satellite in your browser
   ${cyan('upgrade')}             upgrade your satellite to a specific version code
   ${cyan('use')}                 switch between multiple profiles
   ${cyan('version')}             check the version of a satellite, mission control and cli
@@ -64,5 +65,16 @@ Usage: ${cyan('juno use [options]')}
 Options:
   ${cyan('-p, --profile')}         the profile that should be use
   ${cyan('-l, --list')}            what are the available profiles
+  ${cyan('-h, --help')}            output usage information
+`;
+
+export const helpOpen = `
+${title}
+
+Usage: ${cyan('juno open [options]')}
+
+Options:
+  ${cyan('-b, --browser')}         a particular browser to open. supported: chrome|firefox|edge
+  ${cyan('-c, --console')}         open satellite in the console
   ${cyan('-h, --help')}            output usage information
 `;
