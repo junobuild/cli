@@ -14,6 +14,7 @@ import {actorParameters} from '../utils/actor.utils';
 import {hasArgs, nextArg} from '../utils/args.utils';
 import {getMissionControl} from '../utils/auth.config.utils';
 import {GitHubAsset, GitHubRelease, githubJunoReleases} from '../utils/github.utils';
+import {consoleNoConfigFound} from '../utils/msg.utils';
 import {junoConfigExist, readSatelliteConfig} from '../utils/satellite.config.utils';
 import {satelliteKey, satelliteParameters} from '../utils/satellite.utils';
 import {upgradeWasmGitHub, upgradeWasmLocal} from '../utils/wasm.utils';
@@ -54,7 +55,7 @@ const upgradeMissionControl = async (args?: string[]) => {
 
 const upgradeSatellite = async (args?: string[]) => {
   if (!(await junoConfigExist())) {
-    console.log(`${red('No configuration found.')}`);
+    consoleNoConfigFound();
     return;
   }
 

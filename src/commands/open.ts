@@ -1,15 +1,15 @@
 import {CustomDomain, listCustomDomains} from '@junobuild/admin';
-import {red} from 'kleur';
 import prompts from 'prompts';
 import {CONSOLE_SATELLITE_URL} from '../constants/constants';
 import {hasArgs, nextArg} from '../utils/args.utils';
+import {consoleNoConfigFound} from '../utils/msg.utils';
 import {openUrl} from '../utils/open.utils';
 import {junoConfigExist, readSatelliteConfig} from '../utils/satellite.config.utils';
 import {satelliteParameters} from '../utils/satellite.utils';
 
 export const open = async (args?: string[]) => {
   if (!(await junoConfigExist())) {
-    console.log(`${red('No configuration found.')}`);
+    consoleNoConfigFound();
     return;
   }
 
