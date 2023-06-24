@@ -2,10 +2,17 @@ import {listCustomDomains} from '@junobuild/admin';
 import {red} from 'kleur';
 import terminalLink from 'terminal-link';
 import {consoleUrl, defaultSatelliteDomain} from '../utils/domain.utils';
+import {isProcessToken} from '../utils/process.utils';
 import {junoConfigExist, readSatelliteConfig} from '../utils/satellite.config.utils';
 import {satelliteParameters} from '../utils/satellite.utils';
 
 export const links = async () => {
+  // If a developer is using a JUNO_TOKEN to execute command(s), the links will not be printed.
+  // This is particularly useful for CI environment where such output is not needed and also because only ADMIN controllers can list custom domains.
+  if (isProcessToken()) {
+    return;
+  }
+
   if (!(await junoConfigExist())) {
     return;
   }

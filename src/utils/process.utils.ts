@@ -14,3 +14,5 @@ export const getProcessToken = (): JsonnableEd25519KeyIdentity | undefined => {
     throw new Error('Cannot parse token provided as an environment variable.');
   }
 };
+
+export const isProcessToken = (): boolean => getProcessToken() !== undefined;
