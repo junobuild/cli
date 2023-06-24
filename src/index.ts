@@ -5,6 +5,7 @@ import {config} from './commands/config';
 import {deploy} from './commands/deploy';
 import {help, helpCommand, helpLogin, helpOpen, helpUpgrade, helpUse} from './commands/help';
 import {init} from './commands/init';
+import {links} from './commands/links';
 import {open} from './commands/open';
 import {upgrade} from './commands/upgrade';
 import {use} from './commands/use';
@@ -54,6 +55,7 @@ export const run = async () => {
       break;
     case 'deploy':
       await deploy();
+      await links();
       break;
     case 'config':
       await config();
@@ -72,6 +74,7 @@ export const run = async () => {
       break;
     case 'whoami':
       whoami();
+      await links();
       break;
     case 'use':
       use(args);
