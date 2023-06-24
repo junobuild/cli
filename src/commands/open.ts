@@ -1,7 +1,7 @@
 import {CustomDomain, listCustomDomains} from '@junobuild/admin';
 import prompts from 'prompts';
-import {CONSOLE_SATELLITE_URL} from '../constants/constants';
 import {hasArgs, nextArg} from '../utils/args.utils';
+import {consoleUrl, defaultSatelliteDomain} from '../utils/domain.utils';
 import {consoleNoConfigFound} from '../utils/msg.utils';
 import {openUrl} from '../utils/open.utils';
 import {junoConfigExist, readSatelliteConfig} from '../utils/satellite.config.utils';
@@ -17,7 +17,7 @@ export const open = async (args?: string[]) => {
 
   const {satelliteId} = await readSatelliteConfig();
   if (hasArgs({args, options: ['-c', '--console']})) {
-    await openUrl({url: `${CONSOLE_SATELLITE_URL}${satelliteId}`, browser});
+    await openUrl({url: consoleUrl(satelliteId), browser});
     return;
   }
 
@@ -32,8 +32,6 @@ export const open = async (args?: string[]) => {
   const url = await promptSatellites({domains, satelliteId});
   await openUrl({url, browser});
 };
-
-const defaultSatelliteDomain = (satelliteId: string): string => `https://${satelliteId}.icp0.io`;
 
 const promptSatellites = async ({
   satelliteId,
