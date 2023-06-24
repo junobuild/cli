@@ -80,6 +80,8 @@ export const deploy = async () => {
       throw err;
     }
   }
+
+  console.log(`\n🚀 Deploy complete!`);
 };
 
 const fullPath = ({file, sourceAbsolutePath}: {file: string; sourceAbsolutePath: string}): string =>

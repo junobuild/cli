@@ -6,7 +6,7 @@ export const whoami = () => {
   const profile = getUse();
 
   if (!isDefaultProfile(profile)) {
-    console.log(`Profile: ${green(profile!)}`);
+    console.log(`👤 Profile: ${green(profile!)}`);
   }
 
   const token = getToken();
@@ -17,5 +17,5 @@ export const whoami = () => {
   }
 
   const identity = Ed25519KeyIdentity.fromParsedJson(token);
-  console.log(`Controller: ${green(identity.getPrincipal().toText())}`);
+  console.log(`🔐 Controller: ${green(identity.getPrincipal().toText())}`);
 };

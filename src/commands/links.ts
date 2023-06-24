@@ -1,13 +1,11 @@
 import {listCustomDomains} from '@junobuild/admin';
 import terminalLink from 'terminal-link';
 import {consoleUrl, defaultSatelliteDomain} from '../utils/domain.utils';
-import {consoleNoConfigFound} from '../utils/msg.utils';
 import {junoConfigExist, readSatelliteConfig} from '../utils/satellite.config.utils';
 import {satelliteParameters} from '../utils/satellite.utils';
 
 export const links = async () => {
   if (!(await junoConfigExist())) {
-    consoleNoConfigFound();
     return;
   }
 
@@ -31,7 +29,4 @@ export const links = async () => {
   domains.forEach(({domain}) =>
     console.log(`🌍 ${terminalLink(`https://${domain}`, `https://${domain}`, {fallback})}`)
   );
-
-  // new line before next prompt
-  console.log('');
 };

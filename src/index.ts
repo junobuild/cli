@@ -74,6 +74,7 @@ export const run = async () => {
       break;
     case 'whoami':
       whoami();
+      await links();
       break;
     case 'use':
       use(args);
