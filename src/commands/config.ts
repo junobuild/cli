@@ -17,7 +17,8 @@ export const config = async () => {
     await setConfig({
       config: {
         storage: {
-          headers: storage?.headers ?? []
+          headers: storage?.headers ?? [],
+          rewrites: storage?.rewrites
         }
       },
       satellite: satelliteParameters(satelliteId)
