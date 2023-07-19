@@ -13,7 +13,7 @@ const executeUpgradeWasm = async ({
 }: {
   wasm: Buffer;
   hash: string;
-  upgrade: ({wasm_module}: {wasm_module: Array<number>}) => Promise<void>;
+  upgrade: ({wasm_module}: {wasm_module: Uint8Array}) => Promise<void>;
 }) => {
   await confirmAndExit(`Wasm hash is ${cyan(hash)}.${NEW_CMD_LINE}Start upgrade now?`);
 
@@ -21,7 +21,7 @@ const executeUpgradeWasm = async ({
 
   try {
     await upgrade({
-      wasm_module: [...wasm]
+      wasm_module: wasm
     });
   } finally {
     spinner.stop();
@@ -33,7 +33,7 @@ export const upgradeWasmLocal = async ({
   upgrade
 }: {
   src: string;
-  upgrade: ({wasm_module}: {wasm_module: Array<number>}) => Promise<void>;
+  upgrade: ({wasm_module}: {wasm_module: Uint8Array}) => Promise<void>;
 }) => {
   const loadWasm = async (file: string): Promise<{hash: string; wasm: Buffer}> => {
     const wasm = await readFile(file);
@@ -63,7 +63,7 @@ export const upgradeWasmGitHub = async ({
   upgrade
 }: {
   asset: GitHubAsset;
-  upgrade: ({wasm_module}: {wasm_module: Array<number>}) => Promise<void>;
+  upgrade: ({wasm_module}: {wasm_module: Uint8Array}) => Promise<void>;
 }) => {
   const downloadWasm = async ({
     browser_download_url
