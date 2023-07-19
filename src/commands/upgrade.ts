@@ -149,7 +149,7 @@ const upgradeSatelliteRelease = async (satellite: SatelliteParameters) => {
     return;
   }
 
-  const upgradeSatelliteWasm = async ({wasm_module}: {wasm_module: Array<number>}) =>
+  const upgradeSatelliteWasm = async ({wasm_module}: {wasm_module: Uint8Array}) =>
     upgradeSatelliteAdmin({
       satellite,
       wasm_module,
@@ -180,7 +180,7 @@ const upgradeSatelliteCustom = async ({
     satellite
   });
 
-  const upgradeSatelliteWasm = async ({wasm_module}: {wasm_module: Array<number>}) =>
+  const upgradeSatelliteWasm = async ({wasm_module}: {wasm_module: Uint8Array}) =>
     upgradeSatelliteAdmin({
       satellite,
       wasm_module,
@@ -208,7 +208,7 @@ const updateMissionControlRelease = async (missionControlParameters: MissionCont
     return;
   }
 
-  const upgradeMissionControlWasm = async ({wasm_module}: {wasm_module: Array<number>}) =>
+  const upgradeMissionControlWasm = async ({wasm_module}: {wasm_module: Uint8Array}) =>
     upgradeMissionControlAdmin({
       missionControl: missionControlParameters,
       wasm_module
@@ -231,7 +231,7 @@ const upgradeMissionControlCustom = async ({
     return;
   }
 
-  const upgradeMissionControlWasm = async ({wasm_module}: {wasm_module: Array<number>}) =>
+  const upgradeMissionControlWasm = async ({wasm_module}: {wasm_module: Uint8Array}) =>
     upgradeMissionControlAdmin({
       missionControl: missionControlParameters,
       wasm_module
