@@ -1,19 +1,22 @@
 import {
   SatelliteParameters,
   missionControlVersion,
+  newerReleases as newerReleasesServices,
   satelliteVersion,
   upgradeMissionControl as upgradeMissionControlAdmin,
   upgradeSatellite as upgradeSatelliteAdmin,
-  type MissionControlParameters
+  type GitHubAsset,
+  type GitHubRelease,
+  type MissionControlParameters,
+  type NewerReleasesParams
 } from '@junobuild/admin';
 import {red, yellow} from 'kleur';
 import prompts from 'prompts';
-import {coerce, compare, eq, gt, lt, major, minor, patch, type SemVer} from 'semver';
+import {coerce, compare, major, minor, patch} from 'semver';
 import {MISSION_CONTROL_WASM_NAME, SATELLITE_WASM_NAME} from '../constants/constants';
 import {actorParameters} from '../utils/actor.utils';
 import {hasArgs, nextArg} from '../utils/args.utils';
 import {getMissionControl} from '../utils/auth.config.utils';
-import {GitHubAsset, GitHubRelease, githubJunoReleases} from '../utils/github.utils';
 import {consoleNoConfigFound} from '../utils/msg.utils';
 import {junoConfigExist, readSatelliteConfig} from '../utils/satellite.config.utils';
 import {satelliteKey, satelliteParameters} from '../utils/satellite.utils';
@@ -245,85 +248,14 @@ const selectAsset = async ({
   assetKey,
   displayHint
 }: {
-  currentVersion: string;
-  assetKey: 'satellite' | 'mission_control';
   displayHint: string;
-}): Promise<GitHubAsset | undefined> => {
-  const releases = await githubJunoReleases();
+} & NewerReleasesParams): Promise<GitHubAsset | undefined> => {
+  const {result: newerReleases, error} = await newerReleasesServices({currentVersion, assetKey});
 
-  if (releases === undefined) {
-    console.log(`${red('Cannot fetch GitHub repo releases 😢.')}`);
+  if (error !== undefined) {
+    console.log(`${red(error)}`);
     return undefined;
   }
-
-  const releasesWithAssets = releases.filter(
-    ({assets}) => assets?.find(({name}) => name.includes(assetKey)) !== undefined
-  );
-
-  if (releasesWithAssets.length === 0) {
-    console.log(`${red('No assets has been released. Reach out Juno❗')}`);
-    return undefined;
-  }
-
-  const newerReleases = releasesWithAssets
-    .filter(({assets}) => {
-      const asset = assets?.find(({name}) => name.includes(assetKey));
-
-      if (asset === undefined) {
-        return false;
-      }
-
-      const version = coerce(asset.name)?.format();
-
-      if (version === undefined) {
-        return false;
-      }
-
-      return compare(currentVersion, version) === -1;
-    })
-    .reduce((acc, release) => {
-      const findAssetVersion = ({assets}: GitHubRelease): SemVer | null => {
-        const asset = assets?.find(({name}) => name.includes(assetKey));
-        return coerce(asset?.name ?? '');
-      };
-
-      // We want to display the asset release with the lowest global release!
-      // e.g. if satellite v0.0.2 is present in Juno v0.0.4 and v0.0.5, we want to present "Satellite v0.0.2 (Juno v0.0.4)"
-
-      // There is a release in the accumulator with a same asset version but a global version lower
-      // e.g. accumulator has satellite v0.0.2 in Juno v0.0.10 but release is Juno v0.0.11 with same satellite v0.0.2
-      if (
-        acc.find((existing) => {
-          const version = findAssetVersion(release);
-          const existingVersion = findAssetVersion(existing);
-
-          return (
-            eq(version?.raw ?? '', existingVersion?.raw ?? '') &&
-            lt(existing.tag_name, release.tag_name)
-          );
-        }) !== undefined
-      ) {
-        return acc;
-      }
-
-      // There is a release in the accumulator with a same asset version but a global version newer
-      // e.g. accumulator has satellite v0.0.2 in Juno v0.0.12 but release is Juno v0.0.11 with same satellite v0.0.2
-      const existingIndex = acc.findIndex((existing) => {
-        const version = findAssetVersion(release);
-        const existingVersion = findAssetVersion(existing);
-
-        return (
-          eq(version?.raw ?? '', existingVersion?.raw ?? '') &&
-          gt(existing.tag_name, release.tag_name)
-        );
-      });
-
-      if (existingIndex !== undefined) {
-        return [...acc.filter((_, index) => index !== existingIndex), release];
-      }
-
-      return [...acc, release];
-    }, [] as GitHubRelease[]);
 
   if (newerReleases.length === 0) {
     console.log(`No newer releases are available at the moment.`);

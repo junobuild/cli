@@ -1,4 +1,5 @@
 import {
+  githubJunoLastRelease,
   missionControlVersion as missionControlVersionLib,
   satelliteVersion as satelliteVersionLib
 } from '@junobuild/admin';
@@ -8,7 +9,7 @@ import {version as cliCurrentVersion} from '../../package.json';
 import {MISSION_CONTROL_WASM_NAME, SATELLITE_WASM_NAME} from '../constants/constants';
 import {actorParameters} from '../utils/actor.utils';
 import {getMissionControl} from '../utils/auth.config.utils';
-import {githubCliLastRelease, githubJunoLastRelease} from '../utils/github.utils';
+import {githubCliLastRelease} from '../utils/github.utils';
 import {junoConfigExist, readSatelliteConfig} from '../utils/satellite.config.utils';
 import {satelliteKey, satelliteParameters} from '../utils/satellite.utils';
 
