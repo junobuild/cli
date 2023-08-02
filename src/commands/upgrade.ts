@@ -257,6 +257,11 @@ const selectAsset = async ({
     return undefined;
   }
 
+  if (newerReleases === undefined) {
+    console.log(`${red('Cannot fetch new releases of Juno on GitHub 😢.')}`);
+    return undefined;
+  }
+
   if (newerReleases.length === 0) {
     console.log(`No newer releases are available at the moment.`);
     return undefined;
