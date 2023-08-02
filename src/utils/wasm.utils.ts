@@ -1,9 +1,9 @@
+import type {GitHubAsset} from '@junobuild/admin';
 import {createHash} from 'crypto';
 import {readFile} from 'fs/promises';
 import {cyan} from 'kleur';
 import ora from 'ora';
 import {downloadFromURL} from './download.utils';
-import {GitHubAsset} from './github.utils';
 import {confirmAndExit, NEW_CMD_LINE} from './prompt.utils';
 
 const executeUpgradeWasm = async ({
