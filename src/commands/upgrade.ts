@@ -1,5 +1,7 @@
 import {
   SatelliteParameters,
+  checkUpgradeVersion,
+  mapPromptReleases,
   missionControlVersion,
   newerReleases as newerReleasesServices,
   satelliteVersion,
@@ -12,7 +14,7 @@ import {
 } from '@junobuild/admin';
 import {red, yellow} from 'kleur';
 import prompts from 'prompts';
-import {coerce, compare, major, minor, patch} from 'semver';
+import {coerce, compare} from 'semver';
 import {MISSION_CONTROL_WASM_NAME, SATELLITE_WASM_NAME} from '../constants/constants';
 import {actorParameters} from '../utils/actor.utils';
 import {hasArgs, nextArg} from '../utils/args.utils';
@@ -81,15 +83,7 @@ const promptReleases = async ({
   githubReleases: GitHubRelease[];
   assetKey: 'satellite' | 'mission_control';
 }): Promise<GitHubAsset | undefined> => {
-  const choices = githubReleases.reduce((acc, {tag_name, assets}: GitHubRelease) => {
-    const asset = assets?.find(({name}) => name.includes(assetKey));
-
-    const version = coerce(asset?.name ?? '');
-
-    const title = `v${version} (published in Juno ${tag_name})`;
-
-    return [...acc, ...(asset !== undefined ? [{title, value: asset}] : [])];
-  }, [] as {title: string; value: GitHubAsset}[]);
+  const choices = mapPromptReleases({githubReleases, assetKey});
 
   const {asset} = await prompts({
     type: 'select',
@@ -105,39 +99,6 @@ const promptReleases = async ({
   }
 
   return asset;
-};
-
-const checkVersion = ({
-  currentVersion,
-  selectedVersion,
-  displayHint
-}: {
-  currentVersion: string;
-  selectedVersion: string;
-  displayHint: string;
-}): {canUpgrade: boolean} => {
-  const currentMajor = major(currentVersion);
-  const selectedMajor = major(selectedVersion);
-  const currentMinor = minor(currentVersion);
-  const selectedMinor = minor(selectedVersion);
-  const currentPath = patch(currentVersion);
-  const selectedPath = patch(selectedVersion);
-
-  if (
-    currentMajor < selectedMajor - 1 ||
-    currentMinor < selectedMinor - 1 ||
-    currentPath < selectedPath - 1
-  ) {
-    console.log(
-      `There may have been breaking changes your ${displayHint} ${yellow(
-        `v${currentVersion}`
-      )} and selected version ${yellow(`v${selectedVersion}`)}.\nPlease upgrade iteratively.`
-    );
-
-    return {canUpgrade: false};
-  }
-
-  return {canUpgrade: true};
 };
 
 const upgradeSatelliteRelease = async (satellite: SatelliteParameters) => {
@@ -284,9 +245,15 @@ const selectAsset = async ({
     return undefined;
   }
 
-  const {canUpgrade} = checkVersion({displayHint, currentVersion, selectedVersion});
+  const {canUpgrade} = checkUpgradeVersion({currentVersion, selectedVersion});
 
   if (!canUpgrade) {
+    console.log(
+      `There may have been breaking changes between your ${displayHint} ${yellow(
+        `v${currentVersion}`
+      )} and selected version ${yellow(`v${selectedVersion}`)}.\nPlease upgrade iteratively.`
+    );
+
     return undefined;
   }
 
