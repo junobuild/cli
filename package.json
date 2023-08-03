@@ -21,9 +21,13 @@
     "dev": "node rmdir.mjs && NODE_ENV=development node esbuild.mjs"
   },
   "dependencies": {
-    "@dfinity/identity": "^0.15.6",
-    "@junobuild/admin": "file:../juno-js/packages/admin",
-    "@junobuild/core": "^0.0.22",
+    "@dfinity/agent": "^0.18.1",
+    "@dfinity/candid": "^0.18.1",
+    "@dfinity/identity": "^0.18.1",
+    "@dfinity/principal": "^0.18.1",
+    "@junobuild/admin": "^0.0.23",
+    "@junobuild/core": "^0.0.23",
+    "@junobuild/utils": "^0.0.4",
     "conf": "^11.0.1",
     "file-type": "^18.5.0",
     "mime-types": "^2.1.35",
@@ -33,7 +37,7 @@
     "ora": "^6.3.1",
     "portfinder": "^1.0.32",
     "prompts": "^2.4.2",
-    "semver": "^7.5.3",
+    "semver": "^7.5.4",
     "terminal-link": "^3.0.0"
   },
   "devDependencies": {
