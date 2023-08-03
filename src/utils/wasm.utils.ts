@@ -1,8 +1,8 @@
-import type {GitHubAsset} from '@junobuild/admin';
 import {createHash} from 'crypto';
 import {readFile} from 'fs/promises';
 import {cyan} from 'kleur';
 import ora from 'ora';
+import {JUNO_CDN_URL} from '../constants/constants';
 import {downloadFromURL} from './download.utils';
 import {confirmAndExit, NEW_CMD_LINE} from './prompt.utils';
 
@@ -58,17 +58,17 @@ export const upgradeWasmLocal = async ({
   }
 };
 
-export const upgradeWasmGitHub = async ({
-  asset,
+export const upgradeWasmCdn = async ({
+  version,
+  assetKey,
   upgrade
 }: {
-  asset: GitHubAsset;
+  version: string;
+  assetKey: 'satellite' | 'mission_control';
   upgrade: ({wasm_module}: {wasm_module: Uint8Array}) => Promise<void>;
 }) => {
-  const downloadWasm = async ({
-    browser_download_url
-  }: GitHubAsset): Promise<{hash: string; wasm: Buffer}> => {
-    const wasm = await downloadFromURL(browser_download_url);
+  const downloadWasm = async (): Promise<{hash: string; wasm: Buffer}> => {
+    const wasm = await downloadFromURL(`${JUNO_CDN_URL}/releases/${assetKey}-v${version}.wasm.gz`);
 
     return {
       wasm,
@@ -79,7 +79,7 @@ export const upgradeWasmGitHub = async ({
   const spinner = ora('Downloading Wasm...').start();
 
   try {
-    const {hash, wasm} = await downloadWasm(asset);
+    const {hash, wasm} = await downloadWasm();
 
     spinner.stop();
 

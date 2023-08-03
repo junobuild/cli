@@ -1,20 +1,15 @@
 import {
   SatelliteParameters,
   checkUpgradeVersion,
-  mapPromptReleases,
   missionControlVersion,
-  newerReleases as newerReleasesServices,
   satelliteVersion,
   upgradeMissionControl as upgradeMissionControlAdmin,
   upgradeSatellite as upgradeSatelliteAdmin,
-  type GitHubAsset,
-  type GitHubRelease,
-  type MissionControlParameters,
-  type NewerReleasesParams
+  type MissionControlParameters
 } from '@junobuild/admin';
 import {red, yellow} from 'kleur';
 import prompts from 'prompts';
-import {coerce, compare} from 'semver';
+import {compare} from 'semver';
 import {MISSION_CONTROL_WASM_NAME, SATELLITE_WASM_NAME} from '../constants/constants';
 import {actorParameters} from '../utils/actor.utils';
 import {hasArgs, nextArg} from '../utils/args.utils';
@@ -22,7 +17,8 @@ import {getMissionControl} from '../utils/auth.config.utils';
 import {consoleNoConfigFound} from '../utils/msg.utils';
 import {junoConfigExist, readSatelliteConfig} from '../utils/satellite.config.utils';
 import {satelliteKey, satelliteParameters} from '../utils/satellite.utils';
-import {upgradeWasmGitHub, upgradeWasmLocal} from '../utils/wasm.utils';
+import {newerReleases as newerReleasesUtils} from '../utils/upgrade.utils';
+import {upgradeWasmCdn, upgradeWasmLocal} from '../utils/wasm.utils';
 
 export const upgrade = async (args?: string[]) => {
   if (hasArgs({args, options: ['-m', '--mission-control']})) {
@@ -77,28 +73,31 @@ const upgradeSatellite = async (args?: string[]) => {
 };
 
 const promptReleases = async ({
-  githubReleases,
+  newerReleases,
   assetKey
 }: {
-  githubReleases: GitHubRelease[];
+  newerReleases: string[];
   assetKey: 'satellite' | 'mission_control';
-}): Promise<GitHubAsset | undefined> => {
-  const choices = mapPromptReleases({githubReleases, assetKey});
+}): Promise<string> => {
+  const choices = newerReleases.map((release) => ({
+    title: `v${release}`,
+    value: release
+  }));
 
-  const {asset} = await prompts({
+  const {version} = await prompts({
     type: 'select',
-    name: 'asset',
+    name: 'version',
     message: `To which version should your ${assetKey.replace('_', ' ')} be upgraded?`,
     choices,
     initial: 0
   });
 
   // In case of control+c
-  if (asset === undefined) {
+  if (version === undefined) {
     process.exit(1);
   }
 
-  return asset;
+  return version;
 };
 
 const upgradeSatelliteRelease = async (satellite: SatelliteParameters) => {
@@ -107,9 +106,9 @@ const upgradeSatelliteRelease = async (satellite: SatelliteParameters) => {
   });
 
   const displayHint = `satellite "${satelliteKey(satellite.satelliteId ?? '')}"`;
-  const asset = await selectAsset({currentVersion, assetKey: SATELLITE_WASM_NAME, displayHint});
+  const version = await selectVersion({currentVersion, assetKey: SATELLITE_WASM_NAME, displayHint});
 
-  if (asset === undefined) {
+  if (version === undefined) {
     return;
   }
 
@@ -122,7 +121,7 @@ const upgradeSatelliteRelease = async (satellite: SatelliteParameters) => {
       deprecatedNoScope: compare(currentVersion, '0.0.9') < 0
     });
 
-  await upgradeWasmGitHub({asset, upgrade: upgradeSatelliteWasm});
+  await upgradeWasmCdn({version, assetKey: 'satellite', upgrade: upgradeSatelliteWasm});
 };
 
 const upgradeSatelliteCustom = async ({
@@ -162,13 +161,13 @@ const updateMissionControlRelease = async (missionControlParameters: MissionCont
   });
 
   const displayHint = `mission control`;
-  const asset = await selectAsset({
+  const version = await selectVersion({
     currentVersion,
     assetKey: MISSION_CONTROL_WASM_NAME,
     displayHint
   });
 
-  if (asset === undefined) {
+  if (version === undefined) {
     return;
   }
 
@@ -178,7 +177,7 @@ const updateMissionControlRelease = async (missionControlParameters: MissionCont
       wasm_module
     });
 
-  await upgradeWasmGitHub({asset, upgrade: upgradeMissionControlWasm});
+  await upgradeWasmCdn({version, assetKey: 'mission_control', upgrade: upgradeMissionControlWasm});
 };
 
 const upgradeMissionControlCustom = async ({
@@ -204,14 +203,19 @@ const upgradeMissionControlCustom = async ({
   await upgradeWasmLocal({src, upgrade: upgradeMissionControlWasm});
 };
 
-const selectAsset = async ({
+const selectVersion = async ({
   currentVersion,
   assetKey,
   displayHint
 }: {
+  currentVersion: string;
+  assetKey: 'satellite' | 'mission_control';
   displayHint: string;
-} & NewerReleasesParams): Promise<GitHubAsset | undefined> => {
-  const {result: newerReleases, error} = await newerReleasesServices({currentVersion, assetKey});
+}): Promise<string | undefined> => {
+  const {result: newerReleases, error} = await newerReleasesUtils({
+    currentVersion,
+    segments: assetKey === 'mission_control' ? 'mission_controls' : 'satellites'
+  });
 
   if (error !== undefined) {
     console.log(`${red(error)}`);
@@ -219,7 +223,7 @@ const selectAsset = async ({
   }
 
   if (newerReleases === undefined) {
-    console.log(`${red('Cannot fetch new releases of Juno on GitHub 😢.')}`);
+    console.log(`${red('Did not find any new releases of Juno 😢.')}`);
     return undefined;
   }
 
@@ -228,22 +232,10 @@ const selectAsset = async ({
     return undefined;
   }
 
-  const asset = await promptReleases({
-    githubReleases: newerReleases,
+  const selectedVersion = await promptReleases({
+    newerReleases,
     assetKey
   });
-
-  if (asset === undefined) {
-    console.log(`${red('No asset has been released for the selected version. Reach out Juno❗️')}`);
-    return undefined;
-  }
-
-  const selectedVersion = coerce(asset.name)?.format();
-
-  if (selectedVersion === undefined) {
-    console.log(`${red('No version can be extracted from the asset. Reach out Juno❗️')}`);
-    return undefined;
-  }
 
   const {canUpgrade} = checkUpgradeVersion({currentVersion, selectedVersion});
 
@@ -257,5 +249,5 @@ const selectAsset = async ({
     return undefined;
   }
 
-  return asset;
+  return selectedVersion;
 };
