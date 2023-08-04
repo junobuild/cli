@@ -1,6 +1,6 @@
-import {get} from 'https';
+import {get, type RequestOptions} from 'https';
 
-export const downloadFromURL = (url: string): Promise<Buffer> => {
+export const downloadFromURL = (url: string | RequestOptions): Promise<Buffer> => {
   return new Promise((resolve, reject) => {
     get(url, async (res) => {
       if (res.statusCode !== undefined && [301, 302].includes(res.statusCode)) {

@@ -1,3 +1,5 @@
+import {GITHUB_API_CLI_URL} from '../constants/constants';
+
 export interface GitHubAsset {
   url: string; // 'https://api.github.com/repos/peterpeterparker/dummy/releases/assets/91555492'
   id: number;
@@ -29,9 +31,6 @@ export interface GitHubRelease {
   body: string;
 }
 
-const GITHUB_API_CLI_URL = 'https://api.github.com/repos/buildwithjuno/cli';
-const GITHUB_API_JUNO_URL = 'https://api.github.com/repos/buildwithjuno/juno';
-
 const GITHUB_API_HEADERS: RequestInit = {
   headers: {
     accept: 'application/vnd.github+json',
@@ -51,16 +50,3 @@ const githubLastRelease = async (apiUrl: string): Promise<GitHubRelease | undefi
 
 export const githubCliLastRelease = (): Promise<GitHubRelease | undefined> =>
   githubLastRelease(GITHUB_API_CLI_URL);
-
-export const githubJunoLastRelease = (): Promise<GitHubRelease | undefined> =>
-  githubLastRelease(GITHUB_API_JUNO_URL);
-
-export const githubJunoReleases = async (): Promise<GitHubRelease[] | undefined> => {
-  const response = await fetch(`${GITHUB_API_JUNO_URL}/releases`, GITHUB_API_HEADERS);
-
-  if (!response.ok) {
-    return undefined;
-  }
-
-  return response.json();
-};

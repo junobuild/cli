@@ -11,6 +11,7 @@ import {minimatch} from 'minimatch';
 import ora from 'ora';
 import {basename, extname, join} from 'path';
 import {COLLECTION_DAPP, DAPP_COLLECTION, SOURCE, UPLOAD_BATCH_SIZE} from '../constants/constants';
+import {SatelliteConfig} from '../types/satellite.config';
 import {junoConfigExist, readSatelliteConfig} from '../utils/satellite.config.utils';
 import {satelliteParameters} from '../utils/satellite.utils';
 import {init} from './init';
@@ -28,11 +29,11 @@ export const deploy = async () => {
     await init();
   }
 
-  const {satelliteId, source = SOURCE, ignore = []} = await readSatelliteConfig();
+  const {satelliteId, source = SOURCE, ignore = [], encoding = []} = await readSatelliteConfig();
 
   const sourceAbsolutePath = join(process.cwd(), source);
 
-  const sourceFiles = await listFiles({sourceAbsolutePath, satelliteId, ignore});
+  const sourceFiles = await listFiles({sourceAbsolutePath, satelliteId, ignore, encoding});
 
   if (sourceFiles.length === 0) {
     console.log('No new files to upload.');
@@ -154,12 +155,13 @@ const fileNeedUpload = async ({
 const listFiles = async ({
   sourceAbsolutePath,
   satelliteId,
-  ignore
+  ignore,
+  encoding
 }: {
   sourceAbsolutePath: string;
-  satelliteId: string;
-  ignore: string[];
-}): Promise<FileDetails[]> => {
+} & Required<Pick<SatelliteConfig, 'satelliteId' | 'ignore' | 'encoding'>>): Promise<
+  FileDetails[]
+> => {
   const sourceFiles = files(sourceAbsolutePath);
 
   const filteredSourceFiles = sourceFiles.filter(
@@ -174,6 +176,13 @@ const listFiles = async ({
     file: string;
     ext: FileExtension | undefined;
   }): ENCODING_TYPE | undefined => {
+    const customEncoding = encoding.find(([pattern, _]) => minimatch(file, pattern));
+
+    if (customEncoding !== undefined) {
+      const [_, encodingType] = customEncoding;
+      return encodingType;
+    }
+
     if (ext === 'Z') {
       return 'compress';
     } else if (ext === 'gz') {

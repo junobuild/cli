@@ -3,14 +3,15 @@ import {
   satelliteVersion as satelliteVersionLib
 } from '@junobuild/admin';
 import {cyan, green, red, yellow} from 'kleur';
-import {clean, coerce, compare} from 'semver';
+import {clean, compare} from 'semver';
 import {version as cliCurrentVersion} from '../../package.json';
 import {MISSION_CONTROL_WASM_NAME, SATELLITE_WASM_NAME} from '../constants/constants';
 import {actorParameters} from '../utils/actor.utils';
 import {getMissionControl} from '../utils/auth.config.utils';
-import {githubCliLastRelease, githubJunoLastRelease} from '../utils/github.utils';
+import {githubCliLastRelease} from '../utils/github.utils';
 import {junoConfigExist, readSatelliteConfig} from '../utils/satellite.config.utils';
 import {satelliteKey, satelliteParameters} from '../utils/satellite.utils';
+import {lastRelease} from '../utils/upgrade.utils';
 
 export const version = async () => {
   await cliVersion();
@@ -105,31 +106,12 @@ const checkSegmentVersion = async ({
   assetKey: 'satellite' | 'mission_control';
   displayHint: string;
 }): Promise<void> => {
-  const githubRelease = await githubJunoLastRelease();
+  const latestVersion = await lastRelease(
+    assetKey === 'mission_control' ? 'mission_controls' : 'satellites'
+  );
 
-  if (githubRelease === undefined) {
-    console.log(`${red('Cannot fetch last release version of Juno on GitHub 😢.')}`);
-    return;
-  }
-
-  const {assets} = githubRelease;
-
-  const asset = assets?.find(({name}) => name.includes(assetKey));
-
-  if (asset === undefined) {
-    console.log(
-      `${red(`No "${assetKey}" asset has been released with the version. Reach out Juno❗️`)}`
-    );
-    return;
-  }
-
-  // Extract - or guess - version number from released asset
-  // e.g. Juno v0.5.0 is released with satellite-v0.2.0.wasm => extract version = 0.2.0
-  // This because the wasm might not necessary changes across Juno's versions.
-  const latestVersion = coerce(asset.name)?.format();
-
-  if (!latestVersion) {
-    console.log(`${red(`Cannot extract version from asset "${assetKey}". Reach out Juno❗️`)}`);
+  if (latestVersion === undefined) {
+    console.log(`${red('Cannot fetch last release version of Juno 😢.')}`);
     return;
   }
 
