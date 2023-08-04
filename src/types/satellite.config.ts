@@ -1,4 +1,5 @@
 import {StorageConfig} from '@junobuild/admin';
+import { ENCODING_TYPE } from "@junobuild/core";
 
 export interface SatelliteConfig {
   /**
@@ -19,4 +20,16 @@ export interface SatelliteConfig {
    * The "ignore" attribute specifies the files to ignore on deploy. It can take globs the same way that Git handles .gitignore.
    */
   ignore?: string[];
+  /**
+   * The CLI maps the encoding type according to the file extension. Encoding is then used in the satellite to provide the HTTP response header `Content-Encoding`.
+   *
+   * .Z = compress
+   * .gz = gzip
+   * .br = br
+   * .zlib = deflate
+   * rest = identity
+   *
+   * The "encoding" attribute can be used to overwrite the default mapping. It can take globs the same way that Git handles .gitignore.
+   */
+  encoding?: [string, ENCODING_TYPE][];
 }
