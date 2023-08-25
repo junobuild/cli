@@ -8,11 +8,17 @@ interface AuthConfigData {
   token: JsonnableEd25519KeyIdentity;
   satellites: AuthSatelliteConfig[];
   missionControl?: string;
+  orbiters?: AuthOrbiterConfig[];
 }
 
 export interface AuthSatelliteConfig {
   p: string; // principal
   n: string; // name
+}
+
+export interface AuthOrbiterConfig {
+  p: string; // principal
+  n?: string; // name
 }
 
 export type AuthProfile = 'default' | string;
@@ -38,11 +44,13 @@ const config = new Conf<AuthConfig>({projectName: AUTH_PROJECT_NAME, schema});
 export const saveAuthConfig = ({
   token,
   satellites,
+  orbiters,
   missionControl,
   profile
 }: {
   token: JsonnableEd25519KeyIdentity;
   satellites: AuthSatelliteConfig[];
+  orbiters: AuthOrbiterConfig[] | null;
   missionControl: string | null;
   profile: AuthProfile | null;
 }) => {
@@ -54,6 +62,7 @@ export const saveAuthConfig = ({
       [profile!]: {
         token,
         satellites,
+        ...(orbiters !== null && {orbiters}),
         ...(missionControl !== null && {missionControl})
       }
     });
@@ -66,8 +75,12 @@ export const saveAuthConfig = ({
   saveToken(token);
   saveAuthSatellites(satellites);
 
+  if (orbiters !== null) {
+    saveAuthOrbiters(orbiters);
+  }
+
   if (missionControl !== null) {
-    saveMissionControl(missionControl);
+    saveAuthMissionControl(missionControl);
   }
 
   deleteUse();
@@ -107,8 +120,9 @@ export const getAuthSatellites = (): AuthSatelliteConfig[] => {
   return config.get('satellites');
 };
 
-const saveMissionControl = (missionControl: string) => config.set('missionControl', missionControl);
-export const getMissionControl = (): string | undefined => {
+const saveAuthMissionControl = (missionControl: string) =>
+  config.set('missionControl', missionControl);
+export const getAuthMissionControl = (): string | undefined => {
   const use = getUse();
 
   if (!isDefaultProfile(use)) {
@@ -116,6 +130,17 @@ export const getMissionControl = (): string | undefined => {
   }
 
   return config.get('missionControl');
+};
+
+const saveAuthOrbiters = (orbiters: AuthOrbiterConfig[]) => config.set('orbiters', orbiters);
+export const getAuthOrbiters = (): AuthOrbiterConfig[] | undefined => {
+  const use = getUse();
+
+  if (!isDefaultProfile(use)) {
+    return getProfiles()?.[use!]?.orbiters;
+  }
+
+  return config.get('orbiters');
 };
 
 export const clearAuthConfig = () => config.clear();

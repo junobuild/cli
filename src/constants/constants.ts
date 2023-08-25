@@ -6,6 +6,7 @@ export const SOURCE = 'build';
 export const DAPP_COLLECTION = '#dapp';
 export const SATELLITE_WASM_NAME = 'satellite';
 export const MISSION_CONTROL_WASM_NAME = 'mission_control';
+export const ORBITER_WASM_NAME = 'orbiter';
 export const UPLOAD_BATCH_SIZE = 20;
 export const COLLECTION_DAPP = '#dapp';
 export const NODE_LTS = 18;

@@ -11,9 +11,11 @@ import {red, yellow} from 'kleur';
 import prompts from 'prompts';
 import {compare} from 'semver';
 import {MISSION_CONTROL_WASM_NAME, SATELLITE_WASM_NAME} from '../constants/constants';
+import type {AssetKey} from '../types/asset-key';
 import {actorParameters} from '../utils/actor.utils';
 import {hasArgs, nextArg} from '../utils/args.utils';
-import {getMissionControl} from '../utils/auth.config.utils';
+import {toAssetKeys} from '../utils/asset-key.utils';
+import {getAuthMissionControl} from '../utils/auth.config.utils';
 import {consoleNoConfigFound} from '../utils/msg.utils';
 import {junoConfigExist, readSatelliteConfig} from '../utils/satellite.config.utils';
 import {satelliteKey, satelliteParameters} from '../utils/satellite.utils';
@@ -30,7 +32,7 @@ export const upgrade = async (args?: string[]) => {
 };
 
 const upgradeMissionControl = async (args?: string[]) => {
-  const missionControl = getMissionControl();
+  const missionControl = getAuthMissionControl();
 
   if (!missionControl) {
     console.log(
@@ -77,7 +79,7 @@ const promptReleases = async ({
   assetKey
 }: {
   newerReleases: string[];
-  assetKey: 'satellite' | 'mission_control';
+  assetKey: AssetKey;
 }): Promise<string> => {
   const choices = newerReleases.map((release) => ({
     title: `v${release}`,
@@ -209,12 +211,12 @@ const selectVersion = async ({
   displayHint
 }: {
   currentVersion: string;
-  assetKey: 'satellite' | 'mission_control';
+  assetKey: AssetKey;
   displayHint: string;
 }): Promise<string | undefined> => {
   const {result: newerReleases, error} = await newerReleasesUtils({
     currentVersion,
-    segments: assetKey === 'mission_control' ? 'mission_controls' : 'satellites'
+    assetKeys: toAssetKeys(assetKey)
   });
 
   if (error !== undefined) {

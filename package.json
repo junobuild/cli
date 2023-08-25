@@ -25,7 +25,7 @@
     "@dfinity/candid": "^0.18.1",
     "@dfinity/identity": "^0.18.1",
     "@dfinity/principal": "^0.18.1",
-    "@junobuild/admin": "^0.0.23",
+    "@junobuild/admin": "file:../juno-js/packages/admin",
     "@junobuild/core": "^0.0.23",
     "@junobuild/utils": "^0.0.4",
     "conf": "^11.0.1",
