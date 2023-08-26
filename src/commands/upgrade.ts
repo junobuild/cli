@@ -36,7 +36,7 @@ export const upgrade = async (args?: string[]) => {
   }
 
   if (hasArgs({args, options: ['-o', '--orbiter']})) {
-    await upgradeMissionControl(args);
+    await upgradeOrbiters(args);
     return;
   }
 
