@@ -17,7 +17,7 @@ import {toAssetKeys} from '../utils/asset-key.utils';
 import {getAuthMissionControl, getAuthOrbiters} from '../utils/auth.config.utils';
 import {githubCliLastRelease} from '../utils/github.utils';
 import {junoConfigExist, readSatelliteConfig} from '../utils/satellite.config.utils';
-import { orbiterKey, satelliteKey, satelliteParameters } from "../utils/satellite.utils";
+import {orbiterKey, satelliteKey, satelliteParameters} from '../utils/satellite.utils';
 import {lastRelease} from '../utils/upgrade.utils';
 
 export const version = async () => {

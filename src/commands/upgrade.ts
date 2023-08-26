@@ -1,29 +1,41 @@
 import {
+  OrbiterParameters,
   SatelliteParameters,
   checkUpgradeVersion,
   missionControlVersion,
+  orbiterVersion,
   satelliteVersion,
   upgradeMissionControl as upgradeMissionControlAdmin,
+  upgradeOrbiter as upgradeOrbiterAdmin,
   upgradeSatellite as upgradeSatelliteAdmin,
   type MissionControlParameters
 } from '@junobuild/admin';
 import {red, yellow} from 'kleur';
 import prompts from 'prompts';
 import {compare} from 'semver';
-import {MISSION_CONTROL_WASM_NAME, SATELLITE_WASM_NAME} from '../constants/constants';
+import {
+  MISSION_CONTROL_WASM_NAME,
+  ORBITER_WASM_NAME,
+  SATELLITE_WASM_NAME
+} from '../constants/constants';
 import type {AssetKey} from '../types/asset-key';
 import {actorParameters} from '../utils/actor.utils';
 import {hasArgs, nextArg} from '../utils/args.utils';
 import {toAssetKeys} from '../utils/asset-key.utils';
-import {getAuthMissionControl} from '../utils/auth.config.utils';
+import {getAuthMissionControl, getAuthOrbiters} from '../utils/auth.config.utils';
 import {consoleNoConfigFound} from '../utils/msg.utils';
 import {junoConfigExist, readSatelliteConfig} from '../utils/satellite.config.utils';
-import {satelliteKey, satelliteParameters} from '../utils/satellite.utils';
+import {orbiterKey, satelliteKey, satelliteParameters} from '../utils/satellite.utils';
 import {newerReleases as newerReleasesUtils} from '../utils/upgrade.utils';
 import {upgradeWasmCdn, upgradeWasmLocal} from '../utils/wasm.utils';
 
 export const upgrade = async (args?: string[]) => {
   if (hasArgs({args, options: ['-m', '--mission-control']})) {
+    await upgradeMissionControl(args);
+    return;
+  }
+
+  if (hasArgs({args, options: ['-o', '--orbiter']})) {
     await upgradeMissionControl(args);
     return;
   }
@@ -54,6 +66,32 @@ const upgradeMissionControl = async (args?: string[]) => {
   }
 
   await updateMissionControlRelease(missionControlParameters);
+};
+
+const upgradeOrbiters = async (args?: string[]) => {
+  const authOrbiters = getAuthOrbiters();
+
+  if (authOrbiters === undefined || authOrbiters.length === 0) {
+    return;
+  }
+
+  const upgradeOrbiter = async (orbiterId: string) => {
+    const orbiterParameters = {
+      orbiterId,
+      ...actorParameters()
+    };
+
+    if (hasArgs({args, options: ['-s', '--src']})) {
+      await upgradeOrbiterCustom({args, orbiterParameters});
+      return;
+    }
+
+    await updateOrbiterRelease(orbiterParameters);
+  };
+
+  for (const orbiter of authOrbiters) {
+    await upgradeOrbiter(orbiter.p);
+  }
 };
 
 const upgradeSatellite = async (args?: string[]) => {
@@ -203,6 +241,57 @@ const upgradeMissionControlCustom = async ({
     });
 
   await upgradeWasmLocal({src, upgrade: upgradeMissionControlWasm});
+};
+
+const updateOrbiterRelease = async (
+  orbiterParameters: Required<Pick<OrbiterParameters, 'orbiterId'>> &
+    Omit<OrbiterParameters, 'orbiterId'>
+) => {
+  const currentVersion = await orbiterVersion({
+    orbiter: orbiterParameters
+  });
+
+  const displayHint = `orbiter "${orbiterKey(orbiterParameters.orbiterId)}"`;
+  const version = await selectVersion({
+    currentVersion,
+    assetKey: ORBITER_WASM_NAME,
+    displayHint
+  });
+
+  if (version === undefined) {
+    return;
+  }
+
+  const upgradeOrbiterWasm = async ({wasm_module}: {wasm_module: Uint8Array}) =>
+    upgradeOrbiterAdmin({
+      orbiter: orbiterParameters,
+      wasm_module
+    });
+
+  await upgradeWasmCdn({version, assetKey: 'orbiter', upgrade: upgradeOrbiterWasm});
+};
+
+const upgradeOrbiterCustom = async ({
+  orbiterParameters,
+  args
+}: {
+  orbiterParameters: OrbiterParameters;
+  args?: string[];
+}) => {
+  const src = nextArg({args, option: '-s'}) ?? nextArg({args, option: '--src'});
+
+  if (src === undefined) {
+    console.log(`${red('No source file provided.')}`);
+    return;
+  }
+
+  const upgradeOrbiterWasm = async ({wasm_module}: {wasm_module: Uint8Array}) =>
+    upgradeOrbiterAdmin({
+      orbiter: orbiterParameters,
+      wasm_module
+    });
+
+  await upgradeWasmLocal({src, upgrade: upgradeOrbiterWasm});
 };
 
 const selectVersion = async ({
