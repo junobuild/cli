@@ -34,8 +34,13 @@ Usage: ${cyan('juno upgrade [options]')}
 
 Options:
   ${cyan('-s, --src')}             a local wasm file for the upgrade
-  ${cyan('-m, --mission-control')} target a mission control instead of satellite (default)
+  ${cyan('-m, --mission-control')} target a mission control
+  ${cyan('-o, --orbiter')}         target an orbiter
   ${cyan('-h, --help')}            output usage information
+  
+Notes:
+
+The command targets per default a satellite.
 `;
 
 export const helpCommand = (command: string) => `

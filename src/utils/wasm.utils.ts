@@ -3,6 +3,7 @@ import {readFile} from 'fs/promises';
 import {cyan} from 'kleur';
 import ora from 'ora';
 import {JUNO_CDN_URL} from '../constants/constants';
+import type {AssetKey} from '../types/asset-key';
 import {downloadFromURL} from './download.utils';
 import {NEW_CMD_LINE, confirmAndExit} from './prompt.utils';
 
@@ -64,7 +65,7 @@ export const upgradeWasmCdn = async ({
   upgrade
 }: {
   version: string;
-  assetKey: 'satellite' | 'mission_control';
+  assetKey: AssetKey;
   upgrade: ({wasm_module}: {wasm_module: Uint8Array}) => Promise<void>;
 }) => {
   const downloadWasm = async (): Promise<{hash: string; wasm: Buffer}> => {

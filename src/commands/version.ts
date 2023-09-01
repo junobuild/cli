@@ -1,22 +1,30 @@
 import {
   missionControlVersion as missionControlVersionLib,
+  orbiterVersion as orbiterVersionLib,
   satelliteVersion as satelliteVersionLib
 } from '@junobuild/admin';
 import {cyan, green, red, yellow} from 'kleur';
 import {clean, compare} from 'semver';
 import {version as cliCurrentVersion} from '../../package.json';
-import {MISSION_CONTROL_WASM_NAME, SATELLITE_WASM_NAME} from '../constants/constants';
+import {
+  MISSION_CONTROL_WASM_NAME,
+  ORBITER_WASM_NAME,
+  SATELLITE_WASM_NAME
+} from '../constants/constants';
+import type {AssetKey} from '../types/asset-key';
 import {actorParameters} from '../utils/actor.utils';
-import {getMissionControl} from '../utils/auth.config.utils';
+import {toAssetKeys} from '../utils/asset-key.utils';
+import {getAuthMissionControl, getAuthOrbiters} from '../utils/auth.config.utils';
 import {githubCliLastRelease} from '../utils/github.utils';
 import {junoConfigExist, readSatelliteConfig} from '../utils/satellite.config.utils';
-import {satelliteKey, satelliteParameters} from '../utils/satellite.utils';
+import {orbiterKey, satelliteKey, satelliteParameters} from '../utils/satellite.utils';
 import {lastRelease} from '../utils/upgrade.utils';
 
 export const version = async () => {
   await cliVersion();
   await missionControlVersion();
   await satelliteVersion();
+  await orbitersVersion();
 };
 
 const cliVersion = async () => {
@@ -45,7 +53,7 @@ const cliVersion = async () => {
 };
 
 const missionControlVersion = async () => {
-  const missionControl = getMissionControl();
+  const missionControl = getAuthMissionControl();
 
   if (!missionControl) {
     console.log(
@@ -97,21 +105,48 @@ const satelliteVersion = async () => {
   });
 };
 
+const orbitersVersion = async () => {
+  const orbiters = getAuthOrbiters();
+
+  if (!orbiters || orbiters.length === 0) {
+    return;
+  }
+
+  const checkOrbiterVersion = async (orbiterId: string) => {
+    const orbiterParameters = {
+      orbiterId,
+      ...actorParameters()
+    };
+
+    const currentVersion = await orbiterVersionLib({
+      orbiter: orbiterParameters
+    });
+
+    const displayHint = `orbiter "${orbiterKey(orbiterId)}"`;
+
+    await checkSegmentVersion({
+      currentVersion,
+      assetKey: ORBITER_WASM_NAME,
+      displayHint
+    });
+  };
+
+  await Promise.allSettled(orbiters.map(({p: orbiterId}) => checkOrbiterVersion(orbiterId)));
+};
+
 const checkSegmentVersion = async ({
   currentVersion,
   assetKey,
   displayHint
 }: {
   currentVersion: string;
-  assetKey: 'satellite' | 'mission_control';
+  assetKey: AssetKey;
   displayHint: string;
 }): Promise<void> => {
-  const latestVersion = await lastRelease(
-    assetKey === 'mission_control' ? 'mission_controls' : 'satellites'
-  );
+  const latestVersion = await lastRelease(toAssetKeys(assetKey));
 
   if (latestVersion === undefined) {
-    console.log(`${red('Cannot fetch last release version of Juno 😢.')}`);
+    console.log(`${red(`Cannot fetch last release version of ${displayHint} on Juno's CDN 😢.`)}`);
     return;
   }
 
