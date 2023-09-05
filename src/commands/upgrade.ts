@@ -28,6 +28,7 @@ import {junoConfigExist, readSatelliteConfig} from '../utils/satellite.config.ut
 import {orbiterKey, satelliteKey, satelliteParameters} from '../utils/satellite.utils';
 import {newerReleases as newerReleasesUtils} from '../utils/upgrade.utils';
 import {upgradeWasmCdn, upgradeWasmLocal} from '../utils/wasm.utils';
+import {confirmAndExit} from '../utils/prompt.utils';
 
 export const upgrade = async (args?: string[]) => {
   if (hasArgs({args, options: ['-m', '--mission-control']})) {
@@ -109,7 +110,7 @@ const upgradeSatellite = async (args?: string[]) => {
     return;
   }
 
-  await upgradeSatelliteRelease(satellite);
+  await upgradeSatelliteRelease({satellite, args});
 };
 
 const promptReleases = async ({
@@ -140,7 +141,13 @@ const promptReleases = async ({
   return version;
 };
 
-const upgradeSatelliteRelease = async (satellite: SatelliteParameters) => {
+const upgradeSatelliteRelease = async ({
+  satellite,
+  args
+}: {
+  satellite: SatelliteParameters;
+  args?: string[];
+}) => {
   const currentVersion = await satelliteVersion({
     satellite
   });
@@ -152,16 +159,19 @@ const upgradeSatelliteRelease = async (satellite: SatelliteParameters) => {
     return;
   }
 
+  const reset = await confirmReset({args, assetKey: 'satellite'});
+
   const upgradeSatelliteWasm = async ({wasm_module}: {wasm_module: Uint8Array}) =>
     upgradeSatelliteAdmin({
       satellite,
       wasm_module,
       // TODO: option to be removed
       deprecated: compare(currentVersion, '0.0.7') < 0,
-      deprecatedNoScope: compare(currentVersion, '0.0.9') < 0
+      deprecatedNoScope: compare(currentVersion, '0.0.9') < 0,
+      ...(reset && {reset})
     });
 
-  await upgradeWasmCdn({version, assetKey: 'satellite', upgrade: upgradeSatelliteWasm});
+  await upgradeWasmCdn({version, assetKey: 'satellite', upgrade: upgradeSatelliteWasm, reset});
 };
 
 const upgradeSatelliteCustom = async ({
@@ -183,16 +193,19 @@ const upgradeSatelliteCustom = async ({
     satellite
   });
 
+  const reset = await confirmReset({args, assetKey: 'orbiter'});
+
   const upgradeSatelliteWasm = async ({wasm_module}: {wasm_module: Uint8Array}) =>
     upgradeSatelliteAdmin({
       satellite,
       wasm_module,
       // TODO: option to be removed
       deprecated: compare(currentVersion, '0.0.7') < 0,
-      deprecatedNoScope: compare(currentVersion, '0.0.9') < 0
+      deprecatedNoScope: compare(currentVersion, '0.0.9') < 0,
+      ...(reset && {reset})
     });
 
-  await upgradeWasmLocal({src, upgrade: upgradeSatelliteWasm});
+  await upgradeWasmLocal({src, upgrade: upgradeSatelliteWasm, reset});
 };
 
 const updateMissionControlRelease = async (missionControlParameters: MissionControlParameters) => {
@@ -243,10 +256,11 @@ const upgradeMissionControlCustom = async ({
   await upgradeWasmLocal({src, upgrade: upgradeMissionControlWasm});
 };
 
-const updateOrbiterRelease = async (
-  orbiterParameters: Required<Pick<OrbiterParameters, 'orbiterId'>> &
-    Omit<OrbiterParameters, 'orbiterId'>
-) => {
+const updateOrbiterRelease = async ({
+  args,
+  ...orbiterParameters
+}: Required<Pick<OrbiterParameters, 'orbiterId'>> &
+  Omit<OrbiterParameters, 'orbiterId'> & {args?: string[]}) => {
   const currentVersion = await orbiterVersion({
     orbiter: orbiterParameters
   });
@@ -262,13 +276,16 @@ const updateOrbiterRelease = async (
     return;
   }
 
+  const reset = await confirmReset({args, assetKey: 'orbiter'});
+
   const upgradeOrbiterWasm = async ({wasm_module}: {wasm_module: Uint8Array}) =>
     upgradeOrbiterAdmin({
       orbiter: orbiterParameters,
-      wasm_module
+      wasm_module,
+      ...(reset && {reset})
     });
 
-  await upgradeWasmCdn({version, assetKey: 'orbiter', upgrade: upgradeOrbiterWasm});
+  await upgradeWasmCdn({version, assetKey: 'orbiter', upgrade: upgradeOrbiterWasm, reset});
 };
 
 const upgradeOrbiterCustom = async ({
@@ -285,13 +302,16 @@ const upgradeOrbiterCustom = async ({
     return;
   }
 
+  const reset = await confirmReset({args, assetKey: 'orbiter'});
+
   const upgradeOrbiterWasm = async ({wasm_module}: {wasm_module: Uint8Array}) =>
     upgradeOrbiterAdmin({
       orbiter: orbiterParameters,
-      wasm_module
+      wasm_module,
+      ...(reset && {reset})
     });
 
-  await upgradeWasmLocal({src, upgrade: upgradeOrbiterWasm});
+  await upgradeWasmLocal({src, upgrade: upgradeOrbiterWasm, reset});
 };
 
 const selectVersion = async ({
@@ -341,4 +361,27 @@ const selectVersion = async ({
   }
 
   return selectedVersion;
+};
+
+const confirmReset = async ({
+  args,
+  assetKey
+}: {
+  args?: string[];
+  assetKey: AssetKey;
+}): Promise<boolean> => {
+  const reset = hasArgs({args, options: ['-r', '--reset']});
+
+  if (!reset) {
+    return false;
+  }
+
+  await confirmAndExit(
+    `⚠️  Are you absolutely sure you want to upgrade and reset (❗️) your ${assetKey.replace(
+      '_',
+      ' '
+    )} to its initial state?`
+  );
+
+  return true;
 };

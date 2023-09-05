@@ -36,11 +36,13 @@ Options:
   ${cyan('-s, --src')}             a local wasm file for the upgrade
   ${cyan('-m, --mission-control')} target a mission control
   ${cyan('-o, --orbiter')}         target an orbiter
+  ${cyan('-r, --reset')}           reset to the initial state
   ${cyan('-h, --help')}            output usage information
   
 Notes:
 
-The command targets per default a satellite.
+- The command targets per default a satellite.
+- Resetting a mission control is not possible.
 `;
 
 export const helpCommand = (command: string) => `
