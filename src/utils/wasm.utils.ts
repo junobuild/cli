@@ -10,15 +10,19 @@ import {NEW_CMD_LINE, confirmAndExit} from './prompt.utils';
 const executeUpgradeWasm = async ({
   upgrade,
   wasm,
-  hash
+  hash,
+  reset = false
 }: {
   wasm: Buffer;
   hash: string;
   upgrade: ({wasm_module}: {wasm_module: Uint8Array}) => Promise<void>;
+  reset?: boolean;
 }) => {
-  await confirmAndExit(`Wasm hash is ${cyan(hash)}.${NEW_CMD_LINE}Start upgrade now?`);
+  await confirmAndExit(
+    `Wasm hash is ${cyan(hash)}.${NEW_CMD_LINE}Start upgrade${reset ? ' and reset' : ''} now?`
+  );
 
-  const spinner = ora('Upgrading Wasm...').start();
+  const spinner = ora(`Upgrading Wasm${reset ? ' and resetting state' : ''}...`).start();
 
   try {
     await upgrade({
@@ -31,10 +35,12 @@ const executeUpgradeWasm = async ({
 
 export const upgradeWasmLocal = async ({
   src,
-  upgrade
+  upgrade,
+  reset
 }: {
   src: string;
   upgrade: ({wasm_module}: {wasm_module: Uint8Array}) => Promise<void>;
+  reset?: boolean;
 }) => {
   const loadWasm = async (file: string): Promise<{hash: string; wasm: Buffer}> => {
     const wasm = await readFile(file);
@@ -52,7 +58,7 @@ export const upgradeWasmLocal = async ({
 
     spinner.stop();
 
-    await executeUpgradeWasm({upgrade, wasm, hash});
+    await executeUpgradeWasm({upgrade, wasm, hash, reset});
   } catch (err: unknown) {
     spinner.stop();
     throw err;
@@ -62,11 +68,13 @@ export const upgradeWasmLocal = async ({
 export const upgradeWasmCdn = async ({
   version,
   assetKey,
-  upgrade
+  upgrade,
+  reset
 }: {
   version: string;
   assetKey: AssetKey;
   upgrade: ({wasm_module}: {wasm_module: Uint8Array}) => Promise<void>;
+  reset?: boolean;
 }) => {
   const downloadWasm = async (): Promise<{hash: string; wasm: Buffer}> => {
     const {hostname} = new URL(JUNO_CDN_URL);
@@ -92,7 +100,7 @@ export const upgradeWasmCdn = async ({
 
     spinner.stop();
 
-    await executeUpgradeWasm({upgrade, wasm, hash});
+    await executeUpgradeWasm({upgrade, wasm, hash, reset});
   } catch (err: unknown) {
     spinner.stop();
     throw err;
