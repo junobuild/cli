@@ -4,8 +4,8 @@ import {cyan} from 'kleur';
 import ora from 'ora';
 import {JUNO_CDN_URL} from '../constants/constants';
 import type {AssetKey} from '../types/asset-key';
-import {downloadFromURL} from './download.utils';
-import {NEW_CMD_LINE, confirmAndExit} from './prompt.utils';
+import {downloadFromURL} from '../utils/download.utils';
+import {NEW_CMD_LINE, confirmAndExit} from '../utils/prompt.utils';
 
 const executeUpgradeWasm = async ({
   upgrade,

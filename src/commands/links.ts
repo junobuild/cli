@@ -1,9 +1,9 @@
 import {listCustomDomains} from '@junobuild/admin';
 import {red} from 'kleur';
 import terminalLink from 'terminal-link';
+import {junoConfigExist, readSatelliteConfig} from '../configs/satellite.config';
 import {consoleUrl, defaultSatelliteDomain} from '../utils/domain.utils';
 import {isProcessToken} from '../utils/process.utils';
-import {junoConfigExist, readSatelliteConfig} from '../utils/satellite.config.utils';
 import {satelliteParameters} from '../utils/satellite.utils';
 
 export const links = async () => {

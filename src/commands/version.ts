@@ -6,17 +6,17 @@ import {
 import {cyan, green, red, yellow} from 'kleur';
 import {clean, compare} from 'semver';
 import {version as cliCurrentVersion} from '../../package.json';
+import {getAuthMissionControl, getAuthOrbiters} from '../configs/auth.config';
+import {junoConfigExist, readSatelliteConfig} from '../configs/satellite.config';
 import {
   MISSION_CONTROL_WASM_NAME,
   ORBITER_WASM_NAME,
   SATELLITE_WASM_NAME
 } from '../constants/constants';
+import {githubCliLastRelease} from '../rest/github.rest';
 import type {AssetKey} from '../types/asset-key';
 import {actorParameters} from '../utils/actor.utils';
 import {toAssetKeys} from '../utils/asset-key.utils';
-import {getAuthMissionControl, getAuthOrbiters} from '../utils/auth.config.utils';
-import {githubCliLastRelease} from '../utils/github.utils';
-import {junoConfigExist, readSatelliteConfig} from '../utils/satellite.config.utils';
 import {orbiterKey, satelliteKey, satelliteParameters} from '../utils/satellite.utils';
 import {lastRelease} from '../utils/upgrade.utils';
 

@@ -1,6 +1,6 @@
 import {Ed25519KeyIdentity} from '@dfinity/identity';
 import {green} from 'kleur';
-import {getToken, getUse, isDefaultProfile} from '../utils/auth.config.utils';
+import {getToken, getUse, isDefaultProfile} from '../configs/auth.config';
 
 export const whoami = () => {
   const profile = getUse();

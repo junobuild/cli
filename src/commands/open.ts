@@ -1,10 +1,10 @@
 import {CustomDomain, listCustomDomains} from '@junobuild/admin';
 import prompts from 'prompts';
+import {junoConfigExist, readSatelliteConfig} from '../configs/satellite.config';
 import {hasArgs, nextArg} from '../utils/args.utils';
 import {consoleUrl, defaultSatelliteDomain} from '../utils/domain.utils';
 import {consoleNoConfigFound} from '../utils/msg.utils';
 import {openUrl} from '../utils/open.utils';
-import {junoConfigExist, readSatelliteConfig} from '../utils/satellite.config.utils';
 import {satelliteParameters} from '../utils/satellite.utils';
 
 export const open = async (args?: string[]) => {

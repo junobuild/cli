@@ -1,6 +1,6 @@
 import {green, red} from 'kleur';
+import {deleteUse, getProfiles, getUse, saveUse} from '../configs/auth.config';
 import {hasArgs, nextArg} from '../utils/args.utils';
-import {deleteUse, getProfiles, getUse, saveUse} from '../utils/auth.config.utils';
 
 export const use = (args?: string[]) => {
   if (hasArgs({args, options: ['-l', '--list']})) {
