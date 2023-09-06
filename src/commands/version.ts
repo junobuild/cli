@@ -16,7 +16,7 @@ import {
 import type {AssetKey} from '../types/asset-key';
 import {actorParameters} from '../utils/actor.utils';
 import {toAssetKeys} from '../utils/asset-key.utils';
-import {githubCliLastRelease} from '../utils/github.utils';
+import {githubCliLastRelease} from '../rest/github.rest';
 import {orbiterKey, satelliteKey, satelliteParameters} from '../utils/satellite.utils';
 import {lastRelease} from '../utils/upgrade.utils';
 
