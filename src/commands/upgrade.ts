@@ -20,6 +20,7 @@ import {
   ORBITER_WASM_NAME,
   SATELLITE_WASM_NAME
 } from '../constants/constants';
+import {upgradeWasmCdn, upgradeWasmLocal} from '../services/upgrade.services';
 import type {AssetKey} from '../types/asset-key';
 import {actorParameters} from '../utils/actor.utils';
 import {hasArgs, nextArg} from '../utils/args.utils';
@@ -28,7 +29,6 @@ import {consoleNoConfigFound} from '../utils/msg.utils';
 import {confirmAndExit} from '../utils/prompt.utils';
 import {orbiterKey, satelliteKey, satelliteParameters} from '../utils/satellite.utils';
 import {newerReleases as newerReleasesUtils} from '../utils/upgrade.utils';
-import {upgradeWasmCdn, upgradeWasmLocal} from '../services/upgrade.services';
 
 export const upgrade = async (args?: string[]) => {
   if (hasArgs({args, options: ['-m', '--mission-control']})) {

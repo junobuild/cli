@@ -1,6 +1,6 @@
 import {compare} from 'semver';
-import {AssetKeys} from '../types/asset-key';
 import {getReleasesMetadata} from '../rest/cdn.rest';
+import {AssetKeys} from '../types/asset-key';
 
 export const lastRelease = async (assetKeys: AssetKeys): Promise<string | undefined> => {
   try {
