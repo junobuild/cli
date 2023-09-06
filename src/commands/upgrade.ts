@@ -24,11 +24,11 @@ import {hasArgs, nextArg} from '../utils/args.utils';
 import {toAssetKeys} from '../utils/asset-key.utils';
 import {getAuthMissionControl, getAuthOrbiters} from '../utils/auth.config.utils';
 import {consoleNoConfigFound} from '../utils/msg.utils';
+import {confirmAndExit} from '../utils/prompt.utils';
 import {junoConfigExist, readSatelliteConfig} from '../utils/satellite.config.utils';
 import {orbiterKey, satelliteKey, satelliteParameters} from '../utils/satellite.utils';
 import {newerReleases as newerReleasesUtils} from '../utils/upgrade.utils';
 import {upgradeWasmCdn, upgradeWasmLocal} from '../utils/wasm.utils';
-import {confirmAndExit} from '../utils/prompt.utils';
 
 export const upgrade = async (args?: string[]) => {
   if (hasArgs({args, options: ['-m', '--mission-control']})) {
