@@ -28,7 +28,7 @@ import {consoleNoConfigFound} from '../utils/msg.utils';
 import {confirmAndExit} from '../utils/prompt.utils';
 import {orbiterKey, satelliteKey, satelliteParameters} from '../utils/satellite.utils';
 import {newerReleases as newerReleasesUtils} from '../utils/upgrade.utils';
-import {upgradeWasmCdn, upgradeWasmLocal} from '../utils/wasm.utils';
+import {upgradeWasmCdn, upgradeWasmLocal} from '../services/upgrade.services';
 
 export const upgrade = async (args?: string[]) => {
   if (hasArgs({args, options: ['-m', '--mission-control']})) {
