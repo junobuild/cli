@@ -37,9 +37,7 @@ const promptSatellites = async (satellites: AuthSatelliteConfig[]): Promise<stri
   });
 
   // In case of control+c
-  if (satellite === undefined || satellite === '') {
-    process.exit(1);
-  }
+  assertAnswerCtrlC(satellite);
 
   return satellite;
 };
@@ -53,10 +51,7 @@ const promptSatellite = async (): Promise<string> => {
     }
   ]);
 
-  if (satellite === undefined || satellite === '') {
-    console.log(`${red('The satellite ID is mandatory')}`);
-    process.exit(1);
-  }
+  assertAnswerCtrlC(satellite, 'The satellite ID is mandatory');
 
   return satellite;
 };
@@ -71,9 +66,24 @@ const promptSource = async (): Promise<string> => {
     }
   ]);
 
-  if (source === undefined || source === '') {
-    process.exit(1);
-  }
+  assertAnswerCtrlC(source);
 
   return source;
+};
+
+// In case an answer is replaced by control+c
+export const assertAnswerCtrlC: (
+  answer: null | undefined | '' | string,
+  message?: string
+) => asserts answer is NonNullable<string> = (
+  answer: null | undefined | '' | string,
+  message?: string
+): void => {
+  if (answer === undefined || answer === '' || answer === null) {
+    if (message !== undefined) {
+      console.log(`${red(message)}`);
+    }
+
+    process.exit(1);
+  }
 };
