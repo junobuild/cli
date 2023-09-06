@@ -1,8 +1,13 @@
 import {Ed25519KeyIdentity} from '@dfinity/identity';
-import {green} from 'kleur';
+import {Principal} from '@dfinity/principal';
+import {bold, green} from 'kleur';
 import prompts from 'prompts';
 import {clearAuthConfig, getToken} from '../configs/auth.config';
+import {CONSOLE_URL} from '../constants/constants';
 import {login as consoleLogin} from '../services/console.services';
+import {terminalLink} from '../utils/links.utils';
+import {confirmAndExit} from '../utils/prompt.utils';
+import {assertAnswerCtrlC} from './init';
 
 export const logout = async () => {
   clearAuthConfig();
@@ -33,20 +38,17 @@ export const login = async (args?: string[]) => {
     ]
   });
 
-  // In case of control+c
-  if (action === undefined || action === '') {
-    process.exit(1);
-  }
+  assertAnswerCtrlC(action);
 
   if (action === 'login') {
     await consoleLogin(args);
     return;
   }
 
-  await reuse(args);
+  await reuse(identity.getPrincipal());
 };
 
-const reuse = async (args?: string[]) => {
+const reuse = async (principal: Principal) => {
   const {segment} = await prompts({
     type: 'select',
     name: 'segment',
@@ -54,13 +56,33 @@ const reuse = async (args?: string[]) => {
     choices: [
       {title: 'A satellite', value: 'satellite'},
       {title: 'The orbiter for the analytics', value: 'orbiter'},
-      {title: 'Your mission control', value: 'mission_control'}
+      {title: 'Your mission control', value: 'mission control'}
     ],
     initial: 0
   });
 
-  // In case of control+c
-  if (segment === undefined || segment === '') {
-    process.exit(1);
-  }
+  assertAnswerCtrlC(segment);
+
+  console.log(
+    `Great. Before completing the setup, you'll need to add the controller to your ${segment} in Juno's console.\n\nHere are the steps to follow:`
+  );
+
+  const url = `${CONSOLE_URL}${
+    segment === 'orbiter' ? '/analytics' : segment === 'satellite' ? '' : '/mission-control'
+  }`;
+
+  console.log(
+    `\n1. Open the "${segment === 'orbiter' ? 'Settings' : 'Controllers'}" tab on ${terminalLink(
+      url
+    )}`
+  );
+  console.log(
+    `2. Add the controller ${green(principal.toText())} to your ${segment} with the ${bold(
+      'ADMIN'
+    )} scope\n`
+  );
+
+  await confirmAndExit('Have you completed this step?');
+
+
 };

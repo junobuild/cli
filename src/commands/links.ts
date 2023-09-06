@@ -1,8 +1,8 @@
 import {listCustomDomains} from '@junobuild/admin';
 import {red} from 'kleur';
-import terminalLink from 'terminal-link';
 import {junoConfigExist, readSatelliteConfig} from '../configs/satellite.config';
 import {consoleUrl, defaultSatelliteDomain} from '../utils/domain.utils';
+import {terminalLink} from '../utils/links.utils';
 import {isProcessToken} from '../utils/process.utils';
 import {satelliteParameters} from '../utils/satellite.utils';
 
@@ -26,18 +26,14 @@ export const links = async () => {
     const satellite = satelliteParameters(satelliteId);
     const domains = await listCustomDomains({satellite});
 
-    const fallback = (_text: string, url: string) => `${url}`;
-
-    console.log(`\n🛠️  ${terminalLink(adminUrl, adminUrl, {fallback})}`);
+    console.log(`\n🛠️  ${terminalLink(adminUrl)}`);
 
     if (domains.length === 0) {
-      console.log(`🛰️  ${terminalLink(defaultUrl, defaultUrl, {fallback})}`);
+      console.log(`🛰️  ${terminalLink(defaultUrl)}`);
       return;
     }
 
-    domains.forEach(({domain}) =>
-      console.log(`🌍 ${terminalLink(`https://${domain}`, `https://${domain}`, {fallback})}`)
-    );
+    domains.forEach(({domain}) => console.log(`🌍 ${terminalLink(`https://${domain}`)}`));
   } catch (err: unknown) {
     console.log(`${red('Cannot list the custom domains.')}`);
   }
