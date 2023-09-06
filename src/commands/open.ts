@@ -6,6 +6,7 @@ import {consoleUrl, defaultSatelliteDomain} from '../utils/domain.utils';
 import {consoleNoConfigFound} from '../utils/msg.utils';
 import {openUrl} from '../utils/open.utils';
 import {satelliteParameters} from '../utils/satellite.utils';
+import {assertAnswerCtrlC} from './init';
 
 export const open = async (args?: string[]) => {
   if (!(await junoConfigExist())) {
@@ -50,10 +51,7 @@ const promptSatellites = async ({
     ]
   });
 
-  // In case of control+c
-  if (url === undefined || url === '') {
-    process.exit(1);
-  }
+  assertAnswerCtrlC(url);
 
   return url;
 };
