@@ -29,6 +29,7 @@ import {consoleNoConfigFound} from '../utils/msg.utils';
 import {confirmAndExit} from '../utils/prompt.utils';
 import {orbiterKey, satelliteKey, satelliteParameters} from '../utils/satellite.utils';
 import {newerReleases as newerReleasesUtils} from '../utils/upgrade.utils';
+import {assertAnswerCtrlC} from './init';
 
 export const upgrade = async (args?: string[]) => {
   if (hasArgs({args, options: ['-m', '--mission-control']})) {
@@ -133,10 +134,7 @@ const promptReleases = async ({
     initial: 0
   });
 
-  // In case of control+c
-  if (version === undefined) {
-    process.exit(1);
-  }
+  assertAnswerCtrlC(version);
 
   return version;
 };
