@@ -1,7 +1,7 @@
 import {Ed25519KeyIdentity} from '@dfinity/identity/lib/cjs/identity/ed25519';
 import {ActorParameters} from '@junobuild/admin';
 import fetch from 'node-fetch';
-import {getToken} from './auth.config.utils';
+import {getToken} from '../configs/auth.config';
 import {getProcessToken} from './process.utils';
 
 export const actorParameters = (): ActorParameters => {

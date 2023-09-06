@@ -1,6 +1,6 @@
 import {green} from 'kleur';
+import {clearAuthConfig} from '../configs/auth.config';
 import {login as consoleLogin} from '../services/console.services';
-import {clearAuthConfig} from '../utils/auth.config.utils';
 
 export const logout = async () => {
   clearAuthConfig();

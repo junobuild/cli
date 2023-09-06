@@ -13,6 +13,8 @@ import {
 import {red, yellow} from 'kleur';
 import prompts from 'prompts';
 import {compare} from 'semver';
+import {getAuthMissionControl, getAuthOrbiters} from '../configs/auth.config';
+import {junoConfigExist, readSatelliteConfig} from '../configs/satellite.config';
 import {
   MISSION_CONTROL_WASM_NAME,
   ORBITER_WASM_NAME,
@@ -22,10 +24,8 @@ import type {AssetKey} from '../types/asset-key';
 import {actorParameters} from '../utils/actor.utils';
 import {hasArgs, nextArg} from '../utils/args.utils';
 import {toAssetKeys} from '../utils/asset-key.utils';
-import {getAuthMissionControl, getAuthOrbiters} from '../utils/auth.config.utils';
 import {consoleNoConfigFound} from '../utils/msg.utils';
 import {confirmAndExit} from '../utils/prompt.utils';
-import {junoConfigExist, readSatelliteConfig} from '../utils/satellite.config.utils';
 import {orbiterKey, satelliteKey, satelliteParameters} from '../utils/satellite.utils';
 import {newerReleases as newerReleasesUtils} from '../utils/upgrade.utils';
 import {upgradeWasmCdn, upgradeWasmLocal} from '../utils/wasm.utils';

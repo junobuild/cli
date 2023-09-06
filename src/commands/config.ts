@@ -1,6 +1,6 @@
 import {setConfig} from '@junobuild/admin';
 import ora from 'ora';
-import {junoConfigExist, readSatelliteConfig} from '../utils/satellite.config.utils';
+import {junoConfigExist, readSatelliteConfig} from '../configs/satellite.config';
 import {satelliteParameters} from '../utils/satellite.utils';
 import {init} from './init';
 

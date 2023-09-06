@@ -1,8 +1,8 @@
 import {deleteAssets} from '@junobuild/core';
 import ora from 'ora';
+import {junoConfigExist, readSatelliteConfig} from '../configs/satellite.config';
 import {DAPP_COLLECTION} from '../constants/constants';
 import {consoleNoConfigFound} from '../utils/msg.utils';
-import {junoConfigExist, readSatelliteConfig} from '../utils/satellite.config.utils';
 import {satelliteParameters} from '../utils/satellite.utils';
 
 export const clear = async () => {
