@@ -1,10 +1,11 @@
 import {Ed25519KeyIdentity} from '@dfinity/identity';
 import {Principal} from '@dfinity/principal';
-import {bold, green} from 'kleur';
+import {bold, green, red} from 'kleur';
 import prompts from 'prompts';
-import {clearAuthConfig, getToken} from '../configs/auth.config';
+import {clearAuthConfig, getToken, getUse, saveAuthOrbiter} from '../configs/auth.config';
 import {CONSOLE_URL} from '../constants/constants';
 import {login as consoleLogin} from '../services/console.services';
+import {AssetKey} from '../types/asset-key';
 import {terminalLink} from '../utils/links.utils';
 import {confirmAndExit} from '../utils/prompt.utils';
 import {assertAnswerCtrlC} from './init';
@@ -48,7 +49,38 @@ export const login = async (args?: string[]) => {
   await reuse(identity.getPrincipal());
 };
 
-const reuse = async (principal: Principal) => {
+const reuse = async (controller: Principal) => {
+  const segment = await selectSegment();
+
+  console.log(
+    `Great. Before completing the setup, you'll need to add the controller to your ${segment} in Juno's console.\n\nHere are the steps to follow:`
+  );
+
+  await setControllerManually({controller, segment});
+
+  const {segmentId} = await prompts({
+    type: 'text',
+    name: 'segmentId',
+    message: `Good. So, what's the ${green(`${segment} ID`)} to which you just added the controller?`
+  });
+
+  if (segmentId === undefined) {
+    console.log(`${red(`The ${segment} ID cannot be undefined.`)}`);
+    return;
+  }
+
+  const profile = getUse();
+  saveAuthOrbiter({
+    profile,
+    orbiter: {
+      p: segmentId
+    }
+  });
+
+  console.log(`\nDone. The ${segment} ${green(`${segmentId}`)} has been configured for your terminal. ✅`);
+};
+
+const selectSegment = async (): Promise<AssetKey> => {
   const {segment} = await prompts({
     type: 'select',
     name: 'segment',
@@ -63,10 +95,16 @@ const reuse = async (principal: Principal) => {
 
   assertAnswerCtrlC(segment);
 
-  console.log(
-    `Great. Before completing the setup, you'll need to add the controller to your ${segment} in Juno's console.\n\nHere are the steps to follow:`
-  );
+  return segment as AssetKey;
+};
 
+const setControllerManually = async ({
+  segment,
+  controller
+}: {
+  segment: AssetKey;
+  controller: Principal;
+}) => {
   const url = `${CONSOLE_URL}${
     segment === 'orbiter' ? '/analytics' : segment === 'satellite' ? '' : '/mission-control'
   }`;
@@ -77,12 +115,11 @@ const reuse = async (principal: Principal) => {
     )}`
   );
   console.log(
-    `2. Add the controller ${green(principal.toText())} to your ${segment} with the ${bold(
+    `2. Add the controller ${green(controller.toText())} to your ${segment} with the ${bold(
       'ADMIN'
-    )} scope\n`
+    )} scope`
   );
+  console.log(`3. Copy the ${green(`${segment} ID`)} to which you added the controller\n`);
 
   await confirmAndExit('Have you completed this step?');
-
-
 };
