@@ -61,7 +61,7 @@ const promptSource = async (): Promise<string> => {
     {
       type: 'text',
       name: 'source',
-      message: `What's the name or path of the build ${cyan('source')} folder of your dapp?`,
+      message: `What's the name or path of the folder containing your built dapp files?`,
       initial: 'build'
     }
   ]);
