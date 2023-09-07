@@ -5,7 +5,7 @@ import {MimeType, fileTypeFromFile} from 'file-type';
 import {FileExtension} from 'file-type/core';
 import {lstatSync, readdirSync} from 'fs';
 import {readFile} from 'fs/promises';
-import {green, grey} from 'kleur';
+import {green, grey, red} from 'kleur';
 import mime from 'mime-types';
 import {minimatch} from 'minimatch';
 import ora from 'ora';
@@ -88,6 +88,19 @@ export const deploy = async () => {
 const fullPath = ({file, sourceAbsolutePath}: {file: string; sourceAbsolutePath: string}): string =>
   encodeURI(file.replace(sourceAbsolutePath, '').replace(/\\/g, '/'));
 
+const assertSourceDirExists = (source: string) => {
+  try {
+    lstatSync(source);
+  } catch (err: unknown) {
+    console.log(
+      `${red(
+        'Cannot proceed deployment.'
+      )}\nAre you sure the folder containing your built app (the "source" tag in the juno.json file) files is correctly configured, or have you built your app?`
+    );
+    process.exit(1);
+  }
+};
+
 const files = (source: string): string[] => {
   return readdirSync(source).flatMap((file) => {
     const path = join(source, file);
@@ -162,6 +175,8 @@ const listFiles = async ({
 } & Required<Pick<SatelliteConfig, 'satelliteId' | 'ignore' | 'encoding'>>): Promise<
   FileDetails[]
 > => {
+  assertSourceDirExists(sourceAbsolutePath);
+
   const sourceFiles = files(sourceAbsolutePath);
 
   const filteredSourceFiles = sourceFiles.filter(
