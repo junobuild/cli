@@ -10,6 +10,7 @@ export const ORBITER_WASM_NAME = 'orbiter';
 export const UPLOAD_BATCH_SIZE = 20;
 export const COLLECTION_DAPP = '#dapp';
 export const NODE_LTS = 18;
-export const CONSOLE_SATELLITE_URL = 'https://console.juno.build/satellite/?s=';
+export const CONSOLE_URL = 'https://console.juno.build';
+export const CONSOLE_SATELLITE_URL = `${CONSOLE_URL}/satellite/?s=`;
 export const JUNO_CDN_URL = 'https://fmkjf-bqaaa-aaaal-acpza-cai.raw.icp0.io';
 export const GITHUB_API_CLI_URL = 'https://api.github.com/repos/buildwithjuno/cli';

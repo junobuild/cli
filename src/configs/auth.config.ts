@@ -86,18 +86,26 @@ export const saveAuthConfig = ({
   deleteUse();
 };
 
+// Use / profile
+
 export const deleteUse = () => config.delete('use');
 export const saveUse = (use: AuthProfile) => config.set('use', use);
 export const getUse = (): AuthProfile | undefined => config.get('use');
 
+// Profile
+
 export const saveProfiles = (profiles: Record<string, AuthConfigData>) =>
   config.set('profiles', profiles);
+
 export const getProfiles = (): Record<string, AuthConfigData> | undefined => config.get('profiles');
 
 export const isDefaultProfile = (use: AuthProfile | undefined | null): boolean =>
   use === null || use === undefined || use === 'default';
 
+// Token
+
 const saveToken = (token: JsonnableEd25519KeyIdentity) => config.set('token', token);
+
 export const getToken = (): JsonnableEd25519KeyIdentity | undefined => {
   const use = getUse();
 
@@ -108,8 +116,11 @@ export const getToken = (): JsonnableEd25519KeyIdentity | undefined => {
   return config.get('token');
 };
 
+// Satellites
+
 const saveAuthSatellites = (satellites: AuthSatelliteConfig[]) =>
   config.set('satellites', satellites);
+
 export const getAuthSatellites = (): AuthSatelliteConfig[] => {
   const use = getUse();
 
@@ -120,8 +131,44 @@ export const getAuthSatellites = (): AuthSatelliteConfig[] => {
   return config.get('satellites');
 };
 
+export const addAuthSatellite = ({
+  satellite,
+  profile
+}: {
+  satellite: AuthSatelliteConfig;
+  profile: AuthProfile | undefined;
+}) => {
+  if (!isDefaultProfile(profile)) {
+    const profiles = getProfiles();
+    const currentProfile = profiles?.[profile!];
+
+    if (currentProfile === undefined) {
+      throw new Error(`The profile must exist.`);
+    }
+
+    saveProfiles({
+      ...(profiles !== undefined ? profiles : {}),
+      [profile!]: {
+        ...currentProfile,
+        satellites: [
+          ...(currentProfile.satellites ?? []).filter(({p}) => p !== satellite.p),
+          satellite
+        ]
+      }
+    });
+
+    return;
+  }
+
+  const currentSatellites = getAuthSatellites();
+  saveAuthSatellites([...(currentSatellites ?? []).filter(({p}) => p !== satellite.p), satellite]);
+};
+
+// Mission control
+
 const saveAuthMissionControl = (missionControl: string) =>
   config.set('missionControl', missionControl);
+
 export const getAuthMissionControl = (): string | undefined => {
   const use = getUse();
 
@@ -132,7 +179,39 @@ export const getAuthMissionControl = (): string | undefined => {
   return config.get('missionControl');
 };
 
+export const addAuthMissionControl = ({
+  missionControl,
+  profile
+}: {
+  missionControl: string;
+  profile: AuthProfile | undefined;
+}) => {
+  if (!isDefaultProfile(profile)) {
+    const profiles = getProfiles();
+    const currentProfile = profiles?.[profile!];
+
+    if (currentProfile === undefined) {
+      throw new Error(`The profile must exist.`);
+    }
+
+    saveProfiles({
+      ...(profiles !== undefined ? profiles : {}),
+      [profile!]: {
+        ...currentProfile,
+        missionControl
+      }
+    });
+
+    return;
+  }
+
+  saveAuthMissionControl(missionControl);
+};
+
+// Orbiters
+
 const saveAuthOrbiters = (orbiters: AuthOrbiterConfig[]) => config.set('orbiters', orbiters);
+
 export const getAuthOrbiters = (): AuthOrbiterConfig[] | undefined => {
   const use = getUse();
 
@@ -142,5 +221,37 @@ export const getAuthOrbiters = (): AuthOrbiterConfig[] | undefined => {
 
   return config.get('orbiters');
 };
+
+export const addAuthOrbiter = ({
+  orbiter,
+  profile
+}: {
+  orbiter: AuthOrbiterConfig;
+  profile: AuthProfile | undefined;
+}) => {
+  if (!isDefaultProfile(profile)) {
+    const profiles = getProfiles();
+    const currentProfile = profiles?.[profile!];
+
+    if (currentProfile === undefined) {
+      throw new Error(`The profile must exist.`);
+    }
+
+    saveProfiles({
+      ...(profiles !== undefined ? profiles : {}),
+      [profile!]: {
+        ...currentProfile,
+        orbiters: [...(currentProfile.orbiters ?? []).filter(({p}) => p !== orbiter.p), orbiter]
+      }
+    });
+
+    return;
+  }
+
+  const currentOrbiters = getAuthOrbiters();
+  saveAuthOrbiters([...(currentOrbiters ?? []).filter(({p}) => p !== orbiter.p), orbiter]);
+};
+
+// Clear
 
 export const clearAuthConfig = () => config.clear();
