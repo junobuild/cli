@@ -52,10 +52,10 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/buildwithjuno/cli.git"
+    "url": "git+https://github.com/junobuild/cli.git"
   },
   "bugs": {
-    "url": "https://github.com/buildwithjuno/cli"
+    "url": "https://github.com/junobuild/cli"
   },
   "keywords": [
     "blockchain-as-a-service",
