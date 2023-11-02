@@ -23,6 +23,12 @@ export const run = async () => {
 
   const [cmd, ...args] = process.argv.slice(2);
 
+  // Special use case if dev runs "juno --help"
+  if (['-h', '--help'].includes(cmd)) {
+    console.log(help);
+    return;
+  }
+
   if (hasArgs({args, options: ['-h', '--help']})) {
     switch (cmd) {
       case 'login':

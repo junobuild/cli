@@ -10,6 +10,7 @@ const title = `${JUNO_LOGO} CLI ${grey(`v${version}`)}`;
 export const help = `
 ${title}
 
+
 Usage: ${cyan('juno [command]')}
 
 Commands:
