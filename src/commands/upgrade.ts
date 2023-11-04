@@ -191,7 +191,7 @@ const upgradeSatelliteCustom = async ({
     satellite
   });
 
-  const reset = await confirmReset({args, assetKey: 'orbiter'});
+  const reset = await confirmReset({args, assetKey: 'satellite'});
 
   const upgradeSatelliteWasm = async ({wasm_module}: {wasm_module: Uint8Array}) =>
     upgradeSatelliteAdmin({
