@@ -1,5 +1,5 @@
 import {StorageConfig} from '@junobuild/admin';
-import {ENCODING_TYPE} from '@junobuild/core';
+import {ENCODING_TYPE} from '@junobuild/core-peer';
 
 export interface SatelliteConfig {
   /**

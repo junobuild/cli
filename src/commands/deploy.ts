@@ -1,4 +1,4 @@
-import {AssetKey, Assets, ENCODING_TYPE, listAssets, uploadBlob} from '@junobuild/core';
+import {AssetKey, Assets, ENCODING_TYPE, listAssets, uploadBlob} from '@junobuild/core-peer';
 import {Blob} from 'buffer';
 import crypto from 'crypto';
 import {MimeType, fileTypeFromFile} from 'file-type';
