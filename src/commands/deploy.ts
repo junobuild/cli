@@ -10,16 +10,17 @@ import {Blob} from 'buffer';
 import crypto from 'crypto';
 import {fileTypeFromFile, type MimeType} from 'file-type';
 import {type FileExtension} from 'file-type/core';
-import {lstatSync, readdirSync} from 'fs';
-import {readFile} from 'fs/promises';
-import {green, grey, red} from 'kleur';
+import {red} from 'kleur';
+import Listr from 'listr';
 import mime from 'mime-types';
 import {minimatch} from 'minimatch';
-import ora from 'ora';
-import {basename, extname, join} from 'path';
+import {lstatSync} from 'node:fs';
+import {readFile} from 'node:fs/promises';
+import {basename, extname, join} from 'node:path';
 import {junoConfigExist, readSatelliteConfig} from '../configs/satellite.config';
 import {COLLECTION_DAPP, DAPP_COLLECTION, SOURCE, UPLOAD_BATCH_SIZE} from '../constants/constants';
 import {type SatelliteConfig} from '../types/satellite.config';
+import {listSourceFiles} from '../utils/deploy.utils';
 import {satelliteParameters} from '../utils/satellite.utils';
 import {init} from './init';
 
@@ -70,30 +71,27 @@ export const deploy = async () => {
     });
   };
 
-  // Execute upload UPLOAD_BATCH_SIZE files at a time max preventively to not stress too much the network
-  for (let i = 0; i < sourceFiles.length; i += UPLOAD_BATCH_SIZE) {
-    const files = sourceFiles.slice(i, i + UPLOAD_BATCH_SIZE);
+  const uploadFiles = async (groupFiles: FileDetails[]) => {
+    // Execute upload UPLOAD_BATCH_SIZE files at a time max preventively to not stress too much the network
+    for (let i = 0; i < groupFiles.length; i += UPLOAD_BATCH_SIZE) {
+      const files = groupFiles.slice(i, i + UPLOAD_BATCH_SIZE);
 
-    files.forEach((file) => {
-      console.log(`↗️  ${grey(fileDetailsPath(file))}`);
-    });
+      const tasks = new Listr<AssetKey>(
+        files.map((file) => ({
+          title: `Uploading ${file.file}`,
+          task: async () => upload(file)
+        })),
+        {concurrent: true}
+      );
 
-    const spinner = ora(`Uploading...`).start();
-
-    try {
-      const promises = files.map(upload);
-      await Promise.all(promises);
-
-      spinner.stop();
-
-      files.forEach((file) => {
-        console.log(`✅ ${green(fileDetailsPath(file))}`);
-      });
-    } catch (err: unknown) {
-      spinner.stop();
-      throw err;
+      await tasks.run();
     }
-  }
+  };
+
+  // TODO: temporary possible race condition fix until Satellite v0.0.13 is published
+  // We must upload the alternative path first to ensure . Friday Oct. 10 2023 I got unexpected race condition while uploading the Astro sample example (file hoisted.8961d9b1.js).
+  await uploadFiles(sourceFiles.filter(({alternateFile}) => nonNullish(alternateFile)));
+  await uploadFiles(sourceFiles.filter(({alternateFile}) => isNullish(alternateFile)));
 
   console.log(`\n🚀 Deploy complete!`);
 };
@@ -112,13 +110,6 @@ const assertSourceDirExists = (source: string) => {
     );
     process.exit(1);
   }
-};
-
-const files = (source: string): string[] => {
-  return readdirSync(source).flatMap((file) => {
-    const path = join(source, file);
-    return lstatSync(path).isDirectory() ? files(path) : join(path);
-  });
 };
 
 const filterFilesToUpload = async ({
@@ -190,11 +181,7 @@ const listFiles = async ({
 > => {
   assertSourceDirExists(sourceAbsolutePath);
 
-  const sourceFiles = files(sourceAbsolutePath);
-
-  const filteredSourceFiles = sourceFiles.filter(
-    (file) => ignore.find((pattern) => minimatch(file, pattern)) === undefined
-  );
+  const filteredSourceFiles = listSourceFiles({sourceAbsolutePath, ignore});
 
   // TODO: brotli and zlib naive
   const mapEncodingType = ({

@@ -32,6 +32,7 @@
     "@junobuild/utils": "^0.0.15",
     "conf": "^12.0.0",
     "file-type": "^18.6.0",
+    "listr": "^0.14.3",
     "mime-types": "^2.1.35",
     "minimatch": "^9.0.3",
     "node-fetch": "^3.3.2",
@@ -43,6 +44,8 @@
     "terminal-link": "^3.0.0"
   },
   "devDependencies": {
+    "@types/listr": "^0.14.8",
+    "@types/mime-types": "^2.1.4",
     "@types/minimatch": "^5.1.2",
     "@types/prompts": "^2.4.8",
     "@types/semver": "^7.5.5",
