@@ -1,7 +1,7 @@
 import {minimatch} from 'minimatch';
 import {lstatSync, readdirSync} from 'node:fs';
 import {join} from 'node:path';
-import {SatelliteConfig} from '../types/satellite.config';
+import type {SatelliteConfig} from '../types/satellite.config';
 
 export const listSourceFiles = ({
   sourceAbsolutePath,
