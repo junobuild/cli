@@ -1,10 +1,20 @@
 import {minimatch} from 'minimatch';
 import {createReadStream, createWriteStream} from 'node:fs';
 import {createGzip} from 'node:zlib';
-import {COMPRESS_FILES} from '../constants/constants';
+import {SatelliteConfig} from '../types/satellite.config';
 
-export const compressFiles = async (sourceFiles: string[]): Promise<string[]> => {
-  const filesToCompress = sourceFiles.filter((file) => minimatch(file, COMPRESS_FILES));
+export const gzipFiles = async ({
+  sourceFiles,
+  gzip
+}: {sourceFiles: string[]} & Required<Pick<SatelliteConfig, 'gzip'>>): Promise<string[]> => {
+  if (gzip === false) {
+    return [];
+  }
+
+  // @ts-ignore we read json so, it's possible that one provide a boolean that does not match the TS type
+  const pattern = gzip === true ? COMPRESS_FILES : gzip;
+
+  const filesToCompress = sourceFiles.filter((file) => minimatch(file, pattern));
   return Promise.all(filesToCompress.map(gzipFile));
 };
 
