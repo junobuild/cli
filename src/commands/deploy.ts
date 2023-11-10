@@ -18,8 +18,15 @@ import {lstatSync} from 'node:fs';
 import {readFile} from 'node:fs/promises';
 import {basename, extname, join} from 'node:path';
 import {junoConfigExist, readSatelliteConfig} from '../configs/satellite.config';
-import {COLLECTION_DAPP, DAPP_COLLECTION, SOURCE, UPLOAD_BATCH_SIZE} from '../constants/constants';
+import {COLLECTION_DAPP, DAPP_COLLECTION, UPLOAD_BATCH_SIZE} from '../constants/constants';
+import {
+  DEPLOY_DEFAULT_ENCODING,
+  DEPLOY_DEFAULT_GZIP,
+  DEPLOY_DEFAULT_IGNORE,
+  DEPLOY_DEFAULT_SOURCE
+} from '../constants/deploy.constants';
 import {type SatelliteConfig} from '../types/satellite.config';
+import {gzipFiles} from '../utils/compress.utils';
 import {listSourceFiles} from '../utils/deploy.utils';
 import {satelliteParameters} from '../utils/satellite.utils';
 import {init} from './init';
@@ -37,11 +44,17 @@ export const deploy = async () => {
     await init();
   }
 
-  const {satelliteId, source = SOURCE, ignore = [], encoding = []} = await readSatelliteConfig();
+  const {
+    satelliteId,
+    source = DEPLOY_DEFAULT_SOURCE,
+    ignore = DEPLOY_DEFAULT_IGNORE,
+    encoding = DEPLOY_DEFAULT_ENCODING,
+    gzip = DEPLOY_DEFAULT_GZIP
+  } = await readSatelliteConfig();
 
   const sourceAbsolutePath = join(process.cwd(), source);
 
-  const sourceFiles = await listFiles({sourceAbsolutePath, satelliteId, ignore, encoding});
+  const sourceFiles = await listFiles({sourceAbsolutePath, satelliteId, ignore, encoding, gzip});
 
   if (sourceFiles.length === 0) {
     console.log('No new files to upload.');
@@ -79,7 +92,7 @@ export const deploy = async () => {
       const tasks = new Listr<AssetKey>(
         files.map((file) => ({
           title: `Uploading ${file.file}`,
-          task: async () => upload(file)
+          task: async () => await upload(file)
         })),
         {concurrent: true}
       );
@@ -173,15 +186,19 @@ const listFiles = async ({
   sourceAbsolutePath,
   satelliteId,
   ignore,
-  encoding
+  encoding,
+  gzip
 }: {
   sourceAbsolutePath: string;
-} & Required<Pick<SatelliteConfig, 'satelliteId' | 'ignore' | 'encoding'>>): Promise<
+} & Required<Pick<SatelliteConfig, 'satelliteId' | 'ignore' | 'encoding' | 'gzip'>>): Promise<
   FileDetails[]
 > => {
   assertSourceDirExists(sourceAbsolutePath);
 
-  const filteredSourceFiles = listSourceFiles({sourceAbsolutePath, ignore});
+  const sourceFiles = listSourceFiles({sourceAbsolutePath, ignore});
+  const compressedFiles = await gzipFiles({sourceFiles, gzip});
+
+  const files = [...sourceFiles, ...compressedFiles];
 
   // TODO: brotli and zlib naive
   const mapEncodingType = ({
@@ -222,7 +239,7 @@ const listFiles = async ({
       return undefined;
     }
 
-    return filteredSourceFiles.find((sourceFile) => sourceFile === file.replace(extname(file), ''));
+    return files.find((sourceFile) => sourceFile === file.replace(extname(file), ''));
   };
 
   const mapFiles = async (file: string): Promise<FileDetails> => {
@@ -243,7 +260,7 @@ const listFiles = async ({
     };
   };
 
-  const encodingFiles: FileDetails[] = await Promise.all(filteredSourceFiles.map(mapFiles));
+  const encodingFiles: FileDetails[] = await Promise.all(files.map(mapFiles));
 
   return await filterFilesToUpload({
     files: encodingFiles,

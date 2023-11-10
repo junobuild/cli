@@ -21,6 +21,11 @@ export interface SatelliteConfig {
    */
   ignore?: string[];
   /**
+   * By default, the CLI searches for JavaScript (js), ES Module (mjs), and CSS (css) files in the source folder and optimizes them with Gzip compression.
+   * You can customize this behavior by either turning it off or providing a different file matching pattern using glob syntax.
+   */
+  gzip?: string | false;
+  /**
    * The CLI maps the encoding type according to the file extension. Encoding is then used in the satellite to provide the HTTP response header `Content-Encoding`.
    *
    * .Z = compress
