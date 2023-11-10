@@ -1,4 +1,4 @@
-import {deleteAssets} from '@junobuild/core';
+import {deleteAssets} from '@junobuild/core-peer';
 import ora from 'ora';
 import {junoConfigExist, readSatelliteConfig} from '../configs/satellite.config';
 import {DAPP_COLLECTION} from '../constants/constants';
