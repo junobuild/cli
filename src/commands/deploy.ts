@@ -92,7 +92,7 @@ export const deploy = async () => {
       const tasks = new Listr<AssetKey>(
         files.map((file) => ({
           title: `Uploading ${file.file}`,
-          task: async () => upload(file)
+          task: async () => await upload(file)
         })),
         {concurrent: true}
       );
