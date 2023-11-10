@@ -131,7 +131,11 @@ const orbitersVersion = async () => {
     });
   };
 
-  await Promise.allSettled(orbiters.map(({p: orbiterId}) => checkOrbiterVersion(orbiterId)));
+  await Promise.allSettled(
+    orbiters.map(async ({p: orbiterId}) => {
+      await checkOrbiterVersion(orbiterId);
+    })
+  );
 };
 
 const checkSegmentVersion = async ({

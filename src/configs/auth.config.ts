@@ -1,7 +1,7 @@
 import type {JsonnableEd25519KeyIdentity} from '@dfinity/identity/lib/cjs/identity/ed25519';
 // TODO: fix TypeScript declaration import of conf
-// @ts-ignore
-import Conf, {Schema} from 'conf';
+// @ts-expect-error
+import Conf, {type Schema} from 'conf';
 import {AUTH_PROJECT_NAME} from '../constants/constants';
 
 interface AuthConfigData {

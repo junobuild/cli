@@ -37,7 +37,7 @@ export const promptConfirm = async (message: string): Promise<boolean> => {
   return answer;
 };
 
-export const confirm = async (message: string): Promise<boolean> => promptConfirm(message);
+export const confirm = async (message: string): Promise<boolean> => await promptConfirm(message);
 
 export const confirmAndExit = async (message: string) => {
   const answer = await confirm(message);

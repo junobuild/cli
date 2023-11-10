@@ -1,5 +1,5 @@
 import {Ed25519KeyIdentity} from '@dfinity/identity/lib/cjs/identity/ed25519';
-import {ActorParameters} from '@junobuild/admin';
+import {type ActorParameters} from '@junobuild/admin';
 import {red} from 'kleur';
 import fetch from 'node-fetch';
 import {getToken} from '../configs/auth.config';
@@ -18,7 +18,7 @@ export const actorParameters = (): ActorParameters => {
   return {
     identity,
     // TODO: TypeScript incompatibility window.fetch vs nodejs.fetch vs agent-ts using typeof fetch
-    // @ts-ignore
+    // @ts-expect-error
     fetch,
     env: process.env.NODE_ENV === 'development' ? 'dev' : 'prod'
   };

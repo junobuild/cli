@@ -1,4 +1,4 @@
-import {Principal} from '@dfinity/principal';
+import {type Principal} from '@dfinity/principal';
 import {bold, green, red} from 'kleur';
 import prompts from 'prompts';
 import {assertAnswerCtrlC} from '../commands/init';
@@ -9,7 +9,7 @@ import {
   getUse
 } from '../configs/auth.config';
 import {CONSOLE_URL} from '../constants/constants';
-import {AssetKey} from '../types/asset-key';
+import {type AssetKey} from '../types/asset-key';
 import {terminalLink} from '../utils/links.utils';
 import {confirmAndExit} from '../utils/prompt.utils';
 
@@ -86,15 +86,18 @@ const saveMissionControl = ({
 }: {
   profile: string | undefined;
   segmentId: string;
-}) => addAuthMissionControl({profile, missionControl: segmentId});
+}) => {
+  addAuthMissionControl({profile, missionControl: segmentId});
+};
 
-const saveOrbiter = ({profile, segmentId}: {profile: string | undefined; segmentId: string}) =>
+const saveOrbiter = ({profile, segmentId}: {profile: string | undefined; segmentId: string}) => {
   addAuthOrbiter({
     profile,
     orbiter: {
       p: segmentId
     }
   });
+};
 
 const selectSegment = async (): Promise<AssetKey> => {
   const {segment} = await prompts({

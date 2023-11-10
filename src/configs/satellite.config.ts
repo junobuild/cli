@@ -1,7 +1,7 @@
 import {access, readFile, writeFile} from 'fs/promises';
 import {JUNO_CONFIG} from '../constants/constants';
-import {JunoConfig} from '../types/juno.config';
-import {SatelliteConfig} from '../types/satellite.config';
+import {type JunoConfig} from '../types/juno.config';
+import {type SatelliteConfig} from '../types/satellite.config';
 
 export const saveSatelliteConfig = async (satellite: SatelliteConfig): Promise<void> => {
   if (await junoConfigExist()) {
@@ -16,8 +16,9 @@ export const saveSatelliteConfig = async (satellite: SatelliteConfig): Promise<v
   await writeJunoConfig({satellite});
 };
 
-const writeJunoConfig = (config: JunoConfig): Promise<void> =>
-  writeFile(JUNO_CONFIG, JSON.stringify(config, null, 2), 'utf-8');
+const writeJunoConfig = async (config: JunoConfig): Promise<void> => {
+  await writeFile(JUNO_CONFIG, JSON.stringify(config, null, 2), 'utf-8');
+};
 
 const readJunoConfig = async (): Promise<JunoConfig> => {
   const buffer = await readFile(JUNO_CONFIG);

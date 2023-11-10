@@ -1,4 +1,4 @@
-import {AssetKey, AssetKeys} from '../types/asset-key';
+import {type AssetKey, type AssetKeys} from '../types/asset-key';
 
 export const toAssetKeys = (assetKey: AssetKey): AssetKeys => {
   switch (assetKey) {
