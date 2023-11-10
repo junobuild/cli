@@ -13,13 +13,14 @@ import {type FileExtension} from 'file-type/core';
 import {green, grey, red} from 'kleur';
 import mime from 'mime-types';
 import {minimatch} from 'minimatch';
-import {lstatSync, readdirSync} from 'node:fs';
+import {lstatSync} from 'node:fs';
 import {readFile} from 'node:fs/promises';
 import {basename, extname, join} from 'node:path';
 import ora from 'ora';
 import {junoConfigExist, readSatelliteConfig} from '../configs/satellite.config';
 import {COLLECTION_DAPP, DAPP_COLLECTION, SOURCE, UPLOAD_BATCH_SIZE} from '../constants/constants';
 import {type SatelliteConfig} from '../types/satellite.config';
+import {listSourceFiles} from '../utils/deploy.utils';
 import {satelliteParameters} from '../utils/satellite.utils';
 import {init} from './init';
 
@@ -114,13 +115,6 @@ const assertSourceDirExists = (source: string) => {
   }
 };
 
-const files = (source: string): string[] => {
-  return readdirSync(source).flatMap((file) => {
-    const path = join(source, file);
-    return lstatSync(path).isDirectory() ? files(path) : join(path);
-  });
-};
-
 const filterFilesToUpload = async ({
   files,
   sourceAbsolutePath,
@@ -190,11 +184,7 @@ const listFiles = async ({
 > => {
   assertSourceDirExists(sourceAbsolutePath);
 
-  const sourceFiles = files(sourceAbsolutePath);
-
-  const filteredSourceFiles = sourceFiles.filter(
-    (file) => ignore.find((pattern) => minimatch(file, pattern)) === undefined
-  );
+  const filteredSourceFiles = listSourceFiles({sourceAbsolutePath, ignore});
 
   // TODO: brotli and zlib naive
   const mapEncodingType = ({
