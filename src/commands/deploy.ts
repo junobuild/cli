@@ -77,7 +77,7 @@ export const deploy = async () => {
     const files = sourceFiles.slice(i, i + UPLOAD_BATCH_SIZE);
 
     files.forEach((file) => {
-      console.log(`↗️  ${grey(fileDetailsPath(file))}`);
+      console.log(`↗️  ${grey(file.file)}`);
     });
 
     const spinner = ora(`Uploading...`).start();
@@ -89,7 +89,7 @@ export const deploy = async () => {
       spinner.stop();
 
       files.forEach((file) => {
-        console.log(`✅ ${green(fileDetailsPath(file))}`);
+        console.log(`✅ ${green(file.file)}`);
       });
     } catch (err: unknown) {
       spinner.stop();
