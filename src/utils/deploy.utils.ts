@@ -9,11 +9,7 @@ export const listSourceFiles = ({
 }: {sourceAbsolutePath: string} & Required<Pick<SatelliteConfig, 'ignore'>>): string[] => {
   const sourceFiles = files(sourceAbsolutePath);
 
-  console.log('Sources', sourceFiles);
-
   const filteredEmptyFiles = sourceFiles.filter((file) => lstatSync(file).size > 0);
-
-  console.log('Empty', filteredEmptyFiles);
 
   const filteredSourceFiles = filteredEmptyFiles.filter(
     (file) => ignore.find((pattern) => minimatch(file, pattern)) === undefined
