@@ -10,6 +10,7 @@ import {
   type OrbiterParameters,
   type SatelliteParameters
 } from '@junobuild/admin';
+import {isNullish} from '@junobuild/utils';
 import {red, yellow} from 'kleur';
 import prompts from 'prompts';
 import {compare} from 'semver';
@@ -48,7 +49,7 @@ export const upgrade = async (args?: string[]) => {
 const upgradeMissionControl = async (args?: string[]) => {
   const missionControl = getAuthMissionControl();
 
-  if (!missionControl) {
+  if (isNullish(missionControl)) {
     console.log(
       `${red(
         'No mission control found.'

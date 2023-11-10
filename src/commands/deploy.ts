@@ -5,6 +5,7 @@ import {
   type Assets,
   type ENCODING_TYPE
 } from '@junobuild/core-peer';
+import {isNullish, nonNullish} from '@junobuild/utils';
 import {Blob} from 'buffer';
 import crypto from 'crypto';
 import {fileTypeFromFile, type MimeType} from 'file-type';
@@ -165,7 +166,7 @@ const fileNeedUpload = async ({
     ({fullPath: f}) => f === fullPath({file: effectiveFilePath, sourceAbsolutePath})
   );
 
-  if (!asset) {
+  if (isNullish(asset)) {
     return {file, upload: true};
   }
 
@@ -205,7 +206,7 @@ const listFiles = async ({
   }): ENCODING_TYPE | undefined => {
     const customEncoding = encoding.find(([pattern, _]) => minimatch(file, pattern));
 
-    if (customEncoding !== undefined) {
+    if (nonNullish(customEncoding)) {
       const [_, encodingType] = customEncoding;
       return encodingType;
     }
@@ -230,7 +231,7 @@ const listFiles = async ({
     file: string;
     encodingType: ENCODING_TYPE | undefined;
   }): string | undefined => {
-    if (!encodingType) {
+    if (isNullish(encodingType)) {
       return undefined;
     }
 

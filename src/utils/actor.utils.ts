@@ -1,5 +1,6 @@
 import {Ed25519KeyIdentity} from '@dfinity/identity/lib/cjs/identity/ed25519';
 import {type ActorParameters} from '@junobuild/admin';
+import {isNullish} from '@junobuild/utils';
 import {red} from 'kleur';
 import fetch from 'node-fetch';
 import {getToken} from '../configs/auth.config';
@@ -8,7 +9,7 @@ import {getProcessToken} from './process.utils';
 export const actorParameters = (): ActorParameters => {
   const token = getProcessToken() ?? getToken();
 
-  if (!token) {
+  if (isNullish(token)) {
     console.log(`${red('No controller found.')} Are you logged in?`);
     process.exit(1);
   }
