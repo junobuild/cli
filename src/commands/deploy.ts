@@ -20,6 +20,7 @@ import ora from 'ora';
 import {junoConfigExist, readSatelliteConfig} from '../configs/satellite.config';
 import {COLLECTION_DAPP, DAPP_COLLECTION, SOURCE, UPLOAD_BATCH_SIZE} from '../constants/constants';
 import {type SatelliteConfig} from '../types/satellite.config';
+import {compressFiles} from '../utils/compress.utils';
 import {listSourceFiles} from '../utils/deploy.utils';
 import {satelliteParameters} from '../utils/satellite.utils';
 import {init} from './init';
@@ -184,7 +185,10 @@ const listFiles = async ({
 > => {
   assertSourceDirExists(sourceAbsolutePath);
 
-  const filteredSourceFiles = listSourceFiles({sourceAbsolutePath, ignore});
+  const sourceFiles = listSourceFiles({sourceAbsolutePath, ignore});
+  const compressedFiles = await compressFiles(sourceFiles);
+
+  const files = [...sourceFiles, ...compressedFiles];
 
   // TODO: brotli and zlib naive
   const mapEncodingType = ({
@@ -225,7 +229,7 @@ const listFiles = async ({
       return undefined;
     }
 
-    return filteredSourceFiles.find((sourceFile) => sourceFile === file.replace(extname(file), ''));
+    return files.find((sourceFile) => sourceFile === file.replace(extname(file), ''));
   };
 
   const mapFiles = async (file: string): Promise<FileDetails> => {
@@ -246,7 +250,7 @@ const listFiles = async ({
     };
   };
 
-  const encodingFiles: FileDetails[] = await Promise.all(filteredSourceFiles.map(mapFiles));
+  const encodingFiles: FileDetails[] = await Promise.all(files.map(mapFiles));
 
   return await filterFilesToUpload({
     files: encodingFiles,
