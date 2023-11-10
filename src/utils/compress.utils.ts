@@ -2,7 +2,7 @@ import {minimatch} from 'minimatch';
 import {createReadStream, createWriteStream} from 'node:fs';
 import {createGzip} from 'node:zlib';
 import {DEPLOY_DEFAULT_GZIP} from '../constants/deploy.constants';
-import {SatelliteConfig} from '../types/satellite.config';
+import type {SatelliteConfig} from '../types/satellite.config';
 
 export const gzipFiles = async ({
   sourceFiles,
@@ -12,15 +12,15 @@ export const gzipFiles = async ({
     return [];
   }
 
-  // @ts-ignore we read json so, it's possible that one provide a boolean that does not match the TS type
+  // @ts-expect-error we read json so, it's possible that one provide a boolean that does not match the TS type
   const pattern = gzip === true ? DEPLOY_DEFAULT_GZIP : gzip;
 
   const filesToCompress = sourceFiles.filter((file) => minimatch(file, pattern));
-  return Promise.all(filesToCompress.map(gzipFile));
+  return await Promise.all(filesToCompress.map(gzipFile));
 };
 
-const gzipFile = (sourcePath: string) =>
-  new Promise<string>((resolve, reject) => {
+const gzipFile = async (sourcePath: string) =>
+  await new Promise<string>((resolve, reject) => {
     const sourceStream = createReadStream(sourcePath);
 
     const destinationPath = `${sourcePath}.gz`;
@@ -30,6 +30,8 @@ const gzipFile = (sourcePath: string) =>
 
     sourceStream.pipe(gzip).pipe(destinationStream);
 
-    destinationStream.on('close', () => resolve(destinationPath));
+    destinationStream.on('close', () => {
+      resolve(destinationPath);
+    });
     destinationStream.on('error', reject);
   });
