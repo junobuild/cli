@@ -14,5 +14,6 @@ export const CONSOLE_URL = 'https://console.juno.build';
 export const CONSOLE_SATELLITE_URL = `${CONSOLE_URL}/satellite/?s=`;
 export const JUNO_CDN_URL = 'https://fmkjf-bqaaa-aaaal-acpza-cai.raw.icp0.io';
 export const GITHUB_API_CLI_URL = 'https://api.github.com/repos/junobuild/cli';
+export const IGNORE_OS_FILES = ['.ds_store', 'thumbs.db'];
 
 export const COMPRESS_FILES = '**/*.+(css|js|mjs)';

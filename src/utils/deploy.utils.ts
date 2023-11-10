@@ -1,6 +1,7 @@
 import {minimatch} from 'minimatch';
 import {lstatSync, readdirSync} from 'node:fs';
-import {join} from 'node:path';
+import {basename, join} from 'node:path';
+import {IGNORE_OS_FILES} from '../constants/constants';
 import type {SatelliteConfig} from '../types/satellite.config';
 
 export const listSourceFiles = ({
@@ -9,13 +10,24 @@ export const listSourceFiles = ({
 }: {sourceAbsolutePath: string} & Required<Pick<SatelliteConfig, 'ignore'>>): string[] => {
   const sourceFiles = files(sourceAbsolutePath);
 
-  const filteredEmptyFiles = sourceFiles.filter((file) => lstatSync(file).size > 0);
+  return sourceFiles.filter((file) => filterFile({file, ignore}));
+};
 
-  const filteredSourceFiles = filteredEmptyFiles.filter(
-    (file) => ignore.find((pattern) => minimatch(file, pattern)) === undefined
-  );
+const filterFile = ({
+  file,
+  ignore
+}: {file: string} & Required<Pick<SatelliteConfig, 'ignore'>>): boolean => {
+  // File must not be empty >= 0kb
+  if (lstatSync(file).size <= 0) {
+    return false;
+  }
 
-  return filteredSourceFiles;
+  // Ignore .DS_Store on Mac or Thumbs.db on Windows
+  if (IGNORE_OS_FILES.includes(basename(file).toLowerCase())) {
+    return false;
+  }
+
+  return ignore.find((pattern) => minimatch(file, pattern)) === undefined;
 };
 
 const files = (source: string): string[] =>
