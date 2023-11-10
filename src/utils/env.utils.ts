@@ -1,17 +1,17 @@
 import {green, yellow} from 'kleur';
 import {major} from 'semver';
-import {NODE_LTS} from '../constants/constants';
+import {NODE_18} from '../constants/constants';
 
 export const checkNodeVersion = (): {valid: boolean} => {
   try {
     const {version} = process;
     const nodeMajor = major(version);
 
-    if (nodeMajor < NODE_LTS) {
+    if (nodeMajor < NODE_18) {
       console.log(
         `Your version of Node is ${yellow(`${version}`)}. Juno CLI requires Node ${green(
-          `${NODE_LTS}.x`
-        )} LTS.`
+          `${NODE_18}`
+        )} or a more recent version.`
       );
       return {valid: false};
     }
