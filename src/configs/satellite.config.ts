@@ -1,4 +1,4 @@
-import {access, readFile, writeFile} from 'fs/promises';
+import {access, readFile, writeFile} from 'node:fs/promises';
 import {JUNO_CONFIG} from '../constants/constants';
 import {type JunoConfig} from '../types/juno.config';
 import {type SatelliteConfig} from '../types/satellite.config';
