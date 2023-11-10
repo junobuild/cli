@@ -10,13 +10,13 @@ import {Blob} from 'buffer';
 import crypto from 'crypto';
 import {fileTypeFromFile, type MimeType} from 'file-type';
 import {type FileExtension} from 'file-type/core';
-import {green, grey, red} from 'kleur';
+import {red} from 'kleur';
+import Listr from 'listr';
 import mime from 'mime-types';
 import {minimatch} from 'minimatch';
 import {lstatSync} from 'node:fs';
 import {readFile} from 'node:fs/promises';
 import {basename, extname, join} from 'node:path';
-import ora from 'ora';
 import {junoConfigExist, readSatelliteConfig} from '../configs/satellite.config';
 import {COLLECTION_DAPP, DAPP_COLLECTION, SOURCE, UPLOAD_BATCH_SIZE} from '../constants/constants';
 import {type SatelliteConfig} from '../types/satellite.config';
@@ -76,25 +76,15 @@ export const deploy = async () => {
     for (let i = 0; i < groupFiles.length; i += UPLOAD_BATCH_SIZE) {
       const files = groupFiles.slice(i, i + UPLOAD_BATCH_SIZE);
 
-      files.forEach((file) => {
-        console.log(`↗️  ${grey(file.file)}`);
-      });
+      const tasks = new Listr<AssetKey>(
+        files.map((file) => ({
+          title: `Uploading ${file.file}`,
+          task: async () => upload(file)
+        })),
+        {concurrent: true}
+      );
 
-      const spinner = ora(`Uploading...`).start();
-
-      try {
-        const promises = files.map(upload);
-        await Promise.all(promises);
-
-        spinner.stop();
-
-        files.forEach((file) => {
-          console.log(`✅ ${green(file.file)}`);
-        });
-      } catch (err: unknown) {
-        spinner.stop();
-        throw err;
-      }
+      await tasks.run();
     }
   };
 
