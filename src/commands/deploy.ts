@@ -71,30 +71,37 @@ export const deploy = async () => {
     });
   };
 
-  // Execute upload UPLOAD_BATCH_SIZE files at a time max preventively to not stress too much the network
-  for (let i = 0; i < sourceFiles.length; i += UPLOAD_BATCH_SIZE) {
-    const files = sourceFiles.slice(i, i + UPLOAD_BATCH_SIZE);
-
-    files.forEach((file) => {
-      console.log(`↗️  ${grey(fileDetailsPath(file))}`);
-    });
-
-    const spinner = ora(`Uploading...`).start();
-
-    try {
-      const promises = files.map(upload);
-      await Promise.all(promises);
-
-      spinner.stop();
+  const uploadFiles = async (groupFiles: FileDetails[]) => {
+    // Execute upload UPLOAD_BATCH_SIZE files at a time max preventively to not stress too much the network
+    for (let i = 0; i < groupFiles.length; i += UPLOAD_BATCH_SIZE) {
+      const files = groupFiles.slice(i, i + UPLOAD_BATCH_SIZE);
 
       files.forEach((file) => {
-        console.log(`✅ ${green(fileDetailsPath(file))}`);
+        console.log(`↗️  ${grey(file.file)}`);
       });
-    } catch (err: unknown) {
-      spinner.stop();
-      throw err;
+
+      const spinner = ora(`Uploading...`).start();
+
+      try {
+        const promises = files.map(upload);
+        await Promise.all(promises);
+
+        spinner.stop();
+
+        files.forEach((file) => {
+          console.log(`✅ ${green(file.file)}`);
+        });
+      } catch (err: unknown) {
+        spinner.stop();
+        throw err;
+      }
     }
-  }
+  };
+
+  // TODO: temporary possible race condition fix until Satellite v0.0.13 is published
+  // We must upload the alternative path first to ensure . Friday Oct. 10 2023 I got unexpected race condition while uploading the Astro sample example (file hoisted.8961d9b1.js).
+  await uploadFiles(sourceFiles.filter(({alternateFile}) => nonNullish(alternateFile)));
+  await uploadFiles(sourceFiles.filter(({alternateFile}) => isNullish(alternateFile)));
 
   console.log(`\n🚀 Deploy complete!`);
 };
