@@ -96,7 +96,7 @@ export const deploy = async () => {
         throw err;
       }
     }
-  }
+  };
 
   // TODO: temporary possible race condition fix until Satellite v0.0.13 is published
   // We must upload the alternative path first to ensure . Friday Oct. 10 2023 I got unexpected race condition while uploading the Astro sample example (file hoisted.8961d9b1.js).
