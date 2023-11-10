@@ -45,8 +45,8 @@ const githubLastRelease = async (apiUrl: string): Promise<GitHubRelease | undefi
     return undefined;
   }
 
-  return response.json();
+  return await response.json();
 };
 
-export const githubCliLastRelease = (): Promise<GitHubRelease | undefined> =>
-  githubLastRelease(GITHUB_API_CLI_URL);
+export const githubCliLastRelease = async (): Promise<GitHubRelease | undefined> =>
+  await githubLastRelease(GITHUB_API_CLI_URL);

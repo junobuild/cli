@@ -1,12 +1,13 @@
+import {isNullish} from '@junobuild/utils';
 import {cyan, red} from 'kleur';
 import prompts from 'prompts';
-import {AuthSatelliteConfig, getAuthSatellites, getToken} from '../configs/auth.config';
+import {getAuthSatellites, getToken, type AuthSatelliteConfig} from '../configs/auth.config';
 import {saveSatelliteConfig} from '../configs/satellite.config';
 
 export const init = async () => {
   const token = getToken();
 
-  if (!token) {
+  if (isNullish(token)) {
     console.log(`No controller found. Run ${cyan('login')} to get started 🚀.`);
     return;
   }

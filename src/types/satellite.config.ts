@@ -1,5 +1,5 @@
-import {StorageConfig} from '@junobuild/admin';
-import {ENCODING_TYPE} from '@junobuild/core-peer';
+import {type StorageConfig} from '@junobuild/admin';
+import {type ENCODING_TYPE} from '@junobuild/core-peer';
 
 export interface SatelliteConfig {
   /**
@@ -31,5 +31,5 @@ export interface SatelliteConfig {
    *
    * The "encoding" attribute can be used to overwrite the default mapping. It can take globs the same way that Git handles .gitignore.
    */
-  encoding?: [string, ENCODING_TYPE][];
+  encoding?: Array<[string, ENCODING_TYPE]>;
 }

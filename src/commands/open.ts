@@ -1,4 +1,4 @@
-import {CustomDomain, listCustomDomains} from '@junobuild/admin';
+import {listCustomDomains, type CustomDomain} from '@junobuild/admin';
 import prompts from 'prompts';
 import {junoConfigExist, readSatelliteConfig} from '../configs/satellite.config';
 import {hasArgs, nextArg} from '../utils/args.utils';

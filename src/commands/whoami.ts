@@ -1,4 +1,5 @@
 import {Ed25519KeyIdentity} from '@dfinity/identity';
+import {isNullish} from '@junobuild/utils';
 import {green} from 'kleur';
 import {getToken, getUse, isDefaultProfile} from '../configs/auth.config';
 
@@ -11,7 +12,7 @@ export const whoami = () => {
 
   const token = getToken();
 
-  if (!token) {
+  if (isNullish(token)) {
     console.log(`No controller found.`);
     return;
   }

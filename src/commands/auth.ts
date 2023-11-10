@@ -1,4 +1,5 @@
 import {Ed25519KeyIdentity} from '@dfinity/identity';
+import {isNullish} from '@junobuild/utils';
 import {green} from 'kleur';
 import prompts from 'prompts';
 import {clearAuthConfig, getToken} from '../configs/auth.config';
@@ -15,7 +16,7 @@ export const logout = async () => {
 export const login = async (args?: string[]) => {
   const token = getToken();
 
-  if (!token) {
+  if (isNullish(token)) {
     await consoleLogin(args);
     return;
   }

@@ -1,8 +1,15 @@
-import {AssetKey, Assets, ENCODING_TYPE, listAssets, uploadBlob} from '@junobuild/core-peer';
+import {
+  listAssets,
+  uploadBlob,
+  type AssetKey,
+  type Assets,
+  type ENCODING_TYPE
+} from '@junobuild/core-peer';
+import {isNullish, nonNullish} from '@junobuild/utils';
 import {Blob} from 'buffer';
 import crypto from 'crypto';
-import {MimeType, fileTypeFromFile} from 'file-type';
-import {FileExtension} from 'file-type/core';
+import {fileTypeFromFile, type MimeType} from 'file-type';
+import {type FileExtension} from 'file-type/core';
 import {lstatSync, readdirSync} from 'fs';
 import {readFile} from 'fs/promises';
 import {green, grey, red} from 'kleur';
@@ -12,17 +19,17 @@ import ora from 'ora';
 import {basename, extname, join} from 'path';
 import {junoConfigExist, readSatelliteConfig} from '../configs/satellite.config';
 import {COLLECTION_DAPP, DAPP_COLLECTION, SOURCE, UPLOAD_BATCH_SIZE} from '../constants/constants';
-import {SatelliteConfig} from '../types/satellite.config';
+import {type SatelliteConfig} from '../types/satellite.config';
 import {satelliteParameters} from '../utils/satellite.utils';
 import {init} from './init';
 
-type FileDetails = {
+interface FileDetails {
   file: string;
   // e.g. for index.js.gz -> index.js
   alternateFile?: string;
   encoding?: ENCODING_TYPE;
   mime?: MimeType;
-};
+}
 
 export const deploy = async () => {
   if (!(await junoConfigExist())) {
@@ -47,15 +54,17 @@ export const deploy = async () => {
   const upload = async (file: FileDetails): Promise<AssetKey> => {
     const filePath = fileDetailsPath(file);
 
-    return uploadBlob({
+    return await uploadBlob({
       satellite,
       filename: basename(filePath),
       fullPath: fullPath({file: filePath, sourceAbsolutePath}),
-      // @ts-ignore type incompatibility NodeJS vs bundle
+      // @ts-expect-error type incompatibility NodeJS vs bundle
       data: new Blob([await readFile(file.file)]),
       collection: COLLECTION_DAPP,
       headers: [
-        ...(file.mime === undefined ? [] : ([['Content-Type', file.mime]] as [string, string][]))
+        ...(file.mime === undefined
+          ? []
+          : ([['Content-Type', file.mime]] as Array<[string, string]>))
       ],
       encoding: file.encoding
     });
@@ -65,7 +74,9 @@ export const deploy = async () => {
   for (let i = 0; i < sourceFiles.length; i += UPLOAD_BATCH_SIZE) {
     const files = sourceFiles.slice(i, i + UPLOAD_BATCH_SIZE);
 
-    files.forEach((file) => console.log(`↗️  ${grey(fileDetailsPath(file))}`));
+    files.forEach((file) => {
+      console.log(`↗️  ${grey(fileDetailsPath(file))}`);
+    });
 
     const spinner = ora(`Uploading...`).start();
 
@@ -75,7 +86,9 @@ export const deploy = async () => {
 
       spinner.stop();
 
-      files.forEach((file) => console.log(`✅ ${green(fileDetailsPath(file))}`));
+      files.forEach((file) => {
+        console.log(`✅ ${green(fileDetailsPath(file))}`);
+      });
     } catch (err: unknown) {
       spinner.stop();
       throw err;
@@ -122,10 +135,10 @@ const filterFilesToUpload = async ({
     satellite: satelliteParameters(satelliteId)
   });
 
-  const promises = files.map((file: FileDetails) =>
-    fileNeedUpload({file, sourceAbsolutePath, existingAssets})
+  const promises = files.map(
+    async (file: FileDetails) => await fileNeedUpload({file, sourceAbsolutePath, existingAssets})
   );
-  const results: {file: FileDetails; upload: boolean}[] = await Promise.all(promises);
+  const results: Array<{file: FileDetails; upload: boolean}> = await Promise.all(promises);
 
   return results.filter(({upload}) => upload).map(({file}) => file);
 };
@@ -153,7 +166,7 @@ const fileNeedUpload = async ({
     ({fullPath: f}) => f === fullPath({file: effectiveFilePath, sourceAbsolutePath})
   );
 
-  if (!asset) {
+  if (isNullish(asset)) {
     return {file, upload: true};
   }
 
@@ -162,7 +175,7 @@ const fileNeedUpload = async ({
   // TODO: current sha256 comparison (NodeJS vs Rust) with Gzip and BR is inaccurate. Therefore we re-upload compressed files only if their corresponding source files have been modified as well.
   // return {file, upload: sha256 !== asset.encodings[file.encoding ?? 'identity']?.sha256};
   // TODO: we also always assume the raw encoding is there
-  return {file, upload: sha256 !== asset.encodings['identity']?.sha256};
+  return {file, upload: sha256 !== asset.encodings.identity?.sha256};
 };
 
 const listFiles = async ({
@@ -193,7 +206,7 @@ const listFiles = async ({
   }): ENCODING_TYPE | undefined => {
     const customEncoding = encoding.find(([pattern, _]) => minimatch(file, pattern));
 
-    if (customEncoding !== undefined) {
+    if (nonNullish(customEncoding)) {
       const [_, encodingType] = customEncoding;
       return encodingType;
     }
@@ -218,7 +231,7 @@ const listFiles = async ({
     file: string;
     encodingType: ENCODING_TYPE | undefined;
   }): string | undefined => {
-    if (!encodingType) {
+    if (isNullish(encodingType)) {
       return undefined;
     }
 
@@ -245,7 +258,7 @@ const listFiles = async ({
 
   const encodingFiles: FileDetails[] = await Promise.all(filteredSourceFiles.map(mapFiles));
 
-  return filterFilesToUpload({
+  return await filterFilesToUpload({
     files: encodingFiles,
     sourceAbsolutePath,
     satelliteId

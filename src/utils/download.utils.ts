@@ -1,9 +1,10 @@
+import {nonNullish} from '@junobuild/utils';
 import {get, type RequestOptions} from 'https';
 
-export const downloadFromURL = (url: string | RequestOptions): Promise<Buffer> => {
-  return new Promise((resolve, reject) => {
+export const downloadFromURL = async (url: string | RequestOptions): Promise<Buffer> => {
+  return await new Promise((resolve, reject) => {
     get(url, async (res) => {
-      if (res.statusCode !== undefined && [301, 302].includes(res.statusCode)) {
+      if (nonNullish(res.statusCode) && [301, 302].includes(res.statusCode)) {
         await downloadFromURL(res.headers.location!).then(resolve, reject);
       }
 
