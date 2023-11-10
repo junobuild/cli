@@ -1,6 +1,6 @@
 import {createHash} from 'crypto';
-import {readFile} from 'fs/promises';
 import {cyan} from 'kleur';
+import {readFile} from 'node:fs/promises';
 import ora from 'ora';
 import {JUNO_CDN_URL} from '../constants/constants';
 import type {AssetKey} from '../types/asset-key';

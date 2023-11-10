@@ -1,10 +1,10 @@
 import {Ed25519KeyIdentity} from '@dfinity/identity';
 import type {JsonnableEd25519KeyIdentity} from '@dfinity/identity/lib/cjs/identity/ed25519';
-import fs from 'fs';
 import type http from 'http';
 import {createServer} from 'http';
 import {bold, green, underline} from 'kleur';
-import path, {dirname} from 'path';
+import fs from 'node:fs';
+import path, {dirname} from 'node:path';
 import {fileURLToPath} from 'url';
 import util from 'util';
 import {saveAuthConfig} from '../configs/auth.config';
