@@ -1,7 +1,8 @@
 import {Ed25519KeyIdentity} from '@dfinity/identity';
 import type {JsonnableEd25519KeyIdentity} from '@dfinity/identity/lib/cjs/identity/ed25519';
 import fs from 'fs';
-import http, {createServer} from 'http';
+import type http from 'http';
+import {createServer} from 'http';
 import {bold, green, underline} from 'kleur';
 import path, {dirname} from 'path';
 import {fileURLToPath} from 'url';
@@ -26,7 +27,7 @@ export const login = async (args?: string[]) => {
 
   const browser = nextArg({args, option: '-b'}) ?? nextArg({args, option: '--browser'});
 
-  return new Promise<void>((resolve, reject) => {
+  await new Promise<void>((resolve, reject) => {
     const server = createServer(async (req, res) => {
       const url = new URL(requestUrl({port, reqUrl: req.url}));
       const returnedNonce = url.searchParams.get('state');
@@ -55,7 +56,6 @@ export const login = async (args?: string[]) => {
       }
 
       server.close();
-      return;
     });
 
     server.listen(port, async () => {

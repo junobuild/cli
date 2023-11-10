@@ -3,6 +3,7 @@ import {
   orbiterVersion as orbiterVersionLib,
   satelliteVersion as satelliteVersionLib
 } from '@junobuild/admin';
+import {isNullish} from '@junobuild/utils';
 import {cyan, green, red, yellow} from 'kleur';
 import {clean, compare} from 'semver';
 import {version as cliCurrentVersion} from '../../package.json';
@@ -39,7 +40,7 @@ const cliVersion = async () => {
 
   const latestVersion = clean(tag_name);
 
-  if (!latestVersion) {
+  if (isNullish(latestVersion)) {
     console.log(`${red(`Cannot extract version from release. Reach out Juno❗️`)}`);
     return;
   }
@@ -55,7 +56,7 @@ const cliVersion = async () => {
 const missionControlVersion = async () => {
   const missionControl = getAuthMissionControl();
 
-  if (!missionControl) {
+  if (isNullish(missionControl)) {
     console.log(
       `${yellow(
         'No mission control found.'
@@ -108,7 +109,7 @@ const satelliteVersion = async () => {
 const orbitersVersion = async () => {
   const orbiters = getAuthOrbiters();
 
-  if (!orbiters || orbiters.length === 0) {
+  if (isNullish(orbiters) || orbiters.length === 0) {
     return;
   }
 
@@ -131,7 +132,11 @@ const orbitersVersion = async () => {
     });
   };
 
-  await Promise.allSettled(orbiters.map(({p: orbiterId}) => checkOrbiterVersion(orbiterId)));
+  await Promise.allSettled(
+    orbiters.map(async ({p: orbiterId}) => {
+      await checkOrbiterVersion(orbiterId);
+    })
+  );
 };
 
 const checkSegmentVersion = async ({

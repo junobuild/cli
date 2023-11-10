@@ -1,4 +1,4 @@
-import {SatelliteParameters} from '@junobuild/admin';
+import {type SatelliteParameters} from '@junobuild/admin';
 import {getAuthOrbiters, getAuthSatellites} from '../configs/auth.config';
 import {actorParameters} from './actor.utils';
 

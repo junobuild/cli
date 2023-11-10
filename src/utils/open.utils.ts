@@ -1,10 +1,16 @@
 import type {ChildProcess} from 'child_process';
 import open, {apps} from 'open';
 
-export const openUrl = ({url, browser}: {url: string; browser?: string}): Promise<ChildProcess> => {
+export const openUrl = async ({
+  url,
+  browser
+}: {
+  url: string;
+  browser?: string;
+}): Promise<ChildProcess> => {
   const {chrome, firefox, edge} = apps;
 
-  let app: string | readonly string[] | undefined = undefined;
+  let app: string | readonly string[] | undefined;
   switch (browser?.toLowerCase()) {
     case 'chrome':
       app = chrome;
@@ -17,5 +23,5 @@ export const openUrl = ({url, browser}: {url: string; browser?: string}): Promis
       break;
   }
 
-  return open(url, app !== undefined ? {app: {name: app}} : undefined);
+  return await open(url, app !== undefined ? {app: {name: app}} : undefined);
 };
