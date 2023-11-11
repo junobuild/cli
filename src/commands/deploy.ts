@@ -198,7 +198,7 @@ const listFiles = async ({
   const sourceFiles = listSourceFiles({sourceAbsolutePath, ignore});
   const compressedFiles = await gzipFiles({sourceFiles, gzip});
 
-  const files = [...sourceFiles, ...compressedFiles];
+  const files = [...sourceFiles, ...compressedFiles.filter((file) => !sourceFiles.includes(file))];
 
   // TODO: brotli and zlib naive
   const mapEncodingType = ({
