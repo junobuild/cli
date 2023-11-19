@@ -107,7 +107,7 @@ const selectSegment = async (): Promise<AssetKey> => {
     choices: [
       {title: 'A satellite', value: 'satellite'},
       {title: 'The orbiter for the analytics', value: 'orbiter'},
-      {title: 'Your mission control', value: 'mission control'}
+      {title: 'Your mission control', value: 'mission_control'}
     ],
     initial: 0
   });
