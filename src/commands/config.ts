@@ -18,7 +18,9 @@ export const config = async () => {
       config: {
         storage: {
           headers: storage?.headers ?? [],
-          rewrites: storage?.rewrites
+          rewrites: storage?.rewrites,
+          redirects: storage?.redirects,
+          iframe: storage?.iframe
         }
       },
       satellite: satelliteParameters(satelliteId)
