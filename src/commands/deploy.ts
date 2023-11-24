@@ -16,7 +16,7 @@ import mime from 'mime-types';
 import {minimatch} from 'minimatch';
 import {lstatSync} from 'node:fs';
 import {readFile} from 'node:fs/promises';
-import {basename, extname, join} from 'node:path';
+import {basename, extname, join, relative} from 'node:path';
 import {junoConfigExist, readSatelliteConfig} from '../configs/satellite.config';
 import {COLLECTION_DAPP, DAPP_COLLECTION, UPLOAD_BATCH_SIZE} from '../constants/constants';
 import {
@@ -91,7 +91,7 @@ export const deploy = async () => {
 
       const tasks = new Listr<AssetKey>(
         files.map((file) => ({
-          title: `Uploading ${file.file}`,
+          title: `Uploading ${relative(sourceAbsolutePath, file.file)}`,
           task: async () => await upload(file)
         })),
         {concurrent: true}
