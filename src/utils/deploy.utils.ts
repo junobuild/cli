@@ -2,8 +2,7 @@ import {minimatch} from 'minimatch';
 import {lstatSync, readdirSync} from 'node:fs';
 import {basename, join} from 'node:path';
 import {IGNORE_OS_FILES} from '../constants/constants';
-
-import {SatelliteConfig} from '../types/juno.config';
+import type {SatelliteConfig} from '../types/juno.config';
 
 export const listSourceFiles = ({
   sourceAbsolutePath,
