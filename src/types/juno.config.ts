@@ -39,6 +39,14 @@ export interface SatelliteConfig {
   encoding?: Array<[string, ENCODING_TYPE]>;
 }
 
+export interface OrbiterConfig {
+  /**
+   * The ID of the orbiter used in the dapp.
+   */
+  orbiterId: string;
+}
+
 export interface JunoConfig {
   satellite: SatelliteConfig;
+  orbiter?: OrbiterConfig;
 }

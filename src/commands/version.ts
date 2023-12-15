@@ -85,7 +85,7 @@ const missionControlVersion = async () => {
 
 const satelliteVersion = async () => {
   if (!(await junoConfigExist())) {
-    console.log(`${yellow('No satellite configuration found.')}`);
+    console.log(`No ${yellow('juno.json')} configuration file found.`);
     return;
   }
 

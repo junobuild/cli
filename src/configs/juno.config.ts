@@ -1,6 +1,6 @@
 import {access, readFile, writeFile} from 'node:fs/promises';
 import {JUNO_JSON} from '../constants/constants';
-import type {JunoConfig, SatelliteConfig} from '../types/juno.config';
+import type {JunoConfig, OrbiterConfig, SatelliteConfig} from '../types/juno.config';
 
 export const saveSatelliteConfig = async (satellite: SatelliteConfig): Promise<void> => {
   if (await junoConfigExist()) {
@@ -13,6 +13,18 @@ export const saveSatelliteConfig = async (satellite: SatelliteConfig): Promise<v
   }
 
   await writeJunoConfig({satellite});
+};
+
+export const saveOrbiterConfig = async (orbiter: OrbiterConfig): Promise<void> => {
+  if (!(await junoConfigExist())) {
+    throw new Error(`No juno.json configuration file has been initialized yet.`);
+  }
+
+  const existingConfig = await readJunoConfig();
+  await writeJunoConfig({
+    ...existingConfig,
+    orbiter
+  });
 };
 
 export const readSatelliteConfig = async (): Promise<SatelliteConfig> => {
