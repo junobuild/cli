@@ -2,8 +2,7 @@ import {minimatch} from 'minimatch';
 import {createReadStream, createWriteStream} from 'node:fs';
 import {createGzip} from 'node:zlib';
 import {DEPLOY_DEFAULT_GZIP} from '../constants/deploy.constants';
-
-import {SatelliteConfig} from '../types/juno.config';
+import type {SatelliteConfig} from '../types/juno.config';
 
 export const gzipFiles = async ({
   sourceFiles,

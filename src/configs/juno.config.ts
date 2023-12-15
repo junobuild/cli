@@ -1,6 +1,6 @@
 import {access, readFile, writeFile} from 'node:fs/promises';
 import {JUNO_JSON} from '../constants/constants';
-import {OrbiterConfig, SatelliteConfig, type JunoConfig} from '../types/juno.config';
+import type {JunoConfig, OrbiterConfig, SatelliteConfig} from '../types/juno.config';
 
 export const saveSatelliteConfig = async (satellite: SatelliteConfig): Promise<void> => {
   if (await junoConfigExist()) {

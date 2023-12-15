@@ -25,7 +25,7 @@ import {
   DEPLOY_DEFAULT_IGNORE,
   DEPLOY_DEFAULT_SOURCE
 } from '../constants/deploy.constants';
-import {SatelliteConfig} from '../types/juno.config';
+import type {SatelliteConfig} from '../types/juno.config';
 import {gzipFiles} from '../utils/compress.utils';
 import {listSourceFiles} from '../utils/deploy.utils';
 import {satelliteParameters} from '../utils/satellite.utils';
