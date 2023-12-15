@@ -3,7 +3,15 @@ import {login, logout} from './commands/auth';
 import {clear} from './commands/clear';
 import {config} from './commands/config';
 import {deploy} from './commands/deploy';
-import {help, helpCommand, helpLogin, helpOpen, helpUpgrade, helpUse} from './commands/help';
+import {
+  help,
+  helpCommand,
+  helpDeploy,
+  helpLogin,
+  helpOpen,
+  helpUpgrade,
+  helpUse
+} from './commands/help';
 import {init} from './commands/init';
 import {links} from './commands/links';
 import {open} from './commands/open';
@@ -43,6 +51,9 @@ export const run = async () => {
       case 'use':
         console.log(helpUse);
         break;
+      case 'deploy':
+        console.log(helpDeploy);
+        break;
       default:
         console.log(helpCommand(cmd));
     }
@@ -60,7 +71,7 @@ export const run = async () => {
       await init();
       break;
     case 'deploy':
-      await deploy();
+      await deploy(args);
       await links();
       break;
     case 'config':
