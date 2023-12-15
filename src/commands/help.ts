@@ -5,18 +5,20 @@ const JUNO_LOGO = `  __  __ __  __  _  ____
 __) ||  |  ||  \\| |/    \\
 \\___/ \\___/ |_|\\__|\\____/`;
 
-const title = `${JUNO_LOGO} CLI ${grey(`v${version}`)}`;
+const TITLE = `${JUNO_LOGO} CLI ${grey(`v${version}`)}`;
 
 export const help = `
-${title}
+${TITLE}
 
 
 Usage: ${cyan('juno [command]')}
 
 Commands:
-  ${cyan('clear')}               clear existing app code and assets from your satellite
+  ${cyan(
+    'clear'
+  )}               clear existing dapp code by removing JavaScript, HTML, CSS, and other files from your satellite
   ${cyan('config')}              apply configuration to satellite
-  ${cyan('deploy')}              deploy your app to your satellite
+  ${cyan('deploy')}              deploy your dapp to your satellite
   ${cyan('init')}                configure the current directory as a satellite
   ${cyan('help')}                display help information
   ${cyan('login')}               generate an authentication for use in non-interactive environments
@@ -29,7 +31,7 @@ Commands:
 `;
 
 export const helpUpgrade = `
-${title}
+${TITLE}
 
 Usage: ${cyan('juno upgrade [options]')}
 
@@ -47,7 +49,7 @@ Notes:
 `;
 
 export const helpCommand = (command: string) => `
-${title}
+${TITLE}
 
 Usage: ${cyan(`juno ${command}`)}
 
@@ -56,7 +58,7 @@ Options:
 `;
 
 export const helpLogin = `
-${title}
+${TITLE}
 
 Usage: ${cyan('juno login [options]')}
 
@@ -66,7 +68,7 @@ Options:
 `;
 
 export const helpUse = `
-${title}
+${TITLE}
 
 Usage: ${cyan('juno use [options]')}
 
@@ -77,12 +79,22 @@ Options:
 `;
 
 export const helpOpen = `
-${title}
+${TITLE}
 
 Usage: ${cyan('juno open [options]')}
 
 Options:
   ${cyan('-b, --browser')}         a particular browser to open. supported: chrome|firefox|edge
   ${cyan('-c, --console')}         open satellite in the console
+  ${cyan('-h, --help')}            output usage information
+`;
+
+export const helpDeploy = `
+${TITLE}
+
+Usage: ${cyan('juno deploy [options]')}
+
+Options:
+  ${cyan('-c, --clear')}           clear existing dapp files before proceeding with deployment
   ${cyan('-h, --help')}            output usage information
 `;

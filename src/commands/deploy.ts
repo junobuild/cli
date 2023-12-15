@@ -25,7 +25,9 @@ import {
   DEPLOY_DEFAULT_IGNORE,
   DEPLOY_DEFAULT_SOURCE
 } from '../constants/deploy.constants';
+import {clear} from '../services/clear.services';
 import type {SatelliteConfig} from '../types/juno.config';
+import {hasArgs} from '../utils/args.utils';
 import {gzipFiles} from '../utils/compress.utils';
 import {listSourceFiles} from '../utils/deploy.utils';
 import {satelliteParameters} from '../utils/satellite.utils';
@@ -39,11 +41,19 @@ interface FileDetails {
   mime?: MimeType;
 }
 
-export const deploy = async () => {
+export const deploy = async (args?: string[]) => {
   if (!(await junoConfigExist())) {
     await init();
   }
 
+  if (hasArgs({args, options: ['-c', '--clear']})) {
+    await clear();
+  }
+
+  await executeDeploy();
+};
+
+const executeDeploy = async () => {
   const {
     satelliteId,
     source = DEPLOY_DEFAULT_SOURCE,
