@@ -1,7 +1,6 @@
 import {access, readFile, writeFile} from 'node:fs/promises';
 import {JUNO_JSON} from '../constants/constants';
-import {type JunoConfig} from '../types/juno.config';
-import {type SatelliteConfig} from '../types/satellite.config';
+import {SatelliteConfig, type JunoConfig} from '../types/juno.config';
 
 export const saveSatelliteConfig = async (satellite: SatelliteConfig): Promise<void> => {
   if (await dappConfigExist()) {
