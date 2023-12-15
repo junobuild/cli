@@ -1,11 +1,11 @@
 import {setConfig} from '@junobuild/admin';
 import ora from 'ora';
-import {junoConfigExist, readSatelliteConfig} from '../configs/satellite.config';
+import {dappConfigExist, readSatelliteConfig} from '../configs/dapp.config';
 import {satelliteParameters} from '../utils/satellite.utils';
 import {init} from './init';
 
 export const config = async () => {
-  if (!(await junoConfigExist())) {
+  if (!(await dappConfigExist())) {
     await init();
   }
 

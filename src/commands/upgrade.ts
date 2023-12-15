@@ -15,7 +15,7 @@ import {red, yellow} from 'kleur';
 import prompts from 'prompts';
 import {compare} from 'semver';
 import {getAuthMissionControl, getAuthOrbiters} from '../configs/auth.config';
-import {junoConfigExist, readSatelliteConfig} from '../configs/satellite.config';
+import {dappConfigExist, readSatelliteConfig} from '../configs/dapp.config';
 import {
   MISSION_CONTROL_WASM_NAME,
   ORBITER_WASM_NAME,
@@ -98,7 +98,7 @@ const upgradeOrbiters = async (args?: string[]) => {
 };
 
 const upgradeSatellite = async (args?: string[]) => {
-  if (!(await junoConfigExist())) {
+  if (!(await dappConfigExist())) {
     consoleNoConfigFound();
     return;
   }

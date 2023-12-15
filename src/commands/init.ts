@@ -2,7 +2,7 @@ import {isNullish} from '@junobuild/utils';
 import {cyan, red} from 'kleur';
 import prompts from 'prompts';
 import {getAuthSatellites, getToken, type AuthSatelliteConfig} from '../configs/auth.config';
-import {saveSatelliteConfig} from '../configs/satellite.config';
+import {saveSatelliteConfig} from '../configs/dapp.config';
 
 export const init = async () => {
   const token = getToken();

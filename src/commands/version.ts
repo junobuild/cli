@@ -8,7 +8,7 @@ import {cyan, green, red, yellow} from 'kleur';
 import {clean, compare} from 'semver';
 import {version as cliCurrentVersion} from '../../package.json';
 import {getAuthMissionControl, getAuthOrbiters} from '../configs/auth.config';
-import {junoConfigExist, readSatelliteConfig} from '../configs/satellite.config';
+import {dappConfigExist, readSatelliteConfig} from '../configs/dapp.config';
 import {
   MISSION_CONTROL_WASM_NAME,
   ORBITER_WASM_NAME,
@@ -84,7 +84,7 @@ const missionControlVersion = async () => {
 };
 
 const satelliteVersion = async () => {
-  if (!(await junoConfigExist())) {
+  if (!(await dappConfigExist())) {
     console.log(`${yellow('No satellite configuration found.')}`);
     return;
   }

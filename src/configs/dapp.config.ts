@@ -1,38 +1,29 @@
 import {access, readFile, writeFile} from 'node:fs/promises';
-import {JUNO_CONFIG} from '../constants/constants';
+import {JUNO_JSON} from '../constants/constants';
 import {type JunoConfig} from '../types/juno.config';
 import {type SatelliteConfig} from '../types/satellite.config';
 
 export const saveSatelliteConfig = async (satellite: SatelliteConfig): Promise<void> => {
-  if (await junoConfigExist()) {
-    const existingConfig = await readJunoConfig();
-    await writeJunoConfig({
+  if (await dappConfigExist()) {
+    const existingConfig = await readDappConfig();
+    await writeDappConfig({
       ...existingConfig,
       satellite
     });
     return;
   }
 
-  await writeJunoConfig({satellite});
-};
-
-const writeJunoConfig = async (config: JunoConfig): Promise<void> => {
-  await writeFile(JUNO_CONFIG, JSON.stringify(config, null, 2), 'utf-8');
-};
-
-const readJunoConfig = async (): Promise<JunoConfig> => {
-  const buffer = await readFile(JUNO_CONFIG);
-  return JSON.parse(buffer.toString('utf-8'));
+  await writeDappConfig({satellite});
 };
 
 export const readSatelliteConfig = async (): Promise<SatelliteConfig> => {
-  const {satellite} = await readJunoConfig();
+  const {satellite} = await readDappConfig();
   return satellite;
 };
 
-export const junoConfigExist = async (): Promise<boolean> => {
+export const dappConfigExist = async (): Promise<boolean> => {
   try {
-    await access(JUNO_CONFIG);
+    await access(JUNO_JSON);
     return true;
   } catch (err: unknown) {
     if (err instanceof Error && 'code' in err && (err as NodeJS.ErrnoException).code === 'ENOENT') {
@@ -41,4 +32,13 @@ export const junoConfigExist = async (): Promise<boolean> => {
       throw err;
     }
   }
+};
+
+const writeDappConfig = async (config: JunoConfig): Promise<void> => {
+  await writeFile(JUNO_JSON, JSON.stringify(config, null, 2), 'utf-8');
+};
+
+const readDappConfig = async (): Promise<JunoConfig> => {
+  const buffer = await readFile(JUNO_JSON);
+  return JSON.parse(buffer.toString('utf-8'));
 };
