@@ -7,7 +7,7 @@ import fs from 'node:fs';
 import path, {dirname} from 'node:path';
 import {fileURLToPath} from 'url';
 import util from 'util';
-import {saveAuthConfig} from '../configs/auth.config';
+import {saveCliConfig} from '../configs/cli.config';
 import {AUTH_URL} from '../constants/constants';
 import {nextArg} from '../utils/args.utils';
 import {authUrl, requestUrl} from '../utils/auth.utils';
@@ -102,7 +102,7 @@ const saveConfig = ({
   missionControl: string | null;
   profile: string | null;
 }) => {
-  saveAuthConfig({
+  saveCliConfig({
     token,
     satellites: JSON.parse(decodeURIComponent(satellites ?? '[]')),
     orbiters: orbiters !== null ? JSON.parse(decodeURIComponent(orbiters)) : null,

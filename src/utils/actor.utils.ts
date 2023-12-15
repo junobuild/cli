@@ -3,7 +3,7 @@ import {type ActorParameters} from '@junobuild/admin';
 import {isNullish} from '@junobuild/utils';
 import {red} from 'kleur';
 import fetch from 'node-fetch';
-import {getToken} from '../configs/auth.config';
+import {getToken} from '../configs/cli.config';
 import {getProcessToken} from './process.utils';
 
 export const actorParameters = (): ActorParameters => {

@@ -2,34 +2,34 @@ import type {JsonnableEd25519KeyIdentity} from '@dfinity/identity/lib/cjs/identi
 // TODO: fix TypeScript declaration import of conf
 // @ts-expect-error
 import Conf, {type Schema} from 'conf';
-import {AUTH_PROJECT_NAME} from '../constants/constants';
+import {CLI_PROJECT_NAME} from '../constants/constants';
 
-interface AuthConfigData {
+interface CliConfigData {
   token: JsonnableEd25519KeyIdentity;
-  satellites: AuthSatelliteConfig[];
+  satellites: CliSatelliteConfig[];
   missionControl?: string;
-  orbiters?: AuthOrbiterConfig[];
+  orbiters?: CliOrbiterConfig[];
 }
 
-export interface AuthSatelliteConfig {
+export interface CliSatelliteConfig {
   p: string; // principal
   n: string; // name
 }
 
-export interface AuthOrbiterConfig {
+export interface CliOrbiterConfig {
   p: string; // principal
   n?: string; // name
 }
 
-export type AuthProfile = 'default' | string;
+export type CliProfile = 'default' | string;
 
 // Backwards compatibility. Default is save in root of the object, profile in an optional record.
-interface AuthConfig extends AuthConfigData {
-  use?: AuthProfile;
-  profiles?: Record<string, AuthConfigData>;
+interface CliConfig extends CliConfigData {
+  use?: CliProfile;
+  profiles?: Record<string, CliConfigData>;
 }
 
-const schema: Schema<AuthConfig> = {
+const schema: Schema<CliConfig> = {
   token: {
     type: 'array'
   },
@@ -39,9 +39,9 @@ const schema: Schema<AuthConfig> = {
 } as const;
 
 // Save in https://github.com/sindresorhus/env-paths#pathsconfig
-const config = new Conf<AuthConfig>({projectName: AUTH_PROJECT_NAME, schema});
+const config = new Conf<CliConfig>({projectName: CLI_PROJECT_NAME, schema});
 
-export const saveAuthConfig = ({
+export const saveCliConfig = ({
   token,
   satellites,
   orbiters,
@@ -49,10 +49,10 @@ export const saveAuthConfig = ({
   profile
 }: {
   token: JsonnableEd25519KeyIdentity;
-  satellites: AuthSatelliteConfig[];
-  orbiters: AuthOrbiterConfig[] | null;
+  satellites: CliSatelliteConfig[];
+  orbiters: CliOrbiterConfig[] | null;
   missionControl: string | null;
-  profile: AuthProfile | null;
+  profile: CliProfile | null;
 }) => {
   if (!isDefaultProfile(profile)) {
     const profiles = getProfiles();
@@ -73,14 +73,14 @@ export const saveAuthConfig = ({
   }
 
   saveToken(token);
-  saveAuthSatellites(satellites);
+  saveCliSatellites(satellites);
 
   if (orbiters !== null) {
-    saveAuthOrbiters(orbiters);
+    saveCliOrbiters(orbiters);
   }
 
   if (missionControl !== null) {
-    saveAuthMissionControl(missionControl);
+    saveCliMissionControl(missionControl);
   }
 
   deleteUse();
@@ -89,17 +89,17 @@ export const saveAuthConfig = ({
 // Use / profile
 
 export const deleteUse = () => config.delete('use');
-export const saveUse = (use: AuthProfile) => config.set('use', use);
-export const getUse = (): AuthProfile | undefined => config.get('use');
+export const saveUse = (use: CliProfile) => config.set('use', use);
+export const getUse = (): CliProfile | undefined => config.get('use');
 
 // Profile
 
-export const saveProfiles = (profiles: Record<string, AuthConfigData>) =>
+export const saveProfiles = (profiles: Record<string, CliConfigData>) =>
   config.set('profiles', profiles);
 
-export const getProfiles = (): Record<string, AuthConfigData> | undefined => config.get('profiles');
+export const getProfiles = (): Record<string, CliConfigData> | undefined => config.get('profiles');
 
-export const isDefaultProfile = (use: AuthProfile | undefined | null): boolean =>
+export const isDefaultProfile = (use: CliProfile | undefined | null): boolean =>
   use === null || use === undefined || use === 'default';
 
 // Token
@@ -118,10 +118,10 @@ export const getToken = (): JsonnableEd25519KeyIdentity | undefined => {
 
 // Satellites
 
-const saveAuthSatellites = (satellites: AuthSatelliteConfig[]) =>
+const saveCliSatellites = (satellites: CliSatelliteConfig[]) =>
   config.set('satellites', satellites);
 
-export const getAuthSatellites = (): AuthSatelliteConfig[] => {
+export const getCliSatellites = (): CliSatelliteConfig[] => {
   const use = getUse();
 
   if (!isDefaultProfile(use)) {
@@ -131,12 +131,12 @@ export const getAuthSatellites = (): AuthSatelliteConfig[] => {
   return config.get('satellites');
 };
 
-export const addAuthSatellite = ({
+export const addCliSatellite = ({
   satellite,
   profile
 }: {
-  satellite: AuthSatelliteConfig;
-  profile: AuthProfile | undefined;
+  satellite: CliSatelliteConfig;
+  profile: CliProfile | undefined;
 }) => {
   if (!isDefaultProfile(profile)) {
     const profiles = getProfiles();
@@ -160,16 +160,16 @@ export const addAuthSatellite = ({
     return;
   }
 
-  const currentSatellites = getAuthSatellites();
-  saveAuthSatellites([...(currentSatellites ?? []).filter(({p}) => p !== satellite.p), satellite]);
+  const currentSatellites = getCliSatellites();
+  saveCliSatellites([...(currentSatellites ?? []).filter(({p}) => p !== satellite.p), satellite]);
 };
 
 // Mission control
 
-const saveAuthMissionControl = (missionControl: string) =>
+const saveCliMissionControl = (missionControl: string) =>
   config.set('missionControl', missionControl);
 
-export const getAuthMissionControl = (): string | undefined => {
+export const getCliMissionControl = (): string | undefined => {
   const use = getUse();
 
   if (!isDefaultProfile(use)) {
@@ -179,12 +179,12 @@ export const getAuthMissionControl = (): string | undefined => {
   return config.get('missionControl');
 };
 
-export const addAuthMissionControl = ({
+export const addCliMissionControl = ({
   missionControl,
   profile
 }: {
   missionControl: string;
-  profile: AuthProfile | undefined;
+  profile: CliProfile | undefined;
 }) => {
   if (!isDefaultProfile(profile)) {
     const profiles = getProfiles();
@@ -205,14 +205,14 @@ export const addAuthMissionControl = ({
     return;
   }
 
-  saveAuthMissionControl(missionControl);
+  saveCliMissionControl(missionControl);
 };
 
 // Orbiters
 
-const saveAuthOrbiters = (orbiters: AuthOrbiterConfig[]) => config.set('orbiters', orbiters);
+const saveCliOrbiters = (orbiters: CliOrbiterConfig[]) => config.set('orbiters', orbiters);
 
-export const getAuthOrbiters = (): AuthOrbiterConfig[] | undefined => {
+export const getCliOrbiters = (): CliOrbiterConfig[] | undefined => {
   const use = getUse();
 
   if (!isDefaultProfile(use)) {
@@ -222,12 +222,12 @@ export const getAuthOrbiters = (): AuthOrbiterConfig[] | undefined => {
   return config.get('orbiters');
 };
 
-export const addAuthOrbiter = ({
+export const addCliOrbiter = ({
   orbiter,
   profile
 }: {
-  orbiter: AuthOrbiterConfig;
-  profile: AuthProfile | undefined;
+  orbiter: CliOrbiterConfig;
+  profile: CliProfile | undefined;
 }) => {
   if (!isDefaultProfile(profile)) {
     const profiles = getProfiles();
@@ -248,10 +248,10 @@ export const addAuthOrbiter = ({
     return;
   }
 
-  const currentOrbiters = getAuthOrbiters();
-  saveAuthOrbiters([...(currentOrbiters ?? []).filter(({p}) => p !== orbiter.p), orbiter]);
+  const currentOrbiters = getCliOrbiters();
+  saveCliOrbiters([...(currentOrbiters ?? []).filter(({p}) => p !== orbiter.p), orbiter]);
 };
 
 // Clear
 
-export const clearAuthConfig = () => config.clear();
+export const clearCliConfig = () => config.clear();

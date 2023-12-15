@@ -14,7 +14,7 @@ import {isNullish} from '@junobuild/utils';
 import {red, yellow} from 'kleur';
 import prompts from 'prompts';
 import {compare} from 'semver';
-import {getAuthMissionControl, getAuthOrbiters} from '../configs/auth.config';
+import {getCliMissionControl, getCliOrbiters} from '../configs/cli.config';
 import {dappConfigExist, readSatelliteConfig} from '../configs/dapp.config';
 import {
   MISSION_CONTROL_WASM_NAME,
@@ -47,7 +47,7 @@ export const upgrade = async (args?: string[]) => {
 };
 
 const upgradeMissionControl = async (args?: string[]) => {
-  const missionControl = getAuthMissionControl();
+  const missionControl = getCliMissionControl();
 
   if (isNullish(missionControl)) {
     console.log(
@@ -72,7 +72,7 @@ const upgradeMissionControl = async (args?: string[]) => {
 };
 
 const upgradeOrbiters = async (args?: string[]) => {
-  const authOrbiters = getAuthOrbiters();
+  const authOrbiters = getCliOrbiters();
 
   if (authOrbiters === undefined || authOrbiters.length === 0) {
     return;

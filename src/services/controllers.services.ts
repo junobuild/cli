@@ -2,12 +2,7 @@ import {type Principal} from '@dfinity/principal';
 import {bold, green, red} from 'kleur';
 import prompts from 'prompts';
 import {assertAnswerCtrlC} from '../commands/init';
-import {
-  addAuthMissionControl,
-  addAuthOrbiter,
-  addAuthSatellite,
-  getUse
-} from '../configs/auth.config';
+import {addCliMissionControl, addCliOrbiter, addCliSatellite, getUse} from '../configs/cli.config';
 import {CONSOLE_URL} from '../constants/constants';
 import {type AssetKey} from '../types/asset-key';
 import {terminalLink} from '../utils/links.utils';
@@ -71,7 +66,7 @@ const saveSatellite = async ({
     return;
   }
 
-  addAuthSatellite({
+  addCliSatellite({
     profile,
     satellite: {
       p: segmentId,
@@ -87,11 +82,11 @@ const saveMissionControl = ({
   profile: string | undefined;
   segmentId: string;
 }) => {
-  addAuthMissionControl({profile, missionControl: segmentId});
+  addCliMissionControl({profile, missionControl: segmentId});
 };
 
 const saveOrbiter = ({profile, segmentId}: {profile: string | undefined; segmentId: string}) => {
-  addAuthOrbiter({
+  addCliOrbiter({
     profile,
     orbiter: {
       p: segmentId

@@ -2,13 +2,13 @@ import {Ed25519KeyIdentity} from '@dfinity/identity';
 import {isNullish} from '@junobuild/utils';
 import {green} from 'kleur';
 import prompts from 'prompts';
-import {clearAuthConfig, getToken} from '../configs/auth.config';
+import {clearCliConfig, getToken} from '../configs/cli.config';
 import {reuseController} from '../services/controllers.services';
 import {login as consoleLogin} from '../services/login.services';
 import {assertAnswerCtrlC} from './init';
 
 export const logout = async () => {
-  clearAuthConfig();
+  clearCliConfig();
 
   console.log(`${green('Logged out')}`);
 };

@@ -1,7 +1,7 @@
 import {Ed25519KeyIdentity} from '@dfinity/identity';
 import {isNullish} from '@junobuild/utils';
 import {green} from 'kleur';
-import {getToken, getUse, isDefaultProfile} from '../configs/auth.config';
+import {getToken, getUse, isDefaultProfile} from '../configs/cli.config';
 
 export const whoami = () => {
   const profile = getUse();

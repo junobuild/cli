@@ -1,5 +1,5 @@
 import {green, red} from 'kleur';
-import {deleteUse, getProfiles, getUse, saveUse} from '../configs/auth.config';
+import {deleteUse, getProfiles, getUse, saveUse} from '../configs/cli.config';
 import {hasArgs, nextArg} from '../utils/args.utils';
 
 export const use = (args?: string[]) => {

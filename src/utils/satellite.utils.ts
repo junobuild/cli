@@ -1,5 +1,5 @@
 import {type SatelliteParameters} from '@junobuild/admin';
-import {getAuthOrbiters, getAuthSatellites} from '../configs/auth.config';
+import {getCliOrbiters, getCliSatellites} from '../configs/cli.config';
 import {actorParameters} from './actor.utils';
 
 export const satelliteParameters = (satelliteId: string): SatelliteParameters => ({
@@ -12,13 +12,13 @@ export const satelliteParameters = (satelliteId: string): SatelliteParameters =>
  * @param satelliteId name or id
  */
 export const satelliteKey = (satelliteId: string): string => {
-  const satellites = getAuthSatellites();
+  const satellites = getCliSatellites();
   const satellite = satellites.find(({p}) => p === satelliteId);
   return satellite?.n ?? satelliteId;
 };
 
 export const orbiterKey = (orbiterId: string): string => {
-  const orbiters = getAuthOrbiters();
+  const orbiters = getCliOrbiters();
   const orbiter = orbiters?.find(({p}) => p === orbiterId);
   return orbiter?.n !== undefined && orbiter?.n !== '' ? orbiter.n : orbiterId;
 };

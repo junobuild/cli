@@ -1,7 +1,7 @@
 import {isNullish} from '@junobuild/utils';
 import {cyan, red} from 'kleur';
 import prompts from 'prompts';
-import {getAuthSatellites, getToken, type AuthSatelliteConfig} from '../configs/auth.config';
+import {getCliSatellites, getToken, type CliSatelliteConfig} from '../configs/cli.config';
 import {saveSatelliteConfig} from '../configs/dapp.config';
 
 export const init = async () => {
@@ -12,7 +12,7 @@ export const init = async () => {
     return;
   }
 
-  const satellites = getAuthSatellites();
+  const satellites = getCliSatellites();
 
   let satellite = await (satellites?.length > 0 ? promptSatellites(satellites) : promptSatellite());
 
@@ -25,7 +25,7 @@ export const init = async () => {
   await saveSatelliteConfig({satelliteId: satellite, source});
 };
 
-const promptSatellites = async (satellites: AuthSatelliteConfig[]): Promise<string> => {
+const promptSatellites = async (satellites: CliSatelliteConfig[]): Promise<string> => {
   const {satellite} = await prompts({
     type: 'select',
     name: 'satellite',

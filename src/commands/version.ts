@@ -7,7 +7,7 @@ import {isNullish} from '@junobuild/utils';
 import {cyan, green, red, yellow} from 'kleur';
 import {clean, compare} from 'semver';
 import {version as cliCurrentVersion} from '../../package.json';
-import {getAuthMissionControl, getAuthOrbiters} from '../configs/auth.config';
+import {getCliMissionControl, getCliOrbiters} from '../configs/cli.config';
 import {dappConfigExist, readSatelliteConfig} from '../configs/dapp.config';
 import {
   MISSION_CONTROL_WASM_NAME,
@@ -54,7 +54,7 @@ const cliVersion = async () => {
 };
 
 const missionControlVersion = async () => {
-  const missionControl = getAuthMissionControl();
+  const missionControl = getCliMissionControl();
 
   if (isNullish(missionControl)) {
     console.log(
@@ -107,7 +107,7 @@ const satelliteVersion = async () => {
 };
 
 const orbitersVersion = async () => {
-  const orbiters = getAuthOrbiters();
+  const orbiters = getCliOrbiters();
 
   if (isNullish(orbiters) || orbiters.length === 0) {
     return;
