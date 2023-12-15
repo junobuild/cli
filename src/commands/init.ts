@@ -1,8 +1,14 @@
 import {isNullish} from '@junobuild/utils';
 import {cyan, red} from 'kleur';
 import prompts from 'prompts';
-import {getCliSatellites, getToken, type CliSatelliteConfig} from '../configs/cli.config';
-import {saveSatelliteConfig} from '../configs/juno.config';
+import {
+  CliOrbiterConfig,
+  getCliOrbiters,
+  getCliSatellites,
+  getToken,
+  type CliSatelliteConfig
+} from '../configs/cli.config';
+import {saveOrbiterConfig, saveSatelliteConfig} from '../configs/juno.config';
 
 export const init = async () => {
   const token = getToken();
@@ -12,6 +18,11 @@ export const init = async () => {
     return;
   }
 
+  await initSatelliteConfig();
+  await initOrbiterConfig();
+};
+
+const initSatelliteConfig = async () => {
   const satellites = getCliSatellites();
 
   let satellite = await (satellites?.length > 0 ? promptSatellites(satellites) : promptSatellite());
@@ -23,6 +34,22 @@ export const init = async () => {
   const source = await promptSource();
 
   await saveSatelliteConfig({satelliteId: satellite, source});
+};
+
+const initOrbiterConfig = async () => {
+  const authOrbiters = getCliOrbiters();
+
+  if (authOrbiters === undefined || authOrbiters.length === 0) {
+    return;
+  }
+
+  let orbiter = await promptOrbiters(authOrbiters);
+
+  if (orbiter === '_none_') {
+    return;
+  }
+
+  await saveOrbiterConfig({orbiterId: orbiter});
 };
 
 const promptSatellites = async (satellites: CliSatelliteConfig[]): Promise<string> => {
@@ -87,4 +114,22 @@ export const assertAnswerCtrlC: (
 
     process.exit(1);
   }
+};
+
+const promptOrbiters = async (orbiters: CliOrbiterConfig[]): Promise<string> => {
+  const {orbiter} = await prompts({
+    type: 'select',
+    name: 'orbiter',
+    message: 'Which orbiter do you use for the analytics in this dapp?',
+    choices: [
+      ...orbiters.map(({p, n}) => ({title: n ?? p, value: p})),
+      {title: '<none>', value: '_none_'}
+    ],
+    initial: 0
+  });
+
+  // In case of control+c
+  assertAnswerCtrlC(orbiter);
+
+  return orbiter;
 };
