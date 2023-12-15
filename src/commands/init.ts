@@ -2,10 +2,10 @@ import {isNullish} from '@junobuild/utils';
 import {cyan, red} from 'kleur';
 import prompts from 'prompts';
 import {
-  CliOrbiterConfig,
   getCliOrbiters,
   getCliSatellites,
   getToken,
+  type CliOrbiterConfig,
   type CliSatelliteConfig
 } from '../configs/cli.config';
 import {saveOrbiterConfig, saveSatelliteConfig} from '../configs/juno.config';
@@ -43,7 +43,7 @@ const initOrbiterConfig = async () => {
     return;
   }
 
-  let orbiter = await promptOrbiters(authOrbiters);
+  const orbiter = await promptOrbiters(authOrbiters);
 
   if (orbiter === '_none_') {
     return;
