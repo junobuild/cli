@@ -17,7 +17,7 @@ import {minimatch} from 'minimatch';
 import {lstatSync} from 'node:fs';
 import {readFile} from 'node:fs/promises';
 import {basename, extname, join, relative} from 'node:path';
-import {dappConfigExist, readSatelliteConfig} from '../configs/dapp.config';
+import {junoConfigExist, readSatelliteConfig} from '../configs/juno.config';
 import {COLLECTION_DAPP, DAPP_COLLECTION, UPLOAD_BATCH_SIZE} from '../constants/constants';
 import {
   DEPLOY_DEFAULT_ENCODING,
@@ -40,7 +40,7 @@ interface FileDetails {
 }
 
 export const deploy = async () => {
-  if (!(await dappConfigExist())) {
+  if (!(await junoConfigExist())) {
     await init();
   }
 

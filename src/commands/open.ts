@@ -1,6 +1,6 @@
 import {listCustomDomains, type CustomDomain} from '@junobuild/admin';
 import prompts from 'prompts';
-import {dappConfigExist, readSatelliteConfig} from '../configs/dapp.config';
+import {junoConfigExist, readSatelliteConfig} from '../configs/juno.config';
 import {hasArgs, nextArg} from '../utils/args.utils';
 import {consoleUrl, defaultSatelliteDomain} from '../utils/domain.utils';
 import {consoleNoConfigFound} from '../utils/msg.utils';
@@ -9,7 +9,7 @@ import {satelliteParameters} from '../utils/satellite.utils';
 import {assertAnswerCtrlC} from './init';
 
 export const open = async (args?: string[]) => {
-  if (!(await dappConfigExist())) {
+  if (!(await junoConfigExist())) {
     consoleNoConfigFound();
     return;
   }

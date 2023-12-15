@@ -1,12 +1,12 @@
 import {deleteAssets} from '@junobuild/core-peer';
 import ora from 'ora';
-import {dappConfigExist, readSatelliteConfig} from '../configs/dapp.config';
+import {junoConfigExist, readSatelliteConfig} from '../configs/juno.config';
 import {DAPP_COLLECTION} from '../constants/constants';
 import {consoleNoConfigFound} from '../utils/msg.utils';
 import {satelliteParameters} from '../utils/satellite.utils';
 
 export const clear = async () => {
-  if (!(await dappConfigExist())) {
+  if (!(await junoConfigExist())) {
     consoleNoConfigFound();
     return;
   }

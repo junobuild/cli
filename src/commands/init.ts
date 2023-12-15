@@ -2,7 +2,7 @@ import {isNullish} from '@junobuild/utils';
 import {cyan, red} from 'kleur';
 import prompts from 'prompts';
 import {getCliSatellites, getToken, type CliSatelliteConfig} from '../configs/cli.config';
-import {saveSatelliteConfig} from '../configs/dapp.config';
+import {saveSatelliteConfig} from '../configs/juno.config';
 
 export const init = async () => {
   const token = getToken();

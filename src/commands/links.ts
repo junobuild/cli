@@ -1,6 +1,6 @@
 import {listCustomDomains} from '@junobuild/admin';
 import {red} from 'kleur';
-import {dappConfigExist, readSatelliteConfig} from '../configs/dapp.config';
+import {junoConfigExist, readSatelliteConfig} from '../configs/juno.config';
 import {consoleUrl, defaultSatelliteDomain} from '../utils/domain.utils';
 import {terminalLink} from '../utils/links.utils';
 import {isProcessToken} from '../utils/process.utils';
@@ -13,7 +13,7 @@ export const links = async () => {
     return;
   }
 
-  if (!(await dappConfigExist())) {
+  if (!(await junoConfigExist())) {
     return;
   }
 

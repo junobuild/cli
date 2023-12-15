@@ -3,24 +3,24 @@ import {JUNO_JSON} from '../constants/constants';
 import {SatelliteConfig, type JunoConfig} from '../types/juno.config';
 
 export const saveSatelliteConfig = async (satellite: SatelliteConfig): Promise<void> => {
-  if (await dappConfigExist()) {
-    const existingConfig = await readDappConfig();
-    await writeDappConfig({
+  if (await junoConfigExist()) {
+    const existingConfig = await readJunoConfig();
+    await writeJunoConfig({
       ...existingConfig,
       satellite
     });
     return;
   }
 
-  await writeDappConfig({satellite});
+  await writeJunoConfig({satellite});
 };
 
 export const readSatelliteConfig = async (): Promise<SatelliteConfig> => {
-  const {satellite} = await readDappConfig();
+  const {satellite} = await readJunoConfig();
   return satellite;
 };
 
-export const dappConfigExist = async (): Promise<boolean> => {
+export const junoConfigExist = async (): Promise<boolean> => {
   try {
     await access(JUNO_JSON);
     return true;
@@ -33,11 +33,11 @@ export const dappConfigExist = async (): Promise<boolean> => {
   }
 };
 
-const writeDappConfig = async (config: JunoConfig): Promise<void> => {
+const writeJunoConfig = async (config: JunoConfig): Promise<void> => {
   await writeFile(JUNO_JSON, JSON.stringify(config, null, 2), 'utf-8');
 };
 
-const readDappConfig = async (): Promise<JunoConfig> => {
+const readJunoConfig = async (): Promise<JunoConfig> => {
   const buffer = await readFile(JUNO_JSON);
   return JSON.parse(buffer.toString('utf-8'));
 };
