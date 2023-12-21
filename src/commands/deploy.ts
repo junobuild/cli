@@ -120,7 +120,7 @@ const executeDeploy = async () => {
 };
 
 const fullPath = ({file, sourceAbsolutePath}: {file: string; sourceAbsolutePath: string}): string =>
-  encodeURI(file.replace(sourceAbsolutePath, '').replace(/\\/g, '/'));
+  file.replace(sourceAbsolutePath, '').replace(/\\/g, '/');
 
 const assertSourceDirExists = (source: string) => {
   try {
