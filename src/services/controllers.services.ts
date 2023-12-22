@@ -17,7 +17,7 @@ export const reuseController = async (controller: Principal) => {
 
   await setControllerManually({controller, segment});
 
-  const {segmentId} = await prompts({
+  const {segmentId}: {segmentId: string} = await prompts({
     type: 'text',
     name: 'segmentId',
     message: `Good. So, what's the ${green(
@@ -55,14 +55,14 @@ const saveSatellite = async ({
   profile: string | undefined;
   segmentId: string;
 }) => {
-  const {name} = await prompts({
+  const {name}: {name: string} = await prompts({
     type: 'text',
     name: 'name',
     message: `Can you please provide a name for this satellite?`
   });
 
   if (name === undefined) {
-    console.log(`${red(`The ${name} is mandatory.`)}`);
+    console.log(`${red(`The name is mandatory.`)}`);
     return;
   }
 
@@ -95,7 +95,7 @@ const saveOrbiter = ({profile, segmentId}: {profile: string | undefined; segment
 };
 
 const selectSegment = async (): Promise<AssetKey> => {
-  const {segment} = await prompts({
+  const {segment}: {segment: string} = await prompts({
     type: 'select',
     name: 'segment',
     message: 'Which new segment would you like to authorize with your controller?',

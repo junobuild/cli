@@ -41,7 +41,7 @@ const promptSatellites = async ({
   satelliteId: string;
   domains: CustomDomain[];
 }): Promise<string> => {
-  const {url} = await prompts({
+  const {url}: {url: string} = await prompts({
     type: 'select',
     name: 'url',
     message: 'Which URL of your satellite should be opened?',

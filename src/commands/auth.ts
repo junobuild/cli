@@ -26,7 +26,7 @@ export const login = async (args?: string[]) => {
     `🔐 Your terminal is already a controller: ${green(identity.getPrincipal().toText())}.\n`
   );
 
-  const {action} = await prompts({
+  const {action}: {action: string} = await prompts({
     type: 'select',
     name: 'action',
     message: 'What would you like to do?',
