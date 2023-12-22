@@ -1,3 +1,4 @@
+import {setCustomDomains, type CustomDomain, type SatelliteParameters} from '@junobuild/admin';
 import {createHash} from 'crypto';
 import {cyan} from 'kleur';
 import {readFile} from 'node:fs/promises';
@@ -104,5 +105,18 @@ export const upgradeWasmCdn = async ({
   } catch (err: unknown) {
     spinner.stop();
     throw err;
+  }
+};
+
+export const redoCustomDomains = async (params: {
+  satellite: SatelliteParameters;
+  domains: CustomDomain[];
+}) => {
+  const spinner = ora('Setting back custom domains...').start();
+
+  try {
+    await setCustomDomains(params);
+  } finally {
+    spinner.stop();
   }
 };

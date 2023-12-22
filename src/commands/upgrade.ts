@@ -1,5 +1,6 @@
 import {
   checkUpgradeVersion,
+  listCustomDomains,
   missionControlVersion,
   orbiterVersion,
   satelliteVersion,
@@ -21,7 +22,7 @@ import {
   ORBITER_WASM_NAME,
   SATELLITE_WASM_NAME
 } from '../constants/constants';
-import {upgradeWasmCdn, upgradeWasmLocal} from '../services/upgrade.services';
+import {redoCustomDomains, upgradeWasmCdn, upgradeWasmLocal} from '../services/upgrade.services';
 import type {AssetKey} from '../types/asset-key';
 import {actorParameters} from '../utils/actor.utils';
 import {hasArgs, nextArg} from '../utils/args.utils';
@@ -154,24 +155,23 @@ const upgradeSatelliteRelease = async ({
   const displayHint = `satellite "${satelliteKey(satellite.satelliteId ?? '')}"`;
   const version = await selectVersion({currentVersion, assetKey: SATELLITE_WASM_NAME, displayHint});
 
-  if (version === undefined) {
+  if (isNullish(version)) {
     return;
   }
 
-  const reset = await confirmReset({args, assetKey: 'satellite'});
-
-  const upgradeSatelliteWasm = async ({wasm_module}: {wasm_module: Uint8Array}) => {
-    await upgradeSatelliteAdmin({
-      satellite,
-      wasm_module,
-      // TODO: option to be removed
-      deprecated: compare(currentVersion, '0.0.7') < 0,
-      deprecatedNoScope: compare(currentVersion, '0.0.9') < 0,
-      ...(reset && {reset})
-    });
+  const upgrade = async (params: {
+    upgrade: ({wasm_module}: {wasm_module: Uint8Array}) => Promise<void>;
+    reset?: boolean;
+  }) => {
+    await upgradeWasmCdn({version, assetKey: 'satellite', ...params});
   };
 
-  await upgradeWasmCdn({version, assetKey: 'satellite', upgrade: upgradeSatelliteWasm, reset});
+  await executeUpgradeSatellite({
+    satellite,
+    args,
+    currentVersion,
+    upgrade
+  });
 };
 
 const upgradeSatelliteCustom = async ({
@@ -193,7 +193,39 @@ const upgradeSatelliteCustom = async ({
     satellite
   });
 
+  const upgrade = async (params: {
+    upgrade: ({wasm_module}: {wasm_module: Uint8Array}) => Promise<void>;
+    reset?: boolean;
+  }) => {
+    await upgradeWasmLocal({src, ...params});
+  };
+
+  await executeUpgradeSatellite({
+    satellite,
+    args,
+    currentVersion,
+    upgrade
+  });
+};
+
+const executeUpgradeSatellite = async ({
+  satellite,
+  args,
+  currentVersion,
+  upgrade
+}: {
+  satellite: SatelliteParameters;
+  args?: string[];
+  currentVersion: string;
+  upgrade: (params: {
+    upgrade: ({wasm_module}: {wasm_module: Uint8Array}) => Promise<void>;
+    reset?: boolean;
+  }) => Promise<void>;
+}) => {
   const reset = await confirmReset({args, assetKey: 'satellite'});
+
+  // Information we want to try to redo once the satellite has been updated and resetted
+  const customDomains = reset ? await listCustomDomains({satellite}) : [];
 
   const upgradeSatelliteWasm = async ({wasm_module}: {wasm_module: Uint8Array}) => {
     await upgradeSatelliteAdmin({
@@ -206,7 +238,14 @@ const upgradeSatelliteCustom = async ({
     });
   };
 
-  await upgradeWasmLocal({src, upgrade: upgradeSatelliteWasm, reset});
+  await upgrade({
+    upgrade: upgradeSatelliteWasm,
+    reset
+  });
+
+  if (reset && customDomains.length > 0) {
+    await redoCustomDomains({satellite, domains: customDomains});
+  }
 };
 
 const updateMissionControlRelease = async (missionControlParameters: MissionControlParameters) => {
