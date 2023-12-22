@@ -26,13 +26,13 @@ import {
   DEPLOY_DEFAULT_SOURCE
 } from '../constants/deploy.constants';
 import {clear} from '../services/clear.services';
+import {assertSatelliteMemorySize} from '../services/deploy.services';
 import type {SatelliteConfig} from '../types/juno.config';
 import {hasArgs} from '../utils/args.utils';
 import {gzipFiles} from '../utils/compress.utils';
 import {listSourceFiles} from '../utils/deploy.utils';
 import {satelliteParameters} from '../utils/satellite.utils';
 import {init} from './init';
-import { assertSatelliteMemorySize } from "../services/deploy.services";
 
 interface FileDetails {
   file: string;
@@ -50,8 +50,6 @@ export const deploy = async (args?: string[]) => {
   if (hasArgs({args, options: ['-c', '--clear']})) {
     await clear();
   }
-
-  await assertSatelliteMemorySize();
 
   await executeDeploy();
 };
@@ -73,6 +71,8 @@ const executeDeploy = async () => {
     console.log('No new files to upload.');
     return;
   }
+
+  await assertSatelliteMemorySize();
 
   const satellite = satelliteParameters(satelliteId);
 
