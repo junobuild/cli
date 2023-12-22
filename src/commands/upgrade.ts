@@ -162,7 +162,9 @@ const upgradeSatelliteRelease = async ({
   const upgrade = async (params: {
     upgrade: ({wasm_module}: {wasm_module: Uint8Array}) => Promise<void>;
     reset?: boolean;
-  }) => upgradeWasmCdn({version, assetKey: 'satellite', ...params});
+  }) => {
+    await upgradeWasmCdn({version, assetKey: 'satellite', ...params});
+  };
 
   await executeUpgradeSatellite({
     satellite,
@@ -194,7 +196,9 @@ const upgradeSatelliteCustom = async ({
   const upgrade = async (params: {
     upgrade: ({wasm_module}: {wasm_module: Uint8Array}) => Promise<void>;
     reset?: boolean;
-  }) => upgradeWasmLocal({src, ...params});
+  }) => {
+    await upgradeWasmLocal({src, ...params});
+  };
 
   await executeUpgradeSatellite({
     satellite,
