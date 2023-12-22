@@ -27,7 +27,7 @@
     "@dfinity/candid": "^0.20.2",
     "@dfinity/identity": "^0.20.2",
     "@dfinity/principal": "^0.20.2",
-    "@junobuild/admin": "^0.0.38-next-2023-12-22",
+    "@junobuild/admin": "^0.0.38-next-2023-12-22.1",
     "@junobuild/core-peer": "^0.0.3-next-2023-12-21",
     "@junobuild/utils": "^0.0.16-next-2023-12-21",
     "conf": "^12.0.0",

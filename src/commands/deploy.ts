@@ -26,6 +26,7 @@ import {
   DEPLOY_DEFAULT_SOURCE
 } from '../constants/deploy.constants';
 import {clear} from '../services/clear.services';
+import {assertSatelliteMemorySize} from '../services/deploy.services';
 import type {SatelliteConfig} from '../types/juno.config';
 import {hasArgs} from '../utils/args.utils';
 import {gzipFiles} from '../utils/compress.utils';
@@ -70,6 +71,8 @@ const executeDeploy = async () => {
     console.log('No new files to upload.');
     return;
   }
+
+  await assertSatelliteMemorySize();
 
   const satellite = satelliteParameters(satelliteId);
 
