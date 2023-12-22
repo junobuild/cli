@@ -6,6 +6,7 @@ import {JUNO_CDN_URL} from '../constants/constants';
 import type {AssetKey} from '../types/asset-key';
 import {downloadFromURL} from '../utils/download.utils';
 import {NEW_CMD_LINE, confirmAndExit} from '../utils/prompt.utils';
+import { CustomDomain, SatelliteParameters, setCustomDomains } from "@junobuild/admin";
 
 const executeUpgradeWasm = async ({
   upgrade,
@@ -106,3 +107,13 @@ export const upgradeWasmCdn = async ({
     throw err;
   }
 };
+
+export const redoCustomDomains = async (params: {satellite: SatelliteParameters; domains: CustomDomain[]}) => {
+  const spinner = ora('Setting back custom domains...').start();
+
+  try {
+    await setCustomDomains(params);
+  } finally {
+    spinner.stop();
+  }
+}
