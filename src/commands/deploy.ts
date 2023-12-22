@@ -32,6 +32,7 @@ import {gzipFiles} from '../utils/compress.utils';
 import {listSourceFiles} from '../utils/deploy.utils';
 import {satelliteParameters} from '../utils/satellite.utils';
 import {init} from './init';
+import { assertSatelliteMemorySize } from "../services/deploy.services";
 
 interface FileDetails {
   file: string;
@@ -49,6 +50,8 @@ export const deploy = async (args?: string[]) => {
   if (hasArgs({args, options: ['-c', '--clear']})) {
     await clear();
   }
+
+  await assertSatelliteMemorySize();
 
   await executeDeploy();
 };
