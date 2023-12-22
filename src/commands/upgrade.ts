@@ -127,7 +127,7 @@ const promptReleases = async ({
     value: release
   }));
 
-  const {version} = await prompts({
+  const {version}: {version: string} = await prompts({
     type: 'select',
     name: 'version',
     message: `To which version should your ${assetKey.replace('_', ' ')} be upgraded?`,

@@ -53,7 +53,7 @@ const initOrbiterConfig = async () => {
 };
 
 const promptSatellites = async (satellites: CliSatelliteConfig[]): Promise<string> => {
-  const {satellite} = await prompts({
+  const {satellite}: {satellite: string} = await prompts({
     type: 'select',
     name: 'satellite',
     message: 'Which satellite should be linked with this dapp?',
@@ -71,7 +71,7 @@ const promptSatellites = async (satellites: CliSatelliteConfig[]): Promise<strin
 };
 
 const promptSatellite = async (): Promise<string> => {
-  const {satellite} = await prompts([
+  const {satellite}: {satellite: string} = await prompts([
     {
       type: 'text',
       name: 'satellite',
@@ -85,7 +85,7 @@ const promptSatellite = async (): Promise<string> => {
 };
 
 const promptSource = async (): Promise<string> => {
-  const {source} = await prompts([
+  const {source}: {source: string} = await prompts([
     {
       type: 'text',
       name: 'source',
@@ -117,7 +117,7 @@ export const assertAnswerCtrlC: (
 };
 
 const promptOrbiters = async (orbiters: CliOrbiterConfig[]): Promise<string> => {
-  const {orbiter} = await prompts({
+  const {orbiter}: {orbiter: string} = await prompts({
     type: 'select',
     name: 'orbiter',
     message: 'Which orbiter do you use for the analytics in this dapp?',
