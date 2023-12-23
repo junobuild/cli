@@ -98,3 +98,13 @@ Options:
   ${cyan('-c, --clear')}           clear existing dapp files before proceeding with deployment
   ${cyan('-h, --help')}            output usage information
 `;
+
+export const helpClear = `
+${TITLE}
+
+Usage: ${cyan('juno clear [options]')}
+
+Options:
+  ${cyan('-f, --fullPath')}        clear a particular file of your dapp
+  ${cyan('-h, --help')}            output usage information
+`;
