@@ -5,6 +5,7 @@ import {config} from './commands/config';
 import {deploy} from './commands/deploy';
 import {
   help,
+  helpClear,
   helpCommand,
   helpDeploy,
   helpLogin,
@@ -51,6 +52,9 @@ export const run = async () => {
       case 'use':
         console.log(helpUse);
         break;
+      case 'clear':
+        console.log(helpClear);
+        break;
       case 'deploy':
         console.log(helpDeploy);
         break;
@@ -78,7 +82,7 @@ export const run = async () => {
       await config();
       break;
     case 'clear':
-      await clear();
+      await clear(args);
       break;
     case 'version':
       await versionCommand();
