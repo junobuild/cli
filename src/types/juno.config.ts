@@ -1,6 +1,17 @@
 import type {StorageConfig} from '@junobuild/admin';
 import type {ENCODING_TYPE} from '@junobuild/core-peer';
 
+export interface SatelliteAssertions {
+  /**
+   * Configuration for the heap memory size check. This can be a boolean to enable or disable the check, or a number to set a custom memory threshold in MB.
+   *
+   * - true: Enable the default check (with a threshold of 900MB).
+   * - false: Disable the heap memory size check.
+   * - number: Specify a custom threshold (in bytes) for the heap memory size check.
+   */
+  heapMemory?: number | boolean;
+}
+
 export interface SatelliteConfig {
   /**
    * The ID of the satellite to control from the folder where the juno.json config file is located.
@@ -37,6 +48,10 @@ export interface SatelliteConfig {
    * The "encoding" attribute can be used to overwrite the default mapping. It can take globs the same way that Git handles .gitignore.
    */
   encoding?: Array<[string, ENCODING_TYPE]>;
+  /**
+   * Optional configuration to override default assertions performed by the CLI.
+   */
+  assertions?: SatelliteAssertions;
 }
 
 export interface OrbiterConfig {

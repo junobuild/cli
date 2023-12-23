@@ -7,7 +7,11 @@ import {NEW_CMD_LINE, confirmAndExit} from '../utils/prompt.utils';
 import {satelliteParameters} from '../utils/satellite.utils';
 
 export const assertSatelliteMemorySize = async () => {
-  const {satelliteId} = await readSatelliteConfig();
+  const {satelliteId, assertions} = await readSatelliteConfig();
+
+  if (assertions?.heapMemory === false) {
+    return;
+  }
 
   const satellite = satelliteParameters(satelliteId);
 
@@ -24,17 +28,27 @@ export const assertSatelliteMemorySize = async () => {
     return;
   }
 
+  const maxMemorySize =
+    assertions?.heapMemory !== undefined && typeof assertions?.heapMemory !== 'boolean'
+      ? BigInt(assertions?.heapMemory)
+      : MEMORY_HEAP_WARNING;
+
   const {heap} = await satelliteMemorySize({satellite});
 
-  if (heap < MEMORY_HEAP_WARNING) {
+  if (heap < maxMemorySize) {
     return;
   }
 
-  await confirmAndExit(
-    `⚠️  Your satellite's heap memory is ${Intl.NumberFormat('en-US', {
+  const formatNumber = (value: bigint): string =>
+    Intl.NumberFormat('en-US', {
       maximumSignificantDigits: 3
-    }).format(
-      Number(heap) / 1_000_000
-    )} MB. It is approaching 1 GB, which is the recommended upper limit. Are you sure you want to deploy?`
+    }).format(Number(value) / 1_000_000);
+
+  await confirmAndExit(
+    `⚠️  Your satellite's heap memory is ${formatNumber(
+      heap
+    )} MB, which exceeds the recommended limit of ${formatNumber(
+      maxMemorySize
+    )} MB. Are you sure you want to proceed with the deployment?`
   );
 };
