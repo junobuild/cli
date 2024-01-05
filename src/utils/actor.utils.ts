@@ -1,6 +1,6 @@
 import {Ed25519KeyIdentity} from '@dfinity/identity/lib/cjs/identity/ed25519';
 import {type ActorParameters} from '@junobuild/admin';
-import {isNullish} from '@junobuild/utils';
+import {isNullish, nonNullish} from '@junobuild/utils';
 import {red} from 'kleur';
 import fetch from 'node-fetch';
 import {getToken} from '../configs/cli.config';
@@ -21,6 +21,6 @@ export const actorParameters = (): ActorParameters => {
     // TODO: TypeScript incompatibility window.fetch vs nodejs.fetch vs agent-ts using typeof fetch
     // @ts-expect-error
     fetch,
-    env: process.env.NODE_ENV === 'development' ? 'dev' : 'prod'
+    ...(nonNullish(process.env.CONTAINER_URL) && {container: process.env.CONTAINER_URL})
   };
 };
