@@ -19,6 +19,7 @@ Commands:
   )}               clear existing dapp code by removing JavaScript, HTML, CSS, and other files from your satellite
   ${cyan('config')}              apply configuration to satellite
   ${cyan('deploy')}              deploy your dapp to your satellite
+  ${cyan('eject')}               creates a Rust template for custom satellite feature extensions
   ${cyan('init')}                configure the current directory as a satellite
   ${cyan('help')}                display help information
   ${cyan('login')}               generate an authentication for use in non-interactive environments
