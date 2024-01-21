@@ -37,7 +37,7 @@ export const checkRustVersion = async (): Promise<{valid: boolean}> => {
 
     if (lt(version, RUST_MIN_VERSION)) {
       console.log(
-        `Your version of Rustc is ${yellow(`${version}`)}. Juno CLI requires Node ${green(
+        `Your version of Rustc is ${yellow(`${version}`)}. Juno CLI requires ${green(
           `${RUST_MIN_VERSION}`
         )} or a more recent version.`
       );

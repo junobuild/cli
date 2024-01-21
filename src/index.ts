@@ -3,7 +3,7 @@ import {login, logout} from './commands/auth';
 import {clear} from './commands/clear';
 import {config} from './commands/config';
 import {deploy} from './commands/deploy';
-import {eject} from './commands/eject';
+import {dev} from './commands/dev';
 import {
   help,
   helpClear,
@@ -105,8 +105,8 @@ export const run = async () => {
     case 'use':
       use(args);
       break;
-    case 'eject':
-      await eject();
+    case 'dev':
+      await dev(args);
       break;
     case 'help':
       console.log(help);
