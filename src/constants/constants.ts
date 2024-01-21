@@ -15,3 +15,4 @@ export const JUNO_CDN_URL = 'https://cdn.juno.build';
 export const GITHUB_API_CLI_URL = 'https://api.github.com/repos/junobuild/cli';
 export const IGNORE_OS_FILES = ['.ds_store', 'thumbs.db'];
 export const RUST_MIN_VERSION = '1.71.0';
+export const IC_WASM_MIN_VERSION = '0.3.6';

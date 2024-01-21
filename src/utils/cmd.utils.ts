@@ -1,4 +1,8 @@
-import {spawn as spawnCommand, type ChildProcessWithoutNullStreams} from 'child_process';
+import {
+  ChildProcess,
+  spawn as spawnCommand,
+  type ChildProcessWithoutNullStreams
+} from 'child_process';
 
 export const spawn = async ({
   command,
@@ -27,6 +31,28 @@ export const spawn = async ({
     process.on('close', (code) => {
       resolve(code);
     });
+    process.on('error', (err) => {
+      reject(err);
+    });
+  });
+};
+
+export const execute = async ({
+  command,
+  args
+}: {
+  command: string;
+  args?: readonly string[];
+}): Promise<number | null> => {
+  return await new Promise<number | null>((resolve, reject) => {
+    const process: ChildProcess = spawnCommand(command, args ?? [], {
+      stdio: 'inherit'
+    });
+
+    process.on('close', (code) => {
+      resolve(code);
+    });
+
     process.on('error', (err) => {
       reject(err);
     });

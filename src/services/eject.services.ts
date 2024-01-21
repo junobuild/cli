@@ -17,6 +17,11 @@ const DESTINATION_SATELLITE_PATH = './src/satellite';
 export const eject = async () => {
   const {valid} = await checkRustVersion();
 
+  if (valid === 'error') {
+    console.error(`Cannot detect your Rust runtime version. Is Cargo installed on your machine?`);
+    return;
+  }
+
   if (!valid) {
     return;
   }

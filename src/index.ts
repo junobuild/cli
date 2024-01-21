@@ -28,6 +28,11 @@ import {checkNodeVersion} from './utils/env.utils';
 export const run = async () => {
   const {valid} = checkNodeVersion();
 
+  if (valid === 'error') {
+    console.error(`Cannot detect your Node runtime version. Is NodeJS installed on your machine?`);
+    return;
+  }
+
   if (!valid) {
     return;
   }
