@@ -112,15 +112,19 @@ Options:
   ${yellow('-h, --help')}            Output usage information.
 `;
 
+export const helpDevSubCommands = `${magenta(
+  'build'
+)}               Compile satellite features using Cargo.
+  ${magenta('deploy')}              Test satellite features in a local Docker environment.`;
+
 export const helpDev = `
 ${TITLE}
 
-Usage: ${green('juno')} ${cyan('dev')} ${magenta('<subcommand>')}
+Usage: ${green('juno')} ${cyan('dev')} ${magenta('<sub-command>')}
 
-Commands:
-  ${magenta('build')}               Compile satellite features using Cargo.
-  ${magenta('deploy')}              Test satellite features in a local Docker environment.
+Sub-commands:
+  ${helpDevSubCommands}
   ${magenta(
     'eject'
-  )}               Create a Rust template for for custom Satellite feature extensions.
+  )}               Create a Rust template for for custom satellite feature extensions.
 `;

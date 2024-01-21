@@ -1,8 +1,9 @@
-import {yellow} from 'kleur';
+import {cyan, green, magenta, yellow} from 'kleur';
 import {existsSync} from 'node:fs';
 import {copyFile, mkdir} from 'node:fs/promises';
 import {dirname, join, relative} from 'node:path';
 import {fileURLToPath} from 'url';
+import {helpDevSubCommands} from '../commands/help';
 import {checkRustVersion} from '../utils/env.utils';
 import {confirm} from '../utils/prompt.utils';
 
@@ -39,6 +40,8 @@ export const eject = async () => {
     sourceFolder: join(TEMPLATE_SATELLITE_PATH, 'src'),
     destinationFolder: join(DESTINATION_SATELLITE_PATH, 'src')
   });
+
+  console.log(success({src: DESTINATION_SATELLITE_PATH}));
 };
 
 const writeFile = async ({
@@ -66,3 +69,16 @@ const writeFile = async ({
 
   await copyFile(join(__dirname, sourceFolder, template), destination);
 };
+
+export const success = ({src}: {src: string}): string => `
+✅ Satellite successfully ejected!
+
+You can now extend your satellite's capabilities. To do so, edit the generated Rust template located in ${yellow(
+  `${src}`
+)} and customize according to your needs.
+
+Useful ${green('juno')} ${cyan('dev')} ${magenta('<subcommand>')} to continue with:
+
+Sub-commands:
+  ${helpDevSubCommands}
+`;
