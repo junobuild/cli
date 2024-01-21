@@ -1,8 +1,16 @@
-import {magenta, yellow} from 'kleur';
+import {green, grey, magenta, yellow} from 'kleur';
+import {lstat, mkdir} from 'node:fs/promises';
+import {join, relative} from 'node:path';
+import ora, {type Ora} from 'ora';
 import {IC_WASM_MIN_VERSION} from '../constants/constants';
 import {execute} from '../utils/cmd.utils';
+import {gzipFile} from '../utils/compress.utils';
 import {checkIcWasmVersion} from '../utils/env.utils';
 import {confirmAndExit} from '../utils/prompt.utils';
+
+const CARGO_RELEASE_DIR = join(process.cwd(), 'target', 'wasm32-unknown-unknown', 'release');
+const DEPLOY_DIR = join(process.cwd(), 'target', 'deploy');
+const SATELLITE_OUTPUT = join(DEPLOY_DIR, 'satellite.wasm');
 
 export const build = async () => {
   const {valid} = await checkIcWasmVersion();
@@ -36,4 +44,66 @@ export const build = async () => {
       '--locked'
     ]
   });
+
+  const spinner = ora({
+    text: 'Finalizing...',
+    discardStdin: true
+  }).start();
+
+  try {
+    await icWasm();
+
+    spinner.text = 'Compressing...';
+
+    await gzipFile(SATELLITE_OUTPUT);
+
+    await successMsg(spinner);
+  } finally {
+    spinner.stop();
+  }
+};
+
+const icWasm = async () => {
+  await mkdir(DEPLOY_DIR, {recursive: true});
+
+  // Remove unused functions and debug info.
+  await execute({
+    command: 'ic-wasm',
+    args: [join(CARGO_RELEASE_DIR, 'satellite.wasm'), '-o', SATELLITE_OUTPUT, 'shrink']
+  });
+
+  // Adds the content of satellite.did to the `icp:public candid:service` custom section of the public metadata in the wasm
+  // TODO
+
+  // Indicate support for certificate version 1 and 2 in the canister metadata
+  await execute({
+    command: 'ic-wasm',
+    args: [
+      SATELLITE_OUTPUT,
+      '-o',
+      SATELLITE_OUTPUT,
+      'metadata',
+      'supported_certificate_versions',
+      '-d',
+      '"1,2"',
+      '-v',
+      'public'
+    ]
+  });
+};
+
+const successMsg = async (spinner: Ora) => {
+  const gzipOutput = `${SATELLITE_OUTPUT}.gz`;
+  const {size} = await lstat(gzipOutput);
+
+  const formatMB = (value: number): string =>
+    Intl.NumberFormat('en-US', {
+      maximumSignificantDigits: 2
+    }).format(value / (1024 * 1024));
+
+  spinner.succeed(
+    `${green('Success!')}\n\nThe satellite has been compiled.\nOutput file: ${yellow(
+      `${relative(process.cwd(), gzipOutput)}`
+    )} ${grey(`(${formatMB(size)}MB)`)}`
+  );
 };

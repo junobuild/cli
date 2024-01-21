@@ -19,7 +19,7 @@ export const gzipFiles = async ({
   return await Promise.all(filesToCompress.map(gzipFile));
 };
 
-const gzipFile = async (sourcePath: string) =>
+export const gzipFile = async (sourcePath: string) =>
   await new Promise<string>((resolve, reject) => {
     const sourceStream = createReadStream(sourcePath);
 
