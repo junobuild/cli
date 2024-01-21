@@ -9,6 +9,7 @@ import {
   helpClear,
   helpCommand,
   helpDeploy,
+  helpDev,
   helpLogin,
   helpOpen,
   helpUpgrade,
@@ -58,6 +59,9 @@ export const run = async () => {
         break;
       case 'deploy':
         console.log(helpDeploy);
+        break;
+      case 'dev':
+        console.log(helpDev);
         break;
       default:
         console.log(helpCommand(cmd));
