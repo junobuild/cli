@@ -1,4 +1,5 @@
 import {green, grey, magenta, yellow} from 'kleur';
+import {existsSync} from 'node:fs';
 import {lstat, mkdir} from 'node:fs/promises';
 import {join, relative} from 'node:path';
 import ora, {type Ora} from 'ora';
@@ -32,17 +33,19 @@ export const build = async () => {
     });
   }
 
+  const args = [
+    'build',
+    '--target',
+    'wasm32-unknown-unknown',
+    '-p',
+    'satellite',
+    '--release',
+    ...(existsSync('Cargo.lock') ? ['--locked'] : [])
+  ];
+
   await execute({
     command: 'cargo',
-    args: [
-      'build',
-      '--target',
-      'wasm32-unknown-unknown',
-      '-p',
-      'satellite',
-      '--release',
-      '--locked'
-    ]
+    args
   });
 
   const spinner = ora({
