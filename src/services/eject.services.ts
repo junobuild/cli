@@ -78,7 +78,7 @@ const writeFile = async ({
 export const success = ({src}: {src: string}): string => `
 ✅ Satellite successfully ejected!
 
-You can now extend your satellite's capabilities. To do so, edit the generated Rust template located in ${yellow(
+You can now extend your satellite's capabilities. Edit the generated Rust template located in ${yellow(
   `${src}`
 )} and customize according to your needs.
 

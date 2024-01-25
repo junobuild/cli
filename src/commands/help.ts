@@ -115,7 +115,9 @@ Options:
 export const helpDevSubCommands = `${magenta(
   'build'
 )}               Compile satellite features using Cargo.
-  ${magenta('deploy')}              Test satellite features in a local Docker environment.`;
+  ${magenta(
+    'start'
+  )}               Start a local Internet Computer network, encapsulated in a Docker environment.`;
 
 export const helpDev = `
 ${TITLE}
@@ -126,5 +128,5 @@ Sub-commands:
   ${helpDevSubCommands}
   ${magenta(
     'eject'
-  )}               Create a Rust template for for custom satellite feature extensions.
+  )}               Create a Rust template for custom satellite feature hooks and extensions.
 `;
