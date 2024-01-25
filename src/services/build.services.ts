@@ -1,6 +1,6 @@
 import {green, grey, magenta, yellow} from 'kleur';
 import {existsSync} from 'node:fs';
-import {lstat, mkdir} from 'node:fs/promises';
+import {lstat, mkdir, rename} from 'node:fs/promises';
 import {join, relative} from 'node:path';
 import ora, {type Ora} from 'ora';
 import {IC_WASM_MIN_VERSION} from '../constants/constants';
@@ -58,7 +58,10 @@ export const build = async () => {
 
     spinner.text = 'Compressing...';
 
-    await gzipFile(SATELLITE_OUTPUT);
+    // We use a temporary file otherwise the automatic deployment in Docker may start with a file that is not yet fully gzipped
+    await gzipFile({source: SATELLITE_OUTPUT, destination: `${SATELLITE_OUTPUT}.tmp.gz`});
+
+    await rename(`${SATELLITE_OUTPUT}.tmp.gz`, `${SATELLITE_OUTPUT}.gz`);
 
     await successMsg(spinner);
   } finally {

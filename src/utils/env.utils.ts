@@ -1,6 +1,11 @@
 import {green, yellow} from 'kleur';
 import {lt, major} from 'semver';
-import {IC_WASM_MIN_VERSION, NODE_18, RUST_MIN_VERSION} from '../constants/constants';
+import {
+  DOCKER_MIN_VERSION,
+  IC_WASM_MIN_VERSION,
+  NODE_18,
+  RUST_MIN_VERSION
+} from '../constants/constants';
 import {spawn} from './cmd.utils';
 
 export const checkNodeVersion = (): {valid: boolean | 'error'} => {
@@ -64,6 +69,32 @@ export const checkIcWasmVersion = async (): Promise<{valid: boolean | 'error'}> 
       console.log(
         `Your version of ic-wasm is ${yellow(version.trim())}. Juno CLI requires ${green(
           `${IC_WASM_MIN_VERSION}`
+        )} or a more recent version.`
+      );
+      return {valid: false};
+    }
+  } catch (e: unknown) {
+    return {valid: 'error'};
+  }
+
+  return {valid: true};
+};
+
+export const checkDockerVersion = async (): Promise<{valid: boolean | 'error'}> => {
+  try {
+    let output = '';
+    await spawn({
+      command: 'docker',
+      args: ['--version'],
+      stdout: (o) => (output += o)
+    });
+
+    const version = output.replaceAll(',', '').trim().split(' ')[2];
+
+    if (lt(version, DOCKER_MIN_VERSION)) {
+      console.log(
+        `Your version of Docker is ${yellow(version.trim())}. Juno CLI requires ${green(
+          `${DOCKER_MIN_VERSION}`
         )} or a more recent version.`
       );
       return {valid: false};

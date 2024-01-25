@@ -16,14 +16,20 @@ export const gzipFiles = async ({
   const pattern = gzip === true ? DEPLOY_DEFAULT_GZIP : gzip;
 
   const filesToCompress = sourceFiles.filter((file) => minimatch(file, pattern));
-  return await Promise.all(filesToCompress.map(gzipFile));
+  return await Promise.all(filesToCompress.map(async (source) => await gzipFile({source})));
 };
 
-export const gzipFile = async (sourcePath: string) =>
+export const gzipFile = async ({
+  source,
+  destination
+}: {
+  source: string;
+  destination?: string;
+}): Promise<string> =>
   await new Promise<string>((resolve, reject) => {
-    const sourceStream = createReadStream(sourcePath);
+    const sourceStream = createReadStream(source);
 
-    const destinationPath = `${sourcePath}.gz`;
+    const destinationPath = destination ?? `${source}.gz`;
     const destinationStream = createWriteStream(destinationPath);
 
     const gzip = createGzip();
