@@ -3,8 +3,7 @@ import {existsSync} from 'node:fs';
 import {lstat, mkdir, rename, writeFile} from 'node:fs/promises';
 import {join, relative} from 'node:path';
 import ora, {type Ora} from 'ora';
-import {IC_WASM_MIN_VERSION} from '../constants/constants';
-import {DEVELOPER_PROJECT_SATELLITE_PATH} from '../constants/dev.constants';
+import {DEVELOPER_PROJECT_SATELLITE_PATH, IC_WASM_MIN_VERSION} from '../constants/dev.constants';
 import {execute, spawn} from '../utils/cmd.utils';
 import {gzipFile} from '../utils/compress.utils';
 import {

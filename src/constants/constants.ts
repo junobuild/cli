@@ -14,6 +14,3 @@ export const CONSOLE_SATELLITE_URL = `${CONSOLE_URL}/satellite/?s=`;
 export const JUNO_CDN_URL = 'https://cdn.juno.build';
 export const GITHUB_API_CLI_URL = 'https://api.github.com/repos/junobuild/cli';
 export const IGNORE_OS_FILES = ['.ds_store', 'thumbs.db'];
-export const RUST_MIN_VERSION = '1.70.0';
-export const IC_WASM_MIN_VERSION = '0.3.6';
-export const DOCKER_MIN_VERSION = '24.0.0';

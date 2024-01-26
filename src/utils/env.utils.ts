@@ -1,11 +1,11 @@
 import {green, yellow} from 'kleur';
 import {lt, major} from 'semver';
+import {NODE_18} from '../constants/constants';
 import {
   DOCKER_MIN_VERSION,
   IC_WASM_MIN_VERSION,
-  NODE_18,
   RUST_MIN_VERSION
-} from '../constants/constants';
+} from '../constants/dev.constants';
 import {spawn} from './cmd.utils';
 
 export const checkNodeVersion = (): {valid: boolean | 'error'} => {
