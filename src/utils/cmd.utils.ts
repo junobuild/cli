@@ -7,11 +7,13 @@ import {
 export const spawn = async ({
   command,
   args,
-  stdout
+  stdout,
+  silentErrors = false
 }: {
   command: string;
   args?: readonly string[];
   stdout?: (output: string) => void;
+  silentErrors?: boolean;
 }): Promise<number | null> => {
   return await new Promise<number | null>((resolve, reject) => {
     const process: ChildProcessWithoutNullStreams = spawnCommand(command, args);
@@ -25,6 +27,10 @@ export const spawn = async ({
       console.log(`${data}`);
     });
     process.stderr.on('data', (data) => {
+      if (silentErrors) {
+        return;
+      }
+
       console.error(`${data}`);
     });
 

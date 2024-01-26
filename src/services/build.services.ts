@@ -1,12 +1,17 @@
 import {green, grey, magenta, yellow} from 'kleur';
 import {existsSync} from 'node:fs';
-import {lstat, mkdir, rename} from 'node:fs/promises';
+import {lstat, mkdir, rename, writeFile} from 'node:fs/promises';
 import {join, relative} from 'node:path';
 import ora, {type Ora} from 'ora';
 import {IC_WASM_MIN_VERSION} from '../constants/constants';
-import {execute} from '../utils/cmd.utils';
+import {DEVELOPER_PROJECT_SATELLITE_PATH} from '../constants/dev.constants';
+import {execute, spawn} from '../utils/cmd.utils';
 import {gzipFile} from '../utils/compress.utils';
-import {checkIcWasmVersion} from '../utils/env.utils';
+import {
+  checkCandidExtractorInstalled,
+  checkIcWasmVersion,
+  checkRustVersion
+} from '../utils/env.utils';
 import {confirmAndExit} from '../utils/prompt.utils';
 
 const CARGO_RELEASE_DIR = join(process.cwd(), 'target', 'wasm32-unknown-unknown', 'release');
@@ -14,23 +19,22 @@ const DEPLOY_DIR = join(process.cwd(), 'target', 'deploy');
 const SATELLITE_OUTPUT = join(DEPLOY_DIR, 'satellite.wasm');
 
 export const build = async () => {
-  const {valid} = await checkIcWasmVersion();
+  const {valid: validRust} = await checkRustVersion();
 
-  if (valid === false) {
+  if (validRust === 'error' || validRust === false) {
     return;
   }
 
-  if (valid === 'error') {
-    await confirmAndExit(
-      `The ${magenta('ic-wasm')} ${yellow(
-        `v${IC_WASM_MIN_VERSION}`
-      )} tool is required to build a satellite but appears to be not available. Would you like to install it on your machine?`
-    );
+  const {valid} = await checkIcWasm();
 
-    await execute({
-      command: 'cargo',
-      args: ['install', `ic-wasm@${IC_WASM_MIN_VERSION}`]
-    });
+  if (!valid) {
+    return;
+  }
+
+  const {valid: validExtractor} = await checkCandidExtractor();
+
+  if (!validExtractor) {
+    return;
   }
 
   const args = [
@@ -54,6 +58,8 @@ export const build = async () => {
   }).start();
 
   try {
+    await did();
+
     await icWasm();
 
     spinner.text = 'Compressing...';
@@ -67,6 +73,17 @@ export const build = async () => {
   } finally {
     spinner.stop();
   }
+};
+
+const did = async () => {
+  let candid = '';
+  await spawn({
+    command: 'candid-extractor',
+    args: [join(CARGO_RELEASE_DIR, 'satellite.wasm')],
+    stdout: (o) => (candid += o)
+  });
+
+  await writeFile(`${DEVELOPER_PROJECT_SATELLITE_PATH}/satellite.did`, candid, 'utf-8');
 };
 
 const icWasm = async () => {
@@ -112,4 +129,50 @@ const successMsg = async (spinner: Ora) => {
       `${relative(process.cwd(), gzipOutput)}`
     )} ${grey(`(${formatMB(size)}MB)`)}`
   );
+};
+
+const checkIcWasm = async (): Promise<{valid: boolean}> => {
+  const {valid} = await checkIcWasmVersion();
+
+  if (valid === false) {
+    return {valid};
+  }
+
+  if (valid === 'error') {
+    await confirmAndExit(
+      `The ${magenta('ic-wasm')} ${yellow(
+        `v${IC_WASM_MIN_VERSION}`
+      )} tool is required to build a satellite but appears to be not available. Would you like to install it on your machine?`
+    );
+
+    await execute({
+      command: 'cargo',
+      args: ['install', `ic-wasm@${IC_WASM_MIN_VERSION}`]
+    });
+  }
+
+  return {valid: true};
+};
+
+const checkCandidExtractor = async (): Promise<{valid: boolean}> => {
+  const {valid} = await checkCandidExtractorInstalled();
+
+  if (valid === false) {
+    return {valid};
+  }
+
+  if (valid === 'error') {
+    await confirmAndExit(
+      `The ${magenta(
+        'candid-extractor'
+      )} tool is required to generate the API ("did file") of your custom satellite but appears to be not available. Would you like to install it on your machine?`
+    );
+
+    await execute({
+      command: 'cargo',
+      args: ['install', `candid-extractor`]
+    });
+  }
+
+  return {valid: true};
 };

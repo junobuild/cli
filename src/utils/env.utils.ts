@@ -48,6 +48,7 @@ export const checkRustVersion = async (): Promise<{valid: boolean | 'error'}> =>
       return {valid: false};
     }
   } catch (e: unknown) {
+    console.error(`Cannot detect your Rust version. Is Cargo installed on your machine?`);
     return {valid: 'error'};
   }
 
@@ -104,4 +105,17 @@ export const checkDockerVersion = async (): Promise<{valid: boolean | 'error'}> 
   }
 
   return {valid: true};
+};
+
+export const checkCandidExtractorInstalled = async (): Promise<{valid: boolean | 'error'}> => {
+  try {
+    await spawn({
+      command: 'candid-extractor',
+      silentErrors: true
+    });
+
+    return {valid: true};
+  } catch (e: unknown) {
+    return {valid: 'error'};
+  }
 };
