@@ -1,6 +1,6 @@
 import {
-  ChildProcess,
   spawn as spawnCommand,
+  type ChildProcess,
   type ChildProcessWithoutNullStreams
 } from 'child_process';
 

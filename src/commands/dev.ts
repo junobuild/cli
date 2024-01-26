@@ -5,7 +5,7 @@ import {start} from '../services/start.services';
 import {helpDev} from './help';
 
 export const dev = async (args?: string[]) => {
-  const [subCommand, options] = args ?? [];
+  const [subCommand] = args ?? [];
 
   switch (subCommand) {
     case 'eject':

@@ -12,7 +12,7 @@ const TEMPLATE_SATELLITE_PATH = join(TEMPLATE_PATH, 'src/satellite');
 export const eject = async () => {
   const {valid} = await checkRustVersion();
 
-  if (valid === 'error' || valid === false) {
+  if (valid === 'error' || !valid) {
     return;
   }
 

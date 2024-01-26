@@ -20,7 +20,7 @@ const SATELLITE_OUTPUT = join(DEPLOY_DIR, 'satellite.wasm');
 export const build = async () => {
   const {valid: validRust} = await checkRustVersion();
 
-  if (validRust === 'error' || validRust === false) {
+  if (validRust === 'error' || !validRust) {
     return;
   }
 
