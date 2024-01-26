@@ -74,6 +74,8 @@ export const build = async () => {
   }
 };
 
+const DID_FILE = join(DEVELOPER_PROJECT_SATELLITE_PATH, 'satellite.did');
+
 const did = async () => {
   let candid = '';
   await spawn({
@@ -82,7 +84,7 @@ const did = async () => {
     stdout: (o) => (candid += o)
   });
 
-  await writeFile(`${DEVELOPER_PROJECT_SATELLITE_PATH}/satellite.did`, candid, 'utf-8');
+  await writeFile(DID_FILE, candid, 'utf-8');
 };
 
 const icWasm = async () => {
@@ -95,7 +97,20 @@ const icWasm = async () => {
   });
 
   // Adds the content of satellite.did to the `icp:public candid:service` custom section of the public metadata in the wasm
-  // TODO
+  await execute({
+    command: 'ic-wasm',
+    args: [
+      SATELLITE_OUTPUT,
+      '-o',
+      SATELLITE_OUTPUT,
+      'metadata',
+      'candid:service',
+      '-f',
+      DID_FILE,
+      '-v',
+      'public'
+    ]
+  });
 
   // Indicate support for certificate version 1 and 2 in the canister metadata
   await execute({
