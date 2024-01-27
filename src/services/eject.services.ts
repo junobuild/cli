@@ -7,7 +7,7 @@ import {checkRustVersion} from '../utils/env.utils';
 import {copyTemplateFile} from '../utils/fs.utils';
 
 const TEMPLATE_PATH = '../templates/eject';
-const TEMPLATE_SATELLITE_PATH = join(TEMPLATE_PATH, 'src/satellite');
+const TEMPLATE_SATELLITE_PATH = join(TEMPLATE_PATH, 'src', 'satellite');
 
 export const eject = async () => {
   const {valid} = await checkRustVersion();
@@ -36,6 +36,12 @@ export const eject = async () => {
     template: 'lib.rs',
     sourceFolder: join(TEMPLATE_SATELLITE_PATH, 'src'),
     destinationFolder: devProjectSrcPath
+  });
+
+  await copyTemplateFile({
+    template: 'satellite.did',
+    sourceFolder: TEMPLATE_SATELLITE_PATH,
+    destinationFolder: DEVELOPER_PROJECT_SATELLITE_PATH
   });
 
   console.log(success({src: DEVELOPER_PROJECT_SATELLITE_PATH}));

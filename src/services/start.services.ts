@@ -6,7 +6,7 @@ import {copyTemplateFile} from '../utils/fs.utils';
 import {confirmAndExit} from '../utils/prompt.utils';
 
 const TEMPLATE_PATH = '../templates/docker';
-const DESTINATION_PATH = '.';
+const DESTINATION_PATH = process.cwd();
 
 export const start = async () => {
   const {valid} = await checkDockerVersion();

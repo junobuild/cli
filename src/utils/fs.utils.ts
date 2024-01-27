@@ -17,7 +17,7 @@ export const copyTemplateFile = async ({
   destinationFolder: string;
   template: string;
 }) => {
-  const destination = join(process.cwd(), destinationFolder, template);
+  const destination = join(destinationFolder, template);
 
   if (existsSync(destination)) {
     const answer = await confirm(
