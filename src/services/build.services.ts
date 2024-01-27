@@ -6,6 +6,7 @@ import ora, {type Ora} from 'ora';
 import {DEVELOPER_PROJECT_SATELLITE_PATH, IC_WASM_MIN_VERSION} from '../constants/dev.constants';
 import {execute, spawn} from '../utils/cmd.utils';
 import {gzipFile} from '../utils/compress.utils';
+import {copySatelliteDid, readSatelliteDid} from '../utils/did.utils';
 import {
   checkCandidExtractorInstalled,
   checkIcWasmVersion,
@@ -75,7 +76,8 @@ export const build = async () => {
 };
 
 const SATELLITE_DID_FILE = join(DEVELOPER_PROJECT_SATELLITE_PATH, 'satellite.did');
-const SATELLITE_CUSTOM_DID_FILE = join(DEVELOPER_PROJECT_SATELLITE_PATH, 'satellite_custom.did');
+const CUSTOM_DID_FILE_NAME = 'custom.did';
+const SATELLITE_CUSTOM_DID_FILE = join(DEVELOPER_PROJECT_SATELLITE_PATH, CUSTOM_DID_FILE_NAME);
 
 const did = async () => {
   let candid = '';
@@ -85,14 +87,23 @@ const did = async () => {
     stdout: (o) => (candid += o)
   });
 
-  // TODO
-  const empty = candid.replace(/(\r\n|\n|\r)/gm, "").trim() === '';
+  const empty = candid.replace(/(\r\n|\n|\r)/gm, '').trim() === '';
 
   if (empty) {
+    // We always overwrite the satellite did file provided by Juno. That way we are sure the did file is always correct.
+    await copySatelliteDid(true);
+
     return;
   }
 
   await writeFile(SATELLITE_CUSTOM_DID_FILE, candid, 'utf-8');
+
+  const templateDid = await readSatelliteDid();
+  await writeFile(
+    SATELLITE_DID_FILE,
+    `import service "${CUSTOM_DID_FILE_NAME}";\n\n${templateDid}`,
+    'utf-8'
+  );
 };
 
 const icWasm = async () => {
