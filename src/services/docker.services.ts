@@ -29,6 +29,24 @@ export const start = async () => {
   });
 };
 
+export const stop = async () => {
+  const {valid} = await checkDockerVersion();
+
+  if (valid === 'error') {
+    console.error(`Cannot detect Docker version. Is Docker installed on your machine?`);
+    return;
+  }
+
+  if (!valid) {
+    return;
+  }
+
+  await execute({
+    command: 'docker',
+    args: ['compose', 'stop']
+  });
+};
+
 const assertJunoDevConfig = async () => {
   if (existsSync('juno.dev.json')) {
     return;

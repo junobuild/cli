@@ -129,4 +129,5 @@ Sub-commands:
   ${magenta(
     'eject'
   )}               Create a Rust template for custom satellite feature hooks and extensions.
+  ${magenta('stop')}                Stop the Docker environment.
 `;

@@ -1,7 +1,7 @@
 import {red} from 'kleur';
 import {build} from '../services/build.services';
+import {start, stop} from '../services/docker.services';
 import {eject} from '../services/eject.services';
-import {start} from '../services/start.services';
 import {helpDev} from './help';
 
 export const dev = async (args?: string[]) => {
@@ -16,6 +16,9 @@ export const dev = async (args?: string[]) => {
       break;
     case 'start':
       await start();
+      break;
+    case 'stop':
+      await stop();
       break;
     default:
       console.log(`${red('Unknown command.')}`);
