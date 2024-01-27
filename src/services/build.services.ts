@@ -76,8 +76,8 @@ export const build = async () => {
 };
 
 const SATELLITE_DID_FILE = join(DEVELOPER_PROJECT_SATELLITE_PATH, 'satellite.did');
-const CUSTOM_DID_FILE_NAME = 'custom.did';
-const SATELLITE_CUSTOM_DID_FILE = join(DEVELOPER_PROJECT_SATELLITE_PATH, CUSTOM_DID_FILE_NAME);
+const EXTENSION_DID_FILE_NAME = 'satellite_extension.did';
+const SATELLITE_CUSTOM_DID_FILE = join(DEVELOPER_PROJECT_SATELLITE_PATH, EXTENSION_DID_FILE_NAME);
 
 const did = async () => {
   let candid = '';
@@ -101,7 +101,7 @@ const did = async () => {
   const templateDid = await readSatelliteDid();
   await writeFile(
     SATELLITE_DID_FILE,
-    `import service "${CUSTOM_DID_FILE_NAME}";\n\n${templateDid}`,
+    `import service "${EXTENSION_DID_FILE_NAME}";\n\n${templateDid}`,
     'utf-8'
   );
 };
