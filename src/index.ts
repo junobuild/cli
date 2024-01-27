@@ -127,6 +127,7 @@ export const run = async () => {
   try {
     await run();
   } catch (err: unknown) {
-    console.log(`${red('An unexpected error happened 😫.')}`, err);
+    console.log(`${red('An unexpected error happened 😫.')}\n`);
+    console.log(err);
   }
 })();

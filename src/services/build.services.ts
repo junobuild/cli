@@ -74,7 +74,8 @@ export const build = async () => {
   }
 };
 
-const DID_FILE = join(DEVELOPER_PROJECT_SATELLITE_PATH, 'satellite.did');
+const SATELLITE_DID_FILE = join(DEVELOPER_PROJECT_SATELLITE_PATH, 'satellite.did');
+const SATELLITE_CUSTOM_DID_FILE = join(DEVELOPER_PROJECT_SATELLITE_PATH, 'satellite_custom.did');
 
 const did = async () => {
   let candid = '';
@@ -84,20 +85,27 @@ const did = async () => {
     stdout: (o) => (candid += o)
   });
 
-  await writeFile(DID_FILE, candid, 'utf-8');
+  // TODO
+  const empty = candid.replace(/(\r\n|\n|\r)/gm, "").trim() === '';
+
+  if (empty) {
+    return;
+  }
+
+  await writeFile(SATELLITE_CUSTOM_DID_FILE, candid, 'utf-8');
 };
 
 const icWasm = async () => {
   await mkdir(DEPLOY_DIR, {recursive: true});
 
   // Remove unused functions and debug info.
-  await execute({
+  await spawn({
     command: 'ic-wasm',
     args: [join(CARGO_RELEASE_DIR, 'satellite.wasm'), '-o', SATELLITE_OUTPUT, 'shrink']
   });
 
   // Adds the content of satellite.did to the `icp:public candid:service` custom section of the public metadata in the wasm
-  await execute({
+  await spawn({
     command: 'ic-wasm',
     args: [
       SATELLITE_OUTPUT,
@@ -106,14 +114,14 @@ const icWasm = async () => {
       'metadata',
       'candid:service',
       '-f',
-      DID_FILE,
+      SATELLITE_DID_FILE,
       '-v',
       'public'
     ]
   });
 
   // Indicate support for certificate version 1 and 2 in the canister metadata
-  await execute({
+  await spawn({
     command: 'ic-wasm',
     args: [
       SATELLITE_OUTPUT,

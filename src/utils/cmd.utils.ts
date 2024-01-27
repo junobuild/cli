@@ -32,6 +32,8 @@ export const spawn = async ({
       }
 
       console.error(`${data}`);
+
+      reject(new Error(`${data}`));
     });
 
     process.on('close', (code) => {
