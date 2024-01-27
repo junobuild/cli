@@ -1,7 +1,7 @@
 import {magenta} from 'kleur';
 import {existsSync} from 'node:fs';
 import {execute} from '../utils/cmd.utils';
-import {checkDockerVersion} from '../utils/env.utils';
+import {assertDockerRunning, checkDockerVersion} from '../utils/env.utils';
 import {copyTemplateFile} from '../utils/fs.utils';
 import {confirmAndExit} from '../utils/prompt.utils';
 
@@ -11,14 +11,11 @@ const DESTINATION_PATH = process.cwd();
 export const start = async () => {
   const {valid} = await checkDockerVersion();
 
-  if (valid === 'error') {
-    console.error(`Cannot detect Docker version. Is Docker installed on your machine?`);
+  if (valid === 'error' || !valid) {
     return;
   }
 
-  if (!valid) {
-    return;
-  }
+  await assertDockerRunning();
 
   await assertJunoDevConfig();
   await assertDockerCompose();
@@ -32,14 +29,11 @@ export const start = async () => {
 export const stop = async () => {
   const {valid} = await checkDockerVersion();
 
-  if (valid === 'error') {
-    console.error(`Cannot detect Docker version. Is Docker installed on your machine?`);
+  if (valid === 'error' || !valid) {
     return;
   }
 
-  if (!valid) {
-    return;
-  }
+  await assertDockerRunning();
 
   await execute({
     command: 'docker',

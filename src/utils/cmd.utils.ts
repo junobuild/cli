@@ -31,8 +31,6 @@ export const spawn = async ({
         return;
       }
 
-      console.error(`${data}`);
-
       reject(new Error(`${data}`));
     });
 

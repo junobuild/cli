@@ -6,7 +6,7 @@ import {
   IC_WASM_MIN_VERSION,
   RUST_MIN_VERSION
 } from '../constants/dev.constants';
-import {spawn} from './cmd.utils';
+import {execute, spawn} from './cmd.utils';
 
 export const checkNodeVersion = (): {valid: boolean | 'error'} => {
   try {
@@ -101,10 +101,22 @@ export const checkDockerVersion = async (): Promise<{valid: boolean | 'error'}> 
       return {valid: false};
     }
   } catch (e: unknown) {
+    console.error(`Cannot detect Docker version. Is Docker installed on your machine?`);
     return {valid: 'error'};
   }
 
   return {valid: true};
+};
+
+export const assertDockerRunning = async () => {
+  try {
+    await execute({
+      command: 'docker',
+      args: ['ps']
+    });
+  } catch (e: unknown) {
+    process.exit(1);
+  }
 };
 
 export const checkCandidExtractorInstalled = async (): Promise<{valid: boolean | 'error'}> => {
