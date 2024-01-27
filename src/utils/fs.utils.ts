@@ -42,4 +42,6 @@ export const readTemplateFile = async ({
 }: {
   sourceFolder: string;
   template: string;
-}) => readFile(join(__dirname, sourceFolder, template), 'utf-8');
+}): Promise<string> => {
+  return await readFile(join(__dirname, sourceFolder, template), 'utf-8');
+};
