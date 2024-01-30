@@ -131,6 +131,22 @@ const icWasm = async () => {
     ]
   });
 
+  // Add the type of build "extended" to the satellite. This way, we can identify whether it's the standard canister ("stock") or a custom build of the developer.
+  await spawn({
+    command: 'ic-wasm',
+    args: [
+      SATELLITE_OUTPUT,
+      '-o',
+      SATELLITE_OUTPUT,
+      'metadata',
+      'juno:build',
+      '-d',
+      '"extended"',
+      '-v',
+      'public'
+    ]
+  });
+
   // Indicate support for certificate version 1 and 2 in the canister metadata
   await spawn({
     command: 'ic-wasm',
