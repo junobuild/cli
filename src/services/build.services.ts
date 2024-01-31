@@ -141,7 +141,7 @@ const icWasm = async () => {
       'metadata',
       'juno:build',
       '-d',
-      '"extended"',
+      'extended',
       '-v',
       'public'
     ]
