@@ -22,8 +22,10 @@ import {
   ORBITER_WASM_NAME,
   SATELLITE_WASM_NAME
 } from '../constants/constants';
+import {assertSatelliteBuildType} from '../services/upgrade-assert.services';
 import {redoCustomDomains, upgradeWasmCdn, upgradeWasmLocal} from '../services/upgrade.services';
 import type {AssetKey} from '../types/asset-key';
+import type {UpgradeWasm, UpgradeWasmModule} from '../types/upgrade';
 import {actorParameters} from '../utils/actor.utils';
 import {hasArgs, nextArg} from '../utils/args.utils';
 import {toAssetKeys} from '../utils/asset-key.utils';
@@ -159,10 +161,7 @@ const upgradeSatelliteRelease = async ({
     return;
   }
 
-  const upgrade = async (params: {
-    upgrade: ({wasm_module}: {wasm_module: Uint8Array}) => Promise<void>;
-    reset?: boolean;
-  }) => {
+  const upgrade = async (params: Pick<UpgradeWasm, 'upgrade' | 'reset' | 'assert'>) => {
     await upgradeWasmCdn({version, assetKey: 'satellite', ...params});
   };
 
@@ -193,10 +192,7 @@ const upgradeSatelliteCustom = async ({
     satellite
   });
 
-  const upgrade = async (params: {
-    upgrade: ({wasm_module}: {wasm_module: Uint8Array}) => Promise<void>;
-    reset?: boolean;
-  }) => {
+  const upgrade = async (params: Pick<UpgradeWasm, 'upgrade' | 'reset' | 'assert'>) => {
     await upgradeWasmLocal({src, ...params});
   };
 
@@ -217,17 +213,14 @@ const executeUpgradeSatellite = async ({
   satellite: SatelliteParameters;
   args?: string[];
   currentVersion: string;
-  upgrade: (params: {
-    upgrade: ({wasm_module}: {wasm_module: Uint8Array}) => Promise<void>;
-    reset?: boolean;
-  }) => Promise<void>;
+  upgrade: (params: Pick<UpgradeWasm, 'upgrade' | 'reset' | 'assert'>) => Promise<void>;
 }) => {
   const reset = await confirmReset({args, assetKey: 'satellite'});
 
   // Information we want to try to redo once the satellite has been updated and resetted
   const customDomains = reset ? await listCustomDomains({satellite}) : [];
 
-  const upgradeSatelliteWasm = async ({wasm_module}: {wasm_module: Uint8Array}) => {
+  const upgradeSatelliteWasm = async ({wasm_module}: UpgradeWasmModule) => {
     await upgradeSatelliteAdmin({
       satellite,
       wasm_module,
@@ -238,9 +231,14 @@ const executeUpgradeSatellite = async ({
     });
   };
 
+  const assert = async (params: UpgradeWasmModule) => {
+    await assertSatelliteBuildType({satellite, ...params});
+  };
+
   await upgrade({
     upgrade: upgradeSatelliteWasm,
-    reset
+    reset,
+    assert
   });
 
   if (reset && customDomains.length > 0) {

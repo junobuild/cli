@@ -1,6 +1,8 @@
 import {minimatch} from 'minimatch';
 import {createReadStream, createWriteStream} from 'node:fs';
+import {Readable} from 'node:stream';
 import {createGzip} from 'node:zlib';
+import {createGunzip} from 'zlib';
 import {DEPLOY_DEFAULT_GZIP} from '../constants/deploy.constants';
 import type {SatelliteConfig} from '../types/juno.config';
 
@@ -41,3 +43,23 @@ export const gzipFile = async ({
     });
     destinationStream.on('error', reject);
   });
+
+export const gunzipFile = async ({source}: {source: Buffer}): Promise<Buffer> =>
+  await new Promise<Buffer>((resolve, reject) => {
+    const sourceStream = Readable.from(source);
+
+    const chunks: Uint8Array[] = [];
+
+    const gzip = createGunzip();
+
+    sourceStream.pipe(gzip);
+
+    gzip.on('data', (chunk: Uint8Array) => chunks.push(chunk));
+    gzip.on('end', () => {
+      resolve(Buffer.concat(chunks));
+    });
+    gzip.on('error', reject);
+  });
+
+export const isGzip = (buffer: Buffer): boolean =>
+  buffer.length > 2 && buffer[0] === 0x1f && buffer[1] === 0x8b;
