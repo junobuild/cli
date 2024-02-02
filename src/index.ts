@@ -66,7 +66,7 @@ export const run = async () => {
         console.log(helpDeploy);
         break;
       case 'dev':
-        console.log(helpDev);
+        console.log(helpDev(true));
         break;
       default:
         console.log(helpCommand(cmd));

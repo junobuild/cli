@@ -1,7 +1,7 @@
 import {cyan, green, magenta, yellow} from 'kleur';
 import {mkdir} from 'node:fs/promises';
 import {join} from 'node:path';
-import {helpDevSubCommands} from '../commands/help';
+import {helpDev} from '../commands/help';
 import {
   DEVELOPER_PROJECT_SATELLITE_PATH,
   TEMPLATE_PATH,
@@ -55,5 +55,5 @@ You can now extend your satellite's capabilities. Edit the generated Rust templa
 Useful ${green('juno')} ${cyan('dev')} ${magenta('<subcommand>')} to continue with:
 
 Sub-commands:
-  ${helpDevSubCommands}
+  ${helpDev(false)}
 `;
