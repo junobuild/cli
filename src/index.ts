@@ -3,11 +3,13 @@ import {login, logout} from './commands/auth';
 import {clear} from './commands/clear';
 import {config} from './commands/config';
 import {deploy} from './commands/deploy';
+import {dev} from './commands/dev';
 import {
   help,
   helpClear,
   helpCommand,
   helpDeploy,
+  helpDev,
   helpLogin,
   helpOpen,
   helpUpgrade,
@@ -25,6 +27,11 @@ import {checkNodeVersion} from './utils/env.utils';
 
 export const run = async () => {
   const {valid} = checkNodeVersion();
+
+  if (valid === 'error') {
+    console.error(`Cannot detect your Node runtime version. Is NodeJS installed on your machine?`);
+    return;
+  }
 
   if (!valid) {
     return;
@@ -57,6 +64,9 @@ export const run = async () => {
         break;
       case 'deploy':
         console.log(helpDeploy);
+        break;
+      case 'dev':
+        console.log(helpDev);
         break;
       default:
         console.log(helpCommand(cmd));
@@ -100,6 +110,9 @@ export const run = async () => {
     case 'use':
       use(args);
       break;
+    case 'dev':
+      await dev(args);
+      break;
     case 'help':
       console.log(help);
       break;
@@ -114,6 +127,7 @@ export const run = async () => {
   try {
     await run();
   } catch (err: unknown) {
-    console.log(`${red('An unexpected error happened 😫.')}`, err);
+    console.log(`${red('An unexpected error happened 😫.')}\n`);
+    console.log(err);
   }
 })();

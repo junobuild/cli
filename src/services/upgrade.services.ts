@@ -5,20 +5,13 @@ import {readFile} from 'node:fs/promises';
 import ora from 'ora';
 import {JUNO_CDN_URL} from '../constants/constants';
 import type {AssetKey} from '../types/asset-key';
+import type {UpgradeWasm} from '../types/upgrade';
 import {downloadFromURL} from '../utils/download.utils';
 import {NEW_CMD_LINE, confirmAndExit} from '../utils/prompt.utils';
 
-const executeUpgradeWasm = async ({
-  upgrade,
-  wasm,
-  hash,
-  reset = false
-}: {
-  wasm: Buffer;
-  hash: string;
-  upgrade: ({wasm_module}: {wasm_module: Uint8Array}) => Promise<void>;
-  reset?: boolean;
-}) => {
+const executeUpgradeWasm = async ({upgrade, wasm, hash, assert, reset = false}: UpgradeWasm) => {
+  await assert?.({wasm_module: wasm});
+
   await confirmAndExit(
     `Wasm hash is ${cyan(hash)}.${NEW_CMD_LINE}Start upgrade${reset ? ' and reset' : ''} now?`
   );
@@ -37,12 +30,11 @@ const executeUpgradeWasm = async ({
 export const upgradeWasmLocal = async ({
   src,
   upgrade,
-  reset
+  reset,
+  assert
 }: {
   src: string;
-  upgrade: ({wasm_module}: {wasm_module: Uint8Array}) => Promise<void>;
-  reset?: boolean;
-}) => {
+} & Pick<UpgradeWasm, 'reset' | 'upgrade' | 'assert'>) => {
   const loadWasm = async (file: string): Promise<{hash: string; wasm: Buffer}> => {
     const wasm = await readFile(file);
 
@@ -59,7 +51,7 @@ export const upgradeWasmLocal = async ({
 
     spinner.stop();
 
-    await executeUpgradeWasm({upgrade, wasm, hash, reset});
+    await executeUpgradeWasm({upgrade, wasm, hash, reset, assert});
   } catch (err: unknown) {
     spinner.stop();
     throw err;
@@ -70,13 +62,12 @@ export const upgradeWasmCdn = async ({
   version,
   assetKey,
   upgrade,
+  assert,
   reset
 }: {
   version: string;
   assetKey: AssetKey;
-  upgrade: ({wasm_module}: {wasm_module: Uint8Array}) => Promise<void>;
-  reset?: boolean;
-}) => {
+} & Pick<UpgradeWasm, 'reset' | 'upgrade' | 'assert'>) => {
   const downloadWasm = async (): Promise<{hash: string; wasm: Buffer}> => {
     const {hostname} = new URL(JUNO_CDN_URL);
 
@@ -101,7 +92,7 @@ export const upgradeWasmCdn = async ({
 
     spinner.stop();
 
-    await executeUpgradeWasm({upgrade, wasm, hash, reset});
+    await executeUpgradeWasm({upgrade, wasm, hash, reset, assert});
   } catch (err: unknown) {
     spinner.stop();
     throw err;

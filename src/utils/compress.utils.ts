@@ -1,6 +1,8 @@
 import {minimatch} from 'minimatch';
 import {createReadStream, createWriteStream} from 'node:fs';
+import {Readable} from 'node:stream';
 import {createGzip} from 'node:zlib';
+import {createGunzip} from 'zlib';
 import {DEPLOY_DEFAULT_GZIP} from '../constants/deploy.constants';
 import type {SatelliteConfig} from '../types/juno.config';
 
@@ -16,14 +18,20 @@ export const gzipFiles = async ({
   const pattern = gzip === true ? DEPLOY_DEFAULT_GZIP : gzip;
 
   const filesToCompress = sourceFiles.filter((file) => minimatch(file, pattern));
-  return await Promise.all(filesToCompress.map(gzipFile));
+  return await Promise.all(filesToCompress.map(async (source) => await gzipFile({source})));
 };
 
-const gzipFile = async (sourcePath: string) =>
+export const gzipFile = async ({
+  source,
+  destination
+}: {
+  source: string;
+  destination?: string;
+}): Promise<string> =>
   await new Promise<string>((resolve, reject) => {
-    const sourceStream = createReadStream(sourcePath);
+    const sourceStream = createReadStream(source);
 
-    const destinationPath = `${sourcePath}.gz`;
+    const destinationPath = destination ?? `${source}.gz`;
     const destinationStream = createWriteStream(destinationPath);
 
     const gzip = createGzip();
@@ -35,3 +43,23 @@ const gzipFile = async (sourcePath: string) =>
     });
     destinationStream.on('error', reject);
   });
+
+export const gunzipFile = async ({source}: {source: Buffer}): Promise<Buffer> =>
+  await new Promise<Buffer>((resolve, reject) => {
+    const sourceStream = Readable.from(source);
+
+    const chunks: Uint8Array[] = [];
+
+    const gzip = createGunzip();
+
+    sourceStream.pipe(gzip);
+
+    gzip.on('data', (chunk: Uint8Array) => chunks.push(chunk));
+    gzip.on('end', () => {
+      resolve(Buffer.concat(chunks));
+    });
+    gzip.on('error', reject);
+  });
+
+export const isGzip = (buffer: Buffer): boolean =>
+  buffer.length > 2 && buffer[0] === 0x1f && buffer[1] === 0x8b;
