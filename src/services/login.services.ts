@@ -45,7 +45,7 @@ export const login = async (args?: string[]) => {
 
       try {
         saveConfig({token, satellites, orbiters, missionControl, profile});
-        await respondWithFile(req, res, 200, '../templates/success.html');
+        await respondWithFile(req, res, 200, '../templates/login/success.html');
         console.log(`${green('Success!')} Logged in. ✅`);
         resolve();
       } catch (err) {
