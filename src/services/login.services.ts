@@ -37,7 +37,7 @@ export const login = async (args?: string[]) => {
       const profile = url.searchParams.get('profile');
 
       if (returnedNonce !== `${nonce}`) {
-        await respondWithFile(req, res, 400, '../templates/failure.html');
+        await respondWithFile(req, res, 400, '../templates/login/failure.html');
         reject(new Error('Unexpected error while logging in.'));
         server.close();
         return;
@@ -51,7 +51,7 @@ export const login = async (args?: string[]) => {
       } catch (err) {
         // TODO: another error page
         console.error(err);
-        await respondWithFile(req, res, 400, '../templates/failure.html');
+        await respondWithFile(req, res, 400, '../templates/login/failure.html');
         reject(err);
       }
 
