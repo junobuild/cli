@@ -34,3 +34,4 @@ UserInterfaceState.xcuserstate
 dist/
 
 target/
+templates/eject/Cargo.lock

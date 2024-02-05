@@ -1,14 +1,7 @@
 {
   "satellite": {
     "collections": {
-      "db": [
-        {
-          "collection": "demo",
-          "read": "managed",
-          "write": "managed",
-          "memory": "heap"
-        }
-      ],
+      "db": [],
       "storage": []
     },
     "controllers": []
