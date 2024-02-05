@@ -37,7 +37,7 @@ export const login = async (args?: string[]) => {
       const profile = url.searchParams.get('profile');
 
       if (returnedNonce !== `${nonce}`) {
-        await respondWithFile(req, res, 400, '../templates/failure.html');
+        await respondWithFile(req, res, 400, '../templates/login/failure.html');
         reject(new Error('Unexpected error while logging in.'));
         server.close();
         return;
@@ -45,13 +45,13 @@ export const login = async (args?: string[]) => {
 
       try {
         saveConfig({token, satellites, orbiters, missionControl, profile});
-        await respondWithFile(req, res, 200, '../templates/success.html');
+        await respondWithFile(req, res, 200, '../templates/login/success.html');
         console.log(`${green('Success!')} Logged in. ✅`);
         resolve();
       } catch (err) {
         // TODO: another error page
         console.error(err);
-        await respondWithFile(req, res, 400, '../templates/failure.html');
+        await respondWithFile(req, res, 400, '../templates/login/failure.html');
         reject(err);
       }
 
