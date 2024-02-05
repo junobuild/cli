@@ -112,26 +112,24 @@ Options:
   ${yellow('-h, --help')}            Output usage information.
 `;
 
-export const helpDev = (listAllCommands: boolean): string => `
+const helpDevBuild = `${magenta('build')}               Compile satellite features using Cargo.`;
+const helpDevStart = `${magenta(
+  'start'
+)}               Start a local Internet Computer network, encapsulated in a Docker environment.`;
+
+export const helpDevContinue = `${helpDevBuild}
+  ${helpDevStart}`;
+
+export const helpDev = `
 ${TITLE}
 
 Usage: ${green('juno')} ${cyan('dev')} ${magenta('<sub-command>')}
 
-Sub-commands:
-  ${magenta('build')}               Compile satellite features using Cargo.${
-    listAllCommands
-      ? `
+Subcommands:
+  ${helpDevBuild}
   ${magenta(
     'eject'
-  )}               Create a Rust template for custom satellite feature hooks and extensions.`
-      : ''
-  }
-  ${magenta(
-    'start'
-  )}               Start a local Internet Computer network, encapsulated in a Docker environment.${
-    listAllCommands
-      ? `
-  ${magenta('stop')}                Stop the Docker environment.`
-      : ''
-  }
+  )}               Create a Rust template for custom satellite feature hooks and extensions.
+  ${helpDevStart}
+  ${magenta('stop')}                Stop the Docker environment.
 `;

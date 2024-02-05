@@ -1,7 +1,7 @@
 import {cyan, green, magenta, yellow} from 'kleur';
 import {mkdir} from 'node:fs/promises';
 import {join} from 'node:path';
-import {helpDev} from '../commands/help';
+import {helpDevContinue} from '../commands/help';
 import {
   DEVELOPER_PROJECT_SATELLITE_PATH,
   TEMPLATE_PATH,
@@ -48,12 +48,13 @@ export const eject = async () => {
 export const success = ({src}: {src: string}): string => `
 ✅ Satellite successfully ejected!
 
-You can now extend your satellite's capabilities. Edit the generated Rust template located in ${yellow(
+You can now extend your satellite's capabilities.
+Edit the generated Rust template located in ${yellow(
   `${src}`
 )} and customize according to your needs.
 
 Useful ${green('juno')} ${cyan('dev')} ${magenta('<subcommand>')} to continue with:
 
-Sub-commands:
-  ${helpDev(false)}
+Subcommands:
+  ${helpDevContinue}
 `;

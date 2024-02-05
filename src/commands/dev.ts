@@ -22,6 +22,6 @@ export const dev = async (args?: string[]) => {
       break;
     default:
       console.log(`${red('Unknown command.')}`);
-      console.log(helpDev(true));
+      console.log(helpDev);
   }
 };
