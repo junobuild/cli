@@ -37,8 +37,6 @@ export const assertSatelliteBuildType = async ({
     })
   ]);
 
-  console.log(satelliteType, wasmType);
-
   if (satelliteType === 'extended' && (wasmType === 'stock' || isNullish(wasmType))) {
     await confirmAndExit(
       `Your satellite is currently running on an ${yellow(
