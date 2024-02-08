@@ -30,12 +30,33 @@ export const assertSatelliteBuildType = async ({
   satellite,
   wasm_module
 }: {satellite: SatelliteParameters} & UpgradeWasmModule) => {
-  const [wasmType, satelliteType] = await Promise.all([
+
+  // TODO: Workaround for agent-js. Disable console.warn.
+  // See https://github.com/dfinity/agent-js/issues/843
+  const hideAgentJsConsoleWarn = globalThis.console.warn;
+  globalThis.console.warn = () => null;
+
+  const [wasmTypeResult, satelliteTypeResult] = await Promise.allSettled([
     wasmBuildType({wasm_module}),
     satelliteBuildType({
       satellite
     })
   ]);
+
+  // Redo console.warn
+  globalThis.console.warn = hideAgentJsConsoleWarn;
+
+  if (wasmTypeResult.status === 'rejected') {
+    throw new Error(`The custom sections of the WASM module you try to upgrade cannot be read.`);
+  }
+
+  // Agent-js throw an exception when a metadata path cannot be found therefore we assumed here that this happens because the Satellite version is < 0.0.15.
+  if (satelliteTypeResult.status === 'rejected') {
+    return;
+  }
+
+  const {value: wasmType} = wasmTypeResult;
+  const {value: satelliteType} = satelliteTypeResult;
 
   if (satelliteType === 'extended' && (wasmType === 'stock' || isNullish(wasmType))) {
     await confirmAndExit(
