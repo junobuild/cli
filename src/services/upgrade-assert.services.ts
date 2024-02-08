@@ -32,8 +32,9 @@ export const assertSatelliteBuildType = async ({
 }: {satellite: SatelliteParameters} & UpgradeWasmModule) => {
   // TODO: Workaround for agent-js. Disable console.warn.
   // See https://github.com/dfinity/agent-js/issues/843
+  // eslint-disable-next-line @typescript-eslint/unbound-method
   const hideAgentJsConsoleWarn = globalThis.console.warn;
-  globalThis.console.warn = () => null;
+  globalThis.console.warn = (): null => null;
 
   const [wasmTypeResult, satelliteTypeResult] = await Promise.allSettled([
     wasmBuildType({wasm_module}),
