@@ -30,7 +30,6 @@ export const assertSatelliteBuildType = async ({
   satellite,
   wasm_module
 }: {satellite: SatelliteParameters} & UpgradeWasmModule) => {
-
   // TODO: Workaround for agent-js. Disable console.warn.
   // See https://github.com/dfinity/agent-js/issues/843
   const hideAgentJsConsoleWarn = globalThis.console.warn;
