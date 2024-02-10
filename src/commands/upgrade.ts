@@ -70,7 +70,9 @@ const upgradeMissionControl = async (args?: string[]) => {
     ...actorParameters()
   };
 
-  const consoleSuccess = () => console.log(`✅ Mission control successfully upgraded.`);
+  const consoleSuccess = () => {
+    console.log(`✅ Mission control successfully upgraded.`);
+  };
 
   if (hasArgs({args, options: ['-s', '--src']})) {
     await upgradeMissionControlCustom({args, missionControlParameters});
@@ -99,7 +101,9 @@ const upgradeOrbiters = async (args?: string[]) => {
       ...actorParameters()
     };
 
-    const consoleSuccess = () => console.log(`✅ Orbiter successfully upgraded.`);
+    const consoleSuccess = () => {
+      console.log(`✅ Orbiter successfully upgraded.`);
+    };
 
     if (hasArgs({args, options: ['-s', '--src']})) {
       await upgradeOrbiterCustom({args, orbiterParameters});
@@ -132,7 +136,9 @@ const upgradeSatellite = async (args?: string[]) => {
 
   const satellite = satelliteParameters(satelliteId);
 
-  const consoleSuccess = () => console.log(`✅ Satellite successfully upgraded.`);
+  const consoleSuccess = () => {
+    console.log(`✅ Satellite successfully upgraded.`);
+  };
 
   if (hasArgs({args, options: ['-s', '--src']})) {
     await upgradeSatelliteCustom({satellite, args});
