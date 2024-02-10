@@ -62,7 +62,7 @@ const upgradeMissionControl = async (args?: string[]) => {
   }
 
   console.log(
-    `${NEW_CMD_LINE}Initiating upgrade for mission control ID ${cyan(missionControl)}.${NEW_CMD_LINE}`
+    `${NEW_CMD_LINE}Initiating upgrade for mission control ${cyan(missionControl)}.${NEW_CMD_LINE}`
   );
 
   const missionControlParameters = {
@@ -70,12 +70,18 @@ const upgradeMissionControl = async (args?: string[]) => {
     ...actorParameters()
   };
 
+  const consoleSuccess = () => console.log(`✅ Mission control successfully upgraded.`);
+
   if (hasArgs({args, options: ['-s', '--src']})) {
     await upgradeMissionControlCustom({args, missionControlParameters});
+
+    consoleSuccess();
     return;
   }
 
   await updateMissionControlRelease({args, missionControlParameters});
+
+  consoleSuccess();
 };
 
 const upgradeOrbiters = async (args?: string[]) => {
@@ -86,21 +92,25 @@ const upgradeOrbiters = async (args?: string[]) => {
   }
 
   const upgradeOrbiter = async (orbiterId: string) => {
-    console.log(
-      `${NEW_CMD_LINE}Initiating upgrade for Orbiter ID ${cyan(orbiterId)}.${NEW_CMD_LINE}`
-    );
+    console.log(`${NEW_CMD_LINE}Initiating upgrade for Orbiter ${cyan(orbiterId)}.${NEW_CMD_LINE}`);
 
     const orbiterParameters = {
       orbiterId,
       ...actorParameters()
     };
 
+    const consoleSuccess = () => console.log(`✅ Orbiter successfully upgraded.`);
+
     if (hasArgs({args, options: ['-s', '--src']})) {
       await upgradeOrbiterCustom({args, orbiterParameters});
+
+      consoleSuccess();
       return;
     }
 
     await updateOrbiterRelease(orbiterParameters);
+
+    consoleSuccess();
   };
 
   for (const orbiter of authOrbiters) {
@@ -117,17 +127,23 @@ const upgradeSatellite = async (args?: string[]) => {
   const {satelliteId} = await readSatelliteConfig();
 
   console.log(
-    `${NEW_CMD_LINE}Initiating upgrade for satellite ID ${cyan(satelliteId)}.${NEW_CMD_LINE}`
+    `${NEW_CMD_LINE}Initiating upgrade for satellite ${cyan(satelliteId)}.${NEW_CMD_LINE}`
   );
 
   const satellite = satelliteParameters(satelliteId);
 
+  const consoleSuccess = () => console.log(`✅ Satellite successfully upgraded.`);
+
   if (hasArgs({args, options: ['-s', '--src']})) {
     await upgradeSatelliteCustom({satellite, args});
+
+    consoleSuccess();
     return;
   }
 
   await upgradeSatelliteRelease({satellite, args});
+
+  consoleSuccess();
 };
 
 const promptReleases = async ({
