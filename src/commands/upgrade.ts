@@ -55,14 +55,14 @@ const upgradeMissionControl = async (args?: string[]) => {
   if (isNullish(missionControl)) {
     console.log(
       `${red(
-        'No Mission Control found.'
+        'No mission control found.'
       )} Ignore this error if your controller does not control your mission control.`
     );
     return;
   }
 
   console.log(
-    `${NEW_CMD_LINE}Initiating upgrade for Mission Control ID ${cyan(missionControl)}.${NEW_CMD_LINE}`
+    `${NEW_CMD_LINE}Initiating upgrade for mission control ID ${cyan(missionControl)}.${NEW_CMD_LINE}`
   );
 
   const missionControlParameters = {
@@ -117,7 +117,7 @@ const upgradeSatellite = async (args?: string[]) => {
   const {satelliteId} = await readSatelliteConfig();
 
   console.log(
-    `${NEW_CMD_LINE}Initiating upgrade for Satellite ID ${cyan(satelliteId)}.${NEW_CMD_LINE}`
+    `${NEW_CMD_LINE}Initiating upgrade for satellite ID ${cyan(satelliteId)}.${NEW_CMD_LINE}`
   );
 
   const satellite = satelliteParameters(satelliteId);
