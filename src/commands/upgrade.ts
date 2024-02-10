@@ -381,7 +381,7 @@ const selectVersion = async ({
   }
 
   if (newerReleases.length === 0) {
-    console.log(`No newer releases are available at the moment.`);
+    console.log(`Currently, there are no new releases available.`);
     return undefined;
   }
 
