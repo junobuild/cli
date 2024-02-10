@@ -60,17 +60,17 @@ export const assertSatelliteBuildType = async ({
 
   if (satelliteType === 'extended' && (wasmType === 'stock' || isNullish(wasmType))) {
     await confirmAndExit(
-      `Your satellite is currently running on an ${yellow(
+      `Your satellite is currently running on an ${cyan(
         `extended`
-      )} build. However, you are about to upgrade it to the ${yellow(
+      )} build.${NEW_CMD_LINE}However, you are about to upgrade it to the ${yellow(
         `stock`
-      )} version. Are you sure you want to proceed?`
+      )} version.${NEW_CMD_LINE}Are you sure you want to proceed?`
     );
   }
 };
 
 export const assertUpgradeHash = async ({hash, reset}: Pick<UpgradeWasm, 'hash' | 'reset'>) => {
   await confirmAndExit(
-    `Wasm hash is ${cyan(hash)}.${NEW_CMD_LINE}Start upgrade${reset ? ' and reset' : ''} now?`
+    `The Wasm hash to be applied for the upgrade is ${cyan(hash)}.${NEW_CMD_LINE}Start upgrade${reset ? ' and reset' : ''} now?`
   );
 };

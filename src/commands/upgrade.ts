@@ -12,7 +12,7 @@ import {
   type SatelliteParameters
 } from '@junobuild/admin';
 import {isNullish} from '@junobuild/utils';
-import {red, yellow} from 'kleur';
+import {cyan, red, yellow} from 'kleur';
 import prompts from 'prompts';
 import {compare} from 'semver';
 import {getCliMissionControl, getCliOrbiters} from '../configs/cli.config';
@@ -30,7 +30,7 @@ import {actorParameters} from '../utils/actor.utils';
 import {hasArgs, nextArg} from '../utils/args.utils';
 import {toAssetKeys} from '../utils/asset-key.utils';
 import {consoleNoConfigFound} from '../utils/msg.utils';
-import {confirmAndExit} from '../utils/prompt.utils';
+import {NEW_CMD_LINE, confirmAndExit} from '../utils/prompt.utils';
 import {orbiterKey, satelliteKey, satelliteParameters} from '../utils/satellite.utils';
 import {newerReleases as newerReleasesUtils} from '../utils/upgrade.utils';
 import {assertAnswerCtrlC} from './init';
@@ -55,11 +55,15 @@ const upgradeMissionControl = async (args?: string[]) => {
   if (isNullish(missionControl)) {
     console.log(
       `${red(
-        'No mission control found.'
+        'No Mission Control found.'
       )} Ignore this error if your controller does not control your mission control.`
     );
     return;
   }
+
+  console.log(
+    `${NEW_CMD_LINE}Initiating upgrade for Mission Control ID ${cyan(missionControl)}.${NEW_CMD_LINE}`
+  );
 
   const missionControlParameters = {
     missionControlId: missionControl,
@@ -82,6 +86,10 @@ const upgradeOrbiters = async (args?: string[]) => {
   }
 
   const upgradeOrbiter = async (orbiterId: string) => {
+    console.log(
+      `${NEW_CMD_LINE}Initiating upgrade for Orbiter ID ${cyan(orbiterId)}.${NEW_CMD_LINE}`
+    );
+
     const orbiterParameters = {
       orbiterId,
       ...actorParameters()
@@ -107,6 +115,10 @@ const upgradeSatellite = async (args?: string[]) => {
   }
 
   const {satelliteId} = await readSatelliteConfig();
+
+  console.log(
+    `${NEW_CMD_LINE}Initiating upgrade for Satellite ID ${cyan(satelliteId)}.${NEW_CMD_LINE}`
+  );
 
   const satellite = satelliteParameters(satelliteId);
 
