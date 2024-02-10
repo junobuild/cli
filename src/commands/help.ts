@@ -39,16 +39,18 @@ ${TITLE}
 Usage: ${green('juno')} ${cyan('upgrade')} ${yellow('[options]')}
 
 Options:
-  ${yellow('-s, --src')}             A local wasm file for the upgrade.
   ${yellow('-m, --mission-control')} Target a mission control.
   ${yellow('-o, --orbiter')}         Target an orbiter.
+  ${yellow('-s, --src')}             A local gzipped wasm file for the upgrade.
   ${yellow('-r, --reset')}           Reset to the initial state.
+  ${yellow('-n, --nocheck')}         Skip assertions and execute upgrade without prompts.
   ${yellow('-h, --help')}            Output usage information.
   
 Notes:
 
 - The command targets per default a satellite.
 - Resetting a mission control is not possible.
+- Disabling checks bypasses the verification of the target hash and skips the validation for build types.  
 `;
 
 export const helpCommand = (command: string) => `
