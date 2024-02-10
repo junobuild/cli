@@ -8,10 +8,18 @@ import type {UpgradeWasm} from '../types/upgrade';
 import {downloadFromURL} from '../utils/download.utils';
 import {assertUpgradeHash} from './upgrade-assert.services';
 
-const executeUpgradeWasm = async ({upgrade, wasm, hash, assert, reset = false}: UpgradeWasm) => {
-  await assert?.({wasm_module: wasm});
-
-  await assertUpgradeHash({hash, reset});
+const executeUpgradeWasm = async ({
+  upgrade,
+  wasm,
+  hash,
+  assert,
+  reset = false,
+  nocheck
+}: UpgradeWasm) => {
+  if (!nocheck) {
+    await assert?.({wasm_module: wasm});
+    await assertUpgradeHash({hash, reset});
+  }
 
   const spinner = ora(`Upgrading Wasm${reset ? ' and resetting state' : ''}...`).start();
 
@@ -28,10 +36,11 @@ export const upgradeWasmLocal = async ({
   src,
   upgrade,
   reset,
-  assert
+  assert,
+  nocheck
 }: {
   src: string;
-} & Pick<UpgradeWasm, 'reset' | 'upgrade' | 'assert'>) => {
+} & Pick<UpgradeWasm, 'reset' | 'upgrade' | 'assert' | 'nocheck'>) => {
   const loadWasm = async (file: string): Promise<{hash: string; wasm: Buffer}> => {
     const wasm = await readFile(file);
 
@@ -48,7 +57,7 @@ export const upgradeWasmLocal = async ({
 
     spinner.stop();
 
-    await executeUpgradeWasm({upgrade, wasm, hash, reset, assert});
+    await executeUpgradeWasm({upgrade, wasm, hash, reset, assert, nocheck});
   } catch (err: unknown) {
     spinner.stop();
     throw err;
@@ -60,11 +69,12 @@ export const upgradeWasmCdn = async ({
   assetKey,
   upgrade,
   assert,
-  reset
+  reset,
+  nocheck
 }: {
   version: string;
   assetKey: AssetKey;
-} & Pick<UpgradeWasm, 'reset' | 'upgrade' | 'assert'>) => {
+} & Pick<UpgradeWasm, 'reset' | 'upgrade' | 'assert' | 'nocheck'>) => {
   const downloadWasm = async (): Promise<{hash: string; wasm: Buffer}> => {
     const {hostname} = new URL(JUNO_CDN_URL);
 
@@ -89,7 +99,7 @@ export const upgradeWasmCdn = async ({
 
     spinner.stop();
 
-    await executeUpgradeWasm({upgrade, wasm, hash, reset, assert});
+    await executeUpgradeWasm({upgrade, wasm, hash, reset, assert, nocheck});
   } catch (err: unknown) {
     spinner.stop();
     throw err;

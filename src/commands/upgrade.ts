@@ -75,7 +75,7 @@ const upgradeMissionControl = async (args?: string[]) => {
     return;
   }
 
-  await updateMissionControlRelease(missionControlParameters);
+  await updateMissionControlRelease({args, missionControlParameters});
 };
 
 const upgradeOrbiters = async (args?: string[]) => {
@@ -173,8 +173,10 @@ const upgradeSatelliteRelease = async ({
     return;
   }
 
+  const nocheck = hasArgs({args, options: ['-n', '--nocheck']});
+
   const upgrade = async (params: Pick<UpgradeWasm, 'upgrade' | 'reset' | 'assert'>) => {
-    await upgradeWasmCdn({version, assetKey: 'satellite', ...params});
+    await upgradeWasmCdn({version, assetKey: 'satellite', nocheck, ...params});
   };
 
   await executeUpgradeSatellite({
@@ -204,8 +206,10 @@ const upgradeSatelliteCustom = async ({
     satellite
   });
 
+  const nocheck = hasArgs({args, options: ['-n', '--nocheck']});
+
   const upgrade = async (params: Pick<UpgradeWasm, 'upgrade' | 'reset' | 'assert'>) => {
-    await upgradeWasmLocal({src, ...params});
+    await upgradeWasmLocal({src, nocheck, ...params});
   };
 
   await executeUpgradeSatellite({
@@ -258,7 +262,13 @@ const executeUpgradeSatellite = async ({
   }
 };
 
-const updateMissionControlRelease = async (missionControlParameters: MissionControlParameters) => {
+const updateMissionControlRelease = async ({
+  args,
+  missionControlParameters
+}: {
+  args?: string[];
+  missionControlParameters: MissionControlParameters;
+}) => {
   const currentVersion = await missionControlVersion({
     missionControl: missionControlParameters
   });
@@ -274,6 +284,8 @@ const updateMissionControlRelease = async (missionControlParameters: MissionCont
     return;
   }
 
+  const nocheck = hasArgs({args, options: ['-n', '--nocheck']});
+
   const upgradeMissionControlWasm = async ({wasm_module}: {wasm_module: Uint8Array}) => {
     await upgradeMissionControlAdmin({
       missionControl: missionControlParameters,
@@ -281,7 +293,12 @@ const updateMissionControlRelease = async (missionControlParameters: MissionCont
     });
   };
 
-  await upgradeWasmCdn({version, assetKey: 'mission_control', upgrade: upgradeMissionControlWasm});
+  await upgradeWasmCdn({
+    version,
+    nocheck,
+    assetKey: 'mission_control',
+    upgrade: upgradeMissionControlWasm
+  });
 };
 
 const upgradeMissionControlCustom = async ({
@@ -298,6 +315,8 @@ const upgradeMissionControlCustom = async ({
     return;
   }
 
+  const nocheck = hasArgs({args, options: ['-n', '--nocheck']});
+
   const upgradeMissionControlWasm = async ({wasm_module}: {wasm_module: Uint8Array}) => {
     await upgradeMissionControlAdmin({
       missionControl: missionControlParameters,
@@ -305,7 +324,7 @@ const upgradeMissionControlCustom = async ({
     });
   };
 
-  await upgradeWasmLocal({src, upgrade: upgradeMissionControlWasm});
+  await upgradeWasmLocal({src, nocheck, upgrade: upgradeMissionControlWasm});
 };
 
 const updateOrbiterRelease = async ({
@@ -329,6 +348,7 @@ const updateOrbiterRelease = async ({
   }
 
   const reset = await confirmReset({args, assetKey: 'orbiter'});
+  const nocheck = hasArgs({args, options: ['-n', '--nocheck']});
 
   const upgradeOrbiterWasm = async ({wasm_module}: {wasm_module: Uint8Array}) => {
     await upgradeOrbiterAdmin({
@@ -338,7 +358,7 @@ const updateOrbiterRelease = async ({
     });
   };
 
-  await upgradeWasmCdn({version, assetKey: 'orbiter', upgrade: upgradeOrbiterWasm, reset});
+  await upgradeWasmCdn({version, assetKey: 'orbiter', upgrade: upgradeOrbiterWasm, reset, nocheck});
 };
 
 const upgradeOrbiterCustom = async ({
@@ -357,6 +377,8 @@ const upgradeOrbiterCustom = async ({
 
   const reset = await confirmReset({args, assetKey: 'orbiter'});
 
+  const nocheck = hasArgs({args, options: ['-n', '--nocheck']});
+
   const upgradeOrbiterWasm = async ({wasm_module}: {wasm_module: Uint8Array}) => {
     await upgradeOrbiterAdmin({
       orbiter: orbiterParameters,
@@ -365,7 +387,7 @@ const upgradeOrbiterCustom = async ({
     });
   };
 
-  await upgradeWasmLocal({src, upgrade: upgradeOrbiterWasm, reset});
+  await upgradeWasmLocal({src, nocheck, upgrade: upgradeOrbiterWasm, reset});
 };
 
 const selectVersion = async ({
