@@ -6,12 +6,12 @@ import {JUNO_CDN_URL} from '../constants/constants';
 import type {AssetKey} from '../types/asset-key';
 import type {UpgradeWasm} from '../types/upgrade';
 import {downloadFromURL} from '../utils/download.utils';
-import {assertSatelliteHash} from './upgrade-assert.services';
+import {assertUpgradeHash} from './upgrade-assert.services';
 
 const executeUpgradeWasm = async ({upgrade, wasm, hash, assert, reset = false}: UpgradeWasm) => {
   await assert?.({wasm_module: wasm});
 
-  await assertSatelliteHash({hash, reset});
+  await assertUpgradeHash({hash, reset});
 
   const spinner = ora(`Upgrading Wasm${reset ? ' and resetting state' : ''}...`).start();
 

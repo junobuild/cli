@@ -69,7 +69,7 @@ export const assertSatelliteBuildType = async ({
   }
 };
 
-export const assertSatelliteHash = async ({hash, reset}: Pick<UpgradeWasm, 'hash' | 'reset'>) => {
+export const assertUpgradeHash = async ({hash, reset}: Pick<UpgradeWasm, 'hash' | 'reset'>) => {
   await confirmAndExit(
     `Wasm hash is ${cyan(hash)}.${NEW_CMD_LINE}Start upgrade${reset ? ' and reset' : ''} now?`
   );
