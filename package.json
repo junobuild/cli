@@ -1,6 +1,6 @@
 {
   "name": "@junobuild/cli",
-  "version": "0.0.49",
+  "version": "0.0.50",
   "description": "The Juno command-line interface",
   "author": "David Dal Busco (https://daviddalbusco.com)",
   "license": "MIT",
