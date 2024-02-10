@@ -1,9 +1,9 @@
 import {satelliteBuildType, type BuildType, type SatelliteParameters} from '@junobuild/admin';
 import {isNullish, nonNullish} from '@junobuild/utils';
-import {yellow} from 'kleur';
-import {type UpgradeWasmModule} from '../types/upgrade';
+import {cyan, yellow} from 'kleur';
+import {type UpgradeWasm, type UpgradeWasmModule} from '../types/upgrade';
 import {gunzipFile, isGzip} from '../utils/compress.utils';
-import {confirmAndExit} from '../utils/prompt.utils';
+import {NEW_CMD_LINE, confirmAndExit} from '../utils/prompt.utils';
 
 const wasmBuildType = async ({wasm_module}: UpgradeWasmModule): Promise<BuildType | undefined> => {
   const buffer = Buffer.from(wasm_module);
@@ -67,4 +67,10 @@ export const assertSatelliteBuildType = async ({
       )} version. Are you sure you want to proceed?`
     );
   }
+};
+
+export const assertSatelliteHash = async ({hash, reset}: Pick<UpgradeWasm, 'hash' | 'reset'>) => {
+  await confirmAndExit(
+    `Wasm hash is ${cyan(hash)}.${NEW_CMD_LINE}Start upgrade${reset ? ' and reset' : ''} now?`
+  );
 };

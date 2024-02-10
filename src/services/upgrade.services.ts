@@ -1,20 +1,17 @@
 import {setCustomDomains, type CustomDomain, type SatelliteParameters} from '@junobuild/admin';
 import {createHash} from 'crypto';
-import {cyan} from 'kleur';
 import {readFile} from 'node:fs/promises';
 import ora from 'ora';
 import {JUNO_CDN_URL} from '../constants/constants';
 import type {AssetKey} from '../types/asset-key';
 import type {UpgradeWasm} from '../types/upgrade';
 import {downloadFromURL} from '../utils/download.utils';
-import {NEW_CMD_LINE, confirmAndExit} from '../utils/prompt.utils';
+import {assertSatelliteHash} from './upgrade-assert.services';
 
 const executeUpgradeWasm = async ({upgrade, wasm, hash, assert, reset = false}: UpgradeWasm) => {
   await assert?.({wasm_module: wasm});
 
-  await confirmAndExit(
-    `Wasm hash is ${cyan(hash)}.${NEW_CMD_LINE}Start upgrade${reset ? ' and reset' : ''} now?`
-  );
+  await assertSatelliteHash({hash, reset});
 
   const spinner = ora(`Upgrading Wasm${reset ? ' and resetting state' : ''}...`).start();
 
