@@ -1,6 +1,11 @@
+import fs from 'fs';
 import {access, readFile, writeFile} from 'node:fs/promises';
+import {dirname, join} from 'node:path';
+import { ModuleKind, ModuleResolutionKind, ScriptTarget, transpileModule } from "typescript";
+import {fileURLToPath} from 'url';
 import {JUNO_JSON} from '../constants/constants';
 import type {JunoConfig, OrbiterConfig, SatelliteConfig} from '../types/juno.config';
+import { nodeRequire } from "./node.utils";
 
 export const saveSatelliteConfig = async (satellite: SatelliteConfig): Promise<void> => {
   if (await junoConfigExist()) {
@@ -49,7 +54,27 @@ const writeJunoConfig = async (config: JunoConfig): Promise<void> => {
   await writeFile(JUNO_JSON, JSON.stringify(config, null, 2), 'utf-8');
 };
 
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+
 const readJunoConfig = async (): Promise<JunoConfig> => {
+  // const url = join(process.cwd(), 'juno.js');
+  // console.log('------------>', (await import(url)).default);
+
+  const urlTs = join(process.cwd(), 'juno.ts');
+
+  console.log(urlTs);
+
+  const result = nodeRequire(urlTs);
+
+  console.log("Export", result.module.default);
+
+  // const source = "let x: string  = 'string'";
+  //
+  // let result = transpileModule(source, { compilerOptions: { module: ModuleKind.CommonJS }});
+  //
+  // console.log(JSON.stringify(result));
+
   const buffer = await readFile(JUNO_JSON);
   return JSON.parse(buffer.toString('utf-8'));
 };
