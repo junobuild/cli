@@ -1,8 +1,9 @@
+import {existsSync} from 'node:fs';
 import {access, readFile, writeFile} from 'node:fs/promises';
 import {join} from 'node:path';
-import {JUNO_JSON} from '../constants/constants';
+import {JUNO_CONFIG_FILENAME} from '../constants/constants';
 import type {JunoConfig, OrbiterConfig, SatelliteConfig} from '../types/juno.config';
-import {nodeRequire} from './node.utils';
+import {nodeRequire} from '../utils/node.utils';
 
 export const saveSatelliteConfig = async (satellite: SatelliteConfig): Promise<void> => {
   if (await junoConfigExist()) {
@@ -36,7 +37,8 @@ export const readSatelliteConfig = async (): Promise<SatelliteConfig> => {
 
 export const junoConfigExist = async (): Promise<boolean> => {
   try {
-    await access(JUNO_JSON);
+    const {configPath} = junoConfigFile();
+    await access(configPath);
     return true;
   } catch (err: unknown) {
     if (err instanceof Error && 'code' in err && (err as NodeJS.ErrnoException).code === 'ENOENT') {
@@ -47,29 +49,59 @@ export const junoConfigExist = async (): Promise<boolean> => {
   }
 };
 
+const junoConfigFile = (): {configPath: string; configType: 'ts' | 'js' | 'json'} => {
+  const junoTs = join(process.cwd(), `${JUNO_CONFIG_FILENAME}.ts`);
+
+  if (existsSync(junoTs)) {
+    return {
+      configPath: junoTs,
+      configType: 'ts'
+    };
+  }
+
+  const junoJs = join(process.cwd(), `${JUNO_CONFIG_FILENAME}.js`);
+
+  if (existsSync(junoJs)) {
+    return {
+      configPath: junoJs,
+      configType: 'js'
+    };
+  }
+
+  const junoMjs = join(process.cwd(), `${JUNO_CONFIG_FILENAME}.mjs`);
+
+  if (existsSync(junoMjs)) {
+    return {
+      configPath: junoMjs,
+      configType: 'js'
+    };
+  }
+
+  return {
+    configPath: join(process.cwd(), `${JUNO_CONFIG_FILENAME}.json`),
+    configType: 'json'
+  };
+};
+
 const writeJunoConfig = async (config: JunoConfig): Promise<void> => {
-  await writeFile(JUNO_JSON, JSON.stringify(config, null, 2), 'utf-8');
+  await writeFile(JUNO_CONFIG_FILENAME, JSON.stringify(config, null, 2), 'utf-8');
 };
 
 const readJunoConfig = async (): Promise<JunoConfig> => {
-  // const url = join(process.cwd(), 'juno.js');
-  // console.log('------------>', (await import(url)).default);
+  const {configPath, configType} = junoConfigFile();
 
-  const urlTs = join(process.cwd(), 'juno.ts');
-
-  const result = nodeRequire(urlTs);
-
-  console.log('Export ------------->', result.module.default);
-
-  //
-  // console.log("Export", result.module.default);
-
-  // const source = "let x: string  = 'string'";
-  //
-  // let result = transpileModule(source, { compilerOptions: { module: ModuleKind.CommonJS }});
-  //
-  // console.log(JSON.stringify(result));
-
-  const buffer = await readFile(JUNO_JSON);
-  return JSON.parse(buffer.toString('utf-8'));
+  switch (configType) {
+    case 'ts': {
+      const modTs = nodeRequire<JunoConfig>(configPath);
+      return modTs.default;
+    }
+    case 'js': {
+      const modJs = await import(configPath);
+      return modJs.default;
+    }
+    default: {
+      const buffer = await readFile(configPath);
+      return JSON.parse(buffer.toString('utf-8'));
+    }
+  }
 };
