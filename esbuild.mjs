@@ -48,7 +48,7 @@ const script = await esbuild.build({
   entryPoints: ['src/index.ts'],
   outfile: 'dist/index.mjs',
   bundle: true,
-  minify: false,
+  minify: true,
   format: 'esm',
   platform: 'node',
   write: false,

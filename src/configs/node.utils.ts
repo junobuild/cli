@@ -1,4 +1,6 @@
-import ts from 'typescript';
+import {transformFileSync} from '@babel/core';
+import * as ts from "@babel/preset-typescript";
+import * as mod from "@babel/plugin-transform-modules-commonjs";
 
 /**
  * Source: Stencil
@@ -27,22 +29,18 @@ export const nodeRequire = (id: string) => {
       if (fileName.endsWith('.ts')) {
         // looks like we've got a typed config file
         // let's transpile it to .js quick
-        const tsResults = ts.transpileModule(sourceText, {
-          fileName,
-          compilerOptions: {
-            module: ts.ModuleKind.CommonJS,
-            moduleResolution: ts.ModuleResolutionKind.NodeJs,
-            esModuleInterop: true,
-            target: ts.ScriptTarget.ESNext,
-            allowJs: true,
-          },
-        });
-        sourceText = tsResults.outputText;
+        sourceText = transformFileSync(fileName, {
+          presets: [ts.default],
+          plugins: [mod.default]
+        }).code;
+
+        console.log("------>", sourceText)
       } else {
         // quick hack to turn a modern es module
         // into and old school commonjs module
         sourceText = sourceText.replace(/export\s+\w+\s+(\w+)/gm, 'exports.$1');
       }
+
 
       try {
         // we need to coerce because of the requirements for the arguments to
