@@ -1,6 +1,7 @@
 import {transformFileSync} from '@babel/core';
 import * as mod from '@babel/plugin-transform-modules-commonjs';
 import * as ts from '@babel/preset-typescript';
+import * as tst from "@junobuild/types";
 import {readFileSync} from 'node:fs';
 
 /**
@@ -25,6 +26,9 @@ export const nodeRequire = <T>(id: string): {default: T} => {
           presets: [ts.default],
           plugins: [mod.default]
         }).code;
+
+        console.log(sourceText)
+
       } else {
         // quick hack to turn a modern es module
         // into and old school commonjs module

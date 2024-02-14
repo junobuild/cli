@@ -1,4 +1,4 @@
-import {existsSync} from 'node:fs';
+import {existsSync, readFileSync} from 'node:fs';
 import {access, readFile, writeFile} from 'node:fs/promises';
 import {join} from 'node:path';
 import {JUNO_CONFIG_FILENAME} from '../constants/constants';
@@ -77,23 +77,54 @@ const junoConfigFile = (): {configPath: string; configType: 'ts' | 'js' | 'json'
     };
   }
 
+  const junoCjs = join(process.cwd(), `${JUNO_CONFIG_FILENAME}.cjs`);
+
+  if (existsSync(junoCjs)) {
+    return {
+      configPath: junoCjs,
+      configType: 'js'
+    };
+  }
+
   return {
     configPath: join(process.cwd(), `${JUNO_CONFIG_FILENAME}.json`),
     configType: 'json'
   };
 };
 
+// TODO
 const writeJunoConfig = async (config: JunoConfig): Promise<void> => {
   await writeFile(JUNO_CONFIG_FILENAME, JSON.stringify(config, null, 2), 'utf-8');
 };
+
+// TODO: replace
+export function defineConfig(config: JunoConfig): JunoConfig;
+export function defineConfig(config: JunoConfig): JunoConfig {
+  return config;
+}
 
 const readJunoConfig = async (): Promise<JunoConfig> => {
   const {configPath, configType} = junoConfigFile();
 
   switch (configType) {
     case 'ts': {
-      const modTs = nodeRequire<JunoConfig>(configPath);
-      return modTs.default;
+
+      // const module = await import(`data:text/javascript;base64,${Buffer.from(readFileSync(configPath).toString()).toString(`base64`)}`);
+      // console.log('MODUE', module)
+      //
+      // console.log(readFileSync(configPath).toString());
+      // const tmp = `data:text/javascript,${readFileSync(configPath).toString()}`;
+      // const result = await import(tmp);
+      //
+      //
+      // console.log('instance', result);
+
+      const userConfig = nodeRequire<JunoConfig | typeof defineConfig>(configPath).default;
+      const config = typeof userConfig === 'function' ? userConfig : userConfig;
+
+      console.log('Config', config);
+
+      return config;
     }
     case 'js': {
       const modJs = await import(configPath);
