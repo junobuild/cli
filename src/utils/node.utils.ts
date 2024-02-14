@@ -1,7 +1,7 @@
 import {transformFileSync} from '@babel/core';
 import * as mod from '@babel/plugin-transform-modules-commonjs';
 import * as ts from '@babel/preset-typescript';
-import * as tst from "@junobuild/types";
+import {defineConfig, type JunoConfig} from '@junobuild/cli-config';
 import {readFileSync} from 'node:fs';
 
 /**
@@ -11,6 +11,9 @@ export const nodeRequire = <T>(id: string): {default: T} => {
   // ensure we cleared out node's internal require() cache for this file
   // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
   delete require.cache[id];
+
+  const Module = require('module');
+  const originalLoad = Module._load;
 
   try {
     // let's override node's require for a second
@@ -26,9 +29,6 @@ export const nodeRequire = <T>(id: string): {default: T} => {
           presets: [ts.default],
           plugins: [mod.default]
         }).code;
-
-        console.log(sourceText)
-
       } else {
         // quick hack to turn a modern es module
         // into and old school commonjs module
@@ -45,11 +45,27 @@ export const nodeRequire = <T>(id: string): {default: T} => {
       (module as NodeModuleWithCompile)._compile(sourceText, fileName);
     };
 
+    // We override defineConfig because the library is unknown in the module we are trying to load.
+    // This need to be a function and not an arrow function because of the "arguments"
+    Module._load = function (request: string): unknown {
+      if (request === '@junobuild/cli-config') {
+        return {
+          defineConfig: (config: JunoConfig) => defineConfig(config)
+        };
+      }
+
+      // @ts-ignore arguments are passed by NodeJS
+      return originalLoad.apply(this, arguments);
+    };
+
     // let's do this!
     return require(id);
   } finally {
     // all set, let's go ahead and reset the require back to the default
     // eslint-disable-next-line n/no-deprecated-api
     require.extensions['.ts'] = undefined;
+
+    // Redo our hack
+    Module._load = originalLoad;
   }
 };
