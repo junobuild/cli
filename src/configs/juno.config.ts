@@ -7,7 +7,7 @@ import type {
 import {existsSync} from 'node:fs';
 import {access, readFile, writeFile} from 'node:fs/promises';
 import {join} from 'node:path';
-import {JUNO_CONFIG_FILENAME} from '../constants/constants';
+import { JUNO_CONFIG_FILENAME, JUNO_JSON } from "../constants/constants";
 import {ConfigType} from '../types/config';
 import {nodeRequire} from '../utils/node.utils';
 
@@ -94,6 +94,16 @@ export const junoConfigFile = (): {configPath: string; configType: ConfigType} =
     return {
       configPath: junoCjs,
       configType: 'js'
+    };
+  }
+
+  // Support for original juno.json file
+  const junoJsonDeprecated = join(process.cwd(), JUNO_JSON);
+
+  if (existsSync(junoJsonDeprecated)) {
+    return {
+      configPath: junoJsonDeprecated,
+      configType: 'json'
     };
   }
 
