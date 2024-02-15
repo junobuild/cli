@@ -1,5 +1,5 @@
 import type {JunoConfig, JunoConfigFnOrObject, SatelliteConfig} from '@junobuild/config';
-import {isNullish} from '@junobuild/utils';
+import {nonNullish} from '@junobuild/utils';
 import {existsSync} from 'node:fs';
 import {access, readFile, writeFile} from 'node:fs/promises';
 import {join} from 'node:path';
@@ -114,7 +114,7 @@ const writeJunoConfig = async ({
       } = config;
 
       const template = await readTemplateFile({
-        template: isNullish(orbiter)
+        template: nonNullish(orbiter)
           ? `${JUNO_CONFIG_FILENAME}.${configType}`
           : `${TEMPLATE_SATELLITE_CONFIG_FILENAME}.${configType}`,
         sourceFolder: TEMPLATE_INIT_PATH
