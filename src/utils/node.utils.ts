@@ -12,6 +12,7 @@ export const nodeRequire = <T>(id: string): {default: T} => {
   // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
   delete require.cache[id];
 
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
   const Module = require('module');
   const originalLoad = Module._load;
 
@@ -54,6 +55,7 @@ export const nodeRequire = <T>(id: string): {default: T} => {
         };
       }
 
+      // eslint-disable-next-line @typescript-eslint/prefer-ts-expect-error
       // @ts-ignore arguments are passed by NodeJS
       return originalLoad.apply(this, arguments);
     };

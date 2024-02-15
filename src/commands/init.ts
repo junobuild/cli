@@ -14,7 +14,7 @@ import {
   saveOrbiterConfig,
   saveSatelliteConfig
 } from '../configs/juno.config';
-import {ConfigType} from '../types/config';
+import type {ConfigType} from '../types/config';
 
 export const init = async () => {
   const token = getToken();

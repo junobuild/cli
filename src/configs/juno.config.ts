@@ -7,8 +7,8 @@ import type {
 import {existsSync} from 'node:fs';
 import {access, readFile, writeFile} from 'node:fs/promises';
 import {join} from 'node:path';
-import { JUNO_CONFIG_FILENAME, JUNO_JSON } from "../constants/constants";
-import {ConfigType} from '../types/config';
+import {JUNO_CONFIG_FILENAME, JUNO_JSON} from '../constants/constants';
+import type {ConfigType} from '../types/config';
 import {nodeRequire} from '../utils/node.utils';
 
 export const saveSatelliteConfig = async ({
@@ -131,7 +131,7 @@ const readJunoConfig = async (): Promise<JunoConfig> => {
     }
     case 'js': {
       const {default: userConfig} = await import(configPath);
-      return config(userConfig);
+      return config(userConfig as JunoConfigFnOrObject);
     }
     default: {
       const buffer = await readFile(configPath);
