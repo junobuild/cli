@@ -1,4 +1,4 @@
-import type {JunoConfigFnOrObject} from '@junobuild/cli-config';
+import type {JunoConfigFnOrObject} from '@junobuild/config';
 import {existsSync} from 'node:fs';
 import {access, readFile, writeFile} from 'node:fs/promises';
 import {join} from 'node:path';

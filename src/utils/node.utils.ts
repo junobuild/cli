@@ -1,7 +1,7 @@
 import {transformFileSync} from '@babel/core';
 import * as mod from '@babel/plugin-transform-modules-commonjs';
 import * as ts from '@babel/preset-typescript';
-import {defineConfig, type JunoConfig} from '@junobuild/cli-config';
+import {defineConfig, type JunoConfig} from '@junobuild/config';
 import {readFileSync} from 'node:fs';
 
 /**
@@ -48,7 +48,7 @@ export const nodeRequire = <T>(id: string): {default: T} => {
     // We override defineConfig because the library is unknown in the module we are trying to load.
     // This need to be a function and not an arrow function because of the "arguments"
     Module._load = function (request: string): unknown {
-      if (request === '@junobuild/cli-config') {
+      if (request === '@junobuild/config') {
         return {
           defineConfig: (config: JunoConfig) => defineConfig(config)
         };
