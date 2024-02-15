@@ -1,9 +1,13 @@
-import type {JunoConfigFnOrObject} from '@junobuild/config';
+import type {
+  JunoConfig,
+  JunoConfigFnOrObject,
+  OrbiterConfig,
+  SatelliteConfig
+} from '@junobuild/config';
 import {existsSync} from 'node:fs';
 import {access, readFile, writeFile} from 'node:fs/promises';
 import {join} from 'node:path';
 import {JUNO_CONFIG_FILENAME} from '../constants/constants';
-import type {JunoConfig, OrbiterConfig, SatelliteConfig} from '../types/juno.config';
 import {nodeRequire} from '../utils/node.utils';
 
 export const saveSatelliteConfig = async (satellite: SatelliteConfig): Promise<void> => {
@@ -101,19 +105,17 @@ const writeJunoConfig = async (config: JunoConfig): Promise<void> => {
 const readJunoConfig = async (): Promise<JunoConfig> => {
   const {configPath, configType} = junoConfigFile();
 
+  const config = (userConfig: JunoConfigFnOrObject): JunoConfig =>
+    typeof userConfig === 'function' ? userConfig({mode: 'production'}) : userConfig;
+
   switch (configType) {
     case 'ts': {
-      const userConfig = nodeRequire<JunoConfigFnOrObject>(configPath).default;
-      const config =
-        typeof userConfig === 'function' ? userConfig({mode: 'production'}) : userConfig;
-
-      console.log('Config', config);
-
-      return config;
+      const {default: userConfig} = nodeRequire<JunoConfigFnOrObject>(configPath);
+      return config(userConfig);
     }
     case 'js': {
-      const modJs = await import(configPath);
-      return modJs.default;
+      const {default: userConfig} = await import(configPath);
+      return config(userConfig);
     }
     default: {
       const buffer = await readFile(configPath);

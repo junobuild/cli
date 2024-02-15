@@ -1,8 +1,8 @@
+import type {SatelliteConfig} from '@junobuild/config';
 import {minimatch} from 'minimatch';
 import {lstatSync, readdirSync} from 'node:fs';
 import {basename, join} from 'node:path';
 import {IGNORE_OS_FILES} from '../constants/constants';
-import type {SatelliteConfig} from '../types/juno.config';
 
 export const listSourceFiles = ({
   sourceAbsolutePath,
