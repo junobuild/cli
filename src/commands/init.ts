@@ -89,7 +89,7 @@ const promptSource = async (): Promise<string> => {
     {
       type: 'text',
       name: 'source',
-      message: `What's the name or path of the folder containing your built dapp files?`,
+      message: `What is the location of your compiled app files? They are often found in the "build" or "dist" folders.`,
       initial: 'build'
     }
   ]);
