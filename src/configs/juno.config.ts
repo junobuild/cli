@@ -1,43 +1,28 @@
-import type {
-  JunoConfig,
-  JunoConfigFnOrObject,
-  OrbiterConfig,
-  SatelliteConfig
-} from '@junobuild/config';
+import type {JunoConfig, JunoConfigFnOrObject, SatelliteConfig} from '@junobuild/config';
+import {isNullish} from '@junobuild/utils';
 import {existsSync} from 'node:fs';
 import {access, readFile, writeFile} from 'node:fs/promises';
 import {join} from 'node:path';
+import {
+  TEMPLATE_INIT_PATH,
+  TEMPLATE_SATELLITE_CONFIG_FILENAME
+} from '../constants/config.constants';
 import {JUNO_CONFIG_FILENAME, JUNO_JSON} from '../constants/constants';
+import {DEPLOY_DEFAULT_SOURCE} from '../constants/deploy.constants';
 import type {ConfigType} from '../types/config';
+import {readTemplateFile} from '../utils/fs.utils';
 import {nodeRequire} from '../utils/node.utils';
 
-export const saveSatelliteConfig = async ({
-  satellite
+export const saveConfig = async ({
+  config,
+  configType
 }: {
-  satellite: SatelliteConfig;
+  config: JunoConfig;
   configType: ConfigType;
 }): Promise<void> => {
-  if (await junoConfigExist()) {
-    const existingConfig = await readJunoConfig();
-    await writeJunoConfig({
-      ...existingConfig,
-      satellite
-    });
-    return;
-  }
-
-  await writeJunoConfig({satellite});
-};
-
-export const saveOrbiterConfig = async (orbiter: OrbiterConfig): Promise<void> => {
-  if (!(await junoConfigExist())) {
-    throw new Error(`No juno.json configuration file has been initialized yet.`);
-  }
-
-  const existingConfig = await readJunoConfig();
   await writeJunoConfig({
-    ...existingConfig,
-    orbiter
+    config,
+    configType
   });
 };
 
@@ -113,9 +98,40 @@ export const junoConfigFile = (): {configPath: string; configType: ConfigType} =
   };
 };
 
-// TODO
-const writeJunoConfig = async (config: JunoConfig): Promise<void> => {
-  await writeFile(JUNO_CONFIG_FILENAME, JSON.stringify(config, null, 2), 'utf-8');
+const writeJunoConfig = async ({
+  config,
+  configType
+}: {
+  config: JunoConfig;
+  configType: ConfigType;
+}): Promise<void> => {
+  switch (configType) {
+    case 'ts':
+    case 'js': {
+      const {
+        orbiter,
+        satellite: {satelliteId, source}
+      } = config;
+
+      const template = await readTemplateFile({
+        template: isNullish(orbiter)
+          ? `${JUNO_CONFIG_FILENAME}.${configType}`
+          : `${TEMPLATE_SATELLITE_CONFIG_FILENAME}.${configType}`,
+        sourceFolder: TEMPLATE_INIT_PATH
+      });
+
+      const content = template
+        .replace('<SATELLITE_ID>', satelliteId)
+        .replace('<SOURCE>', source ?? DEPLOY_DEFAULT_SOURCE)
+        .replace('<ORBITER_ID>', orbiter?.orbiterId ?? '');
+
+      await writeFile(`${JUNO_CONFIG_FILENAME}.${configType}`, content, 'utf-8');
+      break;
+    }
+    default: {
+      await writeFile(`${JUNO_CONFIG_FILENAME}.json`, JSON.stringify(config, null, 2), 'utf-8');
+    }
+  }
 };
 
 const readJunoConfig = async (): Promise<JunoConfig> => {
