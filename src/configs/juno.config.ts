@@ -8,9 +8,15 @@ import {existsSync} from 'node:fs';
 import {access, readFile, writeFile} from 'node:fs/promises';
 import {join} from 'node:path';
 import {JUNO_CONFIG_FILENAME} from '../constants/constants';
+import {ConfigType} from '../types/config';
 import {nodeRequire} from '../utils/node.utils';
 
-export const saveSatelliteConfig = async (satellite: SatelliteConfig): Promise<void> => {
+export const saveSatelliteConfig = async ({
+  satellite
+}: {
+  satellite: SatelliteConfig;
+  configType: ConfigType;
+}): Promise<void> => {
   if (await junoConfigExist()) {
     const existingConfig = await readJunoConfig();
     await writeJunoConfig({
@@ -54,7 +60,7 @@ export const junoConfigExist = async (): Promise<boolean> => {
   }
 };
 
-const junoConfigFile = (): {configPath: string; configType: 'ts' | 'js' | 'json'} => {
+export const junoConfigFile = (): {configPath: string; configType: ConfigType} => {
   const junoTs = join(process.cwd(), `${JUNO_CONFIG_FILENAME}.ts`);
 
   if (existsSync(junoTs)) {

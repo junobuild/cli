@@ -8,7 +8,13 @@ import {
   type CliOrbiterConfig,
   type CliSatelliteConfig
 } from '../configs/cli.config';
-import {saveOrbiterConfig, saveSatelliteConfig} from '../configs/juno.config';
+import {
+  junoConfigExist,
+  junoConfigFile,
+  saveOrbiterConfig,
+  saveSatelliteConfig
+} from '../configs/juno.config';
+import {ConfigType} from '../types/config';
 
 export const init = async () => {
   const token = getToken();
@@ -33,7 +39,9 @@ const initSatelliteConfig = async () => {
 
   const source = await promptSource();
 
-  await saveSatelliteConfig({satelliteId: satellite, source});
+  const configType = await initConfigType();
+
+  await saveSatelliteConfig({satellite: {satelliteId: satellite, source}, configType});
 };
 
 const initOrbiterConfig = async () => {
@@ -68,6 +76,34 @@ const promptSatellites = async (satellites: CliSatelliteConfig[]): Promise<strin
   assertAnswerCtrlC(satellite);
 
   return satellite;
+};
+
+const initConfigType = async (): Promise<ConfigType> => {
+  if (!(await junoConfigExist())) {
+    return await promptConfigType();
+  }
+
+  const {configType} = junoConfigFile();
+  return configType;
+};
+
+const promptConfigType = async (): Promise<ConfigType> => {
+  const {configType}: {configType: ConfigType} = await prompts({
+    type: 'select',
+    name: 'configType',
+    message: 'What configuration file format do you prefer?',
+    choices: [
+      {title: 'TypeScript', value: 'ts'},
+      {title: 'JavaScript', value: 'ts'},
+      {title: 'JSON', value: 'json'}
+    ],
+    initial: 0
+  });
+
+  // In case of control+c
+  assertAnswerCtrlC(configType);
+
+  return configType;
 };
 
 const promptSatellite = async (): Promise<string> => {
