@@ -1,4 +1,4 @@
-import {JunoConfigEnv} from '@junobuild/config';
+import type {JunoConfigEnv} from '@junobuild/config';
 import {nextArg} from './args.utils';
 
 export const configEnv = (args?: string[]): JunoConfigEnv => {
