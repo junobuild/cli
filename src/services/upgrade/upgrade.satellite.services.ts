@@ -1,5 +1,9 @@
-import {SatelliteParameters, listCustomDomains, satelliteVersion} from '@junobuild/admin';
-import {upgradeSatellite as upgradeSatelliteAdmin} from '@junobuild/admin/dist/types/services/satellite.services';
+import {
+  SatelliteParameters,
+  listCustomDomains,
+  satelliteVersion,
+  upgradeSatellite as upgradeSatelliteAdmin
+} from '@junobuild/admin';
 import {isNullish} from '@junobuild/utils';
 import {cyan, red} from 'kleur';
 import {compare} from 'semver';

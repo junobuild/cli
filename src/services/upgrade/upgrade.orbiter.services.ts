@@ -1,5 +1,8 @@
-import {OrbiterParameters, orbiterVersion} from '@junobuild/admin';
-import {upgradeOrbiter as upgradeOrbiterAdmin} from '@junobuild/admin/dist/types/services/orbiter.services';
+import {
+  OrbiterParameters,
+  orbiterVersion,
+  upgradeOrbiter as upgradeOrbiterAdmin
+} from '@junobuild/admin';
 import {cyan, red} from 'kleur';
 import {getCliOrbiters} from '../../configs/cli.config';
 import {ORBITER_WASM_NAME} from '../../constants/constants';

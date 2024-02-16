@@ -1,5 +1,8 @@
-import {MissionControlParameters, missionControlVersion} from '@junobuild/admin';
-import {upgradeMissionControl as upgradeMissionControlAdmin} from '@junobuild/admin/dist/types/services/mission-control.services';
+import {
+  MissionControlParameters,
+  missionControlVersion,
+  upgradeMissionControl as upgradeMissionControlAdmin
+} from '@junobuild/admin';
 import {isNullish} from '@junobuild/utils';
 import {cyan, red} from 'kleur';
 import {getCliMissionControl} from '../../configs/cli.config';
