@@ -16,7 +16,6 @@ import {
   helpUse
 } from './commands/help';
 import {init} from './commands/init';
-import {links} from './commands/links';
 import {open} from './commands/open';
 import {upgrade} from './commands/upgrade';
 import {use} from './commands/use';
@@ -86,7 +85,6 @@ export const run = async () => {
       break;
     case 'deploy':
       await deploy(args);
-      await links();
       break;
     case 'config':
       await config();
@@ -104,8 +102,7 @@ export const run = async () => {
       await upgrade(args);
       break;
     case 'whoami':
-      whoami();
-      await links();
+      await whoami();
       break;
     case 'use':
       use(args);
