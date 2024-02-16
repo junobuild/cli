@@ -18,7 +18,7 @@ import type {ConfigType} from '../types/config';
 import {readTemplateFile} from '../utils/fs.utils';
 import {nodeRequire} from '../utils/node.utils';
 
-export const saveConfig = async ({
+export const saveJunoConfig = async ({
   config,
   configType
 }: {

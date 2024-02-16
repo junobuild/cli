@@ -8,7 +8,7 @@ import {
   type CliOrbiterConfig,
   type CliSatelliteConfig
 } from '../configs/cli.config';
-import {junoConfigExist, junoConfigFile, saveConfig} from '../configs/juno.config';
+import {junoConfigExist, junoConfigFile, saveJunoConfig} from '../configs/juno.config';
 import type {ConfigType} from '../types/config';
 import {NEW_CMD_LINE, confirmAndExit} from '../utils/prompt.utils';
 
@@ -37,7 +37,7 @@ const initConfig = async () => {
 
   const configType = await initConfigType();
 
-  await saveConfig({
+  await saveJunoConfig({
     config: {
       satellite: {satelliteId, source},
       ...(nonNullish(orbiterId) && {orbiter: {orbiterId}})
