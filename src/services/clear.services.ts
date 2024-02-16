@@ -4,9 +4,10 @@ import ora from 'ora';
 import {readSatelliteConfig} from '../configs/juno.config';
 import {DAPP_COLLECTION} from '../constants/constants';
 import {satelliteParameters} from '../utils/satellite.utils';
+import { configEnv } from "../utils/config.utils";
 
 export const clear = async () => {
-  const {satelliteId} = await readSatelliteConfig();
+  const {satelliteId} = await readSatelliteConfig(configEnv(args));
 
   const spinner = ora('Clearing dapp assets...').start();
 
@@ -26,7 +27,7 @@ const cleanFullPath = (fullPath: string): string => {
 };
 
 export const clearAsset = async (fullPath: string) => {
-  const {satelliteId} = await readSatelliteConfig();
+  const {satelliteId} = await readSatelliteConfig(configEnv(args));
 
   const spinner = ora(`Clearing ${fullPath}...`).start();
 

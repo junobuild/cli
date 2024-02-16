@@ -34,6 +34,7 @@ import {NEW_CMD_LINE, confirmAndExit} from '../utils/prompt.utils';
 import {orbiterKey, satelliteKey, satelliteParameters} from '../utils/satellite.utils';
 import {newerReleases as newerReleasesUtils} from '../utils/upgrade.utils';
 import {assertAnswerCtrlC} from './init';
+import { configEnv } from "../utils/config.utils";
 
 export const upgrade = async (args?: string[]) => {
   if (hasArgs({args, options: ['-m', '--mission-control']})) {
@@ -128,7 +129,7 @@ const upgradeSatellite = async (args?: string[]) => {
     return;
   }
 
-  const {satelliteId} = await readSatelliteConfig();
+  const {satelliteId} = await readSatelliteConfig(configEnv(args));
 
   console.log(
     `${NEW_CMD_LINE}Initiating upgrade for satellite ${cyan(satelliteId)}.${NEW_CMD_LINE}`

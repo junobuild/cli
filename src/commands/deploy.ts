@@ -33,6 +33,7 @@ import {gzipFiles} from '../utils/compress.utils';
 import {listSourceFiles} from '../utils/deploy.utils';
 import {satelliteParameters} from '../utils/satellite.utils';
 import {init} from './init';
+import { configEnv } from "../utils/config.utils";
 
 interface FileDetails {
   file: string;
@@ -61,7 +62,7 @@ const executeDeploy = async () => {
     ignore = DEPLOY_DEFAULT_IGNORE,
     encoding = DEPLOY_DEFAULT_ENCODING,
     gzip = DEPLOY_DEFAULT_GZIP
-  } = await readSatelliteConfig();
+  } = await readSatelliteConfig(configEnv(args));
 
   const sourceAbsolutePath = join(process.cwd(), source);
 

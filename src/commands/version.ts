@@ -20,6 +20,7 @@ import {actorParameters} from '../utils/actor.utils';
 import {toAssetKeys} from '../utils/asset-key.utils';
 import {orbiterKey, satelliteKey, satelliteParameters} from '../utils/satellite.utils';
 import {lastRelease} from '../utils/upgrade.utils';
+import { configEnv } from "../utils/config.utils";
 
 export const version = async () => {
   await cliVersion();
@@ -89,7 +90,7 @@ const satelliteVersion = async () => {
     return;
   }
 
-  const {satelliteId} = await readSatelliteConfig();
+  const {satelliteId} = await readSatelliteConfig(configEnv(args));
 
   const satellite = satelliteParameters(satelliteId);
 

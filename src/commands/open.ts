@@ -7,6 +7,7 @@ import {consoleNoConfigFound} from '../utils/msg.utils';
 import {openUrl} from '../utils/open.utils';
 import {satelliteParameters} from '../utils/satellite.utils';
 import {assertAnswerCtrlC} from './init';
+import { configEnv } from "../utils/config.utils";
 
 export const open = async (args?: string[]) => {
   if (!(await junoConfigExist())) {
@@ -16,7 +17,7 @@ export const open = async (args?: string[]) => {
 
   const browser = nextArg({args, option: '-b'}) ?? nextArg({args, option: '--browser'});
 
-  const {satelliteId} = await readSatelliteConfig();
+  const {satelliteId} = await readSatelliteConfig(configEnv(args));
   if (hasArgs({args, options: ['-c', '--console']})) {
     await openUrl({url: consoleUrl(satelliteId), browser});
     return;

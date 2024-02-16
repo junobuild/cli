@@ -5,6 +5,7 @@ import {consoleUrl, defaultSatelliteDomain} from '../utils/domain.utils';
 import {terminalLink} from '../utils/links.utils';
 import {isProcessToken} from '../utils/process.utils';
 import {satelliteParameters} from '../utils/satellite.utils';
+import { configEnv } from "../utils/config.utils";
 
 export const links = async () => {
   // If a developer is using a JUNO_TOKEN to execute command(s), the links will not be printed.
@@ -17,7 +18,7 @@ export const links = async () => {
     return;
   }
 
-  const {satelliteId} = await readSatelliteConfig();
+  const {satelliteId} = await readSatelliteConfig(configEnv(args));
 
   const defaultUrl = defaultSatelliteDomain(satelliteId);
   const adminUrl = consoleUrl(satelliteId);

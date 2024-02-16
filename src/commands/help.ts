@@ -33,6 +33,8 @@ Commands:
   ${cyan('whoami')}              Display the current controller.
 `;
 
+export const helpMode = `${yellow('-m, --mode')}        Set env mode. For example production, development or a custom string. Default is production.`;
+
 export const helpUpgrade = `
 ${TITLE}
 
@@ -44,6 +46,7 @@ Options:
   ${yellow('-s, --src')}             A local gzipped wasm file for the upgrade.
   ${yellow('-r, --reset')}           Reset to the initial state.
   ${yellow('-n, --nocheck')}         Skip assertions and execute upgrade without prompts.
+  ${helpMode}
   ${yellow('-h, --help')}            Output usage information.
   
 Notes:
@@ -91,6 +94,7 @@ Usage: ${green('juno')} ${cyan('open')} ${yellow('[options]')}
 Options:
   ${yellow('-b, --browser')}         A particular browser to open. supported: chrome|firefox|edge.
   ${yellow('-c, --console')}         Open satellite in the console.
+  ${helpMode}
   ${yellow('-h, --help')}            Output usage information.
 `;
 
@@ -101,6 +105,7 @@ Usage: ${green('juno')} ${cyan('deploy')} ${yellow('[options]')}
 
 Options:
   ${yellow('-c, --clear')}           Clear existing dapp files before proceeding with deployment.
+  ${helpMode}
   ${yellow('-h, --help')}            Output usage information.
 `;
 
@@ -111,6 +116,17 @@ Usage: ${green('juno')} ${cyan('clear')} ${yellow('[options]')}
 
 Options:
   ${yellow('-f, --fullPath')}        Clear a particular file of your dapp.
+  ${helpMode}
+  ${yellow('-h, --help')}            Output usage information.
+`;
+
+export const helpConfig = `
+${TITLE}
+
+Usage: ${green('juno')} ${cyan('config')} ${yellow('[options]')}
+
+Options:
+  ${helpMode}
   ${yellow('-h, --help')}            Output usage information.
 `;
 

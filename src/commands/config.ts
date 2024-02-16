@@ -3,13 +3,14 @@ import ora from 'ora';
 import {junoConfigExist, readSatelliteConfig} from '../configs/juno.config';
 import {satelliteParameters} from '../utils/satellite.utils';
 import {init} from './init';
+import { configEnv } from "../utils/config.utils";
 
-export const config = async () => {
+export const config = async (args?: string[]) => {
   if (!(await junoConfigExist())) {
     await init();
   }
 
-  const {satelliteId, storage} = await readSatelliteConfig();
+  const {satelliteId, storage} = await readSatelliteConfig(configEnv(args));
 
   const spinner = ora(`Configuring...`).start();
 

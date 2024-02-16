@@ -7,14 +7,14 @@ import {dev} from './commands/dev';
 import {
   help,
   helpClear,
-  helpCommand,
+  helpCommand, helpConfig,
   helpDeploy,
   helpDev,
   helpLogin,
   helpOpen,
   helpUpgrade,
   helpUse
-} from './commands/help';
+} from "./commands/help";
 import {init} from './commands/init';
 import {links} from './commands/links';
 import {open} from './commands/open';
@@ -61,6 +61,9 @@ export const run = async () => {
         break;
       case 'clear':
         console.log(helpClear);
+        break;
+      case 'config':
+        console.log(helpConfig);
         break;
       case 'deploy':
         console.log(helpDeploy);
