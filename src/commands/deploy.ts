@@ -28,6 +28,7 @@ import {
 } from '../constants/deploy.constants';
 import {clear} from '../services/clear.services';
 import {assertSatelliteMemorySize} from '../services/deploy.services';
+import {links} from '../services/links.services';
 import {hasArgs} from '../utils/args.utils';
 import {gzipFiles} from '../utils/compress.utils';
 import {listSourceFiles} from '../utils/deploy.utils';
@@ -53,6 +54,8 @@ export const deploy = async (args?: string[]) => {
   }
 
   await executeDeploy();
+
+  await links();
 };
 
 const executeDeploy = async () => {

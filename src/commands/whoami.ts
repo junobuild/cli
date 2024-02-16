@@ -2,8 +2,19 @@ import {Ed25519KeyIdentity} from '@dfinity/identity';
 import {isNullish} from '@junobuild/utils';
 import {green} from 'kleur';
 import {getToken, getUse, isDefaultProfile} from '../configs/cli.config';
+import {links} from '../services/links.services';
 
-export const whoami = () => {
+export const whoami = async () => {
+  const {success} = info();
+
+  if (!success) {
+    return;
+  }
+
+  await links();
+};
+
+const info = (): {success: boolean} => {
   const profile = getUse();
 
   if (!isDefaultProfile(profile)) {
@@ -14,9 +25,11 @@ export const whoami = () => {
 
   if (isNullish(token)) {
     console.log(`No controller found.`);
-    return;
+    return {success: false};
   }
 
   const identity = Ed25519KeyIdentity.fromParsedJson(token);
   console.log(`🔐 Controller: ${green(identity.getPrincipal().toText())}`);
+
+  return {success: true};
 };
