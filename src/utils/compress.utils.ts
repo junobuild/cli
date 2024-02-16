@@ -1,10 +1,10 @@
+import type {SatelliteConfig} from '@junobuild/config';
 import {minimatch} from 'minimatch';
 import {createReadStream, createWriteStream} from 'node:fs';
 import {Readable} from 'node:stream';
 import {createGzip} from 'node:zlib';
 import {createGunzip} from 'zlib';
 import {DEPLOY_DEFAULT_GZIP} from '../constants/deploy.constants';
-import type {SatelliteConfig} from '../types/juno.config';
 
 export const gzipFiles = async ({
   sourceFiles,

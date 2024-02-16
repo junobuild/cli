@@ -1,5 +1,5 @@
-import {isNullish} from '@junobuild/utils';
-import {cyan, red} from 'kleur';
+import {isNullish, nonNullish} from '@junobuild/utils';
+import {cyan, red, yellow} from 'kleur';
 import prompts from 'prompts';
 import {
   getCliOrbiters,
@@ -8,7 +8,9 @@ import {
   type CliOrbiterConfig,
   type CliSatelliteConfig
 } from '../configs/cli.config';
-import {saveOrbiterConfig, saveSatelliteConfig} from '../configs/juno.config';
+import {junoConfigExist, junoConfigFile, saveConfig} from '../configs/juno.config';
+import type {ConfigType} from '../types/config';
+import {NEW_CMD_LINE, confirmAndExit} from '../utils/prompt.utils';
 
 export const init = async () => {
   const token = getToken();
@@ -18,38 +20,68 @@ export const init = async () => {
     return;
   }
 
-  await initSatelliteConfig();
-  await initOrbiterConfig();
+  if (await junoConfigExist()) {
+    await confirmAndExit(
+      'Your existing configuration will be overwritten. Are you sure you want to continue?'
+    );
+  }
+
+  await initConfig();
 };
 
-const initSatelliteConfig = async () => {
-  const satellites = getCliSatellites();
-
-  let satellite = await (satellites?.length > 0 ? promptSatellites(satellites) : promptSatellite());
-
-  if (satellite === '_manual_') {
-    satellite = await promptSatellite();
-  }
+const initConfig = async () => {
+  const satelliteId = await initSatelliteConfig();
+  const orbiterId = await initOrbiterConfig();
 
   const source = await promptSource();
 
-  await saveSatelliteConfig({satelliteId: satellite, source});
+  const configType = await initConfigType();
+
+  await saveConfig({
+    config: {
+      satellite: {satelliteId, source},
+      ...(nonNullish(orbiterId) && {orbiter: {orbiterId}})
+    },
+    configType
+  });
+
+  if (configType === 'json') {
+    return;
+  }
+
+  console.log(
+    `${NEW_CMD_LINE}💡 You can leverage your IDE's intellisense with type hints by installing the library: ${yellow('npm i @junobuild/config -D')}${NEW_CMD_LINE}`
+  );
 };
 
-const initOrbiterConfig = async () => {
+const initSatelliteConfig = async (): Promise<string> => {
+  const satellites = getCliSatellites();
+
+  const satellite = await (satellites?.length > 0
+    ? promptSatellites(satellites)
+    : promptSatellite());
+
+  if (satellite === '_manual_') {
+    return await promptSatellite();
+  }
+
+  return satellite;
+};
+
+const initOrbiterConfig = async (): Promise<string | undefined> => {
   const authOrbiters = getCliOrbiters();
 
   if (authOrbiters === undefined || authOrbiters.length === 0) {
-    return;
+    return undefined;
   }
 
   const orbiter = await promptOrbiters(authOrbiters);
 
   if (orbiter === '_none_') {
-    return;
+    return undefined;
   }
 
-  await saveOrbiterConfig({orbiterId: orbiter});
+  return orbiter;
 };
 
 const promptSatellites = async (satellites: CliSatelliteConfig[]): Promise<string> => {
@@ -68,6 +100,34 @@ const promptSatellites = async (satellites: CliSatelliteConfig[]): Promise<strin
   assertAnswerCtrlC(satellite);
 
   return satellite;
+};
+
+const initConfigType = async (): Promise<ConfigType> => {
+  if (!(await junoConfigExist())) {
+    return await promptConfigType();
+  }
+
+  const {configType} = junoConfigFile();
+  return configType;
+};
+
+const promptConfigType = async (): Promise<ConfigType> => {
+  const {configType}: {configType: ConfigType} = await prompts({
+    type: 'select',
+    name: 'configType',
+    message: 'What configuration file format do you prefer?',
+    choices: [
+      {title: 'TypeScript', value: 'ts'},
+      {title: 'JavaScript', value: 'js'},
+      {title: 'JSON', value: 'json'}
+    ],
+    initial: 0
+  });
+
+  // In case of control+c
+  assertAnswerCtrlC(configType);
+
+  return configType;
 };
 
 const promptSatellite = async (): Promise<string> => {

@@ -1,7 +1,7 @@
 import {config} from 'dotenv';
 import esbuild from 'esbuild';
-import {existsSync, mkdirSync, writeFileSync} from 'fs';
-import {join} from 'path';
+import {existsSync, mkdirSync, writeFileSync} from 'node:fs';
+import {join} from 'node:path';
 
 config({
   path: process.env.NODE_ENV === 'development' ? `.env.development` : `.env.production`

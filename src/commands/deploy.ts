@@ -1,3 +1,4 @@
+import type {SatelliteConfig} from '@junobuild/config';
 import {
   listAssets,
   uploadBlob,
@@ -27,7 +28,6 @@ import {
 } from '../constants/deploy.constants';
 import {clear} from '../services/clear.services';
 import {assertSatelliteMemorySize} from '../services/deploy.services';
-import type {SatelliteConfig} from '../types/juno.config';
 import {hasArgs} from '../utils/args.utils';
 import {gzipFiles} from '../utils/compress.utils';
 import {listSourceFiles} from '../utils/deploy.utils';
@@ -132,7 +132,7 @@ const assertSourceDirExists = (source: string) => {
     console.log(
       `${red(
         'Cannot proceed deployment.'
-      )}\nAre you sure the folder containing your built app (the "source" tag in the juno.json file) files is correctly configured, or have you built your app?`
+      )}\nAre you sure the folder containing your built app (the "source" tag in the configuration file for Juno) files is correctly configured, or have you built your app?`
     );
     process.exit(1);
   }
