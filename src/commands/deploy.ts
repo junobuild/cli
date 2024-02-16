@@ -50,15 +50,15 @@ export const deploy = async (args?: string[]) => {
   }
 
   if (hasArgs({args, options: ['-c', '--clear']})) {
-    await clear();
+    await clear(args);
   }
 
-  await executeDeploy();
+  await executeDeploy(args);
 
-  await links();
+  await links(args);
 };
 
-const executeDeploy = async () => {
+const executeDeploy = async (args?: string[]) => {
   const {
     satelliteId,
     source = DEPLOY_DEFAULT_SOURCE,
@@ -76,7 +76,7 @@ const executeDeploy = async () => {
     return;
   }
 
-  await assertSatelliteMemorySize();
+  await assertSatelliteMemorySize(args);
 
   const satellite = satelliteParameters(satelliteId);
 

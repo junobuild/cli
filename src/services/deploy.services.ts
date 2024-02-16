@@ -7,7 +7,7 @@ import {configEnv} from '../utils/config.utils';
 import {NEW_CMD_LINE, confirmAndExit} from '../utils/prompt.utils';
 import {satelliteParameters} from '../utils/satellite.utils';
 
-export const assertSatelliteMemorySize = async () => {
+export const assertSatelliteMemorySize = async (args?: string[]) => {
   const {satelliteId, assertions} = await readSatelliteConfig(configEnv(args));
 
   if (assertions?.heapMemory === false) {

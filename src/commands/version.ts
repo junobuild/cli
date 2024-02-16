@@ -22,10 +22,10 @@ import {configEnv} from '../utils/config.utils';
 import {orbiterKey, satelliteKey, satelliteParameters} from '../utils/satellite.utils';
 import {lastRelease} from '../utils/upgrade.utils';
 
-export const version = async () => {
+export const version = async (args?: string[]) => {
   await cliVersion();
   await missionControlVersion();
-  await satelliteVersion();
+  await satelliteVersion(args);
   await orbitersVersion();
 };
 
@@ -84,7 +84,7 @@ const missionControlVersion = async () => {
   });
 };
 
-const satelliteVersion = async () => {
+const satelliteVersion = async (args?: string[]) => {
   if (!(await junoConfigExist())) {
     console.log(`No ${yellow('config')} file found.`);
     return;

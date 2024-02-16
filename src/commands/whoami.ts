@@ -4,14 +4,14 @@ import {green} from 'kleur';
 import {getToken, getUse, isDefaultProfile} from '../configs/cli.config';
 import {links} from '../services/links.services';
 
-export const whoami = async () => {
+export const whoami = async (args?: string[]) => {
   const {success} = info();
 
   if (!success) {
     return;
   }
 
-  await links();
+  await links(args);
 };
 
 const info = (): {success: boolean} => {

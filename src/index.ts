@@ -97,7 +97,7 @@ export const run = async () => {
       await clear(args);
       break;
     case 'version':
-      await versionCommand();
+      await versionCommand(args);
       break;
     case 'open':
       await open(args);
@@ -106,7 +106,7 @@ export const run = async () => {
       await upgrade(args);
       break;
     case 'whoami':
-      await whoami();
+      await whoami(args);
       break;
     case 'use':
       use(args);

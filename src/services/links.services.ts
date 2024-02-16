@@ -7,7 +7,7 @@ import {terminalLink} from '../utils/links.utils';
 import {isProcessToken} from '../utils/process.utils';
 import {satelliteParameters} from '../utils/satellite.utils';
 
-export const links = async () => {
+export const links = async (args?: string[]) => {
   // If a developer is using a JUNO_TOKEN to execute command(s), the links will not be printed.
   // This is particularly useful for CI environment where such output is not needed and also because only ADMIN controllers can list custom domains.
   if (isProcessToken()) {

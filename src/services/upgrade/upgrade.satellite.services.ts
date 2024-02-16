@@ -11,6 +11,7 @@ import {junoConfigExist, readSatelliteConfig} from '../../configs/juno.config';
 import {SATELLITE_WASM_NAME} from '../../constants/constants';
 import type {UpgradeWasm, UpgradeWasmModule} from '../../types/upgrade';
 import {hasArgs, nextArg} from '../../utils/args.utils';
+import {configEnv} from '../../utils/config.utils';
 import {consoleNoConfigFound} from '../../utils/msg.utils';
 import {NEW_CMD_LINE} from '../../utils/prompt.utils';
 import {satelliteKey, satelliteParameters} from '../../utils/satellite.utils';
@@ -29,7 +30,7 @@ export const upgradeSatellite = async (args?: string[]) => {
     return;
   }
 
-  const {satelliteId} = await readSatelliteConfig();
+  const {satelliteId} = await readSatelliteConfig(configEnv(args));
 
   console.log(
     `${NEW_CMD_LINE}Initiating upgrade for satellite ${cyan(satelliteId)}.${NEW_CMD_LINE}`
