@@ -36,11 +36,14 @@ Commands:
 export const helpUpgrade = `
 ${TITLE}
 
-Usage: ${green('juno')} ${cyan('upgrade')} ${yellow('[options]')}
+Usage: ${green('juno')} ${cyan('upgrade')} ${magenta('<subcommand>')} ${yellow('[options]')}
+
+Subcommands:
+  ${magenta('satellite')}             Upgrade a satellite. Subcommand can be shortened to ${magenta('s')}.
+  ${magenta('mission-control')}       Upgrade a mission control. Subcommand can be shortened to ${magenta('m')}.
+  ${magenta('orbiter')}               Upgrade an orbiter. Subcommand can be shortened as ${magenta('o')}.
 
 Options:
-  ${yellow('-m, --mission-control')} Target a mission control.
-  ${yellow('-o, --orbiter')}         Target an orbiter.
   ${yellow('-s, --src')}             A local gzipped wasm file for the upgrade.
   ${yellow('-r, --reset')}           Reset to the initial state.
   ${yellow('-n, --nocheck')}         Skip assertions and execute upgrade without prompts.
@@ -48,7 +51,6 @@ Options:
   
 Notes:
 
-- The command targets per default a satellite.
 - Resetting a mission control is not possible.
 - Disabling checks bypasses the verification of the target hash and skips the validation for build types.  
 `;
