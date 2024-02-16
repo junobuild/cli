@@ -1,5 +1,5 @@
 import {isNullish, nonNullish} from '@junobuild/utils';
-import { cyan, red, yellow } from "kleur";
+import {cyan, red, yellow} from 'kleur';
 import prompts from 'prompts';
 import {
   getCliOrbiters,
@@ -10,7 +10,7 @@ import {
 } from '../configs/cli.config';
 import {junoConfigExist, junoConfigFile, saveConfig} from '../configs/juno.config';
 import type {ConfigType} from '../types/config';
-import { confirmAndExit, NEW_CMD_LINE } from "../utils/prompt.utils";
+import {NEW_CMD_LINE, confirmAndExit} from '../utils/prompt.utils';
 
 export const init = async () => {
   const token = getToken();
@@ -45,11 +45,13 @@ const initConfig = async () => {
     configType
   });
 
-  if (configType === "json") {
+  if (configType === 'json') {
     return;
   }
 
-  console.log(`${NEW_CMD_LINE}💡 You can leverage your IDE's intellisense with type hints by installing the library: ${yellow("npm i @junobuild/config -D")}${NEW_CMD_LINE}`)
+  console.log(
+    `${NEW_CMD_LINE}💡 You can leverage your IDE's intellisense with type hints by installing the library: ${yellow('npm i @junobuild/config -D')}${NEW_CMD_LINE}`
+  );
 };
 
 const initSatelliteConfig = async (): Promise<string> => {
