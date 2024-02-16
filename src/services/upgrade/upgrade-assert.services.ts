@@ -1,9 +1,9 @@
 import {satelliteBuildType, type BuildType, type SatelliteParameters} from '@junobuild/admin';
 import {isNullish, nonNullish} from '@junobuild/utils';
 import {cyan, yellow} from 'kleur';
-import {type UpgradeWasm, type UpgradeWasmModule} from '../types/upgrade';
-import {gunzipFile, isGzip} from '../utils/compress.utils';
-import {NEW_CMD_LINE, confirmAndExit} from '../utils/prompt.utils';
+import {type UpgradeWasm, type UpgradeWasmModule} from '../../types/upgrade';
+import {gunzipFile, isGzip} from '../../utils/compress.utils';
+import {NEW_CMD_LINE, confirmAndExit} from '../../utils/prompt.utils';
 
 const wasmBuildType = async ({wasm_module}: UpgradeWasmModule): Promise<BuildType | undefined> => {
   const buffer = Buffer.from(wasm_module);
