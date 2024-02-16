@@ -31,6 +31,7 @@ import {assertSatelliteMemorySize} from '../services/deploy.services';
 import {links} from '../services/links.services';
 import {hasArgs} from '../utils/args.utils';
 import {gzipFiles} from '../utils/compress.utils';
+import {configEnv} from '../utils/config.utils';
 import {listSourceFiles} from '../utils/deploy.utils';
 import {satelliteParameters} from '../utils/satellite.utils';
 import {init} from './init';
@@ -49,22 +50,22 @@ export const deploy = async (args?: string[]) => {
   }
 
   if (hasArgs({args, options: ['-c', '--clear']})) {
-    await clear();
+    await clear(args);
   }
 
-  await executeDeploy();
+  await executeDeploy(args);
 
-  await links();
+  await links(args);
 };
 
-const executeDeploy = async () => {
+const executeDeploy = async (args?: string[]) => {
   const {
     satelliteId,
     source = DEPLOY_DEFAULT_SOURCE,
     ignore = DEPLOY_DEFAULT_IGNORE,
     encoding = DEPLOY_DEFAULT_ENCODING,
     gzip = DEPLOY_DEFAULT_GZIP
-  } = await readSatelliteConfig();
+  } = await readSatelliteConfig(configEnv(args));
 
   const sourceAbsolutePath = join(process.cwd(), source);
 
@@ -75,7 +76,7 @@ const executeDeploy = async () => {
     return;
   }
 
-  await assertSatelliteMemorySize();
+  await assertSatelliteMemorySize(args);
 
   const satellite = satelliteParameters(satelliteId);
 

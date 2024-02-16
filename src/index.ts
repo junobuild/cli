@@ -8,6 +8,7 @@ import {
   help,
   helpClear,
   helpCommand,
+  helpConfig,
   helpDeploy,
   helpDev,
   helpLogin,
@@ -61,6 +62,9 @@ export const run = async () => {
       case 'clear':
         console.log(helpClear);
         break;
+      case 'config':
+        console.log(helpConfig);
+        break;
       case 'deploy':
         console.log(helpDeploy);
         break;
@@ -93,7 +97,7 @@ export const run = async () => {
       await clear(args);
       break;
     case 'version':
-      await versionCommand();
+      await versionCommand(args);
       break;
     case 'open':
       await open(args);
@@ -102,7 +106,7 @@ export const run = async () => {
       await upgrade(args);
       break;
     case 'whoami':
-      await whoami();
+      await whoami(args);
       break;
     case 'use':
       use(args);

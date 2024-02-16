@@ -1,4 +1,9 @@
-import type {JunoConfig, JunoConfigFnOrObject, SatelliteConfig} from '@junobuild/config';
+import type {
+  JunoConfig,
+  JunoConfigEnv,
+  JunoConfigFnOrObject,
+  SatelliteConfig
+} from '@junobuild/config';
 import {nonNullish} from '@junobuild/utils';
 import {existsSync} from 'node:fs';
 import {access, readFile, writeFile} from 'node:fs/promises';
@@ -26,8 +31,8 @@ export const saveConfig = async ({
   });
 };
 
-export const readSatelliteConfig = async (): Promise<SatelliteConfig> => {
-  const {satellite} = await readJunoConfig();
+export const readSatelliteConfig = async (env: JunoConfigEnv): Promise<SatelliteConfig> => {
+  const {satellite} = await readJunoConfig(env);
   return satellite;
 };
 
@@ -134,11 +139,11 @@ const writeJunoConfig = async ({
   }
 };
 
-const readJunoConfig = async (): Promise<JunoConfig> => {
+const readJunoConfig = async (env: JunoConfigEnv): Promise<JunoConfig> => {
   const {configPath, configType} = junoConfigFile();
 
   const config = (userConfig: JunoConfigFnOrObject): JunoConfig =>
-    typeof userConfig === 'function' ? userConfig({mode: 'production'}) : userConfig;
+    typeof userConfig === 'function' ? userConfig(env) : userConfig;
 
   switch (configType) {
     case 'ts': {

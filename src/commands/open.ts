@@ -2,6 +2,7 @@ import {listCustomDomains, type CustomDomain} from '@junobuild/admin';
 import prompts from 'prompts';
 import {junoConfigExist, readSatelliteConfig} from '../configs/juno.config';
 import {hasArgs, nextArg} from '../utils/args.utils';
+import {configEnv} from '../utils/config.utils';
 import {consoleUrl, defaultSatelliteDomain} from '../utils/domain.utils';
 import {consoleNoConfigFound} from '../utils/msg.utils';
 import {openUrl} from '../utils/open.utils';
@@ -16,7 +17,7 @@ export const open = async (args?: string[]) => {
 
   const browser = nextArg({args, option: '-b'}) ?? nextArg({args, option: '--browser'});
 
-  const {satelliteId} = await readSatelliteConfig();
+  const {satelliteId} = await readSatelliteConfig(configEnv(args));
   if (hasArgs({args, options: ['-c', '--console']})) {
     await openUrl({url: consoleUrl(satelliteId), browser});
     return;

@@ -3,10 +3,11 @@ import {deleteAsset} from '@junobuild/core-peer';
 import ora from 'ora';
 import {readSatelliteConfig} from '../configs/juno.config';
 import {DAPP_COLLECTION} from '../constants/constants';
+import {configEnv} from '../utils/config.utils';
 import {satelliteParameters} from '../utils/satellite.utils';
 
-export const clear = async () => {
-  const {satelliteId} = await readSatelliteConfig();
+export const clear = async (args?: string[]) => {
+  const {satelliteId} = await readSatelliteConfig(configEnv(args));
 
   const spinner = ora('Clearing dapp assets...').start();
 
@@ -25,8 +26,8 @@ const cleanFullPath = (fullPath: string): string => {
   return `${path.startsWith('/') ? '' : '/'}${path}`;
 };
 
-export const clearAsset = async (fullPath: string) => {
-  const {satelliteId} = await readSatelliteConfig();
+export const clearAsset = async ({fullPath, args}: {fullPath: string; args?: string[]}) => {
+  const {satelliteId} = await readSatelliteConfig(configEnv(args));
 
   const spinner = ora(`Clearing ${fullPath}...`).start();
 

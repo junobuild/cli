@@ -22,9 +22,9 @@ export const clear = async (args?: string[]) => {
       return;
     }
 
-    await clearAsset(file);
+    await clearAsset({fullPath: file, args});
     return;
   }
 
-  await clearServices();
+  await clearServices(args);
 };
