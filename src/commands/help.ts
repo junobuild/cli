@@ -127,7 +127,7 @@ export const helpDevContinue = `${helpDevBuild}
 export const helpDev = `
 ${TITLE}
 
-Usage: ${green('juno')} ${cyan('dev')} ${magenta('<sub-command>')}
+Usage: ${green('juno')} ${cyan('dev')} ${magenta('<subcommand>')}
 
 Subcommands:
   ${helpDevBuild}
