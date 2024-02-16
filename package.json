@@ -25,12 +25,13 @@
   "dependencies": {
     "@babel/core": "^7.23.9",
     "@babel/plugin-transform-modules-commonjs": "^7.23.3",
+    "@babel/preset-typescript": "^7.23.3",
     "@dfinity/agent": "^0.20.2",
     "@dfinity/candid": "^0.20.2",
     "@dfinity/identity": "^0.20.2",
     "@dfinity/principal": "^0.20.2",
     "@junobuild/admin": "^0.0.45",
-    "@junobuild/config": "file:../juno-js/packages/config",
+    "@junobuild/config": "^0.0.1",
     "@junobuild/core-peer": "^0.0.10",
     "@junobuild/utils": "^0.0.18",
     "conf": "^12.0.0",
@@ -47,7 +48,6 @@
     "terminal-link": "^3.0.0"
   },
   "devDependencies": {
-    "@babel/preset-typescript": "^7.23.3",
     "@types/listr": "^0.14.9",
     "@types/mime-types": "^2.1.4",
     "@types/minimatch": "^5.1.2",
