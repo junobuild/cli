@@ -1,7 +1,7 @@
 import {
-  OrbiterParameters,
   orbiterVersion,
-  upgradeOrbiter as upgradeOrbiterAdmin
+  upgradeOrbiter as upgradeOrbiterAdmin,
+  type OrbiterParameters
 } from '@junobuild/admin';
 import {cyan, red} from 'kleur';
 import {getCliOrbiters} from '../../configs/cli.config';

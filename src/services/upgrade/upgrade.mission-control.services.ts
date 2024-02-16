@@ -1,7 +1,7 @@
 import {
-  MissionControlParameters,
   missionControlVersion,
-  upgradeMissionControl as upgradeMissionControlAdmin
+  upgradeMissionControl as upgradeMissionControlAdmin,
+  type MissionControlParameters
 } from '@junobuild/admin';
 import {isNullish} from '@junobuild/utils';
 import {cyan, red} from 'kleur';

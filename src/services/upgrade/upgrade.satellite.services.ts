@@ -1,8 +1,8 @@
 import {
-  SatelliteParameters,
   listCustomDomains,
   satelliteVersion,
-  upgradeSatellite as upgradeSatelliteAdmin
+  upgradeSatellite as upgradeSatelliteAdmin,
+  type SatelliteParameters
 } from '@junobuild/admin';
 import {isNullish} from '@junobuild/utils';
 import {cyan, red} from 'kleur';
