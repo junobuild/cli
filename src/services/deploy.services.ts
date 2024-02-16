@@ -3,9 +3,9 @@ import {yellow} from 'kleur';
 import {compare} from 'semver';
 import {readSatelliteConfig} from '../configs/juno.config';
 import {MEMORY_HEAP_WARNING, MEMORY_SIZE_ENDPOINT_VERSION} from '../constants/deploy.constants';
+import {configEnv} from '../utils/config.utils';
 import {NEW_CMD_LINE, confirmAndExit} from '../utils/prompt.utils';
 import {satelliteParameters} from '../utils/satellite.utils';
-import { configEnv } from "../utils/config.utils";
 
 export const assertSatelliteMemorySize = async () => {
   const {satelliteId, assertions} = await readSatelliteConfig(configEnv(args));

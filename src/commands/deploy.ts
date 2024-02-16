@@ -31,10 +31,10 @@ import {assertSatelliteMemorySize} from '../services/deploy.services';
 import {links} from '../services/links.services';
 import {hasArgs} from '../utils/args.utils';
 import {gzipFiles} from '../utils/compress.utils';
+import {configEnv} from '../utils/config.utils';
 import {listSourceFiles} from '../utils/deploy.utils';
 import {satelliteParameters} from '../utils/satellite.utils';
 import {init} from './init';
-import { configEnv } from "../utils/config.utils";
 
 interface FileDetails {
   file: string;

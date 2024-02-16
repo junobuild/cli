@@ -3,8 +3,8 @@ import {deleteAsset} from '@junobuild/core-peer';
 import ora from 'ora';
 import {readSatelliteConfig} from '../configs/juno.config';
 import {DAPP_COLLECTION} from '../constants/constants';
+import {configEnv} from '../utils/config.utils';
 import {satelliteParameters} from '../utils/satellite.utils';
-import { configEnv } from "../utils/config.utils";
 
 export const clear = async () => {
   const {satelliteId} = await readSatelliteConfig(configEnv(args));

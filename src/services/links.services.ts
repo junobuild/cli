@@ -1,11 +1,11 @@
 import {listCustomDomains} from '@junobuild/admin';
 import {red} from 'kleur';
 import {junoConfigExist, readSatelliteConfig} from '../configs/juno.config';
+import {configEnv} from '../utils/config.utils';
 import {consoleUrl, defaultSatelliteDomain} from '../utils/domain.utils';
 import {terminalLink} from '../utils/links.utils';
 import {isProcessToken} from '../utils/process.utils';
 import {satelliteParameters} from '../utils/satellite.utils';
-import { configEnv } from "../utils/config.utils";
 
 export const links = async () => {
   // If a developer is using a JUNO_TOKEN to execute command(s), the links will not be printed.

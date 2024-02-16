@@ -7,14 +7,15 @@ import {dev} from './commands/dev';
 import {
   help,
   helpClear,
-  helpCommand, helpConfig,
+  helpCommand,
+  helpConfig,
   helpDeploy,
   helpDev,
   helpLogin,
   helpOpen,
   helpUpgrade,
   helpUse
-} from "./commands/help";
+} from './commands/help';
 import {init} from './commands/init';
 import {open} from './commands/open';
 import {upgrade} from './commands/upgrade';
