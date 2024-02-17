@@ -1,6 +1,6 @@
 import {setConfig} from '@junobuild/admin';
 import ora from 'ora';
-import {junoConfigExist, readSatelliteConfig} from '../configs/juno.config';
+import {junoConfigExist, readJunoConfig} from '../configs/juno.config';
 import {configEnv} from '../utils/config.utils';
 import {satelliteParameters} from '../utils/satellite.utils';
 import {init} from './init';
@@ -10,7 +10,9 @@ export const config = async (args?: string[]) => {
     await init();
   }
 
-  const {satelliteId, storage} = await readSatelliteConfig(configEnv(args));
+  const env = configEnv(args);
+  const {satellite} = await readJunoConfig(env);
+  const {storage} = satellite;
 
   const spinner = ora(`Configuring...`).start();
 
@@ -24,7 +26,7 @@ export const config = async (args?: string[]) => {
           iframe: storage?.iframe
         }
       },
-      satellite: satelliteParameters(satelliteId)
+      satellite: satelliteParameters({satellite, env})
     });
   } finally {
     spinner.stop();

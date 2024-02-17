@@ -1,6 +1,6 @@
 import {listCustomDomains} from '@junobuild/admin';
 import {red} from 'kleur';
-import {junoConfigExist, readSatelliteConfig} from '../configs/juno.config';
+import {junoConfigExist, readJunoConfig} from '../configs/juno.config';
 import {configEnv} from '../utils/config.utils';
 import {consoleUrl, defaultSatelliteDomain} from '../utils/domain.utils';
 import {terminalLink} from '../utils/links.utils';
@@ -18,13 +18,16 @@ export const links = async (args?: string[]) => {
     return;
   }
 
-  const {satelliteId} = await readSatelliteConfig(configEnv(args));
+  const env = configEnv(args);
+  const {satellite: satelliteConfig} = await readJunoConfig(env);
+
+  const satellite = satelliteParameters({satellite: satelliteConfig, env});
+  const {satelliteId} = satellite;
 
   const defaultUrl = defaultSatelliteDomain(satelliteId);
   const adminUrl = consoleUrl(satelliteId);
 
   try {
-    const satellite = satelliteParameters(satelliteId);
     const domains = await listCustomDomains({satellite});
 
     console.log(`\n🛠️  ${terminalLink(adminUrl)}`);

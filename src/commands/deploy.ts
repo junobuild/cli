@@ -18,7 +18,7 @@ import {minimatch} from 'minimatch';
 import {lstatSync} from 'node:fs';
 import {readFile} from 'node:fs/promises';
 import {basename, extname, join, relative} from 'node:path';
-import {junoConfigExist, readSatelliteConfig} from '../configs/juno.config';
+import {junoConfigExist, readJunoConfig} from '../configs/juno.config';
 import {COLLECTION_DAPP, DAPP_COLLECTION, UPLOAD_BATCH_SIZE} from '../constants/constants';
 import {
   DEPLOY_DEFAULT_ENCODING,
@@ -29,6 +29,7 @@ import {
 import {clear} from '../services/clear.services';
 import {assertSatelliteMemorySize} from '../services/deploy.services';
 import {links} from '../services/links.services';
+import type {SatelliteConfigEnv} from '../types/config';
 import {hasArgs} from '../utils/args.utils';
 import {gzipFiles} from '../utils/compress.utils';
 import {configEnv} from '../utils/config.utils';
@@ -59,17 +60,26 @@ export const deploy = async (args?: string[]) => {
 };
 
 const executeDeploy = async (args?: string[]) => {
+  const env = configEnv(args);
+  const {satellite: satelliteConfig} = await readJunoConfig(env);
+
   const {
-    satelliteId,
     source = DEPLOY_DEFAULT_SOURCE,
     ignore = DEPLOY_DEFAULT_IGNORE,
     encoding = DEPLOY_DEFAULT_ENCODING,
     gzip = DEPLOY_DEFAULT_GZIP
-  } = await readSatelliteConfig(configEnv(args));
+  } = satelliteConfig;
 
   const sourceAbsolutePath = join(process.cwd(), source);
 
-  const sourceFiles = await listFiles({sourceAbsolutePath, satelliteId, ignore, encoding, gzip});
+  const sourceFiles = await listFiles({
+    sourceAbsolutePath,
+    ignore,
+    encoding,
+    gzip,
+    satellite: satelliteConfig,
+    env
+  });
 
   if (sourceFiles.length === 0) {
     console.log('No new files to upload.');
@@ -78,7 +88,7 @@ const executeDeploy = async (args?: string[]) => {
 
   await assertSatelliteMemorySize(args);
 
-  const satellite = satelliteParameters(satelliteId);
+  const satellite = satelliteParameters({satellite: satelliteConfig, env});
 
   const fileDetailsPath = (file: FileDetails): string => file.alternateFile ?? file.file;
 
@@ -145,15 +155,14 @@ const assertSourceDirExists = (source: string) => {
 const filterFilesToUpload = async ({
   files,
   sourceAbsolutePath,
-  satelliteId
+  ...env
 }: {
   files: FileDetails[];
   sourceAbsolutePath: string;
-  satelliteId: string;
-}): Promise<FileDetails[]> => {
+} & SatelliteConfigEnv): Promise<FileDetails[]> => {
   const existingAssets = await listAssets({
     collection: DAPP_COLLECTION,
-    satellite: satelliteParameters(satelliteId)
+    satellite: satelliteParameters(env)
   });
 
   const promises = files.map(
@@ -201,15 +210,14 @@ const fileNeedUpload = async ({
 
 const listFiles = async ({
   sourceAbsolutePath,
-  satelliteId,
   ignore,
   encoding,
-  gzip
+  gzip,
+  ...env
 }: {
   sourceAbsolutePath: string;
-} & Required<Pick<SatelliteConfig, 'satelliteId' | 'ignore' | 'encoding' | 'gzip'>>): Promise<
-  FileDetails[]
-> => {
+} & SatelliteConfigEnv &
+  Required<Pick<SatelliteConfig, 'ignore' | 'encoding' | 'gzip'>>): Promise<FileDetails[]> => {
   assertSourceDirExists(sourceAbsolutePath);
 
   const sourceFiles = listSourceFiles({sourceAbsolutePath, ignore});
@@ -282,6 +290,6 @@ const listFiles = async ({
   return await filterFilesToUpload({
     files: encodingFiles,
     sourceAbsolutePath,
-    satelliteId
+    ...env
   });
 };
