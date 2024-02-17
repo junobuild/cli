@@ -1,9 +1,4 @@
-import type {
-  JunoConfig,
-  JunoConfigEnv,
-  JunoConfigFnOrObject,
-  SatelliteConfig
-} from '@junobuild/config';
+import type {JunoConfig, JunoConfigEnv, JunoConfigFnOrObject} from '@junobuild/config';
 import {nonNullish} from '@junobuild/utils';
 import {existsSync} from 'node:fs';
 import {access, readFile, writeFile} from 'node:fs/promises';
@@ -14,7 +9,7 @@ import {
 } from '../constants/config.constants';
 import {JUNO_CONFIG_FILENAME, JUNO_JSON} from '../constants/constants';
 import {DEPLOY_DEFAULT_SOURCE} from '../constants/deploy.constants';
-import type {ConfigType} from '../types/config';
+import {ConfigType, JunoConfigWithSatelliteId} from '../types/config';
 import {readTemplateFile} from '../utils/fs.utils';
 import {nodeRequire} from '../utils/node.utils';
 
@@ -22,18 +17,13 @@ export const saveJunoConfig = async ({
   config,
   configType
 }: {
-  config: JunoConfig;
+  config: JunoConfigWithSatelliteId;
   configType: ConfigType;
 }): Promise<void> => {
   await writeJunoConfig({
     config,
     configType
   });
-};
-
-export const readSatelliteConfig = async (env: JunoConfigEnv): Promise<SatelliteConfig> => {
-  const {satellite} = await readJunoConfig(env);
-  return satellite;
 };
 
 export const junoConfigExist = async (): Promise<boolean> => {
@@ -107,7 +97,7 @@ const writeJunoConfig = async ({
   config,
   configType
 }: {
-  config: JunoConfig;
+  config: JunoConfigWithSatelliteId;
   configType: ConfigType;
 }): Promise<void> => {
   switch (configType) {
