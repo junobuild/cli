@@ -7,7 +7,7 @@ import {
 import {isNullish} from '@junobuild/utils';
 import {cyan, red} from 'kleur';
 import {compare} from 'semver';
-import {junoConfigExist, readSatelliteConfig} from '../../configs/juno.config';
+import {junoConfigExist, readJunoConfig} from '../../configs/juno.config';
 import {SATELLITE_WASM_NAME} from '../../constants/constants';
 import type {UpgradeWasm, UpgradeWasmModule} from '../../types/upgrade';
 import {hasArgs, nextArg} from '../../utils/args.utils';
@@ -30,13 +30,15 @@ export const upgradeSatellite = async (args?: string[]) => {
     return;
   }
 
-  const {satelliteId} = await readSatelliteConfig(configEnv(args));
+  const env = configEnv(args);
+  const {satellite: satelliteConfig} = await readJunoConfig(env);
+
+  const satellite = satelliteParameters({satellite: satelliteConfig, env});
+  const {satelliteId} = satellite;
 
   console.log(
     `${NEW_CMD_LINE}Initiating upgrade for satellite ${cyan(satelliteId)}.${NEW_CMD_LINE}`
   );
-
-  const satellite = satelliteParameters(satelliteId);
 
   const consoleSuccess = () => {
     console.log(`✅ Satellite successfully upgraded.`);

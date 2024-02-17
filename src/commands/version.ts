@@ -8,7 +8,7 @@ import {cyan, green, red, yellow} from 'kleur';
 import {clean, compare} from 'semver';
 import {version as cliCurrentVersion} from '../../package.json';
 import {getCliMissionControl, getCliOrbiters} from '../configs/cli.config';
-import {junoConfigExist, readSatelliteConfig} from '../configs/juno.config';
+import {junoConfigExist, readJunoConfig} from '../configs/juno.config';
 import {
   MISSION_CONTROL_WASM_NAME,
   ORBITER_WASM_NAME,
@@ -90,9 +90,11 @@ const satelliteVersion = async (args?: string[]) => {
     return;
   }
 
-  const {satelliteId} = await readSatelliteConfig(configEnv(args));
+  const env = configEnv(args);
+  const {satellite: satelliteConfig} = await readJunoConfig(env);
 
-  const satellite = satelliteParameters(satelliteId);
+  const satellite = satelliteParameters({satellite: satelliteConfig, env});
+  const {satelliteId} = satellite;
 
   const currentVersion = await satelliteVersionLib({
     satellite

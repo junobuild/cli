@@ -139,7 +139,7 @@ const writeJunoConfig = async ({
   }
 };
 
-const readJunoConfig = async (env: JunoConfigEnv): Promise<JunoConfig> => {
+export const readJunoConfig = async (env: JunoConfigEnv): Promise<JunoConfig> => {
   const {configPath, configType} = junoConfigFile();
 
   const config = (userConfig: JunoConfigFnOrObject): JunoConfig =>
