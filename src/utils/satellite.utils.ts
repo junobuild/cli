@@ -1,5 +1,6 @@
 import {type SatelliteParameters} from '@junobuild/admin';
-import {assertNonNullish} from '@junobuild/utils';
+import {isNullish} from '@junobuild/utils';
+import {red} from 'kleur';
 import {getCliOrbiters, getCliSatellites} from '../configs/cli.config';
 import type {SatelliteConfigEnv} from '../types/config';
 import {actorParameters} from './actor.utils';
@@ -11,10 +12,10 @@ export const satelliteParameters = ({
   Required<Pick<SatelliteParameters, 'satelliteId'>> => {
   const satelliteId = satellitesIds?.[mode] ?? satelliteIdUser;
 
-  assertNonNullish(
-    satelliteId,
-    `A satellite ID must be provided in your configuration. Selected mode: ${mode}`
-  );
+  if (isNullish(satelliteId)) {
+    console.log(`${red(`A satellite ID for ${mode} must be set in your configuration.`)}`);
+    process.exit(1);
+  }
 
   return {
     satelliteId,
