@@ -38,14 +38,10 @@ export const helpMode = `${yellow('-m, --mode')}        Set env mode. For exampl
 export const helpUpgrade = `
 ${TITLE}
 
-Usage: ${green('juno')} ${cyan('upgrade')} ${magenta('<subcommand>')} ${yellow('[options]')}
-
-Subcommands:
-  ${magenta('satellite')}             Upgrade a satellite. Subcommand can be shortened to ${magenta('s')}.
-  ${magenta('mission-control')}       Upgrade a mission control. Subcommand can be shortened to ${magenta('m')}.
-  ${magenta('orbiter')}               Upgrade an orbiter. Subcommand can be shortened as ${magenta('o')}.
+Usage: ${green('juno')} ${cyan('upgrade')} ${yellow('[options]')}
 
 Options:
+  ${yellow('-t, --target')}          What type of segment should be upgraded. Valid targets are ${magenta('satellite')}, ${magenta('mission-control')} or ${magenta('orbiter')}.  
   ${yellow('-s, --src')}             A local gzipped wasm file for the upgrade.
   ${yellow('-r, --reset')}           Reset to the initial state.
   ${yellow('-n, --nocheck')}         Skip assertions and execute upgrade without prompts.
@@ -56,6 +52,7 @@ Notes:
 
 - Resetting a mission control is not possible.
 - Disabling checks bypasses the verification of the target hash and skips the validation for build types.  
+- Targets can be shortened to ${magenta('s')} for satellite, ${magenta('m')} for mission-control and ${magenta('o')} for orbiter.
 `;
 
 export const helpCommand = (command: string) => `

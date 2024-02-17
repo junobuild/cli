@@ -2,12 +2,13 @@ import {red} from 'kleur';
 import {upgradeMissionControl} from '../services/upgrade/upgrade.mission-control.services';
 import {upgradeOrbiters} from '../services/upgrade/upgrade.orbiter.services';
 import {upgradeSatellite} from '../services/upgrade/upgrade.satellite.services';
+import {nextArg} from '../utils/args.utils';
 import {helpUpgrade} from './help';
 
 export const upgrade = async (args?: string[]) => {
-  const [subCommand] = args ?? [];
+  const target = nextArg({args, option: '-t'}) ?? nextArg({args, option: '--target'});
 
-  switch (subCommand) {
+  switch (target) {
     case 's':
     case 'satellite':
       await upgradeSatellite(args);
@@ -21,7 +22,7 @@ export const upgrade = async (args?: string[]) => {
       await upgradeOrbiters(args);
       break;
     default:
-      console.log(`${red('Unknown subcommand.')}`);
+      console.log(`${red('Unknown target.')}`);
       console.log(helpUpgrade);
   }
 };
