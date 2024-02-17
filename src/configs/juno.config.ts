@@ -9,7 +9,7 @@ import {
 } from '../constants/config.constants';
 import {JUNO_CONFIG_FILENAME, JUNO_JSON} from '../constants/constants';
 import {DEPLOY_DEFAULT_SOURCE} from '../constants/deploy.constants';
-import {ConfigType, JunoConfigWithSatelliteId} from '../types/config';
+import type {ConfigType, JunoConfigWithSatelliteId} from '../types/config';
 import {readTemplateFile} from '../utils/fs.utils';
 import {nodeRequire} from '../utils/node.utils';
 
