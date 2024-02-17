@@ -33,7 +33,7 @@ Commands:
   ${cyan('whoami')}              Display the current controller.
 `;
 
-export const helpMode = `${yellow('-m, --mode')}        Set env mode. For example production, development or a custom string. Default is production.`;
+export const helpMode = `${yellow('-m, --mode')}            Set env mode. For example production, development or a custom string. Default is production.`;
 
 export const helpUpgrade = `
 ${TITLE}
@@ -61,7 +61,11 @@ ${TITLE}
 Usage: ${green('juno')} ${cyan(command)} ${yellow('[options]')}
 
 Options:
-  ${yellow('-h, --help')}          Output usage information.
+  ${yellow('-h, --help')}            Output usage information.
+`;
+
+export const helpCommandWithMode = (command: string) => `
+${helpCommand(command)}  ${helpMode}
 `;
 
 export const helpLogin = `
