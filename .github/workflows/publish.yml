@@ -14,10 +14,9 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
+      - uses: actions/setup-node@v4
         with:
-          node-version: '18.x'
-          registry-url: 'https://registry.npmjs.org'
+          node-version: lts/Hydrogen
       - run: npm install -g npm
       - run: npm ci
       - run: npm run build
