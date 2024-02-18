@@ -1,7 +1,7 @@
 export const AUTH_URL = `${process.env.JUNO_URL}/cli`;
 export const CLI_PROJECT_NAME = process.env.CLI_PROJECT_NAME;
 export const REDIRECT_URL = 'http://localhost:{port}';
-export const JUNO_CONFIG_FILENAME = 'juno.config'; // .json | .js | .mjs | .ts
+export const JUNO_CONFIG_FILENAME = 'juno.config'; // .json | .js | .mjs | .cjs | .ts
 /**
  * @deprecated juno.json is deprecated but still supported. We are now using juno.config.xxx
  */
