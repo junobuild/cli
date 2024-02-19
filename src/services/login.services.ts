@@ -21,7 +21,7 @@ export const login = async (args?: string[]) => {
   const port = await getPort();
   const nonce = Math.floor(Math.random() * (2 << 29) + 1);
 
-  const key = Ed25519KeyIdentity.generate();
+  const key = Ed25519KeyIdentity.generate(null as unknown as Uint8Array);
   const principal = key.getPrincipal().toText();
   const token = key.toJSON(); // save to local
 
