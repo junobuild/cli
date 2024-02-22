@@ -3,7 +3,7 @@ import {existsSync} from 'node:fs';
 import {writeFile} from 'node:fs/promises';
 import {join} from 'node:path';
 import {junoDevConfigExist, junoDevConfigFile} from '../configs/juno.dev.config';
-import {JUNO_CONFIG_FILENAME, JUNO_DEV_CONFIG_FILENAME} from '../constants/constants';
+import {JUNO_DEV_CONFIG_FILENAME} from '../constants/constants';
 import {execute} from '../utils/cmd.utils';
 import {assertDockerRunning, checkDockerVersion} from '../utils/env.utils';
 import {copyTemplateFile, readTemplateFile} from '../utils/fs.utils';
@@ -82,7 +82,7 @@ const assertDockerCompose = async () => {
     sourceFolder: TEMPLATE_PATH
   });
 
-  const configFile = `${JUNO_CONFIG_FILENAME}.${configType}`;
+  const configFile = `${JUNO_DEV_CONFIG_FILENAME}.${configType}`;
 
   const content = template.replaceAll('<JUNO_DEV_CONFIG>', configFile);
 
