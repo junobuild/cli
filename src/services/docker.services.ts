@@ -1,9 +1,14 @@
 import {magenta} from 'kleur';
 import {existsSync} from 'node:fs';
+import {writeFile} from 'node:fs/promises';
+import {join} from 'node:path';
+import {junoDevConfigExist, junoDevConfigFile} from '../configs/juno.dev.config';
+import {JUNO_DEV_CONFIG_FILENAME} from '../constants/constants';
 import {execute} from '../utils/cmd.utils';
 import {assertDockerRunning, checkDockerVersion} from '../utils/env.utils';
-import {copyTemplateFile} from '../utils/fs.utils';
+import {copyTemplateFile, readTemplateFile} from '../utils/fs.utils';
 import {confirmAndExit} from '../utils/prompt.utils';
+import {promptConfigType} from './init.services';
 
 const TEMPLATE_PATH = '../templates/docker';
 const DESTINATION_PATH = process.cwd();
@@ -42,18 +47,18 @@ export const stop = async () => {
 };
 
 const assertJunoDevConfig = async () => {
-  if (existsSync('juno.dev.json')) {
+  if (await junoDevConfigExist()) {
     return;
   }
 
   await confirmAndExit(
-    `A config file is required for development. Would you like the CLI to create a default ${magenta(
-      'juno.dev.json'
-    )} for you?`
+    `A config file is required for development. Would you like the CLI to create one for you?`
   );
 
+  const configType = await promptConfigType();
+
   await copyTemplateFile({
-    template: 'juno.dev.json',
+    template: `${JUNO_DEV_CONFIG_FILENAME}.${configType}`,
     sourceFolder: TEMPLATE_PATH,
     destinationFolder: DESTINATION_PATH
   });
@@ -70,9 +75,16 @@ const assertDockerCompose = async () => {
     )} file for you?`
   );
 
-  await copyTemplateFile({
+  const {configType} = junoDevConfigFile();
+
+  const template = await readTemplateFile({
     template: 'docker-compose.yml',
-    sourceFolder: TEMPLATE_PATH,
-    destinationFolder: DESTINATION_PATH
+    sourceFolder: TEMPLATE_PATH
   });
+
+  const configFile = `${JUNO_DEV_CONFIG_FILENAME}.${configType}`;
+
+  const content = template.replaceAll('<JUNO_DEV_CONFIG>', configFile);
+
+  await writeFile(join(DESTINATION_PATH, 'docker-compose.yml'), content, 'utf-8');
 };
