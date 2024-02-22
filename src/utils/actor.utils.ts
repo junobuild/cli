@@ -4,6 +4,7 @@ import {isNullish, nonNullish} from '@junobuild/utils';
 import {red} from 'kleur';
 import fetch from 'node-fetch';
 import {getToken} from '../configs/cli.config';
+import {REVOKED_CONTROLLERS} from '../constants/constants';
 import {getProcessToken} from './process.utils';
 
 export const actorParameters = (): ActorParameters => {
@@ -15,6 +16,10 @@ export const actorParameters = (): ActorParameters => {
   }
 
   const identity = Ed25519KeyIdentity.fromParsedJson(token);
+
+  if (REVOKED_CONTROLLERS.includes(identity.getPrincipal().toText())) {
+    throw new Error('The controller has been revoked for security reason!');
+  }
 
   return {
     identity,
