@@ -112,7 +112,7 @@ export const assertDockerRunning = async () => {
   try {
     await execute({
       command: 'docker',
-      args: ['ps']
+      args: ['ps', '--quiet']
     });
   } catch (e: unknown) {
     process.exit(1);
