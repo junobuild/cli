@@ -14,3 +14,12 @@ export const CONSOLE_SATELLITE_URL = `${CONSOLE_URL}/satellite/?s=`;
 export const JUNO_CDN_URL = 'https://cdn.juno.build';
 export const GITHUB_API_CLI_URL = 'https://api.github.com/repos/junobuild/cli';
 export const IGNORE_OS_FILES = ['.ds_store', 'thumbs.db'];
+
+/**
+ * Revoked principals that must not be used.
+ *
+ * @see https://forum.dfinity.org/t/agent-js-insecure-key-generation-in-ed25519keyidentity-generate/27732
+ */
+export const REVOKED_CONTROLLERS: string[] = [
+  '535yc-uxytb-gfk7h-tny7p-vjkoe-i4krp-3qmcl-uqfgr-cpgej-yqtjq-rqe'
+];
