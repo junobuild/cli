@@ -8,7 +8,8 @@ import {
   type CliOrbiterConfig,
   type CliSatelliteConfig
 } from '../configs/cli.config';
-import {junoConfigExist, junoConfigFile, saveJunoConfig} from '../configs/juno.config';
+import {junoConfigExist, junoConfigFile, writeJunoConfig} from '../configs/juno.config';
+import {promptConfigType} from '../services/init.services';
 import type {ConfigType} from '../types/config';
 import {NEW_CMD_LINE, confirmAndExit} from '../utils/prompt.utils';
 
@@ -37,7 +38,7 @@ const initConfig = async () => {
 
   const configType = await initConfigType();
 
-  await saveJunoConfig({
+  await writeJunoConfig({
     config: {
       satellite: {satelliteId, source},
       ...(nonNullish(orbiterId) && {orbiter: {orbiterId}})
@@ -108,25 +109,6 @@ const initConfigType = async (): Promise<ConfigType> => {
   }
 
   const {configType} = junoConfigFile();
-  return configType;
-};
-
-const promptConfigType = async (): Promise<ConfigType> => {
-  const {configType}: {configType: ConfigType} = await prompts({
-    type: 'select',
-    name: 'configType',
-    message: 'What configuration file format do you prefer?',
-    choices: [
-      {title: 'TypeScript', value: 'ts'},
-      {title: 'JavaScript', value: 'js'},
-      {title: 'JSON', value: 'json'}
-    ],
-    initial: 0
-  });
-
-  // In case of control+c
-  assertAnswerCtrlC(configType);
-
   return configType;
 };
 

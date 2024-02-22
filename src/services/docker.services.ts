@@ -1,9 +1,12 @@
 import {magenta} from 'kleur';
 import {existsSync} from 'node:fs';
+import {junoDevConfigExist} from '../configs/juno.dev.config';
+import {JUNO_DEV_CONFIG_FILENAME} from '../constants/constants';
 import {execute} from '../utils/cmd.utils';
 import {assertDockerRunning, checkDockerVersion} from '../utils/env.utils';
 import {copyTemplateFile} from '../utils/fs.utils';
 import {confirmAndExit} from '../utils/prompt.utils';
+import {promptConfigType} from './init.services';
 
 const TEMPLATE_PATH = '../templates/docker';
 const DESTINATION_PATH = process.cwd();
@@ -42,18 +45,18 @@ export const stop = async () => {
 };
 
 const assertJunoDevConfig = async () => {
-  if (existsSync('juno.dev.json')) {
+  if (await junoDevConfigExist()) {
     return;
   }
 
   await confirmAndExit(
-    `A config file is required for development. Would you like the CLI to create a default ${magenta(
-      'juno.dev.json'
-    )} for you?`
+    `A config file is required for development. Would you like the CLI to create one for you?`
   );
 
+  const configType = await promptConfigType();
+
   await copyTemplateFile({
-    template: 'juno.dev.json',
+    template: `${JUNO_DEV_CONFIG_FILENAME}.${configType}`,
     sourceFolder: TEMPLATE_PATH,
     destinationFolder: DESTINATION_PATH
   });

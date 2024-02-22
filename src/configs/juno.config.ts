@@ -13,19 +13,6 @@ import type {ConfigType, JunoConfigWithSatelliteId} from '../types/config';
 import {readTemplateFile} from '../utils/fs.utils';
 import {nodeRequire} from '../utils/node.utils';
 
-export const saveJunoConfig = async ({
-  config,
-  configType
-}: {
-  config: JunoConfigWithSatelliteId;
-  configType: ConfigType;
-}): Promise<void> => {
-  await writeJunoConfig({
-    config,
-    configType
-  });
-};
-
 export const junoConfigExist = async (): Promise<boolean> => {
   try {
     const {configPath} = junoConfigFile();
@@ -93,7 +80,7 @@ export const junoConfigFile = (): {configPath: string; configType: ConfigType} =
   };
 };
 
-const writeJunoConfig = async ({
+export const writeJunoConfig = async ({
   config,
   configType
 }: {
