@@ -2,7 +2,7 @@ import type {ConfigFilename} from '@junobuild/cli-tools';
 import {
   junoConfigExist as junoConfigExistTools,
   junoConfigFile as junoConfigFileTools
-} from '@junobuild/cli-tools/dist/types/configs/juno.config';
+} from '@junobuild/cli-tools';
 import {JUNO_DEV_CONFIG_FILENAME} from '../constants/constants';
 import type {ConfigType} from '../types/config';
 
