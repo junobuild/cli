@@ -33,7 +33,7 @@ Commands:
   ${cyan('whoami')}              Display the current controller.
 `;
 
-export const helpMode = `${yellow('-m, --mode')}            Set env mode. For example production, development or a custom string. Default is production.`;
+export const helpMode = `${yellow('-m, --mode')}            Set env mode. For example production or a custom string. Default is production.`;
 
 export const helpUpgrade = `
 ${TITLE}
