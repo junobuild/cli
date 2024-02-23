@@ -3,14 +3,6 @@ export const CLI_PROJECT_NAME = process.env.CLI_PROJECT_NAME;
 export const REDIRECT_URL = 'http://localhost:{port}';
 export const JUNO_CONFIG_FILENAME = 'juno.config'; // .json | .js | .mjs | .cjs | .ts
 export const JUNO_DEV_CONFIG_FILENAME = 'juno.dev.config'; // .json | .js | .mjs | .cjs | .ts
-/**
- * @deprecated juno.json is deprecated but still supported. We are now using juno.config.xxx
- */
-export const JUNO_JSON = 'juno.json';
-/**
- * @deprecated juno.dev.json is deprecated but still supported. We are now using juno.dev.config.xxx
- */
-export const JUNO_DEV_JSON = 'juno.dev.json';
 export const DAPP_COLLECTION = '#dapp';
 export const SATELLITE_WASM_NAME = 'satellite';
 export const MISSION_CONTROL_WASM_NAME = 'mission_control';
