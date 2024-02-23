@@ -135,5 +135,6 @@ export const run = async () => {
   } catch (err: unknown) {
     console.log(`${red('An unexpected error happened 😫.')}\n`);
     console.log(err);
+    process.exit(1);
   }
 })();
