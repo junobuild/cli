@@ -1,5 +1,7 @@
 import {isNullish, nonNullish} from '@junobuild/utils';
 import {cyan, red, yellow} from 'kleur';
+import {unlink} from 'node:fs/promises';
+import {basename} from 'node:path';
 import prompts from 'prompts';
 import {
   getCliOrbiters,
@@ -36,7 +38,7 @@ const initConfig = async () => {
 
   const source = await promptSource();
 
-  const configType = await initConfigType();
+  const {configType, configPath: originalConfigPath} = await initConfigType();
 
   await writeJunoConfig({
     config: {
@@ -45,6 +47,12 @@ const initConfig = async () => {
     },
     configType
   });
+
+  // We delete the deprecated juno.json, which is now replaced with juno.config.json|ts|js, as just created above.
+  // The developer was prompted about overwriting the configuration previously.
+  if (nonNullish(originalConfigPath) && basename(originalConfigPath) === 'juno.json') {
+    await unlink(originalConfigPath);
+  }
 
   if (configType === 'json') {
     return;
@@ -103,13 +111,13 @@ const promptSatellites = async (satellites: CliSatelliteConfig[]): Promise<strin
   return satellite;
 };
 
-const initConfigType = async (): Promise<ConfigType> => {
+const initConfigType = async (): Promise<{configPath?: string; configType: ConfigType}> => {
   if (!(await junoConfigExist())) {
-    return await promptConfigType();
+    const configType = await promptConfigType();
+    return {configType};
   }
 
-  const {configType} = junoConfigFile();
-  return configType;
+  return junoConfigFile();
 };
 
 const promptSatellite = async (): Promise<string> => {
