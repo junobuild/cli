@@ -1,11 +1,5 @@
 import type {SatelliteConfig} from '@junobuild/config';
-import {
-  listAssets,
-  uploadBlob,
-  type AssetKey,
-  type Assets,
-  type ENCODING_TYPE
-} from '@junobuild/core-peer';
+import {uploadBlob, type Asset, type AssetKey, type ENCODING_TYPE} from '@junobuild/core-peer';
 import {isNullish, nonNullish} from '@junobuild/utils';
 import {Blob} from 'buffer';
 import crypto from 'crypto';
@@ -19,7 +13,7 @@ import {lstatSync} from 'node:fs';
 import {readFile} from 'node:fs/promises';
 import {basename, extname, join, relative} from 'node:path';
 import {junoConfigExist, readJunoConfig} from '../configs/juno.config';
-import {COLLECTION_DAPP, DAPP_COLLECTION, UPLOAD_BATCH_SIZE} from '../constants/constants';
+import {COLLECTION_DAPP, UPLOAD_BATCH_SIZE} from '../constants/constants';
 import {
   DEPLOY_DEFAULT_ENCODING,
   DEPLOY_DEFAULT_GZIP,
@@ -27,7 +21,7 @@ import {
   DEPLOY_DEFAULT_SOURCE
 } from '../constants/deploy.constants';
 import {clear} from '../services/clear.services';
-import {assertSatelliteMemorySize} from '../services/deploy.services';
+import {assertSatelliteMemorySize, listAssets} from '../services/deploy.services';
 import {links} from '../services/links.services';
 import type {SatelliteConfigEnv} from '../types/config';
 import {hasArgs} from '../utils/args.utils';
@@ -160,10 +154,7 @@ const filterFilesToUpload = async ({
   files: FileDetails[];
   sourceAbsolutePath: string;
 } & SatelliteConfigEnv): Promise<FileDetails[]> => {
-  const existingAssets = await listAssets({
-    collection: DAPP_COLLECTION,
-    satellite: satelliteParameters(env)
-  });
+  const existingAssets = await listAssets({env});
 
   const promises = files.map(
     async (file: FileDetails) => await fileNeedUpload({file, sourceAbsolutePath, existingAssets})
@@ -184,7 +175,7 @@ const fileNeedUpload = async ({
   sourceAbsolutePath
 }: {
   file: FileDetails;
-  existingAssets: Assets;
+  existingAssets: Asset[];
   sourceAbsolutePath: string;
 }): Promise<{
   file: FileDetails;
@@ -192,7 +183,7 @@ const fileNeedUpload = async ({
 }> => {
   const effectiveFilePath = file.alternateFile ?? file.file;
 
-  const asset = existingAssets.assets.find(
+  const asset = existingAssets.find(
     ({fullPath: f}) => f === fullPath({file: effectiveFilePath, sourceAbsolutePath})
   );
 
