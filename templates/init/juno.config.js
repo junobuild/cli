@@ -3,10 +3,10 @@ import {defineConfig} from '@junobuild/config';
 /** @type {import('@junobuild/config').JunoConfig} */
 export default defineConfig({
   satellite: {
-    satelliteId: '<SATELLITE_ID>',
+    id: '<SATELLITE_ID>',
     source: '<SOURCE>'
   },
   orbiter: {
-    orbiterId: '<ORBITER_ID>'
+    id: '<ORBITER_ID>'
   }
 });

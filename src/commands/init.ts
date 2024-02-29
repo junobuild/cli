@@ -42,8 +42,8 @@ const initConfig = async () => {
 
   await writeJunoConfig({
     config: {
-      satellite: {satelliteId, source},
-      ...(nonNullish(orbiterId) && {orbiter: {orbiterId}})
+      satellite: {id: satelliteId, source},
+      ...(nonNullish(orbiterId) && {orbiter: {id: orbiterId}})
     },
     configType
   });

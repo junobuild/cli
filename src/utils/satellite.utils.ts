@@ -6,11 +6,11 @@ import type {SatelliteConfigEnv} from '../types/config';
 import {actorParameters} from './actor.utils';
 
 export const satelliteParameters = ({
-  satellite: {satelliteId: satelliteIdUser, satellitesIds},
+  satellite: {satelliteId: deprecatedSatelliteId, id, ids},
   env: {mode}
 }: SatelliteConfigEnv): Omit<SatelliteParameters, 'satelliteId'> &
   Required<Pick<SatelliteParameters, 'satelliteId'>> => {
-  const satelliteId = satellitesIds?.[mode] ?? satelliteIdUser;
+  const satelliteId = ids?.[mode] ?? id ?? deprecatedSatelliteId;
 
   if (isNullish(satelliteId)) {
     console.log(`${red(`A satellite ID for ${mode} must be set in your configuration.`)}`);
