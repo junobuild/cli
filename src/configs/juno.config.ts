@@ -37,7 +37,7 @@ export const writeJunoConfig = async ({
     case 'js': {
       const {
         orbiter,
-        satellite: {satelliteId, source}
+        satellite: {id, source}
       } = config;
 
       const template = await readTemplateFile({
@@ -48,9 +48,9 @@ export const writeJunoConfig = async ({
       });
 
       const content = template
-        .replace('<SATELLITE_ID>', satelliteId)
+        .replace('<SATELLITE_ID>', id)
         .replace('<SOURCE>', source ?? DEPLOY_DEFAULT_SOURCE)
-        .replace('<ORBITER_ID>', orbiter?.orbiterId ?? '');
+        .replace('<ORBITER_ID>', orbiter?.id ?? '');
 
       await writeFile(`${JUNO_CONFIG_FILENAME}.${configType}`, content, 'utf-8');
       break;

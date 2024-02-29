@@ -1,4 +1,4 @@
-import type {JunoConfig, JunoConfigEnv, SatelliteConfig} from '@junobuild/config';
+import type {JunoConfig, JunoConfigEnv, OrbiterConfig, SatelliteConfig} from '@junobuild/config';
 
 export type ConfigType = 'ts' | 'js' | 'json';
 
@@ -7,7 +7,7 @@ export interface SatelliteConfigEnv {
   env: JunoConfigEnv;
 }
 
-export type JunoConfigWithSatelliteId = Omit<JunoConfig, 'satellite'> & {
-  satellite: Omit<SatelliteConfig, 'satelliteId' | 'satellitesIds'> &
-    Required<Pick<SatelliteConfig, 'satelliteId'>>;
+export type JunoConfigWithSatelliteId = Omit<JunoConfig, 'satellite' | 'orbiter'> & {
+  satellite: Omit<SatelliteConfig, 'id' | 'satellitesIds'> & Required<Pick<SatelliteConfig, 'id'>>;
+  orbiter?: Omit<OrbiterConfig, 'orbiterId'>;
 };
