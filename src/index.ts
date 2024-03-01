@@ -46,6 +46,12 @@ export const run = async () => {
     return;
   }
 
+  // Special use case if dev runs "juno --version"
+  if (['-v', '--version'].includes(cmd)) {
+    await versionCommand(args);
+    return;
+  }
+
   if (hasArgs({args, options: ['-h', '--help']})) {
     switch (cmd) {
       case 'login':
