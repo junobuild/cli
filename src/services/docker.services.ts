@@ -83,8 +83,11 @@ const assertDockerCompose = async () => {
   });
 
   const configFile = `${JUNO_DEV_CONFIG_FILENAME}.${configType}`;
+  const {timeZone} = Intl.DateTimeFormat().resolvedOptions();
 
-  const content = template.replaceAll('<JUNO_DEV_CONFIG>', configFile);
+  const content = template
+    .replaceAll('<JUNO_DEV_CONFIG>', configFile)
+    .replaceAll('<TIME_ZONE>', timeZone);
 
   await writeFile(join(DESTINATION_PATH, 'docker-compose.yml'), content, 'utf-8');
 };

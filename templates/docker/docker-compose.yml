@@ -7,6 +7,8 @@ services:
       - juno_satellite:/juno/.juno
       - ./<JUNO_DEV_CONFIG>:/juno/<JUNO_DEV_CONFIG>
       - ./target/deploy:/juno/target/deploy/
+    environment:
+      - TZ=<TIME_ZONE>
 
 volumes:
   juno_satellite:
