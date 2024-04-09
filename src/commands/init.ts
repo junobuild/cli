@@ -12,15 +12,23 @@ import {
 } from '../configs/cli.config';
 import {junoConfigExist, junoConfigFile, writeJunoConfig} from '../configs/juno.config';
 import {promptConfigType} from '../services/init.services';
+import {login as consoleLogin} from '../services/login.services';
 import type {ConfigType} from '../types/config';
-import {NEW_CMD_LINE, confirmAndExit} from '../utils/prompt.utils';
+import {NEW_CMD_LINE, confirm, confirmAndExit} from '../utils/prompt.utils';
 
-export const init = async () => {
+export const init = async (args?: string[]) => {
   const token = getToken();
 
   if (isNullish(token)) {
-    console.log(`No controller found. Run ${cyan('login')} to get started 🚀.`);
-    return;
+    const login = await confirm(
+      `Your terminal is not authenticated. Would you like to ${cyan('log in')} now?`
+    );
+
+    if (!login) {
+      return;
+    }
+
+    await consoleLogin(args);
   }
 
   if (await junoConfigExist()) {

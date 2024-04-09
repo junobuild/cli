@@ -96,7 +96,7 @@ export const run = async () => {
       await logout();
       break;
     case 'init':
-      await init();
+      await init(args);
       break;
     case 'deploy':
       await deploy(args);
