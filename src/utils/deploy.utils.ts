@@ -1,7 +1,8 @@
+import {files} from '@junobuild/cli-tools';
 import type {SatelliteConfig} from '@junobuild/config';
 import {minimatch} from 'minimatch';
-import {lstatSync, readdirSync} from 'node:fs';
-import {basename, join} from 'node:path';
+import {lstatSync} from 'node:fs';
+import {basename} from 'node:path';
 import {IGNORE_OS_FILES} from '../constants/constants';
 
 export const listSourceFiles = ({
@@ -29,9 +30,3 @@ const filterFile = ({
 
   return ignore.find((pattern) => minimatch(file, pattern)) === undefined;
 };
-
-const files = (source: string): string[] =>
-  readdirSync(source).flatMap((file) => {
-    const path = join(source, file);
-    return lstatSync(path).isDirectory() ? files(path) : join(path);
-  });

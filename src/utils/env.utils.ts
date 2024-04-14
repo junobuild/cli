@@ -1,3 +1,4 @@
+import {execute, spawn} from '@junobuild/cli-tools';
 import {green, yellow} from 'kleur';
 import {lt, major} from 'semver';
 import {NODE_18} from '../constants/constants';
@@ -6,7 +7,6 @@ import {
   IC_WASM_MIN_VERSION,
   RUST_MIN_VERSION
 } from '../constants/dev.constants';
-import {execute, spawn} from './cmd.utils';
 
 export const checkNodeVersion = (): {valid: boolean | 'error'} => {
   try {

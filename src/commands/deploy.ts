@@ -1,3 +1,4 @@
+import {hasArgs} from '@junobuild/cli-tools';
 import type {SatelliteConfig} from '@junobuild/config';
 import {uploadBlob, type Asset, type AssetKey, type ENCODING_TYPE} from '@junobuild/core-peer';
 import {isNullish, nonNullish} from '@junobuild/utils';
@@ -24,7 +25,6 @@ import {clear} from '../services/clear.services';
 import {assertSatelliteMemorySize, listAssets} from '../services/deploy.services';
 import {links} from '../services/links.services';
 import type {SatelliteConfigEnv} from '../types/config';
-import {hasArgs} from '../utils/args.utils';
 import {gzipFiles} from '../utils/compress.utils';
 import {configEnv} from '../utils/config.utils';
 import {listSourceFiles} from '../utils/deploy.utils';

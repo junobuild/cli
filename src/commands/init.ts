@@ -1,5 +1,5 @@
 import {isNullish, nonNullish} from '@junobuild/utils';
-import {cyan, red, yellow} from 'kleur';
+import {cyan, yellow} from 'kleur';
 import {unlink} from 'node:fs/promises';
 import {basename} from 'node:path';
 import prompts from 'prompts';
@@ -14,7 +14,7 @@ import {junoConfigExist, junoConfigFile, writeJunoConfig} from '../configs/juno.
 import {promptConfigType} from '../services/init.services';
 import {login as consoleLogin} from '../services/login.services';
 import type {ConfigType} from '../types/config';
-import {NEW_CMD_LINE, confirm, confirmAndExit} from '../utils/prompt.utils';
+import {NEW_CMD_LINE, assertAnswerCtrlC, confirm, confirmAndExit} from '../utils/prompt.utils';
 
 export const init = async (args?: string[]) => {
   const token = getToken();
@@ -155,23 +155,6 @@ const promptSource = async (): Promise<string> => {
   assertAnswerCtrlC(source);
 
   return source;
-};
-
-// In case an answer is replaced by control+c
-export const assertAnswerCtrlC: (
-  answer: null | undefined | '' | string,
-  message?: string
-) => asserts answer is NonNullable<string> = (
-  answer: null | undefined | '' | string,
-  message?: string
-): void => {
-  if (answer === undefined || answer === '' || answer === null) {
-    if (message !== undefined) {
-      console.log(`${red(message)}`);
-    }
-
-    process.exit(1);
-  }
 };
 
 const promptOrbiters = async (orbiters: CliOrbiterConfig[]): Promise<string> => {

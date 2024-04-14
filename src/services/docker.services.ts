@@ -1,10 +1,10 @@
+import {execute} from '@junobuild/cli-tools';
 import {magenta} from 'kleur';
 import {existsSync} from 'node:fs';
 import {writeFile} from 'node:fs/promises';
 import {join} from 'node:path';
 import {junoDevConfigExist, junoDevConfigFile} from '../configs/juno.dev.config';
 import {JUNO_DEV_CONFIG_FILENAME} from '../constants/constants';
-import {execute} from '../utils/cmd.utils';
 import {assertDockerRunning, checkDockerVersion} from '../utils/env.utils';
 import {copyTemplateFile, readTemplateFile} from '../utils/fs.utils';
 import {confirmAndExit} from '../utils/prompt.utils';

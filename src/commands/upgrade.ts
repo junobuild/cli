@@ -1,8 +1,8 @@
+import {nextArg} from '@junobuild/cli-tools';
 import {red} from 'kleur';
 import {upgradeMissionControl} from '../services/upgrade/upgrade.mission-control.services';
 import {upgradeOrbiters} from '../services/upgrade/upgrade.orbiter.services';
 import {upgradeSatellite} from '../services/upgrade/upgrade.satellite.services';
-import {nextArg} from '../utils/args.utils';
 import {helpUpgrade} from './help';
 
 export const upgrade = async (args?: string[]) => {

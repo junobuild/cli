@@ -1,3 +1,4 @@
+import {hasArgs} from '@junobuild/cli-tools';
 import {red} from 'kleur';
 import {login, logout} from './commands/auth';
 import {clear} from './commands/clear';
@@ -23,7 +24,6 @@ import {upgrade} from './commands/upgrade';
 import {use} from './commands/use';
 import {version as versionCommand} from './commands/version';
 import {whoami} from './commands/whoami';
-import {hasArgs} from './utils/args.utils';
 import {checkNodeVersion} from './utils/env.utils';
 
 export const run = async () => {

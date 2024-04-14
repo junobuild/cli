@@ -1,6 +1,6 @@
 import prompts from 'prompts';
-import {assertAnswerCtrlC} from '../commands/init';
 import type {ConfigType} from '../types/config';
+import {assertAnswerCtrlC} from '../utils/prompt.utils';
 
 export const promptConfigType = async (): Promise<ConfigType> => {
   const {configType}: {configType: ConfigType} = await prompts({

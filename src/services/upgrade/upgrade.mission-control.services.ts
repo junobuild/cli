@@ -3,12 +3,12 @@ import {
   upgradeMissionControl as upgradeMissionControlAdmin,
   type MissionControlParameters
 } from '@junobuild/admin';
+import {hasArgs, nextArg} from '@junobuild/cli-tools';
 import {isNullish} from '@junobuild/utils';
 import {cyan, red} from 'kleur';
 import {getCliMissionControl} from '../../configs/cli.config';
 import {MISSION_CONTROL_WASM_NAME} from '../../constants/constants';
 import {actorParameters} from '../../utils/actor.utils';
-import {hasArgs, nextArg} from '../../utils/args.utils';
 import {NEW_CMD_LINE} from '../../utils/prompt.utils';
 import {selectVersion, upgradeWasmCdn, upgradeWasmLocal} from './upgrade.services';
 

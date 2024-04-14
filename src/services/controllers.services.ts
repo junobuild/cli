@@ -1,12 +1,11 @@
 import {type Principal} from '@dfinity/principal';
 import {bold, green, red} from 'kleur';
 import prompts from 'prompts';
-import {assertAnswerCtrlC} from '../commands/init';
 import {addCliMissionControl, addCliOrbiter, addCliSatellite, getUse} from '../configs/cli.config';
 import {CONSOLE_URL} from '../constants/constants';
 import {type AssetKey} from '../types/asset-key';
 import {terminalLink} from '../utils/links.utils';
-import {confirmAndExit} from '../utils/prompt.utils';
+import {assertAnswerCtrlC, confirmAndExit} from '../utils/prompt.utils';
 
 export const reuseController = async (controller: Principal) => {
   const segment = await selectSegment();

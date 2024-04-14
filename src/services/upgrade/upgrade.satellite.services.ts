@@ -4,13 +4,13 @@ import {
   upgradeSatellite as upgradeSatelliteAdmin,
   type SatelliteParameters
 } from '@junobuild/admin';
+import {hasArgs, nextArg} from '@junobuild/cli-tools';
 import {isNullish} from '@junobuild/utils';
 import {cyan, red} from 'kleur';
 import {compare} from 'semver';
 import {junoConfigExist, readJunoConfig} from '../../configs/juno.config';
 import {SATELLITE_WASM_NAME} from '../../constants/constants';
 import type {UpgradeWasm, UpgradeWasmModule} from '../../types/upgrade';
-import {hasArgs, nextArg} from '../../utils/args.utils';
 import {configEnv} from '../../utils/config.utils';
 import {consoleNoConfigFound} from '../../utils/msg.utils';
 import {NEW_CMD_LINE} from '../../utils/prompt.utils';

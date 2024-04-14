@@ -3,11 +3,11 @@ import {
   upgradeOrbiter as upgradeOrbiterAdmin,
   type OrbiterParameters
 } from '@junobuild/admin';
+import {hasArgs, nextArg} from '@junobuild/cli-tools';
 import {cyan, red} from 'kleur';
 import {getCliOrbiters} from '../../configs/cli.config';
 import {ORBITER_WASM_NAME} from '../../constants/constants';
 import {actorParameters} from '../../utils/actor.utils';
-import {hasArgs, nextArg} from '../../utils/args.utils';
 import {NEW_CMD_LINE} from '../../utils/prompt.utils';
 import {orbiterKey} from '../../utils/satellite.utils';
 import {confirmReset, selectVersion, upgradeWasmCdn, upgradeWasmLocal} from './upgrade.services';

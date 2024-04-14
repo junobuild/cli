@@ -1,13 +1,13 @@
 import {listCustomDomains, type CustomDomain} from '@junobuild/admin';
+import {hasArgs, nextArg} from '@junobuild/cli-tools';
 import prompts from 'prompts';
 import {junoConfigExist, readJunoConfig} from '../configs/juno.config';
-import {hasArgs, nextArg} from '../utils/args.utils';
 import {configEnv} from '../utils/config.utils';
 import {consoleUrl, defaultSatelliteDomain} from '../utils/domain.utils';
 import {consoleNoConfigFound} from '../utils/msg.utils';
 import {openUrl} from '../utils/open.utils';
+import {assertAnswerCtrlC} from '../utils/prompt.utils';
 import {satelliteParameters} from '../utils/satellite.utils';
-import {assertAnswerCtrlC} from './init';
 
 export const open = async (args?: string[]) => {
   if (!(await junoConfigExist())) {

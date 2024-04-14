@@ -1,8 +1,8 @@
+import {hasArgs, nextArg} from '@junobuild/cli-tools';
 import {isNullish} from '@junobuild/utils';
 import {yellow} from 'kleur';
 import {junoConfigExist} from '../configs/juno.config';
 import {clearAsset, clear as clearServices} from '../services/clear.services';
-import {hasArgs, nextArg} from '../utils/args.utils';
 import {consoleNoConfigFound} from '../utils/msg.utils';
 
 export const clear = async (args?: string[]) => {
