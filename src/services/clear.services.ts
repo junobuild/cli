@@ -1,4 +1,4 @@
-import {deleteAssets} from '@junobuild/admin';
+import {deleteAssets, listCustomDomains, setCustomDomains} from '@junobuild/admin';
 import {deleteAsset} from '@junobuild/core-peer';
 import ora from 'ora';
 import {readJunoConfig} from '../configs/juno.config';
@@ -13,9 +13,19 @@ export const clear = async (args?: string[]) => {
   const spinner = ora('Clearing dapp assets...').start();
 
   try {
+    const satellite = satelliteParameters({satellite: satelliteConfig, env});
+
+    // TODO: to be removed. Workaround as temporary solution of https://github.com/junobuild/juno/issues/484.
+    const domains = await listCustomDomains({satellite});
+
     await deleteAssets({
       collection: DAPP_COLLECTION,
-      satellite: satelliteParameters({satellite: satelliteConfig, env})
+      satellite
+    });
+
+    await setCustomDomains({
+      satellite,
+      domains
     });
   } finally {
     spinner.stop();
