@@ -162,7 +162,7 @@ const checkSegmentVersion = async ({
     currentVersion,
     latestVersion,
     displayHint,
-    commandLineHint: `juno upgrade${assetKey === 'mission_control' ? '-t -m' : ''}`
+    commandLineHint: `juno upgrade${assetKey === 'mission_control' ? '-t m' : ''}`
   });
 };
 
