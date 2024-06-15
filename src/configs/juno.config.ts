@@ -1,4 +1,5 @@
 import {
+  DEPLOY_DEFAULT_SOURCE,
   junoConfigExist as junoConfigExistTools,
   junoConfigFile as junoConfigFileTools,
   readJunoConfig as readJunoConfigTools,
@@ -12,7 +13,6 @@ import {
   TEMPLATE_SATELLITE_CONFIG_FILENAME
 } from '../constants/config.constants';
 import {JUNO_CONFIG_FILENAME} from '../constants/constants';
-import {DEPLOY_DEFAULT_SOURCE} from '../constants/deploy.constants';
 import type {ConfigType, JunoConfigWithSatelliteId} from '../types/config';
 import {readTemplateFile} from '../utils/fs.utils';
 
