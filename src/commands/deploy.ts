@@ -29,8 +29,9 @@ const executeDeploy = async (args?: string[]) => {
   const env = configEnv(args);
   const {satellite: satelliteConfig} = await readJunoConfig(env);
 
-  const listExistingAssets = async (): Promise<Asset[]> =>
+  const listExistingAssets = async ({startAfter}: {startAfter?: string}): Promise<Asset[]> =>
     await listAssets({
+      startAfter,
       env: {
         env,
         satellite: satelliteConfig
