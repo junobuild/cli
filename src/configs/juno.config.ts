@@ -1,11 +1,11 @@
+import {DEPLOY_DEFAULT_SOURCE} from '@junobuild/cli-tools';
+import type {JunoConfig, JunoConfigEnv, JunoConfigFnOrObject} from '@junobuild/config';
 import {
-  DEPLOY_DEFAULT_SOURCE,
   junoConfigExist as junoConfigExistTools,
   junoConfigFile as junoConfigFileTools,
   readJunoConfig as readJunoConfigTools,
   type ConfigFilename
-} from '@junobuild/cli-tools';
-import type {JunoConfig, JunoConfigEnv, JunoConfigFnOrObject} from '@junobuild/config';
+} from '@junobuild/config-loader';
 import {nonNullish} from '@junobuild/utils';
 import {writeFile} from 'node:fs/promises';
 import {
