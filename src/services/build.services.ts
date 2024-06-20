@@ -1,11 +1,10 @@
-import {execute, spawn} from '@junobuild/cli-tools';
+import {execute, gzipFile, spawn} from '@junobuild/cli-tools';
 import {green, grey, magenta, yellow} from 'kleur';
 import {existsSync} from 'node:fs';
 import {lstat, mkdir, rename, writeFile} from 'node:fs/promises';
 import {join, relative} from 'node:path';
 import ora, {type Ora} from 'ora';
 import {DEVELOPER_PROJECT_SATELLITE_PATH, IC_WASM_MIN_VERSION} from '../constants/dev.constants';
-import {gzipFile} from '../utils/compress.utils';
 import {copySatelliteDid, readSatelliteDid} from '../utils/did.utils';
 import {
   checkCandidExtractorInstalled,

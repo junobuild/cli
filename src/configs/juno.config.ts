@@ -1,10 +1,11 @@
+import {DEPLOY_DEFAULT_SOURCE} from '@junobuild/cli-tools';
+import type {JunoConfig, JunoConfigEnv, JunoConfigFnOrObject} from '@junobuild/config';
 import {
   junoConfigExist as junoConfigExistTools,
   junoConfigFile as junoConfigFileTools,
   readJunoConfig as readJunoConfigTools,
   type ConfigFilename
-} from '@junobuild/cli-tools';
-import type {JunoConfig, JunoConfigEnv, JunoConfigFnOrObject} from '@junobuild/config';
+} from '@junobuild/config-loader';
 import {nonNullish} from '@junobuild/utils';
 import {writeFile} from 'node:fs/promises';
 import {
@@ -12,7 +13,6 @@ import {
   TEMPLATE_SATELLITE_CONFIG_FILENAME
 } from '../constants/config.constants';
 import {JUNO_CONFIG_FILENAME} from '../constants/constants';
-import {DEPLOY_DEFAULT_SOURCE} from '../constants/deploy.constants';
 import type {ConfigType, JunoConfigWithSatelliteId} from '../types/config';
 import {readTemplateFile} from '../utils/fs.utils';
 
