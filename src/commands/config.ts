@@ -27,7 +27,8 @@ export const config = async (args?: string[]) => {
             headers: storage?.headers ?? [],
             rewrites: storage?.rewrites,
             redirects: storage?.redirects,
-            iframe: storage?.iframe
+            iframe: storage?.iframe,
+            rawAccess: storage?.rawAccess
           }
         },
         satellite
