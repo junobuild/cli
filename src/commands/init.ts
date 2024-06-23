@@ -53,7 +53,8 @@ const initConfig = async () => {
       satellite: {id: satelliteId, source},
       ...(nonNullish(orbiterId) && {orbiter: {id: orbiterId}})
     },
-    configType
+    configType,
+    configPath: originalConfigPath
   });
 
   // We delete the deprecated juno.json, which is now replaced with juno.config.json|ts|js, as just created above.
