@@ -27,10 +27,12 @@ export const junoConfigFile = (): {configPath: string; configType: ConfigType} =
 
 export const writeJunoConfig = async ({
   config,
-  configType
+  configType,
+  configPath
 }: {
   config: JunoConfigWithSatelliteId;
   configType: ConfigType;
+  configPath: string | undefined;
 }): Promise<void> => {
   switch (configType) {
     case 'ts':
@@ -52,7 +54,7 @@ export const writeJunoConfig = async ({
         .replace('<SOURCE>', source ?? DEPLOY_DEFAULT_SOURCE)
         .replace('<ORBITER_ID>', orbiter?.id ?? '');
 
-      await writeFile(`${JUNO_CONFIG_FILENAME}.${configType}`, content, 'utf-8');
+      await writeFile(configPath ?? `${JUNO_CONFIG_FILENAME}.${configType}`, content, 'utf-8');
       break;
     }
     default: {
