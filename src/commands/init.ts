@@ -1,3 +1,4 @@
+import type {PartialConfigFile} from '@junobuild/config-loader';
 import {isNullish, nonNullish} from '@junobuild/utils';
 import {cyan, yellow} from 'kleur';
 import {unlink} from 'node:fs/promises';
@@ -10,10 +11,14 @@ import {
   type CliOrbiterConfig,
   type CliSatelliteConfig
 } from '../configs/cli.config';
-import {junoConfigExist, junoConfigFile, writeJunoConfig} from '../configs/juno.config';
+import {
+  detectJunoConfigType,
+  junoConfigExist,
+  junoConfigFile,
+  writeJunoConfig
+} from '../configs/juno.config';
 import {promptConfigType} from '../services/init.services';
 import {login as consoleLogin} from '../services/login.services';
-import type {ConfigType} from '../types/config';
 import {NEW_CMD_LINE, assertAnswerCtrlC, confirm, confirmAndExit} from '../utils/prompt.utils';
 
 export const init = async (args?: string[]) => {
@@ -120,8 +125,15 @@ const promptSatellites = async (satellites: CliSatelliteConfig[]): Promise<strin
   return satellite;
 };
 
-const initConfigType = async (): Promise<{configPath?: string; configType: ConfigType}> => {
+const initConfigType = async (): Promise<PartialConfigFile> => {
   if (!(await junoConfigExist())) {
+    // We try to automatically detect if we should create a TypeScript or JavaScript (mjs) configuration.
+    const detectedConfig = detectJunoConfigType();
+
+    if (nonNullish(detectedConfig)) {
+      return detectedConfig;
+    }
+
     const configType = await promptConfigType();
     return {configType};
   }

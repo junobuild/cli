@@ -11,15 +11,17 @@ const __dirname = dirname(__filename);
 export const copyTemplateFile = async ({
   sourceFolder,
   destinationFolder,
+  destinationFilename,
   template,
   overwrite = false
 }: {
   sourceFolder: string;
   destinationFolder: string;
+  destinationFilename?: string;
   template: string;
   overwrite?: boolean;
 }) => {
-  const destination = join(destinationFolder, template);
+  const destination = destinationFilename ?? join(destinationFolder, template);
 
   if (!overwrite && existsSync(destination)) {
     const answer = await confirm(
