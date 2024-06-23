@@ -156,12 +156,30 @@ const promptSatellite = async (): Promise<string> => {
 };
 
 const promptSource = async (): Promise<string> => {
+  const {output}: {output: string} = await prompts({
+    type: 'select',
+    name: 'output',
+    message: 'What is the output folder of your `npm run build` command?',
+    choices: [
+      {title: 'build', value: 'build'},
+      {title: 'dist', value: 'dist'},
+      {title: '<not listed, manual entry>', value: '_manual_'}
+    ],
+    initial: 0
+  });
+
+  // In case of control+c
+  assertAnswerCtrlC(output);
+
+  if (output !== '_manual_') {
+    return output;
+  }
+
   const {source}: {source: string} = await prompts([
     {
       type: 'text',
       name: 'source',
-      message: `What is the location of your compiled app files? They are often found in the "build" or "dist" folders.`,
-      initial: 'build'
+      message: 'Please enter the name of your output folder'
     }
   ]);
 
