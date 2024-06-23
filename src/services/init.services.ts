@@ -1,5 +1,5 @@
+import type {ConfigType} from '@junobuild/config-loader';
 import prompts from 'prompts';
-import type {ConfigType} from '../types/config';
 import {assertAnswerCtrlC} from '../utils/prompt.utils';
 
 export const promptConfigType = async (): Promise<ConfigType> => {

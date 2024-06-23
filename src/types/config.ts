@@ -1,7 +1,5 @@
 import type {JunoConfig, JunoConfigEnv, OrbiterConfig, SatelliteConfig} from '@junobuild/config';
 
-export type ConfigType = 'ts' | 'js' | 'json';
-
 export interface SatelliteConfigEnv {
   satellite: SatelliteConfig;
   env: JunoConfigEnv;

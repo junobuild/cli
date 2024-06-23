@@ -1,11 +1,14 @@
 import {DEPLOY_DEFAULT_SOURCE} from '@junobuild/cli-tools';
 import type {JunoConfig, JunoConfigEnv, JunoConfigFnOrObject} from '@junobuild/config';
 import {
+  detectJunoConfigType as detectJunoConfigTypeTools,
   junoConfigExist as junoConfigExistTools,
   junoConfigFile as junoConfigFileTools,
   readJunoConfig as readJunoConfigTools,
-  type ConfigFilename
+  type ConfigFilename,
+  type ConfigType
 } from '@junobuild/config-loader';
+import type {ConfigFile} from '@junobuild/config-loader/dist/types/types/config';
 import {nonNullish} from '@junobuild/utils';
 import {writeFile} from 'node:fs/promises';
 import {
@@ -13,7 +16,7 @@ import {
   TEMPLATE_SATELLITE_CONFIG_FILENAME
 } from '../constants/config.constants';
 import {JUNO_CONFIG_FILENAME} from '../constants/constants';
-import type {ConfigType, JunoConfigWithSatelliteId} from '../types/config';
+import type {JunoConfigWithSatelliteId} from '../types/config';
 import {readTemplateFile} from '../utils/fs.utils';
 
 const JUNO_CONFIG_FILE: {filename: ConfigFilename} = {filename: JUNO_CONFIG_FILENAME};
@@ -22,8 +25,10 @@ export const junoConfigExist = async (): Promise<boolean> => {
   return await junoConfigExistTools(JUNO_CONFIG_FILE);
 };
 
-export const junoConfigFile = (): {configPath: string; configType: ConfigType} =>
-  junoConfigFileTools(JUNO_CONFIG_FILE);
+export const junoConfigFile = (): ConfigFile => junoConfigFileTools(JUNO_CONFIG_FILE);
+
+export const detectJunoConfigType = (): ConfigFile | undefined =>
+  detectJunoConfigTypeTools(JUNO_CONFIG_FILE);
 
 export const writeJunoConfig = async ({
   config,
