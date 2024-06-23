@@ -4,7 +4,7 @@ import {nonNullish} from '@junobuild/utils';
 import {magenta} from 'kleur';
 import {existsSync} from 'node:fs';
 import {writeFile} from 'node:fs/promises';
-import {join} from 'node:path';
+import {join, basename} from 'node:path';
 import {
   detectJunoDevConfigType,
   junoDevConfigExist,
@@ -95,14 +95,13 @@ const assertDockerCompose = async () => {
     )} file for you?`
   );
 
-  const {configType} = junoDevConfigFile();
-
   const template = await readTemplateFile({
     template: 'docker-compose.yml',
     sourceFolder: TEMPLATE_PATH
   });
 
-  const configFile = `${JUNO_DEV_CONFIG_FILENAME}.${configType}`;
+  const {configPath} = junoDevConfigFile();
+  const configFile = basename(configPath);
 
   const content = template.replaceAll('<JUNO_DEV_CONFIG>', configFile);
 
