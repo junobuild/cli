@@ -5,10 +5,10 @@ import {
   junoConfigExist as junoConfigExistTools,
   junoConfigFile as junoConfigFileTools,
   readJunoConfig as readJunoConfigTools,
+  type ConfigFile,
   type ConfigFilename,
-  type ConfigType
+  type PartialConfigFile
 } from '@junobuild/config-loader';
-import type {ConfigFile} from '@junobuild/config-loader/dist/types/types/config';
 import {nonNullish} from '@junobuild/utils';
 import {writeFile} from 'node:fs/promises';
 import {
@@ -36,9 +36,7 @@ export const writeJunoConfig = async ({
   configPath
 }: {
   config: JunoConfigWithSatelliteId;
-  configType: ConfigType;
-  configPath: string | undefined;
-}): Promise<void> => {
+} & PartialConfigFile): Promise<void> => {
   switch (configType) {
     case 'ts':
     case 'js': {

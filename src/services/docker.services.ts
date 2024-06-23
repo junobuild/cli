@@ -1,9 +1,15 @@
 import {execute} from '@junobuild/cli-tools';
+import type {PartialConfigFile} from '@junobuild/config-loader';
+import {nonNullish} from '@junobuild/utils';
 import {magenta} from 'kleur';
 import {existsSync} from 'node:fs';
 import {writeFile} from 'node:fs/promises';
 import {join} from 'node:path';
-import {junoDevConfigExist, junoDevConfigFile} from '../configs/juno.dev.config';
+import {
+  detectJunoDevConfigType,
+  junoDevConfigExist,
+  junoDevConfigFile
+} from '../configs/juno.dev.config';
 import {JUNO_DEV_CONFIG_FILENAME} from '../constants/constants';
 import {assertDockerRunning, checkDockerVersion} from '../utils/env.utils';
 import {copyTemplateFile, readTemplateFile} from '../utils/fs.utils';
@@ -55,13 +61,27 @@ const assertJunoDevConfig = async () => {
     `A config file is required for development. Would you like the CLI to create one for you?`
   );
 
-  const configType = await promptConfigType();
+  const {configType, configPath} = await buildConfigType();
 
   await copyTemplateFile({
     template: `${JUNO_DEV_CONFIG_FILENAME}.${configType}`,
     sourceFolder: TEMPLATE_PATH,
-    destinationFolder: DESTINATION_PATH
+    destinationFolder: DESTINATION_PATH,
+    ...(nonNullish(configPath) && {destinationFilename: configPath})
   });
+};
+
+const buildConfigType = async (): Promise<PartialConfigFile> => {
+  // We try to automatically detect if we should create a TypeScript or JavaScript (mjs) configuration.
+  const detectedConfig = detectJunoDevConfigType();
+
+  if (nonNullish(detectedConfig)) {
+    return detectedConfig;
+  }
+
+  const configType = await promptConfigType();
+
+  return {configType};
 };
 
 const assertDockerCompose = async () => {
