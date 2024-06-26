@@ -1,4 +1,3 @@
-import {red} from 'kleur';
 import prompts from 'prompts';
 
 export const NEW_CMD_LINE = '\n  ';
@@ -44,23 +43,6 @@ export const confirmAndExit = async (message: string) => {
   const answer = await confirm(message);
 
   if (!answer) {
-    process.exit(1);
-  }
-};
-
-// In case an answer is replaced by control+c
-export const assertAnswerCtrlC: (
-  answer: null | undefined | '' | string,
-  message?: string
-) => asserts answer is NonNullable<string> = (
-  answer: null | undefined | '' | string,
-  message?: string
-): void => {
-  if (answer === undefined || answer === '' || answer === null) {
-    if (message !== undefined) {
-      console.log(`${red(message)}`);
-    }
-
     process.exit(1);
   }
 };

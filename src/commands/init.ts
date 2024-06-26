@@ -1,3 +1,4 @@
+import {assertAnswerCtrlC} from '@junobuild/cli-tools';
 import type {PartialConfigFile} from '@junobuild/config-loader';
 import {isNullish, nonNullish} from '@junobuild/utils';
 import {cyan, yellow} from 'kleur';
@@ -19,7 +20,7 @@ import {
 } from '../configs/juno.config';
 import {promptConfigType} from '../services/init.services';
 import {login as consoleLogin} from '../services/login.services';
-import {NEW_CMD_LINE, assertAnswerCtrlC, confirm, confirmAndExit} from '../utils/prompt.utils';
+import {NEW_CMD_LINE, confirm, confirmAndExit} from '../utils/prompt.utils';
 
 export const init = async (args?: string[]) => {
   const token = getToken();

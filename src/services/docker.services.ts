@@ -4,7 +4,7 @@ import {nonNullish} from '@junobuild/utils';
 import {magenta} from 'kleur';
 import {existsSync} from 'node:fs';
 import {writeFile} from 'node:fs/promises';
-import {join, basename} from 'node:path';
+import {basename, join} from 'node:path';
 import {
   detectJunoDevConfigType,
   junoDevConfigExist,

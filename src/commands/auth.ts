@@ -1,11 +1,11 @@
 import {Ed25519KeyIdentity} from '@dfinity/identity';
+import {assertAnswerCtrlC} from '@junobuild/cli-tools';
 import {isNullish} from '@junobuild/utils';
 import {green} from 'kleur';
 import prompts from 'prompts';
 import {clearCliConfig, getToken} from '../configs/cli.config';
 import {reuseController} from '../services/controllers.services';
 import {login as consoleLogin} from '../services/login.services';
-import {assertAnswerCtrlC} from '../utils/prompt.utils';
 
 export const logout = async () => {
   clearCliConfig();

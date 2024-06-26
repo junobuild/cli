@@ -4,7 +4,7 @@ import {
   type CustomDomain,
   type SatelliteParameters
 } from '@junobuild/admin';
-import {downloadFromURL, hasArgs} from '@junobuild/cli-tools';
+import {assertAnswerCtrlC, downloadFromURL, hasArgs} from '@junobuild/cli-tools';
 import {createHash} from 'crypto';
 import {red, yellow} from 'kleur';
 import {readFile} from 'node:fs/promises';
@@ -14,7 +14,7 @@ import {JUNO_CDN_URL} from '../../constants/constants';
 import type {AssetKey} from '../../types/asset-key';
 import type {UpgradeWasm} from '../../types/upgrade';
 import {toAssetKeys} from '../../utils/asset-key.utils';
-import {assertAnswerCtrlC, confirmAndExit} from '../../utils/prompt.utils';
+import {confirmAndExit} from '../../utils/prompt.utils';
 import {newerReleases as newerReleasesUtils} from '../../utils/upgrade.utils';
 import {assertUpgradeHash} from './upgrade-assert.services';
 
