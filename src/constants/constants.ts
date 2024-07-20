@@ -7,7 +7,7 @@ export const DAPP_COLLECTION = '#dapp';
 export const SATELLITE_WASM_NAME = 'satellite';
 export const MISSION_CONTROL_WASM_NAME = 'mission_control';
 export const ORBITER_WASM_NAME = 'orbiter';
-export const NODE_18 = 18;
+export const NODE_VERSION = 20;
 export const CONSOLE_URL = 'https://console.juno.build';
 export const CONSOLE_SATELLITE_URL = `${CONSOLE_URL}/satellite/?s=`;
 export const JUNO_CDN_URL = 'https://cdn.juno.build';
