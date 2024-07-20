@@ -1,7 +1,7 @@
 import {execute, spawn} from '@junobuild/cli-tools';
 import {green, yellow} from 'kleur';
 import {lt, major} from 'semver';
-import {NODE_18} from '../constants/constants';
+import {NODE_VERSION} from '../constants/constants';
 import {
   DOCKER_MIN_VERSION,
   IC_WASM_MIN_VERSION,
@@ -13,10 +13,10 @@ export const checkNodeVersion = (): {valid: boolean | 'error'} => {
     const {version} = process;
     const nodeMajor = major(version);
 
-    if (nodeMajor < NODE_18) {
+    if (nodeMajor < NODE_VERSION) {
       console.log(
         `Your version of Node is ${yellow(`${version.trim()}`)}. Juno CLI requires Node ${green(
-          `${NODE_18}`
+          `${NODE_VERSION}`
         )} or a more recent version.`
       );
       return {valid: false};
