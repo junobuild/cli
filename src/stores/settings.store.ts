@@ -27,7 +27,7 @@ class SettingsStore {
     }
 
     const encryption = await confirm(
-      'Do you want to encrypt your configuration file for added security?'
+      'Do you want to encrypt the CLI configuration file for added security?'
     );
 
     saveEncryption(encryption);
