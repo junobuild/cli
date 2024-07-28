@@ -1,4 +1,4 @@
-import {nonNullish} from '@junobuild/utils';
+import {isNullish, nonNullish} from '@junobuild/utils';
 import {
   type CliSettingsConfig,
   getSettingsConfig,
@@ -8,6 +8,8 @@ import {confirm} from '../utils/prompt.utils';
 // TODO: fix TypeScript declaration import of conf
 // @ts-expect-error
 import type Conf from 'conf';
+import {yellow} from 'kleur';
+import {askForPassword} from '../services/cli.settings.services';
 import {loadConfig} from '../utils/config.utils';
 
 class SettingsStore {
@@ -45,9 +47,23 @@ class SettingsStore {
     try {
       const config = loadConfig(undefined);
 
-      // TODO
+      // We load a config object that contains no entries, therefore there is no configuration to migrate.
+      if (isNullish(config.store) || Object.keys(config.store).length === 0) {
+        return;
+      }
+
+      const pwd = await askForPassword(
+        'Please provide a password to encrypt your configuration file'
+      );
+
+      // Save with encryption.
+      const configEncoded = loadConfig(pwd);
+      configEncoded.store = config.store;
     } catch (err: unknown) {
-      // TODO
+      console.log(
+        `${yellow('Your current configuration cannot be encrypted. Maybe it is already encrypted?')}`
+      );
+      console.log(err);
     }
   }
 }
