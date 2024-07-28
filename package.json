@@ -28,11 +28,11 @@
     "@babel/preset-typescript": "^7.24.1",
     "@dfinity/agent": "^1.4.0",
     "@dfinity/candid": "^1.4.0",
+    "@dfinity/ic-management": "^5.1.0",
     "@dfinity/identity": "^1.4.0",
     "@dfinity/principal": "^1.4.0",
     "@junobuild/admin": "^0.0.52",
     "@junobuild/cli-tools": "^0.0.14",
-    "@junobuild/config": "^0.0.11",
     "@junobuild/config-loader": "^0.0.5",
     "@junobuild/core-peer": "^0.0.21",
     "@junobuild/utils": "^0.0.24",
@@ -45,6 +45,7 @@
     "terminal-link": "^3.0.0"
   },
   "devDependencies": {
+    "@junobuild/config": "^0.0.13",
     "@types/prompts": "^2.4.9",
     "@types/semver": "^7.5.8",
     "@typescript-eslint/eslint-plugin": "^6.20.0",
