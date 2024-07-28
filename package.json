@@ -80,6 +80,6 @@
   ],
   "homepage": "https://juno.build",
   "engines": {
-    "node": ">=18"
+    "node": ">=20"
   }
 }
