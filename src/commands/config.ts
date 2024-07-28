@@ -1,7 +1,7 @@
 import {ICManagementCanister, LogVisibility} from '@dfinity/ic-management';
 import {Principal} from '@dfinity/principal';
 import {type SatelliteParameters, setAuthConfig, setConfig} from '@junobuild/admin';
-import {ModuleSettings} from '@junobuild/config';
+import type {ModuleSettings} from '@junobuild/config';
 import {isNullish} from '@junobuild/utils';
 import ora from 'ora';
 import {junoConfigExist, readJunoConfig} from '../configs/juno.config';
