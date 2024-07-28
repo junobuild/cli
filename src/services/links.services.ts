@@ -21,7 +21,7 @@ export const links = async (args?: string[]) => {
   const env = configEnv(args);
   const {satellite: satelliteConfig} = await readJunoConfig(env);
 
-  const satellite = satelliteParameters({satellite: satelliteConfig, env});
+  const satellite = await satelliteParameters({satellite: satelliteConfig, env});
   const {satelliteId} = satellite;
 
   const defaultUrl = defaultSatelliteDomain(satelliteId);

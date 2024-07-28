@@ -30,14 +30,14 @@ export const reuseController = async (controller: Principal) => {
     return;
   }
 
-  const profile = getUse();
+  const profile = await getUse();
 
   switch (segment) {
     case 'orbiter':
-      saveOrbiter({profile, segmentId});
+      await saveOrbiter({profile, segmentId});
       break;
     case 'mission_control':
-      saveMissionControl({profile, segmentId});
+      await saveMissionControl({profile, segmentId});
       break;
     default:
       await saveSatellite({profile, segmentId});
@@ -66,7 +66,7 @@ const saveSatellite = async ({
     return;
   }
 
-  addCliSatellite({
+  await addCliSatellite({
     profile,
     satellite: {
       p: segmentId,
@@ -75,18 +75,24 @@ const saveSatellite = async ({
   });
 };
 
-const saveMissionControl = ({
+const saveMissionControl = async ({
   profile,
   segmentId
 }: {
   profile: string | undefined;
   segmentId: string;
 }) => {
-  addCliMissionControl({profile, missionControl: segmentId});
+  await addCliMissionControl({profile, missionControl: segmentId});
 };
 
-const saveOrbiter = ({profile, segmentId}: {profile: string | undefined; segmentId: string}) => {
-  addCliOrbiter({
+const saveOrbiter = async ({
+  profile,
+  segmentId
+}: {
+  profile: string | undefined;
+  segmentId: string;
+}) => {
+  await addCliOrbiter({
     profile,
     orbiter: {
       p: segmentId

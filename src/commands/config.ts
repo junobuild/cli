@@ -19,7 +19,7 @@ export const config = async (args?: string[]) => {
   const {satellite: satelliteConfig} = await readJunoConfig(env);
   const {storage, authentication, settings} = satelliteConfig;
 
-  const satellite = satelliteParameters({satellite: satelliteConfig, env});
+  const satellite = await satelliteParameters({satellite: satelliteConfig, env});
 
   const spinner = ora(`Configuring...`).start();
 

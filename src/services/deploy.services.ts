@@ -25,7 +25,7 @@ export const assertSatelliteMemorySize = async (args?: string[]) => {
     return;
   }
 
-  const satellite = satelliteParameters({satellite: satelliteConfig, env});
+  const satellite = await satelliteParameters({satellite: satelliteConfig, env});
 
   const currentVersion = await satelliteVersion({
     satellite
@@ -74,7 +74,7 @@ export const listAssets = async ({
 }): Promise<Asset[]> => {
   const {assets, items_page, matches_pages} = await listAssetsLib({
     collection: DAPP_COLLECTION,
-    satellite: satelliteParameters(env),
+    satellite: await satelliteParameters(env),
     filter: {
       order: {
         desc: true,

@@ -7,8 +7,8 @@ import {getToken} from '../configs/cli.config';
 import {REVOKED_CONTROLLERS} from '../constants/constants';
 import {getProcessToken} from './process.utils';
 
-export const actorParameters = (): ActorParameters => {
-  const token = getProcessToken() ?? getToken();
+export const actorParameters = async (): Promise<ActorParameters> => {
+  const token = getProcessToken() ?? (await getToken());
 
   if (isNullish(token)) {
     console.log(`${red('No controller found.')} Are you logged in?`);
@@ -29,7 +29,7 @@ export const actorParameters = (): ActorParameters => {
 };
 
 export const initAgent = async (): Promise<HttpAgent> => {
-  const {identity, container, fetch} = actorParameters();
+  const {identity, container, fetch} = await actorParameters();
 
   const localActor = nonNullish(container) && container !== false;
 

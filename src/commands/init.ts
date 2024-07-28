@@ -5,13 +5,7 @@ import {cyan, yellow} from 'kleur';
 import {unlink} from 'node:fs/promises';
 import {basename} from 'node:path';
 import prompts from 'prompts';
-import {
-  getCliOrbiters,
-  getCliSatellites,
-  getToken,
-  type CliOrbiterConfig,
-  type CliSatelliteConfig
-} from '../configs/cli.config';
+import {getCliOrbiters, getCliSatellites, getToken} from '../configs/cli.config';
 import {
   detectJunoConfigType,
   junoConfigExist,
@@ -20,10 +14,11 @@ import {
 } from '../configs/juno.config';
 import {promptConfigType} from '../services/init.services';
 import {login as consoleLogin} from '../services/login.services';
+import type {CliOrbiterConfig, CliSatelliteConfig} from '../types/cli.config';
 import {NEW_CMD_LINE, confirm, confirmAndExit} from '../utils/prompt.utils';
 
 export const init = async (args?: string[]) => {
-  const token = getToken();
+  const token = await getToken();
 
   if (isNullish(token)) {
     const login = await confirm(
@@ -79,7 +74,7 @@ const initConfig = async () => {
 };
 
 const initSatelliteConfig = async (): Promise<string> => {
-  const satellites = getCliSatellites();
+  const satellites = await getCliSatellites();
 
   const satellite = await (satellites?.length > 0
     ? promptSatellites(satellites)
@@ -93,7 +88,7 @@ const initSatelliteConfig = async (): Promise<string> => {
 };
 
 const initOrbiterConfig = async (): Promise<string | undefined> => {
-  const authOrbiters = getCliOrbiters();
+  const authOrbiters = await getCliOrbiters();
 
   if (authOrbiters === undefined || authOrbiters.length === 0) {
     return undefined;
