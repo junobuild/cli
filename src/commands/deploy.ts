@@ -42,7 +42,7 @@ const executeDeploy = async (args?: string[]) => {
     await assertSatelliteMemorySize(args);
   };
 
-  const satellite = satelliteParameters({satellite: satelliteConfig, env});
+  const satellite = await satelliteParameters({satellite: satelliteConfig, env});
 
   const uploadFile = async ({
     filename,

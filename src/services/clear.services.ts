@@ -13,7 +13,7 @@ export const clear = async (args?: string[]) => {
   const spinner = ora('Clearing dapp assets...').start();
 
   try {
-    const satellite = satelliteParameters({satellite: satelliteConfig, env});
+    const satellite = await satelliteParameters({satellite: satelliteConfig, env});
 
     // TODO: to be removed. Workaround as temporary solution of https://github.com/junobuild/juno/issues/484.
     const domains = await listCustomDomains({satellite});
@@ -46,7 +46,7 @@ export const clearAsset = async ({fullPath, args}: {fullPath: string; args?: str
   try {
     await deleteAsset({
       collection: DAPP_COLLECTION,
-      satellite: satelliteParameters({satellite: satelliteConfig, env}),
+      satellite: await satelliteParameters({satellite: satelliteConfig, env}),
       fullPath: cleanFullPath(fullPath)
     });
   } finally {

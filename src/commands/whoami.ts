@@ -5,7 +5,7 @@ import {getToken, getUse, isDefaultProfile} from '../configs/cli.config';
 import {links} from '../services/links.services';
 
 export const whoami = async (args?: string[]) => {
-  const {success} = info();
+  const {success} = await info();
 
   if (!success) {
     return;
@@ -14,14 +14,14 @@ export const whoami = async (args?: string[]) => {
   await links(args);
 };
 
-const info = (): {success: boolean} => {
-  const profile = getUse();
+const info = async (): Promise<{success: boolean}> => {
+  const profile = await getUse();
 
   if (!isDefaultProfile(profile)) {
     console.log(`👤 Profile: ${green(profile!)}`);
   }
 
-  const token = getToken();
+  const token = await getToken();
 
   if (isNullish(token)) {
     console.log(`No controller found.`);

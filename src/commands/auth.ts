@@ -14,7 +14,7 @@ export const logout = async () => {
 };
 
 export const login = async (args?: string[]) => {
-  const token = getToken();
+  const token = await getToken();
 
   if (isNullish(token)) {
     await consoleLogin(args);

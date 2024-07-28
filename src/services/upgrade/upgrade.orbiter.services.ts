@@ -13,7 +13,7 @@ import {orbiterKey} from '../../utils/satellite.utils';
 import {confirmReset, selectVersion, upgradeWasmCdn, upgradeWasmLocal} from './upgrade.services';
 
 export const upgradeOrbiters = async (args?: string[]) => {
-  const authOrbiters = getCliOrbiters();
+  const authOrbiters = await getCliOrbiters();
 
   if (authOrbiters === undefined || authOrbiters.length === 0) {
     return;
@@ -24,7 +24,7 @@ export const upgradeOrbiters = async (args?: string[]) => {
 
     const orbiterParameters = {
       orbiterId,
-      ...actorParameters()
+      ...(await actorParameters())
     };
 
     const consoleSuccess = () => {
@@ -86,7 +86,7 @@ const updateOrbiterRelease = async ({
     orbiter: orbiterParameters
   });
 
-  const displayHint = `orbiter "${orbiterKey(orbiterParameters.orbiterId)}"`;
+  const displayHint = `orbiter "${await orbiterKey(orbiterParameters.orbiterId)}"`;
   const version = await selectVersion({
     currentVersion,
     assetKey: ORBITER_WASM_NAME,

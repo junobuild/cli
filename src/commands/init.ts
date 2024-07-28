@@ -23,7 +23,7 @@ import {login as consoleLogin} from '../services/login.services';
 import {NEW_CMD_LINE, confirm, confirmAndExit} from '../utils/prompt.utils';
 
 export const init = async (args?: string[]) => {
-  const token = getToken();
+  const token = await getToken();
 
   if (isNullish(token)) {
     const login = await confirm(
@@ -79,7 +79,7 @@ const initConfig = async () => {
 };
 
 const initSatelliteConfig = async (): Promise<string> => {
-  const satellites = getCliSatellites();
+  const satellites = await getCliSatellites();
 
   const satellite = await (satellites?.length > 0
     ? promptSatellites(satellites)
@@ -93,7 +93,7 @@ const initSatelliteConfig = async (): Promise<string> => {
 };
 
 const initOrbiterConfig = async (): Promise<string | undefined> => {
-  const authOrbiters = getCliOrbiters();
+  const authOrbiters = await getCliOrbiters();
 
   if (authOrbiters === undefined || authOrbiters.length === 0) {
     return undefined;

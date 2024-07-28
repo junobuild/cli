@@ -13,7 +13,7 @@ import {NEW_CMD_LINE} from '../../utils/prompt.utils';
 import {selectVersion, upgradeWasmCdn, upgradeWasmLocal} from './upgrade.services';
 
 export const upgradeMissionControl = async (args?: string[]) => {
-  const missionControl = getCliMissionControl();
+  const missionControl = await getCliMissionControl();
 
   if (isNullish(missionControl)) {
     console.log(
@@ -30,7 +30,7 @@ export const upgradeMissionControl = async (args?: string[]) => {
 
   const missionControlParameters = {
     missionControlId: missionControl,
-    ...actorParameters()
+    ...(await actorParameters())
   };
 
   const consoleSuccess = () => {

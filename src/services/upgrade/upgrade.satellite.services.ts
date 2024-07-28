@@ -33,7 +33,7 @@ export const upgradeSatellite = async (args?: string[]) => {
   const env = configEnv(args);
   const {satellite: satelliteConfig} = await readJunoConfig(env);
 
-  const satellite = satelliteParameters({satellite: satelliteConfig, env});
+  const satellite = await satelliteParameters({satellite: satelliteConfig, env});
   const {satelliteId} = satellite;
 
   console.log(
@@ -100,7 +100,7 @@ const upgradeSatelliteRelease = async ({
     satellite
   });
 
-  const displayHint = `satellite "${satelliteKey(satellite.satelliteId ?? '')}"`;
+  const displayHint = `satellite "${await satelliteKey(satellite.satelliteId ?? '')}"`;
   const version = await selectVersion({currentVersion, assetKey: SATELLITE_WASM_NAME, displayHint});
 
   if (isNullish(version)) {

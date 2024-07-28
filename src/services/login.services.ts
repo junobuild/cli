@@ -44,7 +44,7 @@ export const login = async (args?: string[]) => {
       }
 
       try {
-        saveConfig({token, satellites, orbiters, missionControl, profile});
+        await saveConfig({token, satellites, orbiters, missionControl, profile});
         await respondWithFile(req, res, 200, '../templates/login/success.html');
         console.log(`${green('Success!')} Logged in. ✅`);
         resolve();
@@ -89,7 +89,7 @@ async function respondWithFile(
   req.socket.destroy();
 }
 
-const saveConfig = ({
+const saveConfig = async ({
   token,
   satellites,
   orbiters,
@@ -102,7 +102,7 @@ const saveConfig = ({
   missionControl: string | null;
   profile: string | null;
 }) => {
-  saveCliConfig({
+  await saveCliConfig({
     token,
     satellites: JSON.parse(decodeURIComponent(satellites ?? '[]')),
     orbiters: orbiters !== null ? JSON.parse(decodeURIComponent(orbiters)) : null,

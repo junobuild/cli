@@ -120,7 +120,7 @@ export const run = async () => {
       await whoami(args);
       break;
     case 'use':
-      use(args);
+      await use(args);
       break;
     case 'dev':
       await dev(args);

@@ -1,8 +1,11 @@
 import type {JsonnableEd25519KeyIdentity} from '@dfinity/identity/lib/cjs/identity/ed25519';
+import {nonNullish} from '@junobuild/utils';
 // TODO: fix TypeScript declaration import of conf
 // @ts-expect-error
 import Conf, {type Schema} from 'conf';
 import {CLI_PROJECT_NAME} from '../constants/constants';
+import {askForPassword} from '../services/cli.settings.services';
+import {settingsStore} from '../stores/settings.store';
 
 interface CliConfigData {
   token: JsonnableEd25519KeyIdentity;
@@ -39,9 +42,23 @@ const schema: Schema<CliConfig> = {
 } as const;
 
 // Save in https://github.com/sindresorhus/env-paths#pathsconfig
-const config = new Conf<CliConfig>({projectName: CLI_PROJECT_NAME, schema});
+let config: Conf<CliConfig> | undefined;
 
-export const saveCliConfig = ({
+const initConfig = async () => {
+  if (nonNullish(config)) {
+    return;
+  }
+
+  const encryptionKey = settingsStore.useEncryption() ? await askForPassword() : undefined;
+
+  config = new Conf<CliConfig>({
+    projectName: CLI_PROJECT_NAME,
+    schema,
+    ...(nonNullish(encryptionKey) && {encryptionKey})
+  });
+};
+
+export const saveCliConfig = async ({
   token,
   satellites,
   orbiters,
@@ -55,9 +72,9 @@ export const saveCliConfig = ({
   profile: CliProfile | null;
 }) => {
   if (!isDefaultProfile(profile)) {
-    const profiles = getProfiles();
+    const profiles = await getProfiles();
 
-    saveProfiles({
+    await saveProfiles({
       ...(profiles !== undefined ? profiles : {}),
       [profile!]: {
         token,
@@ -67,50 +84,73 @@ export const saveCliConfig = ({
       }
     });
 
-    saveUse(profile!);
+    await saveUse(profile!);
 
     return;
   }
 
-  saveToken(token);
-  saveCliSatellites(satellites);
+  await saveToken(token);
+  await saveCliSatellites(satellites);
 
   if (orbiters !== null) {
-    saveCliOrbiters(orbiters);
+    await saveCliOrbiters(orbiters);
   }
 
   if (missionControl !== null) {
-    saveCliMissionControl(missionControl);
+    await saveCliMissionControl(missionControl);
   }
 
-  deleteUse();
+  await deleteUse();
 };
 
 // Use / profile
 
-export const deleteUse = () => config.delete('use');
-export const saveUse = (use: CliProfile) => config.set('use', use);
-export const getUse = (): CliProfile | undefined => config.get('use');
+export const deleteUse = async () => {
+  await initConfig();
+
+  config.delete('use');
+};
+export const saveUse = async (use: CliProfile) => {
+  await initConfig();
+
+  config.set('use', use);
+};
+export const getUse = async (): Promise<CliProfile | undefined> => {
+  await initConfig();
+
+  return config.get('use');
+};
 
 // Profile
 
-export const saveProfiles = (profiles: Record<string, CliConfigData>) =>
-  config.set('profiles', profiles);
+const saveProfiles = async (profiles: Record<string, CliConfigData>) => {
+  await initConfig();
 
-export const getProfiles = (): Record<string, CliConfigData> | undefined => config.get('profiles');
+  config.set('profiles', profiles);
+};
+
+export const getProfiles = async (): Promise<Record<string, CliConfigData> | undefined> => {
+  await initConfig();
+
+  return config.get('profiles');
+};
 
 export const isDefaultProfile = (use: CliProfile | undefined | null): boolean =>
   use === null || use === undefined || use === 'default';
 
 // Token
 
-const saveToken = (token: JsonnableEd25519KeyIdentity) => config.set('token', token);
+const saveToken = async (token: JsonnableEd25519KeyIdentity) => {
+  await initConfig();
 
-export const getToken = (): JsonnableEd25519KeyIdentity | undefined => {
-  const use = getUse();
+  config.set('token', token);
+};
+
+export const getToken = async (): Promise<JsonnableEd25519KeyIdentity | undefined> => {
+  const use = await getUse();
 
   if (!isDefaultProfile(use)) {
-    return getProfiles()?.[use!]?.token;
+    return (await getProfiles())?.[use!]?.token;
   }
 
   return config.get('token');
@@ -118,20 +158,23 @@ export const getToken = (): JsonnableEd25519KeyIdentity | undefined => {
 
 // Satellites
 
-const saveCliSatellites = (satellites: CliSatelliteConfig[]) =>
-  config.set('satellites', satellites);
+const saveCliSatellites = async (satellites: CliSatelliteConfig[]) => {
+  await initConfig();
 
-export const getCliSatellites = (): CliSatelliteConfig[] => {
-  const use = getUse();
+  await config.set('satellites', satellites);
+};
+
+export const getCliSatellites = async (): Promise<CliSatelliteConfig[]> => {
+  const use = await getUse();
 
   if (!isDefaultProfile(use)) {
-    return getProfiles()?.[use!]?.satellites ?? [];
+    return (await getProfiles())?.[use!]?.satellites ?? [];
   }
 
   return config.get('satellites');
 };
 
-export const addCliSatellite = ({
+export const addCliSatellite = async ({
   satellite,
   profile
 }: {
@@ -139,14 +182,14 @@ export const addCliSatellite = ({
   profile: CliProfile | undefined;
 }) => {
   if (!isDefaultProfile(profile)) {
-    const profiles = getProfiles();
+    const profiles = await getProfiles();
     const currentProfile = profiles?.[profile!];
 
     if (currentProfile === undefined) {
       throw new Error(`The profile must exist.`);
     }
 
-    saveProfiles({
+    await saveProfiles({
       ...(profiles !== undefined ? profiles : {}),
       [profile!]: {
         ...currentProfile,
@@ -160,26 +203,34 @@ export const addCliSatellite = ({
     return;
   }
 
-  const currentSatellites = getCliSatellites();
-  saveCliSatellites([...(currentSatellites ?? []).filter(({p}) => p !== satellite.p), satellite]);
+  const currentSatellites = await getCliSatellites();
+  await saveCliSatellites([
+    ...(currentSatellites ?? []).filter(({p}) => p !== satellite.p),
+    satellite
+  ]);
 };
 
 // Mission control
 
-const saveCliMissionControl = (missionControl: string) =>
-  config.set('missionControl', missionControl);
+const saveCliMissionControl = async (missionControl: string) => {
+  await initConfig();
 
-export const getCliMissionControl = (): string | undefined => {
-  const use = getUse();
+  config.set('missionControl', missionControl);
+};
+
+export const getCliMissionControl = async (): Promise<string | undefined> => {
+  await initConfig();
+
+  const use = await getUse();
 
   if (!isDefaultProfile(use)) {
-    return getProfiles()?.[use!]?.missionControl;
+    return (await getProfiles())?.[use!]?.missionControl;
   }
 
   return config.get('missionControl');
 };
 
-export const addCliMissionControl = ({
+export const addCliMissionControl = async ({
   missionControl,
   profile
 }: {
@@ -187,14 +238,14 @@ export const addCliMissionControl = ({
   profile: CliProfile | undefined;
 }) => {
   if (!isDefaultProfile(profile)) {
-    const profiles = getProfiles();
+    const profiles = await getProfiles();
     const currentProfile = profiles?.[profile!];
 
     if (currentProfile === undefined) {
       throw new Error(`The profile must exist.`);
     }
 
-    saveProfiles({
+    await saveProfiles({
       ...(profiles !== undefined ? profiles : {}),
       [profile!]: {
         ...currentProfile,
@@ -205,24 +256,28 @@ export const addCliMissionControl = ({
     return;
   }
 
-  saveCliMissionControl(missionControl);
+  await saveCliMissionControl(missionControl);
 };
 
 // Orbiters
 
-const saveCliOrbiters = (orbiters: CliOrbiterConfig[]) => config.set('orbiters', orbiters);
+const saveCliOrbiters = async (orbiters: CliOrbiterConfig[]) => {
+  await initConfig();
 
-export const getCliOrbiters = (): CliOrbiterConfig[] | undefined => {
-  const use = getUse();
+  config.set('orbiters', orbiters);
+};
+
+export const getCliOrbiters = async (): Promise<CliOrbiterConfig[] | undefined> => {
+  const use = await getUse();
 
   if (!isDefaultProfile(use)) {
-    return getProfiles()?.[use!]?.orbiters;
+    return (await getProfiles())?.[use!]?.orbiters;
   }
 
   return config.get('orbiters');
 };
 
-export const addCliOrbiter = ({
+export const addCliOrbiter = async ({
   orbiter,
   profile
 }: {
@@ -230,14 +285,14 @@ export const addCliOrbiter = ({
   profile: CliProfile | undefined;
 }) => {
   if (!isDefaultProfile(profile)) {
-    const profiles = getProfiles();
+    const profiles = await getProfiles();
     const currentProfile = profiles?.[profile!];
 
     if (currentProfile === undefined) {
       throw new Error(`The profile must exist.`);
     }
 
-    saveProfiles({
+    await saveProfiles({
       ...(profiles !== undefined ? profiles : {}),
       [profile!]: {
         ...currentProfile,
@@ -248,8 +303,8 @@ export const addCliOrbiter = ({
     return;
   }
 
-  const currentOrbiters = getCliOrbiters();
-  saveCliOrbiters([...(currentOrbiters ?? []).filter(({p}) => p !== orbiter.p), orbiter]);
+  const currentOrbiters = await getCliOrbiters();
+  await saveCliOrbiters([...(currentOrbiters ?? []).filter(({p}) => p !== orbiter.p), orbiter]);
 };
 
 // Clear

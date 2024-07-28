@@ -55,7 +55,7 @@ const cliVersion = async () => {
 };
 
 const missionControlVersion = async () => {
-  const missionControl = getCliMissionControl();
+  const missionControl = await getCliMissionControl();
 
   if (isNullish(missionControl)) {
     console.log(
@@ -68,7 +68,7 @@ const missionControlVersion = async () => {
 
   const missionControlParameters = {
     missionControlId: missionControl,
-    ...actorParameters()
+    ...(await actorParameters())
   };
 
   const currentVersion = await missionControlVersionLib({
@@ -93,14 +93,14 @@ const satelliteVersion = async (args?: string[]) => {
   const env = configEnv(args);
   const {satellite: satelliteConfig} = await readJunoConfig(env);
 
-  const satellite = satelliteParameters({satellite: satelliteConfig, env});
+  const satellite = await satelliteParameters({satellite: satelliteConfig, env});
   const {satelliteId} = satellite;
 
   const currentVersion = await satelliteVersionLib({
     satellite
   });
 
-  const displayHint = `satellite "${satelliteKey(satelliteId)}"`;
+  const displayHint = `satellite "${await satelliteKey(satelliteId)}"`;
 
   await checkSegmentVersion({
     currentVersion,
@@ -110,7 +110,7 @@ const satelliteVersion = async (args?: string[]) => {
 };
 
 const orbitersVersion = async () => {
-  const orbiters = getCliOrbiters();
+  const orbiters = await getCliOrbiters();
 
   if (isNullish(orbiters) || orbiters.length === 0) {
     return;
@@ -119,14 +119,14 @@ const orbitersVersion = async () => {
   const checkOrbiterVersion = async (orbiterId: string) => {
     const orbiterParameters = {
       orbiterId,
-      ...actorParameters()
+      ...(await actorParameters())
     };
 
     const currentVersion = await orbiterVersionLib({
       orbiter: orbiterParameters
     });
 
-    const displayHint = `orbiter "${orbiterKey(orbiterId)}"`;
+    const displayHint = `orbiter "${await orbiterKey(orbiterId)}"`;
 
     await checkSegmentVersion({
       currentVersion,

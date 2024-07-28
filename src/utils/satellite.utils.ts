@@ -5,11 +5,12 @@ import {getCliOrbiters, getCliSatellites} from '../configs/cli.config';
 import type {SatelliteConfigEnv} from '../types/config';
 import {actorParameters} from './actor.utils';
 
-export const satelliteParameters = ({
+export const satelliteParameters = async ({
   satellite: {satelliteId: deprecatedSatelliteId, id, ids},
   env: {mode}
-}: SatelliteConfigEnv): Omit<SatelliteParameters, 'satelliteId'> &
-  Required<Pick<SatelliteParameters, 'satelliteId'>> => {
+}: SatelliteConfigEnv): Promise<
+  Omit<SatelliteParameters, 'satelliteId'> & Required<Pick<SatelliteParameters, 'satelliteId'>>
+> => {
   const satelliteId = ids?.[mode] ?? id ?? deprecatedSatelliteId;
 
   if (isNullish(satelliteId)) {
@@ -19,7 +20,7 @@ export const satelliteParameters = ({
 
   return {
     satelliteId,
-    ...actorParameters()
+    ...(await actorParameters())
   };
 };
 
@@ -27,14 +28,14 @@ export const satelliteParameters = ({
  * For display purpose, use either the name or id. Most probably we should find a name but for simplicity reason we fallback to Id.
  * @param satelliteId name or id
  */
-export const satelliteKey = (satelliteId: string): string => {
-  const satellites = getCliSatellites();
+export const satelliteKey = async (satelliteId: string): Promise<string> => {
+  const satellites = await getCliSatellites();
   const satellite = satellites.find(({p}) => p === satelliteId);
   return satellite?.n ?? satelliteId;
 };
 
-export const orbiterKey = (orbiterId: string): string => {
-  const orbiters = getCliOrbiters();
+export const orbiterKey = async (orbiterId: string): Promise<string> => {
+  const orbiters = await getCliOrbiters();
   const orbiter = orbiters?.find(({p}) => p === orbiterId);
   return orbiter?.n !== undefined && orbiter?.n !== '' ? orbiter.n : orbiterId;
 };
