@@ -22,7 +22,7 @@ const initConfig = async () => {
     return;
   }
 
-  const encryptionKey = settingsStore.useEncryption() ? await askForPassword() : undefined;
+  const encryptionKey = settingsStore.isEncryptionEnabled() ? await askForPassword() : undefined;
 
   config = loadConfig(encryptionKey);
 };

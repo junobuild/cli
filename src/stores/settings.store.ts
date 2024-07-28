@@ -10,7 +10,6 @@ import {confirm} from '../utils/prompt.utils';
 import type Conf from 'conf';
 import {yellow} from 'kleur';
 import {askForPassword} from '../services/cli.settings.services';
-import type {CliConfig} from '../types/cli.config';
 import {loadConfig} from '../utils/config.utils';
 
 class SettingsStore {
@@ -40,7 +39,7 @@ class SettingsStore {
     return store;
   }
 
-  useEncryption(): boolean {
+  isEncryptionEnabled(): boolean {
     return this.#config.get('encryption');
   }
 
@@ -49,12 +48,12 @@ class SettingsStore {
       const config = loadConfig(undefined);
 
       // We load a config object that contains no entries, therefore there is no configuration to migrate.
-      if (isNullish(config.store) || Object.keys(config.store as CliConfig).length === 0) {
+      if (isNullish(config.store) || config.size === 0) {
         return;
       }
 
       const pwd = await askForPassword(
-        'Please provide a password to encrypt your configuration file'
+        'Please provide a password to encrypt your CLI configuration file'
       );
 
       // Save with encryption.
