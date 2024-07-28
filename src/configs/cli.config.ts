@@ -116,6 +116,8 @@ const saveToken = async (token: JsonnableEd25519KeyIdentity) => {
 };
 
 export const getToken = async (): Promise<JsonnableEd25519KeyIdentity | undefined> => {
+  await initConfig();
+
   const use = await getUse();
 
   if (!isDefaultProfile(use)) {
@@ -134,6 +136,8 @@ const saveCliSatellites = async (satellites: CliSatelliteConfig[]) => {
 };
 
 export const getCliSatellites = async (): Promise<CliSatelliteConfig[]> => {
+  await initConfig();
+
   const use = await getUse();
 
   if (!isDefaultProfile(use)) {
@@ -237,6 +241,8 @@ const saveCliOrbiters = async (orbiters: CliOrbiterConfig[]) => {
 };
 
 export const getCliOrbiters = async (): Promise<CliOrbiterConfig[] | undefined> => {
+  await initConfig();
+
   const use = await getUse();
 
   if (!isDefaultProfile(use)) {
@@ -278,4 +284,8 @@ export const addCliOrbiter = async ({
 
 // Clear
 
-export const clearCliConfig = () => config.clear();
+export const clearCliConfig = async () => {
+  await initConfig();
+
+  config.clear();
+};

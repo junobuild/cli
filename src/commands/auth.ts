@@ -8,7 +8,7 @@ import {reuseController} from '../services/controllers.services';
 import {login as consoleLogin} from '../services/login.services';
 
 export const logout = async () => {
-  clearCliConfig();
+  await clearCliConfig();
 
   console.log(`${green('Logged out')}`);
 };
