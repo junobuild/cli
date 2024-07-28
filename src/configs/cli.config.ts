@@ -2,44 +2,17 @@ import type {JsonnableEd25519KeyIdentity} from '@dfinity/identity/lib/cjs/identi
 import {nonNullish} from '@junobuild/utils';
 // TODO: fix TypeScript declaration import of conf
 // @ts-expect-error
-import Conf, {type Schema} from 'conf';
-import {CLI_PROJECT_NAME} from '../constants/constants';
+import type Conf from 'conf';
 import {askForPassword} from '../services/cli.settings.services';
 import {settingsStore} from '../stores/settings.store';
-
-interface CliConfigData {
-  token: JsonnableEd25519KeyIdentity;
-  satellites: CliSatelliteConfig[];
-  missionControl?: string;
-  orbiters?: CliOrbiterConfig[];
-}
-
-export interface CliSatelliteConfig {
-  p: string; // principal
-  n: string; // name
-}
-
-export interface CliOrbiterConfig {
-  p: string; // principal
-  n?: string; // name
-}
-
-export type CliProfile = 'default' | string;
-
-// Backwards compatibility. Default is save in root of the object, profile in an optional record.
-interface CliConfig extends CliConfigData {
-  use?: CliProfile;
-  profiles?: Record<string, CliConfigData>;
-}
-
-const schema: Schema<CliConfig> = {
-  token: {
-    type: 'array'
-  },
-  satellites: {
-    type: 'array'
-  }
-} as const;
+import type {
+  CliConfig,
+  CliConfigData,
+  CliOrbiterConfig,
+  CliProfile,
+  CliSatelliteConfig
+} from '../types/cli.config';
+import {loadConfig} from '../utils/config.utils';
 
 // Save in https://github.com/sindresorhus/env-paths#pathsconfig
 let config: Conf<CliConfig> | undefined;
@@ -51,11 +24,7 @@ const initConfig = async () => {
 
   const encryptionKey = settingsStore.useEncryption() ? await askForPassword() : undefined;
 
-  config = new Conf<CliConfig>({
-    projectName: CLI_PROJECT_NAME,
-    schema,
-    ...(nonNullish(encryptionKey) && {encryptionKey})
-  });
+  config = loadConfig(encryptionKey);
 };
 
 export const saveCliConfig = async ({

@@ -8,6 +8,7 @@ import {confirm} from '../utils/prompt.utils';
 // TODO: fix TypeScript declaration import of conf
 // @ts-expect-error
 import type Conf from 'conf';
+import {loadConfig} from '../utils/config.utils';
 
 class SettingsStore {
   readonly #config: Conf<CliSettingsConfig>;
@@ -19,8 +20,6 @@ class SettingsStore {
   static async init(): Promise<SettingsStore> {
     const store = new SettingsStore(getSettingsConfig());
 
-    console.log('---->', store.config.get('encryption'));
-
     if (nonNullish(store.config.get('encryption'))) {
       return store;
     }
@@ -31,11 +30,25 @@ class SettingsStore {
 
     saveEncryption(encryption);
 
+    if (encryption) {
+      await store.migrateConfig();
+    }
+
     return store;
   }
 
   useEncryption(): boolean {
     return this.#config.get('encryption');
+  }
+
+  private async migrateConfig() {
+    try {
+      const config = loadConfig(undefined);
+
+      // TODO
+    } catch (err: unknown) {
+      // TODO
+    }
   }
 }
 
