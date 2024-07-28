@@ -5,13 +5,7 @@ import {cyan, yellow} from 'kleur';
 import {unlink} from 'node:fs/promises';
 import {basename} from 'node:path';
 import prompts from 'prompts';
-import {
-  getCliOrbiters,
-  getCliSatellites,
-  getToken,
-  type CliOrbiterConfig,
-  type CliSatelliteConfig
-} from '../configs/cli.config';
+import {getCliOrbiters, getCliSatellites, getToken} from '../configs/cli.config';
 import {
   detectJunoConfigType,
   junoConfigExist,
@@ -20,6 +14,7 @@ import {
 } from '../configs/juno.config';
 import {promptConfigType} from '../services/init.services';
 import {login as consoleLogin} from '../services/login.services';
+import type {CliOrbiterConfig, CliSatelliteConfig} from '../types/cli.config';
 import {NEW_CMD_LINE, confirm, confirmAndExit} from '../utils/prompt.utils';
 
 export const init = async (args?: string[]) => {
