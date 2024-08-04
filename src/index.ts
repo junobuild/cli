@@ -35,7 +35,7 @@ export const run = async () => {
   }
 
   if (!valid) {
-    return;
+    process.exit(1);
   }
 
   const [cmd, ...args] = process.argv.slice(2);
