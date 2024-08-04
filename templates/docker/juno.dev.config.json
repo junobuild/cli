@@ -1,7 +1,7 @@
 {
   "satellite": {
     "collections": {
-      "db": [],
+      "datastore": [],
       "storage": []
     },
     "controllers": []
