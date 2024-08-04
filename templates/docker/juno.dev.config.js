@@ -4,7 +4,7 @@ import {defineDevConfig} from '@junobuild/config';
 export default defineDevConfig(() => ({
   satellite: {
     collections: {
-      db: [],
+      datastore: [],
       storage: []
     },
     controllers: []
