@@ -1,6 +1,11 @@
 import {ICManagementCanister, LogVisibility} from '@dfinity/ic-management';
 import {Principal} from '@dfinity/principal';
-import {type SatelliteParameters, setAuthConfig, setConfig} from '@junobuild/admin';
+import {
+  type SatelliteParameters,
+  setAuthConfig,
+  setDatastoreConfig,
+  setStorageConfig
+} from '@junobuild/admin';
 import type {ModuleSettings} from '@junobuild/config';
 import {isNullish} from '@junobuild/utils';
 import ora from 'ora';
@@ -17,7 +22,7 @@ export const config = async (args?: string[]) => {
 
   const env = configEnv(args);
   const {satellite: satelliteConfig} = await readJunoConfig(env);
-  const {storage, authentication, settings} = satelliteConfig;
+  const {storage, authentication, datastore, settings} = satelliteConfig;
 
   const satellite = await satelliteParameters({satellite: satelliteConfig, env});
 
@@ -25,25 +30,30 @@ export const config = async (args?: string[]) => {
 
   try {
     await Promise.allSettled([
-      setConfig({
+      setStorageConfig({
         config: {
-          storage: {
-            headers: storage?.headers ?? [],
-            rewrites: storage?.rewrites,
-            redirects: storage?.redirects,
-            iframe: storage?.iframe,
-            rawAccess: storage?.rawAccess
-          }
+          headers: storage?.headers ?? [],
+          rewrites: storage?.rewrites,
+          redirects: storage?.redirects,
+          iframe: storage?.iframe,
+          rawAccess: storage?.rawAccess,
+          maxMemorySize: storage?.maxMemorySize
         },
         satellite
       }),
+      ...(isNullish(datastore)
+        ? []
+        : [
+            setDatastoreConfig({
+              config: datastore,
+              satellite
+            })
+          ]),
       ...(isNullish(authentication)
         ? []
         : [
             setAuthConfig({
-              config: {
-                authentication
-              },
+              config: authentication,
               satellite
             })
           ]),

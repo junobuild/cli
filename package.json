@@ -31,10 +31,10 @@
     "@dfinity/ic-management": "^5.1.0",
     "@dfinity/identity": "^1.4.0",
     "@dfinity/principal": "^1.4.0",
-    "@junobuild/admin": "^0.0.52",
+    "@junobuild/admin": "^0.0.53-next-2024-08-04",
     "@junobuild/cli-tools": "^0.0.14",
     "@junobuild/config-loader": "^0.0.5",
-    "@junobuild/core-peer": "^0.0.21",
+    "@junobuild/core-peer": "^0.0.22-next-2024-08-04",
     "@junobuild/utils": "^0.0.24",
     "conf": "^13.0.1",
     "open": "^10.1.0",
@@ -45,7 +45,7 @@
     "terminal-link": "^3.0.0"
   },
   "devDependencies": {
-    "@junobuild/config": "^0.0.13",
+    "@junobuild/config": "^0.0.14-next-2024-08-04",
     "@types/prompts": "^2.4.9",
     "@types/semver": "^7.5.8",
     "@typescript-eslint/eslint-plugin": "^6.20.0",
