@@ -11,7 +11,7 @@ import type Conf from 'conf';
 import {yellow} from 'kleur';
 import {askForPassword} from '../services/cli.settings.services';
 import {loadConfig} from '../utils/config.utils';
-import { isProcessToken } from "../utils/process.utils";
+import {isProcessToken} from '../utils/process.utils';
 
 class SettingsStore {
   readonly #config: Conf<CliSettingsConfig>;
