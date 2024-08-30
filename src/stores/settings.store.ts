@@ -11,7 +11,7 @@ import type Conf from 'conf';
 import {yellow} from 'kleur';
 import {askForPassword} from '../services/cli.settings.services';
 import {loadConfig} from '../utils/config.utils';
-import {isProcessToken} from '../utils/process.utils';
+import {isHeadless} from '../utils/process.utils';
 
 class SettingsStore {
   readonly #config: Conf<CliSettingsConfig>;
@@ -23,7 +23,7 @@ class SettingsStore {
   static async init(): Promise<SettingsStore> {
     const store = new SettingsStore(getSettingsConfig());
 
-    if (isProcessToken()) {
+    if (isHeadless()) {
       return store;
     }
 

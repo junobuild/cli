@@ -31,6 +31,9 @@ Commands:
   ${cyan('use')}                 Switch between multiple profiles.
   ${cyan('version')}             Check the version of a satellite, mission control and cli.
   ${cyan('whoami')}              Display the current controller.
+  
+Options:
+  ${grey('--headless')}          Run the CLI in non-interactive mode (enabled automatically if JUNO_TOKEN is set).
 `;
 
 export const helpMode = `${yellow('-m, --mode')}            Set env mode. For example production or a custom string. Default is production.`;
