@@ -41,12 +41,14 @@ export const clearAsset = async ({fullPath, args}: {fullPath: string; args?: str
   const env = configEnv(args);
   const {satellite: satelliteConfig} = await readJunoConfig(env);
 
+  const satellite = await satelliteParameters({satellite: satelliteConfig, env});
+
   const spinner = ora(`Clearing ${fullPath}...`).start();
 
   try {
     await deleteAsset({
       collection: DAPP_COLLECTION,
-      satellite: await satelliteParameters({satellite: satelliteConfig, env}),
+      satellite,
       fullPath: cleanFullPath(fullPath)
     });
   } finally {
