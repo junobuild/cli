@@ -1,16 +1,16 @@
 import {execute, gzipFile, spawn} from '@junobuild/cli-tools';
 import {green, grey, magenta, yellow} from 'kleur';
 import {existsSync} from 'node:fs';
-import {lstat, mkdir, rename, writeFile} from 'node:fs/promises';
+import {lstat, mkdir, readFile, rename, writeFile} from 'node:fs/promises';
 import {join, relative} from 'node:path';
 import ora, {type Ora} from 'ora';
-import {DEVELOPER_PROJECT_SATELLITE_PATH, IC_WASM_MIN_VERSION} from '../constants/dev.constants';
-import {copySatelliteDid, readSatelliteDid} from '../utils/did.utils';
 import {
-  checkCandidExtractorInstalled,
-  checkIcWasmVersion,
-  checkRustVersion
-} from '../utils/env.utils';
+  DEVELOPER_PROJECT_SATELLITE_DECLARATIONS_PATH,
+  DEVELOPER_PROJECT_SATELLITE_PATH,
+  IC_WASM_MIN_VERSION
+} from '../constants/dev.constants';
+import {copySatelliteDid, readSatelliteDid} from '../utils/did.utils';
+import {checkCargoBinInstalled, checkIcWasmVersion, checkRustVersion} from '../utils/env.utils';
 import {confirmAndExit} from '../utils/prompt.utils';
 
 const CARGO_RELEASE_DIR = join(process.cwd(), 'target', 'wasm32-unknown-unknown', 'release');
@@ -36,6 +36,12 @@ export const build = async () => {
     return;
   }
 
+  const {valid: validDidc} = await checkJunoDidc();
+
+  if (!validDidc) {
+    return;
+  }
+
   const args = [
     'build',
     '--target',
@@ -58,6 +64,7 @@ export const build = async () => {
 
   try {
     await did();
+    await didc();
 
     await icWasm();
 
@@ -102,6 +109,37 @@ const did = async () => {
     SATELLITE_DID_FILE,
     `import service "${EXTENSION_DID_FILE_NAME}";\n\n${templateDid}`,
     'utf-8'
+  );
+};
+
+const didc = async () => {
+  // No satellite_extension.did and therefore no services to generate to JS and TS.
+  if (!existsSync(SATELLITE_CUSTOM_DID_FILE)) {
+    return;
+  }
+
+  // We check if the developer has added any API endpoints. If none, we do not need to generate the bindings for JS and TS.
+  const extensionDid = await readFile(SATELLITE_CUSTOM_DID_FILE, 'utf-8');
+  const noAdditionalExtensionDid = 'service : { build_version : () -> (text) query }';
+
+  if (extensionDid.trim() === noAdditionalExtensionDid) {
+    return;
+  }
+
+  await Promise.all(
+    ['js', 'ts'].map((type) =>
+      spawn({
+        command: 'junobuild-didc',
+        args: [
+          '-i',
+          SATELLITE_CUSTOM_DID_FILE,
+          '-t',
+          type,
+          '-o',
+          `${DEVELOPER_PROJECT_SATELLITE_DECLARATIONS_PATH}/satellite.${type}`
+        ]
+      })
+    )
   );
 };
 
@@ -190,7 +228,7 @@ const checkIcWasm = async (): Promise<{valid: boolean}> => {
     await confirmAndExit(
       `The ${magenta('ic-wasm')} ${yellow(
         `v${IC_WASM_MIN_VERSION}`
-      )} tool is required to build a satellite but appears to be not available. Would you like to install it on your machine?`
+      )} tool is required to build a satellite but appears to be not available. Would you like to install it?`
     );
 
     await execute({
@@ -203,7 +241,10 @@ const checkIcWasm = async (): Promise<{valid: boolean}> => {
 };
 
 const checkCandidExtractor = async (): Promise<{valid: boolean}> => {
-  const {valid} = await checkCandidExtractorInstalled();
+  const {valid} = await checkCargoBinInstalled({
+    command: 'candid-extractor',
+    args: ['--version']
+  });
 
   if (valid === false) {
     return {valid};
@@ -213,12 +254,38 @@ const checkCandidExtractor = async (): Promise<{valid: boolean}> => {
     await confirmAndExit(
       `The ${magenta(
         'candid-extractor'
-      )} tool is required to generate the API ("did file") of your custom satellite but appears to be not available. Would you like to install it on your machine?`
+      )} tool is required to generate the API ("did file"). Would you like to install it?`
     );
 
     await execute({
       command: 'cargo',
-      args: ['install', `candid-extractor`]
+      args: ['install', 'candid-extractor']
+    });
+  }
+
+  return {valid: true};
+};
+
+const checkJunoDidc = async (): Promise<{valid: boolean}> => {
+  const {valid} = await checkCargoBinInstalled({
+    command: 'junobuild-didc',
+    args: ['--version']
+  });
+
+  if (valid === false) {
+    return {valid};
+  }
+
+  if (valid === 'error') {
+    await confirmAndExit(
+      `It seems that ${magenta(
+        'junobuild-didc'
+      )} is not installed. This is a useful tool for generating automatically JavaScript or TypeScript bindings. Would you like to install it?`
+    );
+
+    await execute({
+      command: 'cargo',
+      args: ['install', `junobuild-didc`]
     });
   }
 
