@@ -126,21 +126,23 @@ const didc = async () => {
     return;
   }
 
-  await Promise.all(
-    ['js', 'ts'].map((type) =>
-      spawn({
-        command: 'junobuild-didc',
-        args: [
-          '-i',
-          SATELLITE_CUSTOM_DID_FILE,
-          '-t',
-          type,
-          '-o',
-          `${DEVELOPER_PROJECT_SATELLITE_DECLARATIONS_PATH}/satellite.${type}`
-        ]
-      })
-    )
-  );
+  const generate = async (type: 'js' | 'ts') => {
+    await spawn({
+      command: 'junobuild-didc',
+      args: [
+        '-i',
+        SATELLITE_CUSTOM_DID_FILE,
+        '-t',
+        type,
+        '-o',
+        `${DEVELOPER_PROJECT_SATELLITE_DECLARATIONS_PATH}/satellite.${type}`
+      ]
+    });
+  };
+
+  const promises = (['js', 'ts'] as Array<'js' | 'ts'>).map(generate);
+
+  await Promise.all(promises);
 };
 
 const icWasm = async () => {
