@@ -135,7 +135,7 @@ const didc = async () => {
         '-t',
         type,
         '-o',
-        `${DEVELOPER_PROJECT_SATELLITE_DECLARATIONS_PATH}/satellite.${type}`
+        `${DEVELOPER_PROJECT_SATELLITE_DECLARATIONS_PATH}/satellite.${type === 'ts' ? 'd.ts' : 'factory.js'}`
       ]
     });
   };
