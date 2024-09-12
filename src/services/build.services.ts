@@ -12,6 +12,8 @@ import {
 import {copySatelliteDid, readSatelliteDid} from '../utils/did.utils';
 import {checkCargoBinInstalled, checkIcWasmVersion, checkRustVersion} from '../utils/env.utils';
 import {confirmAndExit} from '../utils/prompt.utils';
+import { detectJunoDevConfigType } from "../configs/juno.dev.config";
+import { generateApi } from "@junobuild/did-tools";
 
 const CARGO_RELEASE_DIR = join(process.cwd(), 'target', 'wasm32-unknown-unknown', 'release');
 const DEPLOY_DIR = join(process.cwd(), 'target', 'deploy');
@@ -65,6 +67,7 @@ export const build = async () => {
   try {
     await did();
     await didc();
+    await api();
 
     await icWasm();
 
@@ -112,6 +115,8 @@ const did = async () => {
   );
 };
 
+const satellitedIdl = (type: 'js' | 'ts'): string => `${DEVELOPER_PROJECT_SATELLITE_DECLARATIONS_PATH}/satellite.${type === 'ts' ? 'did.d.ts' : 'factory.did.js'}`
+
 const didc = async () => {
   // No satellite_extension.did and therefore no services to generate to JS and TS.
   if (!existsSync(SATELLITE_CUSTOM_DID_FILE)) {
@@ -135,7 +140,7 @@ const didc = async () => {
         '-t',
         type,
         '-o',
-        `${DEVELOPER_PROJECT_SATELLITE_DECLARATIONS_PATH}/satellite.${type === 'ts' ? 'did.d.ts' : 'factory.did.js'}`
+        satellitedIdl(type)
       ]
     });
   };
@@ -144,6 +149,33 @@ const didc = async () => {
 
   await Promise.all(promises);
 };
+
+const api = async () => {
+  const inputFile = satellitedIdl('ts');
+
+  if (!existsSync(inputFile)) {
+    return;
+  }
+
+  const detectedConfig = detectJunoDevConfigType();
+
+  const outputLanguage = detectedConfig?.configType === "ts" ? "ts" : "js";
+
+  const outputFile = `${DEVELOPER_PROJECT_SATELLITE_DECLARATIONS_PATH}/satellite.api.${outputLanguage}`;
+
+  const packageJson = await readFile(join(process.cwd(), 'package.json'), "utf-8");
+  const {dependencies} = JSON.parse(packageJson);
+  const coreLib = Object.keys((dependencies ?? {})).includes("@junobuild/core-peer") ? "core-peer" : "core";
+
+  await generateApi({
+    inputFile,
+    outputFile,
+    transformerOptions: {
+      outputLanguage,
+      coreLib
+    }
+  })
+}
 
 const icWasm = async () => {
   await mkdir(DEPLOY_DIR, {recursive: true});
