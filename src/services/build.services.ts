@@ -159,7 +159,7 @@ const api = async () => {
   const readCoreLib = async (): Promise<'core' | 'core-peer'> => {
     try {
       const packageJson = await readFile(join(process.cwd(), 'package.json'), 'utf-8');
-      const {dependencies} = JSON.parse(packageJson);
+      const {dependencies} = JSON.parse(packageJson) as {dependencies?: Record<string, string>};
       return Object.keys(dependencies ?? {}).includes('@junobuild/core-peer')
         ? 'core-peer'
         : 'core';
