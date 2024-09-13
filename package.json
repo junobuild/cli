@@ -23,9 +23,6 @@
     "lint": "eslint --max-warnings 0 \"src/**/*\""
   },
   "dependencies": {
-    "@babel/core": "^7.24.5",
-    "@babel/plugin-transform-modules-commonjs": "^7.24.1",
-    "@babel/preset-typescript": "^7.24.1",
     "@dfinity/agent": "^2.0.0",
     "@dfinity/auth-client": "^2.0.0",
     "@dfinity/candid": "^2.0.0",
