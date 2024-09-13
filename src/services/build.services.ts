@@ -1,9 +1,11 @@
 import {execute, gzipFile, spawn} from '@junobuild/cli-tools';
+import {generateApi} from '@junobuild/did-tools';
 import {green, grey, magenta, yellow} from 'kleur';
 import {existsSync} from 'node:fs';
 import {lstat, mkdir, readFile, rename, writeFile} from 'node:fs/promises';
 import {join, relative} from 'node:path';
 import ora, {type Ora} from 'ora';
+import {detectJunoDevConfigType} from '../configs/juno.dev.config';
 import {
   DEVELOPER_PROJECT_SATELLITE_DECLARATIONS_PATH,
   DEVELOPER_PROJECT_SATELLITE_PATH,
@@ -12,8 +14,6 @@ import {
 import {copySatelliteDid, readSatelliteDid} from '../utils/did.utils';
 import {checkCargoBinInstalled, checkIcWasmVersion, checkRustVersion} from '../utils/env.utils';
 import {confirmAndExit} from '../utils/prompt.utils';
-import { detectJunoDevConfigType } from "../configs/juno.dev.config";
-import { generateApi } from "@junobuild/did-tools";
 
 const CARGO_RELEASE_DIR = join(process.cwd(), 'target', 'wasm32-unknown-unknown', 'release');
 const DEPLOY_DIR = join(process.cwd(), 'target', 'deploy');
@@ -115,7 +115,8 @@ const did = async () => {
   );
 };
 
-const satellitedIdl = (type: 'js' | 'ts'): string => `${DEVELOPER_PROJECT_SATELLITE_DECLARATIONS_PATH}/satellite.${type === 'ts' ? 'did.d.ts' : 'factory.did.js'}`
+const satellitedIdl = (type: 'js' | 'ts'): string =>
+  `${DEVELOPER_PROJECT_SATELLITE_DECLARATIONS_PATH}/satellite.${type === 'ts' ? 'did.d.ts' : 'factory.did.js'}`;
 
 const didc = async () => {
   // No satellite_extension.did and therefore no services to generate to JS and TS.
@@ -134,14 +135,7 @@ const didc = async () => {
   const generate = async (type: 'js' | 'ts') => {
     await spawn({
       command: 'junobuild-didc',
-      args: [
-        '-i',
-        SATELLITE_CUSTOM_DID_FILE,
-        '-t',
-        type,
-        '-o',
-        satellitedIdl(type)
-      ]
+      args: ['-i', SATELLITE_CUSTOM_DID_FILE, '-t', type, '-o', satellitedIdl(type)]
     });
   };
 
@@ -158,14 +152,24 @@ const api = async () => {
   }
 
   const detectedConfig = detectJunoDevConfigType();
-
-  const outputLanguage = detectedConfig?.configType === "ts" ? "ts" : "js";
+  const outputLanguage = detectedConfig?.configType === 'ts' ? 'ts' : 'js';
 
   const outputFile = `${DEVELOPER_PROJECT_SATELLITE_DECLARATIONS_PATH}/satellite.api.${outputLanguage}`;
 
-  const packageJson = await readFile(join(process.cwd(), 'package.json'), "utf-8");
-  const {dependencies} = JSON.parse(packageJson);
-  const coreLib = Object.keys((dependencies ?? {})).includes("@junobuild/core-peer") ? "core-peer" : "core";
+  const readCoreLib = async (): Promise<'core' | 'core-peer'> => {
+    try {
+      const packageJson = await readFile(join(process.cwd(), 'package.json'), 'utf-8');
+      const {dependencies} = JSON.parse(packageJson);
+      return Object.keys(dependencies ?? {}).includes('@junobuild/core-peer')
+        ? 'core-peer'
+        : 'core';
+    } catch (err: unknown) {
+      // This should not block the developer therefore we fallback to core
+      return 'core';
+    }
+  };
+
+  const coreLib = await readCoreLib();
 
   await generateApi({
     inputFile,
@@ -174,8 +178,8 @@ const api = async () => {
       outputLanguage,
       coreLib
     }
-  })
-}
+  });
+};
 
 const icWasm = async () => {
   await mkdir(DEPLOY_DIR, {recursive: true});
