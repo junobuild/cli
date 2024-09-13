@@ -119,11 +119,18 @@ export const assertDockerRunning = async () => {
   }
 };
 
-export const checkCandidExtractorInstalled = async (): Promise<{valid: boolean | 'error'}> => {
+export const checkCargoBinInstalled = async ({
+  command,
+  args
+}: {
+  command: string;
+  args?: readonly string[];
+}): Promise<{valid: boolean | 'error'}> => {
   try {
     await spawn({
-      command: 'candid-extractor',
-      silentErrors: true
+      command,
+      args,
+      silentOut: true
     });
 
     return {valid: true};
