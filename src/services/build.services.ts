@@ -187,7 +187,13 @@ const icWasm = async () => {
   // Remove unused functions and debug info.
   await spawn({
     command: 'ic-wasm',
-    args: [join(CARGO_RELEASE_DIR, 'satellite.wasm'), '-o', SATELLITE_OUTPUT, 'shrink', '--keep-name-section']
+    args: [
+      join(CARGO_RELEASE_DIR, 'satellite.wasm'),
+      '-o',
+      SATELLITE_OUTPUT,
+      'shrink',
+      '--keep-name-section'
+    ]
   });
 
   // Adds the content of satellite.did to the `icp:public candid:service` custom section of the public metadata in the wasm
