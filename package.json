@@ -30,6 +30,7 @@
     "@dfinity/identity": "^2.1.3",
     "@dfinity/principal": "^2.1.3",
     "@junobuild/admin": "^0.0.57",
+    "@junobuild/cli-tools": "^0.0.14-next-2024-10-28.2",
     "@junobuild/config": "^0.0.14-next-2024-10-28",
     "@junobuild/config-loader": "^0.0.6",
     "@junobuild/core-peer": "^0.0.28",
