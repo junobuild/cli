@@ -24,6 +24,7 @@ import {logHelpUse} from './help/use.help';
 import {logHelpVersion} from './help/version.help';
 import {logHelpWhoAmI} from './help/whoami.help';
 import {checkNodeVersion} from './utils/env.utils';
+import { logHelpDev } from "./help/dev.help";
 
 export const run = async () => {
   const {valid} = checkNodeVersion();
@@ -75,7 +76,7 @@ export const run = async () => {
         logHelpDeploy(args);
         break;
       case 'dev':
-        logHelpDeploy(args);
+        logHelpDev(args);
         break;
       case 'init':
         logHelpInit(args);
