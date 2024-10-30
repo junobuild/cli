@@ -1,5 +1,10 @@
 import type {UploadFileStorage} from '@junobuild/cli-tools';
-import {deploy as cliDeploy, hasArgs} from '@junobuild/cli-tools';
+import {
+  deploy as cliDeploy,
+  postDeploy as cliPostDeploy,
+  preDeploy as cliPreDeploy,
+  hasArgs
+} from '@junobuild/cli-tools';
 import {uploadBlob, type Asset} from '@junobuild/core-peer';
 import {red} from 'kleur';
 import {lstatSync} from 'node:fs';
@@ -64,6 +69,8 @@ const executeDeploy = async (args?: string[]) => {
     });
   };
 
+  await cliPreDeploy({config: satelliteConfig});
+
   await cliDeploy({
     config: satelliteConfig,
     listAssets: listExistingAssets,
@@ -71,6 +78,8 @@ const executeDeploy = async (args?: string[]) => {
     assertMemory,
     uploadFile
   });
+
+  await cliPostDeploy({config: satelliteConfig});
 };
 
 const assertSourceDirExists = (source: string) => {
