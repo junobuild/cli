@@ -1,14 +1,15 @@
 {
   "compilerOptions": {
+    "moduleDetection": "force",
     "module": "esnext",
     "target": "esnext",
     "lib": ["esnext", "dom"],
     "strict": true,
     "noImplicitAny": false,
     "esModuleInterop": true,
+    "isolatedModules": true,
     "moduleResolution": "node",
     "outDir": "dist",
-    "resolveJsonModule": true,
-    "skipLibCheck": true
+    "resolveJsonModule": true
   }
 }
