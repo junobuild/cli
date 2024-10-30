@@ -31,6 +31,8 @@ ${usage}
 
 const help = `${TITLE}
 
+${DEV_DESCRIPTION}
+
 ${usage}
 `;
 

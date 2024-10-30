@@ -28,6 +28,8 @@ ${usage}
 
 const help = `${TITLE}
 
+${UPGRADE_DESCRIPTION}
+
 ${usage}
 `;
 

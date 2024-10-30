@@ -18,6 +18,8 @@ ${usage}
 
 const help = `${TITLE}
 
+${CONFIG_DESCRIPTION}
+
 ${usage}
 `;
 

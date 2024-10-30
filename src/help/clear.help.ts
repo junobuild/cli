@@ -20,6 +20,8 @@ ${usage}
 
 const help = `${TITLE}
 
+${CLEAR_DESCRIPTION}
+
 ${usage}
 `;
 

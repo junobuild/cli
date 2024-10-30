@@ -19,6 +19,8 @@ ${usage}
 
 const help = `${TITLE}
 
+${DEPLOY_DESCRIPTION}
+
 ${usage}
 `;
 

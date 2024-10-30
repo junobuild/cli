@@ -5,10 +5,14 @@ import {CLEAR_DESCRIPTION} from './clear.help';
 import {CONFIG_DESCRIPTION} from './config.help';
 import {DEPLOY_DESCRIPTION} from './deploy.help';
 import {DEV_DESCRIPTION} from './dev.help';
+import {INIT_DESCRIPTION} from './init.help';
 import {LOGIN_DESCRIPTION} from './login.help';
+import {LOGOUT_DESCRIPTION} from './logout.help';
 import {OPEN_DESCRIPTION} from './open.help';
 import {UPGRADE_DESCRIPTION} from './upgrade.help';
 import {USE_DESCRIPTION} from './use.help';
+import {VERSION_DESCRIPTION} from './version.help';
+import {WHOAMI_DESCRIPTION} from './whoami.help';
 
 const JUNO_LOGO = `  __  __ __  __  _  ____ 
 __) ||  |  ||  \\| |/    \\
@@ -27,15 +31,15 @@ Commands:
   ${cyan('config')}              ${CONFIG_DESCRIPTION}
   ${cyan('deploy')}              ${DEPLOY_DESCRIPTION}
   ${cyan('dev')}                 ${DEV_DESCRIPTION}
-  ${cyan('init')}                Configure the current directory as a satellite.
+  ${cyan('init')}                ${INIT_DESCRIPTION}
   ${cyan('help')}                Display help information.
   ${cyan('login')}               ${LOGIN_DESCRIPTION}
-  ${cyan('logout')}              Log out of the current device using the CLI.
+  ${cyan('logout')}              ${LOGOUT_DESCRIPTION}
   ${cyan('open')}                ${OPEN_DESCRIPTION}
   ${cyan('upgrade')}             ${UPGRADE_DESCRIPTION}
   ${cyan('use')}                 ${USE_DESCRIPTION}
-  ${cyan('version')}             Check the version of a satellite, mission control and cli.
-  ${cyan('whoami')}              Display the current controller.
+  ${cyan('version')}             ${VERSION_DESCRIPTION}
+  ${cyan('whoami')}              ${WHOAMI_DESCRIPTION}
   
 Options:
   ${grey('--headless')}          Run the CLI in non-interactive mode (enabled automatically if JUNO_TOKEN is set).

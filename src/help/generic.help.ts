@@ -8,32 +8,60 @@ const usage = (
 Options:
   ${yellow('-h, --help')}            Output usage information.`;
 
-const help = (command: string) => `${TITLE}
+const help = ({command, description}: {command: string; description: string}) => `${TITLE}
+
+${description}
 
 ${usage(command)}
 `;
 
-const helpWithMode = (command: string) => `${TITLE}
+const helpWithMode = ({command, description}: {command: string; description: string}) => `${TITLE}
+
+${description}
 
 ${usage(command)}
   ${helpMode}
 `;
 
-const doc = (command: string) => `\`\`\`bash
+const doc = ({command, description}: {command: string; description: string}) => `${description}
+
+\`\`\`bash
 ${usage(command)}
 \`\`\`
 `;
 
-const docWithMode = (command: string) => `\`\`\`bash
+const docWithMode = ({
+  command,
+  description
+}: {
+  command: string;
+  description: string;
+}) => `${description}
+
+\`\`\`bash
 ${usage(command)}
   ${helpMode}
 \`\`\`
 `;
 
-export const logHelp = ({args, command}: {args?: string[]; command: string}) => {
-  console.log(helpOutput(args) === 'doc' ? doc(command) : help(command));
+export const logHelp = ({
+  args,
+  ...rest
+}: {
+  args?: string[];
+  command: string;
+  description: string;
+}) => {
+  console.log(helpOutput(args) === 'doc' ? doc(rest) : help(rest));
 };
 
-export const logHelpWithMode = ({args, command}: {args?: string[]; command: string}) => {
-  console.log(helpOutput(args) === 'doc' ? docWithMode(command) : helpWithMode(command));
+export const logHelpWithMode = ({
+  args,
+  ...rest
+}: {
+  args?: string[];
+  command: string;
+  description: string;
+}) => {
+  console.log(helpOutput(args) === 'doc' ? docWithMode(rest) : helpWithMode(rest));
 };

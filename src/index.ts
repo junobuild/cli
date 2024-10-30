@@ -14,12 +14,15 @@ import {whoami} from './commands/whoami';
 import {logHelpClear} from './help/clear.help';
 import {logHelpConfig} from './help/config.help';
 import {logHelpDeploy} from './help/deploy.help';
-import {logHelp, logHelpWithMode} from './help/generic.help';
 import {help} from './help/help';
+import {logHelpInit} from './help/init.help';
 import {logHelpLogin} from './help/login.help';
+import {logHelpLogout} from './help/logout.help';
 import {logHelpOpen} from './help/open.help';
 import {logHelpUpgrade} from './help/upgrade.help';
 import {logHelpUse} from './help/use.help';
+import {logHelpVersion} from './help/version.help';
+import {logHelpWhoAmI} from './help/whoami.help';
 import {checkNodeVersion} from './utils/env.utils';
 
 export const run = async () => {
@@ -74,12 +77,21 @@ export const run = async () => {
       case 'dev':
         logHelpDeploy(args);
         break;
+      case 'init':
+        logHelpInit(args);
+        break;
+      case 'logout':
+        logHelpLogout(args);
+        break;
       case 'version':
+        logHelpVersion(args);
+        break;
       case 'whoami':
-        logHelpWithMode({command: cmd, args});
+        logHelpWhoAmI(args);
         break;
       default:
-        logHelp({command: cmd, args});
+        console.log(`${red('Unknown command.')}`);
+        console.log(help);
     }
     return;
   }

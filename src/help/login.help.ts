@@ -19,6 +19,8 @@ ${usage}
 
 const help = `${TITLE}
 
+${LOGIN_DESCRIPTION}
+
 ${usage}
 `;
 

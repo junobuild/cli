@@ -20,6 +20,8 @@ ${usage}
 
 const help = `${TITLE}
 
+${OPEN_DESCRIPTION}
+
 ${usage}
 `;
 
