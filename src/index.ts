@@ -14,6 +14,7 @@ import {whoami} from './commands/whoami';
 import {logHelpClear} from './help/clear.help';
 import {logHelpConfig} from './help/config.help';
 import {logHelpDeploy} from './help/deploy.help';
+import {logHelpDev} from './help/dev.help';
 import {help} from './help/help';
 import {logHelpInit} from './help/init.help';
 import {logHelpLogin} from './help/login.help';
@@ -24,7 +25,6 @@ import {logHelpUse} from './help/use.help';
 import {logHelpVersion} from './help/version.help';
 import {logHelpWhoAmI} from './help/whoami.help';
 import {checkNodeVersion} from './utils/env.utils';
-import { logHelpDev } from "./help/dev.help";
 
 export const run = async () => {
   const {valid} = checkNodeVersion();
