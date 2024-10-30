@@ -1,5 +1,6 @@
 import {cyan, green, magenta, yellow} from 'kleur';
-import {helpMode, helpOutput, TITLE} from './help';
+import {helpMode, helpOutput} from './common.help';
+import {TITLE} from './help';
 
 export const UPGRADE_DESCRIPTION = 'Upgrade your satellite to a specific version code.';
 

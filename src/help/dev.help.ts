@@ -1,5 +1,6 @@
 import {cyan, green, magenta} from 'kleur';
-import {helpOutput, TITLE} from './help';
+import {helpOutput} from './common.help';
+import {TITLE} from './help';
 
 export const DEV_DESCRIPTION =
   'Handle development-related tasks such as building and deploying locally using Cargo and Docker.';

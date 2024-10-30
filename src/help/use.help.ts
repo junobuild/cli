@@ -1,5 +1,6 @@
 import {cyan, green, yellow} from 'kleur';
-import {helpOutput, TITLE} from './help';
+import {helpOutput} from './common.help';
+import {TITLE} from './help';
 
 export const USE_DESCRIPTION = 'Switch between multiple profiles.';
 

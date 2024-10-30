@@ -1,5 +1,6 @@
 import {cyan, green, yellow} from 'kleur';
-import {helpMode, helpOutput, TITLE} from './help';
+import {helpMode, helpOutput} from './common.help';
+import {TITLE} from './help';
 
 export const CLEAR_DESCRIPTION =
   'Clear existing dapp code by removing JavaScript, HTML, CSS, and other files from your satellite.';

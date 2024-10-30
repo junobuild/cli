@@ -1,5 +1,4 @@
-import {hasArgs} from '@junobuild/cli-tools';
-import {cyan, green, grey, yellow} from 'kleur';
+import {cyan, green, grey} from 'kleur';
 import {version} from '../../package.json';
 import {CLEAR_DESCRIPTION} from './clear.help';
 import {CONFIG_DESCRIPTION} from './config.help';
@@ -44,8 +43,3 @@ Commands:
 Options:
   ${grey('--headless')}          Run the CLI in non-interactive mode (enabled automatically if JUNO_TOKEN is set).
 `;
-
-export const helpMode = `${yellow('-m, --mode')}            Set env mode. For example production or a custom string. Default is production.`;
-
-export const helpOutput = (args?: string[]): 'doc' | 'cli' =>
-  hasArgs({args, options: ['-d', '--doc']}) ? 'doc' : 'cli';

@@ -1,5 +1,6 @@
 import {cyan, green, yellow} from 'kleur';
-import {helpMode, helpOutput, TITLE} from './help';
+import {helpMode, helpOutput} from './common.help';
+import {TITLE} from './help';
 
 export const OPEN_DESCRIPTION = 'Open your satellite in your browser.';
 
