@@ -1,12 +1,12 @@
 import {cyan, green, magenta, yellow} from 'kleur';
 import {mkdir} from 'node:fs/promises';
 import {join} from 'node:path';
-import {helpDevContinue} from '../commands/help';
 import {
   DEVELOPER_PROJECT_SATELLITE_PATH,
   TEMPLATE_PATH,
   TEMPLATE_SATELLITE_PATH
 } from '../constants/dev.constants';
+import {helpDevContinue} from '../help/dev.help';
 import {copySatelliteDid} from '../utils/did.utils';
 import {checkRustVersion} from '../utils/env.utils';
 import {copyTemplateFile} from '../utils/fs.utils';
