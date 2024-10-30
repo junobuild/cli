@@ -1,8 +1,8 @@
 import {red} from 'kleur';
+import {logHelpDev} from '../help/dev.help';
 import {build} from '../services/build.services';
 import {start, stop} from '../services/docker.services';
 import {eject} from '../services/eject.services';
-import {helpDev} from './help';
 
 export const dev = async (args?: string[]) => {
   const [subCommand] = args ?? [];
@@ -22,6 +22,6 @@ export const dev = async (args?: string[]) => {
       break;
     default:
       console.log(`${red('Unknown subcommand.')}`);
-      console.log(helpDev);
+      logHelpDev();
   }
 };

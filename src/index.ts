@@ -5,25 +5,25 @@ import {clear} from './commands/clear';
 import {config} from './commands/config';
 import {deploy} from './commands/deploy';
 import {dev} from './commands/dev';
-import {
-  help,
-  helpClear,
-  helpCommand,
-  helpCommandWithMode,
-  helpConfig,
-  helpDeploy,
-  helpDev,
-  helpLogin,
-  helpOpen,
-  helpUpgrade,
-  helpUse
-} from './commands/help';
 import {init} from './commands/init';
 import {open} from './commands/open';
 import {upgrade} from './commands/upgrade';
 import {use} from './commands/use';
 import {version as versionCommand} from './commands/version';
 import {whoami} from './commands/whoami';
+import {logHelpClear} from './help/clear.help';
+import {logHelpConfig} from './help/config.help';
+import {logHelpDeploy} from './help/deploy.help';
+import {logHelpDev} from './help/dev.help';
+import {help} from './help/help';
+import {logHelpInit} from './help/init.help';
+import {logHelpLogin} from './help/login.help';
+import {logHelpLogout} from './help/logout.help';
+import {logHelpOpen} from './help/open.help';
+import {logHelpUpgrade} from './help/upgrade.help';
+import {logHelpUse} from './help/use.help';
+import {logHelpVersion} from './help/version.help';
+import {logHelpWhoAmI} from './help/whoami.help';
 import {checkNodeVersion} from './utils/env.utils';
 
 export const run = async () => {
@@ -55,35 +55,44 @@ export const run = async () => {
   if (hasArgs({args, options: ['-h', '--help']})) {
     switch (cmd) {
       case 'login':
-        console.log(helpLogin);
+        logHelpLogin(args);
         break;
       case 'upgrade':
-        console.log(helpUpgrade);
+        logHelpUpgrade(args);
         break;
       case 'open':
-        console.log(helpOpen);
+        logHelpOpen(args);
         break;
       case 'use':
-        console.log(helpUse);
+        logHelpUse(args);
         break;
       case 'clear':
-        console.log(helpClear);
+        logHelpClear(args);
         break;
       case 'config':
-        console.log(helpConfig);
+        logHelpConfig(args);
         break;
       case 'deploy':
-        console.log(helpDeploy);
+        logHelpDeploy(args);
         break;
       case 'dev':
-        console.log(helpDev);
+        logHelpDev(args);
+        break;
+      case 'init':
+        logHelpInit(args);
+        break;
+      case 'logout':
+        logHelpLogout(args);
         break;
       case 'version':
+        logHelpVersion(args);
+        break;
       case 'whoami':
-        console.log(helpCommandWithMode(cmd));
+        logHelpWhoAmI(args);
         break;
       default:
-        console.log(helpCommand(cmd));
+        console.log(`${red('Unknown command.')}`);
+        console.log(help);
     }
     return;
   }
