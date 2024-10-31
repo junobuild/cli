@@ -33,7 +33,7 @@
     "@junobuild/cli-tools": "^0.0.15",
     "@junobuild/config-loader": "^0.0.6",
     "@junobuild/core-peer": "^0.0.28",
-    "@junobuild/did-tools": "^0.0.2",
+    "@junobuild/did-tools": "^0.0.3",
     "@junobuild/utils": "^0.0.26",
     "conf": "^13.0.1",
     "open": "^10.1.0",
@@ -44,7 +44,7 @@
     "terminal-link": "^3.0.0"
   },
   "devDependencies": {
-    "@junobuild/config": "^0.0.15",
+    "@junobuild/config": "^0.0.16",
     "@types/prompts": "^2.4.9",
     "@types/semver": "^7.5.8",
     "@typescript-eslint/eslint-plugin": "^6.20.0",
