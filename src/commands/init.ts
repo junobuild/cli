@@ -15,6 +15,7 @@ import {
 import {promptConfigType} from '../services/init.services';
 import {login as consoleLogin} from '../services/login.services';
 import type {CliOrbiterConfig, CliSatelliteConfig} from '../types/cli.config';
+import {detectPackageManager} from '../utils/pm.utils';
 import {NEW_CMD_LINE, confirm, confirmAndExit} from '../utils/prompt.utils';
 
 export const init = async (args?: string[]) => {
@@ -49,13 +50,16 @@ const initConfig = async () => {
 
   const {configType, configPath: originalConfigPath} = await initConfigType();
 
+  const pm = detectPackageManager();
+
   await writeJunoConfig({
     config: {
       satellite: {id: satelliteId, source},
       ...(nonNullish(orbiterId) && {orbiter: {id: orbiterId}})
     },
     configType,
-    configPath: originalConfigPath
+    configPath: originalConfigPath,
+    pm
   });
 
   // We delete the deprecated juno.json, which is now replaced with juno.config.json|ts|js, as just created above.

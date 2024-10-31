@@ -13,10 +13,13 @@ import {nonNullish} from '@junobuild/utils';
 import {writeFile} from 'node:fs/promises';
 import {
   TEMPLATE_INIT_PATH,
-  TEMPLATE_SATELLITE_CONFIG_FILENAME
+  TEMPLATE_JUNO_PREDEPLOY_CONFIG_FILENAME,
+  TEMPLATE_SATELLITE_CONFIG_FILENAME,
+  TEMPLATE_SATELLITE_PREDEPLOY_CONFIG_FILENAME
 } from '../constants/config.constants';
 import {JUNO_CONFIG_FILENAME} from '../constants/constants';
 import type {JunoConfigWithSatelliteId} from '../types/config';
+import type {PackageManager} from '../types/pm';
 import {readTemplateFile} from '../utils/fs.utils';
 
 const JUNO_CONFIG_FILE: {filename: ConfigFilename} = {filename: JUNO_CONFIG_FILENAME};
@@ -33,10 +36,11 @@ export const detectJunoConfigType = (): ConfigFile | undefined =>
 export const writeJunoConfig = async ({
   config,
   configType,
-  configPath
+  configPath,
+  pm
 }: {
   config: JunoConfigWithSatelliteId;
-} & PartialConfigFile): Promise<void> => {
+} & PartialConfigFile & {pm: PackageManager | undefined}): Promise<void> => {
   switch (configType) {
     case 'ts':
     case 'js': {
@@ -45,16 +49,19 @@ export const writeJunoConfig = async ({
         satellite: {id, source}
       } = config;
 
+      const withPredeploy = nonNullish(pm);
+
       const template = await readTemplateFile({
         template: nonNullish(orbiter)
-          ? `${JUNO_CONFIG_FILENAME}.${configType}`
-          : `${TEMPLATE_SATELLITE_CONFIG_FILENAME}.${configType}`,
+          ? `${withPredeploy ? TEMPLATE_JUNO_PREDEPLOY_CONFIG_FILENAME : JUNO_CONFIG_FILENAME}.${configType}`
+          : `${withPredeploy ? TEMPLATE_SATELLITE_PREDEPLOY_CONFIG_FILENAME : TEMPLATE_SATELLITE_CONFIG_FILENAME}.${configType}`,
         sourceFolder: TEMPLATE_INIT_PATH
       });
 
       const content = template
         .replace('<SATELLITE_ID>', id)
         .replace('<SOURCE>', source ?? DEPLOY_DEFAULT_SOURCE)
+        .replace('<COMMAND>', pm === 'npm' ? 'npm run' : (pm ?? ''))
         .replace('<ORBITER_ID>', orbiter?.id ?? '');
 
       await writeFile(configPath ?? `${JUNO_CONFIG_FILENAME}.${configType}`, content, 'utf-8');
