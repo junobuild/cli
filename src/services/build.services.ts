@@ -137,10 +137,15 @@ const didc = async () => {
   }
 
   const generate = async (type: 'js' | 'ts') => {
+    const output = satellitedIdl(type);
+
     await spawn({
       command: 'junobuild-didc',
-      args: ['-i', SATELLITE_CUSTOM_DID_FILE, '-t', type, '-o', satellitedIdl(type)]
+      args: ['-i', SATELLITE_CUSTOM_DID_FILE, '-t', type, '-o', output]
     });
+
+    const content = await readFile(output, 'utf-8');
+    await writeFile(output, `${AUTO_GENERATED}\n\n${content}`);
   };
 
   const promises = (['js', 'ts'] as Array<'js' | 'ts'>).map(generate);
