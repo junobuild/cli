@@ -7,6 +7,7 @@ import {hasArgs, nextArg} from '@junobuild/cli-tools';
 import {cyan, red} from 'kleur';
 import {getCliOrbiters} from '../../configs/cli.config';
 import {ORBITER_WASM_NAME} from '../../constants/constants';
+import type {UpgradeWasmModule} from '../../types/upgrade';
 import {actorParameters} from '../../utils/actor.utils';
 import {NEW_CMD_LINE} from '../../utils/prompt.utils';
 import {orbiterKey} from '../../utils/satellite.utils';
@@ -66,10 +67,10 @@ const upgradeOrbiterCustom = async ({
 
   const nocheck = hasArgs({args, options: ['-n', '--nocheck']});
 
-  const upgradeOrbiterWasm = async ({wasm_module}: {wasm_module: Uint8Array}) => {
+  const upgradeOrbiterWasm = async (params: UpgradeWasmModule) => {
     await upgradeOrbiterAdmin({
       orbiter: orbiterParameters,
-      wasm_module,
+      ...params,
       ...(reset && {reset})
     });
   };
@@ -100,10 +101,10 @@ const updateOrbiterRelease = async ({
   const reset = await confirmReset({args, assetKey: 'orbiter'});
   const nocheck = hasArgs({args, options: ['-n', '--nocheck']});
 
-  const upgradeOrbiterWasm = async ({wasm_module}: {wasm_module: Uint8Array}) => {
+  const upgradeOrbiterWasm = async (params: UpgradeWasmModule) => {
     await upgradeOrbiterAdmin({
       orbiter: orbiterParameters,
-      wasm_module,
+      ...params,
       ...(reset && {reset})
     });
   };

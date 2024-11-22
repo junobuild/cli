@@ -27,7 +27,7 @@ const executeUpgradeWasm = async ({
   nocheck
 }: UpgradeWasm) => {
   if (!nocheck) {
-    await assert?.({wasm_module: wasm});
+    await assert?.({wasmModule: wasm});
     await assertUpgradeHash({hash, reset});
   }
 
@@ -35,7 +35,7 @@ const executeUpgradeWasm = async ({
 
   try {
     await upgrade({
-      wasm_module: wasm
+      wasmModule: wasm
     });
   } finally {
     spinner.stop();

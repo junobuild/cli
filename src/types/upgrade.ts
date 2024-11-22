@@ -1,6 +1,6 @@
-export interface UpgradeWasmModule {
-  wasm_module: Uint8Array;
-}
+import type {InstallCodeParams} from '@dfinity/ic-management';
+
+export type UpgradeWasmModule = Pick<InstallCodeParams, 'wasmModule'>;
 
 export interface UpgradeWasm {
   wasm: Buffer;

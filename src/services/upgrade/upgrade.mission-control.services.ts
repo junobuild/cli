@@ -8,6 +8,7 @@ import {isNullish} from '@junobuild/utils';
 import {cyan, red} from 'kleur';
 import {getCliMissionControl} from '../../configs/cli.config';
 import {MISSION_CONTROL_WASM_NAME} from '../../constants/constants';
+import type {UpgradeWasmModule} from '../../types/upgrade';
 import {actorParameters} from '../../utils/actor.utils';
 import {NEW_CMD_LINE} from '../../utils/prompt.utils';
 import {selectVersion, upgradeWasmCdn, upgradeWasmLocal} from './upgrade.services';
@@ -73,10 +74,10 @@ const updateMissionControlRelease = async ({
 
   const nocheck = hasArgs({args, options: ['-n', '--nocheck']});
 
-  const upgradeMissionControlWasm = async ({wasm_module}: {wasm_module: Uint8Array}) => {
+  const upgradeMissionControlWasm = async (params: UpgradeWasmModule) => {
     await upgradeMissionControlAdmin({
       missionControl: missionControlParameters,
-      wasm_module
+      ...params
     });
   };
 
@@ -104,10 +105,10 @@ const upgradeMissionControlCustom = async ({
 
   const nocheck = hasArgs({args, options: ['-n', '--nocheck']});
 
-  const upgradeMissionControlWasm = async ({wasm_module}: {wasm_module: Uint8Array}) => {
+  const upgradeMissionControlWasm = async (params: UpgradeWasmModule) => {
     await upgradeMissionControlAdmin({
       missionControl: missionControlParameters,
-      wasm_module
+      ...params
     });
   };
 

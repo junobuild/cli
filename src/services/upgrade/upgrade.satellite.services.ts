@@ -137,10 +137,10 @@ const executeUpgradeSatellite = async ({
   // Information we want to try to redo once the satellite has been updated and resetted
   const customDomains = reset ? await listCustomDomains({satellite}) : [];
 
-  const upgradeSatelliteWasm = async ({wasm_module}: UpgradeWasmModule) => {
+  const upgradeSatelliteWasm = async (params: UpgradeWasmModule) => {
     await upgradeSatelliteAdmin({
       satellite,
-      wasm_module,
+      ...params,
       // TODO: option to be removed
       deprecated: compare(currentVersion, '0.0.7') < 0,
       deprecatedNoScope: compare(currentVersion, '0.0.9') < 0,
