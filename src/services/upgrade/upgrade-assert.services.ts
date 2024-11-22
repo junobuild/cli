@@ -5,8 +5,8 @@ import {cyan, yellow} from 'kleur';
 import {type UpgradeWasm, type UpgradeWasmModule} from '../../types/upgrade';
 import {NEW_CMD_LINE, confirmAndExit} from '../../utils/prompt.utils';
 
-const wasmBuildType = async ({wasm_module}: UpgradeWasmModule): Promise<BuildType | undefined> => {
-  const buffer = Buffer.from(wasm_module);
+const wasmBuildType = async ({wasmModule}: UpgradeWasmModule): Promise<BuildType | undefined> => {
+  const buffer = Buffer.from(wasmModule);
 
   const wasm = isGzip(buffer)
     ? await gunzipFile({
@@ -28,7 +28,7 @@ const wasmBuildType = async ({wasm_module}: UpgradeWasmModule): Promise<BuildTyp
 
 export const assertSatelliteBuildType = async ({
   satellite,
-  wasm_module
+  wasmModule
 }: {satellite: SatelliteParameters} & UpgradeWasmModule) => {
   // TODO: Workaround for agent-js. Disable console.warn.
   // See https://github.com/dfinity/agent-js/issues/843
@@ -37,7 +37,7 @@ export const assertSatelliteBuildType = async ({
   globalThis.console.warn = (): null => null;
 
   const [wasmTypeResult, satelliteTypeResult] = await Promise.allSettled([
-    wasmBuildType({wasm_module}),
+    wasmBuildType({wasmModule}),
     satelliteBuildType({
       satellite
     })
