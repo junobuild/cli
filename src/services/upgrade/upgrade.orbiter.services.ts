@@ -72,12 +72,14 @@ const upgradeOrbiterCustom = async ({
   const reset = await confirmReset({args, assetKey: 'orbiter'});
 
   const nocheck = hasArgs({args, options: ['-n', '--nocheck']});
+  const preClearChunks = hasArgs({args, options: ['-c', '--clear-chunks']});
 
   const upgradeOrbiterWasm = async (params: UpgradeWasmModule) => {
     await upgradeOrbiterAdmin({
       orbiter: orbiterParameters,
       ...params,
-      ...(reset && {reset})
+      ...(reset && {reset}),
+      preClearChunks
     });
   };
 
@@ -108,13 +110,16 @@ const updateOrbiterRelease = async ({
   }
 
   const reset = await confirmReset({args, assetKey: 'orbiter'});
+
   const nocheck = hasArgs({args, options: ['-n', '--nocheck']});
+  const preClearChunks = hasArgs({args, options: ['-c', '--clear-chunks']});
 
   const upgradeOrbiterWasm = async (params: UpgradeWasmModule) => {
     await upgradeOrbiterAdmin({
       orbiter: orbiterParameters,
       ...params,
-      ...(reset && {reset})
+      ...(reset && {reset}),
+      preClearChunks
     });
   };
 
