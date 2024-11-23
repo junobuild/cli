@@ -18,6 +18,7 @@ import {satelliteKey, satelliteParameters} from '../../utils/satellite.utils';
 import {assertSatelliteBuildType} from './upgrade-assert.services';
 import {
   confirmReset,
+  consoleUpgradeResult,
   redoCustomDomains,
   selectVersion,
   upgradeWasmCdn,
@@ -40,20 +41,20 @@ export const upgradeSatellite = async (args?: string[]) => {
     `${NEW_CMD_LINE}Initiating upgrade for satellite ${cyan(satelliteId)}.${NEW_CMD_LINE}`
   );
 
-  const consoleSuccess = () => {
-    console.log(`✅ Satellite successfully upgraded.`);
+  const consoleResult = (result: {success: boolean; err?: unknown}) => {
+    consoleUpgradeResult({...result, successMessage: 'Satellite successfully upgraded.'});
   };
 
   if (hasArgs({args, options: ['-s', '--src']})) {
-    await upgradeSatelliteCustom({satellite, args});
+    const result = await upgradeSatelliteCustom({satellite, args});
 
-    consoleSuccess();
+    consoleResult(result);
     return;
   }
 
-  await upgradeSatelliteRelease({satellite, args});
+  const result = await upgradeSatelliteRelease({satellite, args});
 
-  consoleSuccess();
+  consoleResult(result);
 };
 
 const upgradeSatelliteCustom = async ({
@@ -62,12 +63,12 @@ const upgradeSatelliteCustom = async ({
 }: {
   satellite: SatelliteParameters;
   args?: string[];
-}) => {
+}): Promise<{success: boolean; err?: unknown}> => {
   const src = nextArg({args, option: '-s'}) ?? nextArg({args, option: '--src'});
 
   if (src === undefined) {
     console.log(`${red('No source file provided.')}`);
-    return;
+    return {success: false};
   }
 
   // TODO: option to be removed
@@ -77,11 +78,13 @@ const upgradeSatelliteCustom = async ({
 
   const nocheck = hasArgs({args, options: ['-n', '--nocheck']});
 
-  const upgrade = async (params: Pick<UpgradeWasm, 'upgrade' | 'reset' | 'assert'>) => {
-    await upgradeWasmLocal({src, nocheck, ...params});
+  const upgrade = async (
+    params: Pick<UpgradeWasm, 'upgrade' | 'reset' | 'assert'>
+  ): Promise<{success: boolean; err?: unknown}> => {
+    return await upgradeWasmLocal({src, nocheck, ...params});
   };
 
-  await executeUpgradeSatellite({
+  return await executeUpgradeSatellite({
     satellite,
     args,
     currentVersion,
@@ -95,7 +98,7 @@ const upgradeSatelliteRelease = async ({
 }: {
   satellite: SatelliteParameters;
   args?: string[];
-}) => {
+}): Promise<{success: boolean; err?: unknown}> => {
   const currentVersion = await satelliteVersion({
     satellite
   });
@@ -104,16 +107,18 @@ const upgradeSatelliteRelease = async ({
   const version = await selectVersion({currentVersion, assetKey: SATELLITE_WASM_NAME, displayHint});
 
   if (isNullish(version)) {
-    return;
+    return {success: false};
   }
 
   const nocheck = hasArgs({args, options: ['-n', '--nocheck']});
 
-  const upgrade = async (params: Pick<UpgradeWasm, 'upgrade' | 'reset' | 'assert'>) => {
-    await upgradeWasmCdn({version, assetKey: 'satellite', nocheck, ...params});
+  const upgrade = async (
+    params: Pick<UpgradeWasm, 'upgrade' | 'reset' | 'assert'>
+  ): Promise<{success: boolean; err?: unknown}> => {
+    return await upgradeWasmCdn({version, assetKey: 'satellite', nocheck, ...params});
   };
 
-  await executeUpgradeSatellite({
+  return await executeUpgradeSatellite({
     satellite,
     args,
     currentVersion,
@@ -130,8 +135,10 @@ const executeUpgradeSatellite = async ({
   satellite: SatelliteParameters;
   args?: string[];
   currentVersion: string;
-  upgrade: (params: Pick<UpgradeWasm, 'upgrade' | 'reset' | 'assert'>) => Promise<void>;
-}) => {
+  upgrade: (
+    params: Pick<UpgradeWasm, 'upgrade' | 'reset' | 'assert'>
+  ) => Promise<{success: boolean; err?: unknown}>;
+}): Promise<{success: boolean; err?: unknown}> => {
   const reset = await confirmReset({args, assetKey: 'satellite'});
 
   // Information we want to try to redo once the satellite has been updated and resetted
@@ -152,13 +159,23 @@ const executeUpgradeSatellite = async ({
     await assertSatelliteBuildType({satellite, ...params});
   };
 
-  await upgrade({
+  const {success, err} = await upgrade({
     upgrade: upgradeSatelliteWasm,
     reset,
     assert
   });
 
-  if (reset && customDomains.length > 0) {
-    await redoCustomDomains({satellite, domains: customDomains});
+  if (!success) {
+    return {success, err};
   }
+
+  try {
+    if (reset && customDomains.length > 0) {
+      await redoCustomDomains({satellite, domains: customDomains});
+    }
+  } catch (err) {
+    return {success: false, err};
+  }
+
+  return {success: true};
 };
