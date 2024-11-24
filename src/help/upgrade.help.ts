@@ -11,6 +11,7 @@ Options:
   ${yellow('-s, --src')}             A local gzipped wasm file for the upgrade.
   ${yellow('-r, --reset')}           Reset to the initial state.
   ${yellow('-n, --nocheck')}         Skip assertions and execute upgrade without prompts.
+  ${yellow('-c, --clear-chunks')}    Clear any previously uploaded WASM chunks (applies if the WASM size is greater than 2MB).
   ${helpMode}
   ${yellow('-h, --help')}            Output usage information.
   

@@ -1,10 +1,12 @@
 import {
   checkUpgradeVersion,
   setCustomDomains,
+  UpgradeCodeUnchangedError,
   type CustomDomain,
   type SatelliteParameters
 } from '@junobuild/admin';
 import {assertAnswerCtrlC, downloadFromURL, hasArgs} from '@junobuild/cli-tools';
+import {isNullish} from '@junobuild/utils';
 import {createHash} from 'crypto';
 import {red, yellow} from 'kleur';
 import {readFile} from 'node:fs/promises';
@@ -50,7 +52,10 @@ export const upgradeWasmLocal = async ({
   nocheck
 }: {
   src: string;
-} & Pick<UpgradeWasm, 'reset' | 'upgrade' | 'assert' | 'nocheck'>) => {
+} & Pick<UpgradeWasm, 'reset' | 'upgrade' | 'assert' | 'nocheck'>): Promise<{
+  success: boolean;
+  err?: unknown;
+}> => {
   const loadWasm = async (file: string): Promise<{hash: string; wasm: Buffer}> => {
     const wasm = await readFile(file);
 
@@ -68,9 +73,12 @@ export const upgradeWasmLocal = async ({
     spinner.stop();
 
     await executeUpgradeWasm({upgrade, wasm, hash, reset, assert, nocheck});
+
+    return {success: true};
   } catch (err: unknown) {
     spinner.stop();
-    throw err;
+
+    return {success: false, err};
   }
 };
 
@@ -84,7 +92,10 @@ export const upgradeWasmCdn = async ({
 }: {
   version: string;
   assetKey: AssetKey;
-} & Pick<UpgradeWasm, 'reset' | 'upgrade' | 'assert' | 'nocheck'>) => {
+} & Pick<UpgradeWasm, 'reset' | 'upgrade' | 'assert' | 'nocheck'>): Promise<{
+  success: boolean;
+  err?: unknown;
+}> => {
   const downloadWasm = async (): Promise<{hash: string; wasm: Buffer}> => {
     const {hostname} = new URL(JUNO_CDN_URL);
 
@@ -110,9 +121,12 @@ export const upgradeWasmCdn = async ({
     spinner.stop();
 
     await executeUpgradeWasm({upgrade, wasm, hash, reset, assert, nocheck});
+
+    return {success: true};
   } catch (err: unknown) {
     spinner.stop();
-    throw err;
+
+    return {success: false, err};
   }
 };
 
@@ -224,4 +238,30 @@ export const confirmReset = async ({
   );
 
   return true;
+};
+
+export const consoleUpgradeResult = ({
+  success,
+  err,
+  successMessage
+}: {
+  successMessage: string;
+  success: boolean;
+  err?: unknown;
+}) => {
+  if (success) {
+    console.log(`✅ ${successMessage}`);
+    return;
+  }
+
+  if (isNullish(err)) {
+    return;
+  }
+
+  if (err instanceof UpgradeCodeUnchangedError) {
+    console.log(`🙅‍♂️ ${err.message}`);
+    return;
+  }
+
+  throw err;
 };

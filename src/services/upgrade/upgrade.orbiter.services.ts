@@ -11,7 +11,13 @@ import type {UpgradeWasmModule} from '../../types/upgrade';
 import {actorParameters} from '../../utils/actor.utils';
 import {NEW_CMD_LINE} from '../../utils/prompt.utils';
 import {orbiterKey} from '../../utils/satellite.utils';
-import {confirmReset, selectVersion, upgradeWasmCdn, upgradeWasmLocal} from './upgrade.services';
+import {
+  confirmReset,
+  consoleUpgradeResult,
+  selectVersion,
+  upgradeWasmCdn,
+  upgradeWasmLocal
+} from './upgrade.services';
 
 export const upgradeOrbiters = async (args?: string[]) => {
   const authOrbiters = await getCliOrbiters();
@@ -28,20 +34,20 @@ export const upgradeOrbiters = async (args?: string[]) => {
       ...(await actorParameters())
     };
 
-    const consoleSuccess = () => {
-      console.log(`✅ Orbiter successfully upgraded.`);
+    const consoleResult = (result: {success: boolean; err?: unknown}) => {
+      consoleUpgradeResult({...result, successMessage: 'Orbiter successfully upgraded.'});
     };
 
     if (hasArgs({args, options: ['-s', '--src']})) {
-      await upgradeOrbiterCustom({args, orbiterParameters});
+      const result = await upgradeOrbiterCustom({args, orbiterParameters});
 
-      consoleSuccess();
+      consoleResult(result);
       return;
     }
 
-    await updateOrbiterRelease(orbiterParameters);
+    const result = await updateOrbiterRelease(orbiterParameters);
 
-    consoleSuccess();
+    consoleResult(result);
   };
 
   for (const orbiter of authOrbiters) {
@@ -55,34 +61,39 @@ const upgradeOrbiterCustom = async ({
 }: {
   orbiterParameters: OrbiterParameters;
   args?: string[];
-}) => {
+}): Promise<{success: boolean; err?: unknown}> => {
   const src = nextArg({args, option: '-s'}) ?? nextArg({args, option: '--src'});
 
   if (src === undefined) {
     console.log(`${red('No source file provided.')}`);
-    return;
+    return {success: false};
   }
 
   const reset = await confirmReset({args, assetKey: 'orbiter'});
 
   const nocheck = hasArgs({args, options: ['-n', '--nocheck']});
+  const preClearChunks = hasArgs({args, options: ['-c', '--clear-chunks']});
 
   const upgradeOrbiterWasm = async (params: UpgradeWasmModule) => {
     await upgradeOrbiterAdmin({
       orbiter: orbiterParameters,
       ...params,
-      ...(reset && {reset})
+      ...(reset && {reset}),
+      preClearChunks
     });
   };
 
-  await upgradeWasmLocal({src, nocheck, upgrade: upgradeOrbiterWasm, reset});
+  return await upgradeWasmLocal({src, nocheck, upgrade: upgradeOrbiterWasm, reset});
 };
 
 const updateOrbiterRelease = async ({
   args,
   ...orbiterParameters
 }: Required<Pick<OrbiterParameters, 'orbiterId'>> &
-  Omit<OrbiterParameters, 'orbiterId'> & {args?: string[]}) => {
+  Omit<OrbiterParameters, 'orbiterId'> & {args?: string[]}): Promise<{
+  success: boolean;
+  err?: unknown;
+}> => {
   const currentVersion = await orbiterVersion({
     orbiter: orbiterParameters
   });
@@ -95,19 +106,28 @@ const updateOrbiterRelease = async ({
   });
 
   if (version === undefined) {
-    return;
+    return {success: false};
   }
 
   const reset = await confirmReset({args, assetKey: 'orbiter'});
+
   const nocheck = hasArgs({args, options: ['-n', '--nocheck']});
+  const preClearChunks = hasArgs({args, options: ['-c', '--clear-chunks']});
 
   const upgradeOrbiterWasm = async (params: UpgradeWasmModule) => {
     await upgradeOrbiterAdmin({
       orbiter: orbiterParameters,
       ...params,
-      ...(reset && {reset})
+      ...(reset && {reset}),
+      preClearChunks
     });
   };
 
-  await upgradeWasmCdn({version, assetKey: 'orbiter', upgrade: upgradeOrbiterWasm, reset, nocheck});
+  return await upgradeWasmCdn({
+    version,
+    assetKey: 'orbiter',
+    upgrade: upgradeOrbiterWasm,
+    reset,
+    nocheck
+  });
 };

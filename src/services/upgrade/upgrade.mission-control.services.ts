@@ -11,7 +11,12 @@ import {MISSION_CONTROL_WASM_NAME} from '../../constants/constants';
 import type {UpgradeWasmModule} from '../../types/upgrade';
 import {actorParameters} from '../../utils/actor.utils';
 import {NEW_CMD_LINE} from '../../utils/prompt.utils';
-import {selectVersion, upgradeWasmCdn, upgradeWasmLocal} from './upgrade.services';
+import {
+  consoleUpgradeResult,
+  selectVersion,
+  upgradeWasmCdn,
+  upgradeWasmLocal
+} from './upgrade.services';
 
 export const upgradeMissionControl = async (args?: string[]) => {
   const missionControl = await getCliMissionControl();
@@ -34,20 +39,20 @@ export const upgradeMissionControl = async (args?: string[]) => {
     ...(await actorParameters())
   };
 
-  const consoleSuccess = () => {
-    console.log(`✅ Mission control successfully upgraded.`);
+  const consoleResult = (result: {success: boolean; err?: unknown}) => {
+    consoleUpgradeResult({...result, successMessage: 'Mission control successfully upgraded.'});
   };
 
   if (hasArgs({args, options: ['-s', '--src']})) {
-    await upgradeMissionControlCustom({args, missionControlParameters});
+    const result = await upgradeMissionControlCustom({args, missionControlParameters});
 
-    consoleSuccess();
+    consoleResult(result);
     return;
   }
 
-  await updateMissionControlRelease({args, missionControlParameters});
+  const result = await updateMissionControlRelease({args, missionControlParameters});
 
-  consoleSuccess();
+  consoleResult(result);
 };
 
 const updateMissionControlRelease = async ({
@@ -56,7 +61,7 @@ const updateMissionControlRelease = async ({
 }: {
   args?: string[];
   missionControlParameters: MissionControlParameters;
-}) => {
+}): Promise<{success: boolean; err?: unknown}> => {
   const currentVersion = await missionControlVersion({
     missionControl: missionControlParameters
   });
@@ -69,19 +74,21 @@ const updateMissionControlRelease = async ({
   });
 
   if (version === undefined) {
-    return;
+    return {success: false};
   }
 
   const nocheck = hasArgs({args, options: ['-n', '--nocheck']});
+  const preClearChunks = hasArgs({args, options: ['-c', '--clear-chunks']});
 
   const upgradeMissionControlWasm = async (params: UpgradeWasmModule) => {
     await upgradeMissionControlAdmin({
       missionControl: missionControlParameters,
+      preClearChunks,
       ...params
     });
   };
 
-  await upgradeWasmCdn({
+  return await upgradeWasmCdn({
     version,
     nocheck,
     assetKey: 'mission_control',
@@ -95,22 +102,24 @@ const upgradeMissionControlCustom = async ({
 }: {
   missionControlParameters: MissionControlParameters;
   args?: string[];
-}) => {
+}): Promise<{success: boolean; err?: unknown}> => {
   const src = nextArg({args, option: '-s'}) ?? nextArg({args, option: '--src'});
 
   if (src === undefined) {
     console.log(`${red('No source file provided.')}`);
-    return;
+    return {success: false};
   }
 
   const nocheck = hasArgs({args, options: ['-n', '--nocheck']});
+  const preClearChunks = hasArgs({args, options: ['-c', '--clear-chunks']});
 
   const upgradeMissionControlWasm = async (params: UpgradeWasmModule) => {
     await upgradeMissionControlAdmin({
       missionControl: missionControlParameters,
+      preClearChunks,
       ...params
     });
   };
 
-  await upgradeWasmLocal({src, nocheck, upgrade: upgradeMissionControlWasm});
+  return await upgradeWasmLocal({src, nocheck, upgrade: upgradeMissionControlWasm});
 };
