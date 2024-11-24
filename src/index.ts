@@ -7,6 +7,8 @@ import {deploy} from './commands/deploy';
 import {dev} from './commands/dev';
 import {init} from './commands/init';
 import {open} from './commands/open';
+import {start} from './commands/start';
+import {stop} from './commands/stop';
 import {upgrade} from './commands/upgrade';
 import {use} from './commands/use';
 import {version as versionCommand} from './commands/version';
@@ -20,6 +22,8 @@ import {logHelpInit} from './help/init.help';
 import {logHelpLogin} from './help/login.help';
 import {logHelpLogout} from './help/logout.help';
 import {logHelpOpen} from './help/open.help';
+import {logHelpStart} from './help/start.help';
+import {logHelpStop} from './help/stop.help';
 import {logHelpUpgrade} from './help/upgrade.help';
 import {logHelpUse} from './help/use.help';
 import {logHelpVersion} from './help/version.help';
@@ -90,6 +94,12 @@ export const run = async () => {
       case 'whoami':
         logHelpWhoAmI(args);
         break;
+      case 'stop':
+        logHelpStop(args);
+        break;
+      case 'start':
+        logHelpStart(args);
+        break;
       default:
         console.log(`${red('Unknown command.')}`);
         console.log(help);
@@ -130,6 +140,12 @@ export const run = async () => {
       break;
     case 'use':
       await use(args);
+      break;
+    case 'stop':
+      await stop(args);
+      break;
+    case 'start':
+      await start(args);
       break;
     case 'dev':
       await dev(args);
