@@ -2,13 +2,13 @@ import {cyan, green, magenta, yellow} from 'kleur';
 import {helpMode, helpOutput} from './common.help';
 import {TITLE} from './help';
 
-export const UPGRADE_DESCRIPTION = 'Upgrade your satellite to a specific version code.';
+export const UPGRADE_DESCRIPTION = 'Upgrade a module to a new version.';
 
 const usage = `Usage: ${green('juno')} ${cyan('upgrade')} ${yellow('[options]')}
 
 Options:
-  ${yellow('-t, --target')}          What type of segment should be upgraded. Valid targets are ${magenta('satellite')}, ${magenta('mission-control')} or ${magenta('orbiter')}.  
-  ${yellow('-s, --src')}             A local gzipped wasm file for the upgrade.
+  ${yellow('-t, --target')}          Which module type should be upgraded? Valid targets are ${magenta('satellite')}, ${magenta('mission-control')} or ${magenta('orbiter')}.  
+  ${yellow('-s, --src')}             An optional local gzipped WASM file for the upgrade. By default, the CDN will be used.
   ${yellow('-r, --reset')}           Reset to the initial state.
   ${yellow('-n, --nocheck')}         Skip assertions and execute upgrade without prompts.
   ${yellow('-c, --clear-chunks')}    Clear any previously uploaded WASM chunks (applies if the WASM size is greater than 2MB).
