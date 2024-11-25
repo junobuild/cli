@@ -1,9 +1,9 @@
 import {type SatelliteParameters} from '@junobuild/admin';
 import {isNullish} from '@junobuild/utils';
 import {red} from 'kleur';
+import {actorParameters} from '../api/actor.api';
 import {getCliOrbiters, getCliSatellites} from '../configs/cli.config';
 import type {SatelliteConfigEnv} from '../types/config';
-import {actorParameters} from './actor.utils';
 
 export const satelliteParameters = async ({
   satellite: {satelliteId: deprecatedSatelliteId, id, ids},

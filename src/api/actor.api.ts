@@ -1,11 +1,10 @@
-import {HttpAgent} from '@dfinity/agent';
 import {Ed25519KeyIdentity} from '@dfinity/identity/lib/cjs/identity/ed25519';
 import {type ActorParameters} from '@junobuild/admin';
 import {isNullish, nonNullish} from '@junobuild/utils';
 import {red} from 'kleur';
 import {getToken} from '../configs/cli.config';
 import {REVOKED_CONTROLLERS} from '../constants/constants';
-import {getProcessToken} from './process.utils';
+import {getProcessToken} from '../utils/process.utils';
 
 export const actorParameters = async (): Promise<ActorParameters> => {
   const token = getProcessToken() ?? (await getToken());
@@ -26,24 +25,4 @@ export const actorParameters = async (): Promise<ActorParameters> => {
     fetch,
     ...(nonNullish(process.env.CONTAINER_URL) && {container: process.env.CONTAINER_URL})
   };
-};
-
-export const initAgent = async (): Promise<HttpAgent> => {
-  const {identity, container, fetch} = await actorParameters();
-
-  const localActor = nonNullish(container) && container !== false;
-
-  const host = localActor
-    ? container === true
-      ? 'http://127.0.0.1:5987'
-      : container
-    : 'https://icp-api.io';
-
-  return await HttpAgent.create({
-    identity,
-    host,
-    retryTimes: 10,
-    fetch,
-    shouldFetchRootKey: localActor
-  });
 };

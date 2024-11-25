@@ -7,6 +7,7 @@ import {isNullish} from '@junobuild/utils';
 import {cyan, green, red, yellow} from 'kleur';
 import {clean, compare} from 'semver';
 import {version as cliCurrentVersion} from '../../package.json';
+import {actorParameters} from '../api/actor.api';
 import {getCliMissionControl, getCliOrbiters} from '../configs/cli.config';
 import {junoConfigExist, readJunoConfig} from '../configs/juno.config';
 import {
@@ -16,7 +17,6 @@ import {
 } from '../constants/constants';
 import {githubCliLastRelease} from '../rest/github.rest';
 import type {AssetKey} from '../types/asset-key';
-import {actorParameters} from '../utils/actor.utils';
 import {toAssetKeys} from '../utils/asset-key.utils';
 import {configEnv} from '../utils/config.utils';
 import {orbiterKey, satelliteKey, satelliteParameters} from '../utils/satellite.utils';

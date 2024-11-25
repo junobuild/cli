@@ -1,6 +1,6 @@
 import {ICManagementCanister} from '@dfinity/ic-management';
 import type {Principal} from '@dfinity/principal';
-import {initAgent} from '../utils/actor.utils';
+import {initAgent} from './agent.api';
 
 export const canisterStop = async ({canisterId}: {canisterId: Principal}): Promise<void> => {
   const agent = await initAgent();

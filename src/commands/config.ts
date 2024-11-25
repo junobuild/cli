@@ -9,8 +9,8 @@ import {
 import type {ModuleSettings} from '@junobuild/config';
 import {isNullish} from '@junobuild/utils';
 import ora from 'ora';
+import {initAgent} from '../api/agent.api';
 import {junoConfigExist, readJunoConfig} from '../configs/juno.config';
-import {initAgent} from '../utils/actor.utils';
 import {configEnv} from '../utils/config.utils';
 import {satelliteParameters} from '../utils/satellite.utils';
 import {init} from './init';
