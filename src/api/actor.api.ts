@@ -3,10 +3,12 @@ import {type ActorParameters} from '@junobuild/admin';
 import {isNullish, nonNullish} from '@junobuild/utils';
 import {red} from 'kleur';
 import {getToken} from '../configs/cli.config';
-import {REVOKED_CONTROLLERS} from '../constants/constants';
 import {getProcessToken} from '../utils/process.utils';
+import {initAgent} from './agent.api';
 
-export const actorParameters = async (): Promise<ActorParameters> => {
+export const actorParameters = async (): Promise<
+  Omit<ActorParameters, 'agent'> & Required<Pick<ActorParameters, 'agent'>>
+> => {
   const token = getProcessToken() ?? (await getToken());
 
   if (isNullish(token)) {
@@ -16,13 +18,16 @@ export const actorParameters = async (): Promise<ActorParameters> => {
 
   const identity = Ed25519KeyIdentity.fromParsedJson(token);
 
-  if (REVOKED_CONTROLLERS.includes(identity.getPrincipal().toText())) {
-    throw new Error('The controller has been revoked for security reason!');
-  }
-
-  return {
+  const params: Omit<ActorParameters, 'agent'> = {
     identity,
     fetch,
     ...(nonNullish(process.env.CONTAINER_URL) && {container: process.env.CONTAINER_URL})
+  };
+
+  const agent = await initAgent(params);
+
+  return {
+    ...params,
+    agent
   };
 };
