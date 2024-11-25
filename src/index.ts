@@ -7,8 +7,7 @@ import {deploy} from './commands/deploy';
 import {dev} from './commands/dev';
 import {init} from './commands/init';
 import {open} from './commands/open';
-import {start} from './commands/start';
-import {stop} from './commands/stop';
+import {startStop} from './commands/start-stop';
 import {upgrade} from './commands/upgrade';
 import {use} from './commands/use';
 import {version as versionCommand} from './commands/version';
@@ -142,10 +141,10 @@ export const run = async () => {
       await use(args);
       break;
     case 'stop':
-      await stop(args);
+      await startStop({args, action: 'stop'});
       break;
     case 'start':
-      await start(args);
+      await startStop({args, action: 'start'});
       break;
     case 'dev':
       await dev(args);
