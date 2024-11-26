@@ -1,6 +1,7 @@
 import {
   checkUpgradeVersion,
   setCustomDomains,
+  UpgradeCodeProgress,
   UpgradeCodeUnchangedError,
   type CustomDomain,
   type SatelliteParameters
@@ -26,18 +27,37 @@ const executeUpgradeWasm = async ({
   hash,
   assert,
   reset = false,
-  nocheck
-}: UpgradeWasm) => {
+  nocheck,
+  assetKey
+}: {assetKey: AssetKey} & UpgradeWasm) => {
   if (!nocheck) {
     await assert?.({wasmModule: wasm});
     await assertUpgradeHash({hash, reset});
   }
 
-  const spinner = ora(`Upgrading Wasm${reset ? ' and resetting state' : ''}...`).start();
+  const spinner = ora().start();
+
+  const onProgress = (process: UpgradeCodeProgress) => {
+    switch (process) {
+      case UpgradeCodeProgress.AssertingExistingCode:
+        spinner.text = 'Validating if an update is needed...';
+        break;
+      case UpgradeCodeProgress.StoppingCanister:
+        spinner.text = `Stopping ${assetKey} before update...`;
+        break;
+      case UpgradeCodeProgress.UpgradingCode:
+        spinner.text = `Upgrading${reset ? ' and resetting state' : ''}...`;
+        break;
+      case UpgradeCodeProgress.RestartingCanister:
+        spinner.text = `Restarting ${assetKey}...`;
+        break;
+    }
+  };
 
   try {
     await upgrade({
-      wasmModule: wasm
+      wasmModule: wasm,
+      onProgress
     });
   } finally {
     spinner.stop();
@@ -49,9 +69,11 @@ export const upgradeWasmLocal = async ({
   upgrade,
   reset,
   assert,
-  nocheck
+  nocheck,
+  assetKey
 }: {
   src: string;
+  assetKey: AssetKey;
 } & Pick<UpgradeWasm, 'reset' | 'upgrade' | 'assert' | 'nocheck'>): Promise<{
   success: boolean;
   err?: unknown;
@@ -72,7 +94,7 @@ export const upgradeWasmLocal = async ({
 
     spinner.stop();
 
-    await executeUpgradeWasm({upgrade, wasm, hash, reset, assert, nocheck});
+    await executeUpgradeWasm({upgrade, wasm, hash, reset, assert, nocheck, assetKey});
 
     return {success: true};
   } catch (err: unknown) {
@@ -120,7 +142,7 @@ export const upgradeWasmCdn = async ({
 
     spinner.stop();
 
-    await executeUpgradeWasm({upgrade, wasm, hash, reset, assert, nocheck});
+    await executeUpgradeWasm({upgrade, wasm, hash, reset, assert, nocheck, assetKey});
 
     return {success: true};
   } catch (err: unknown) {

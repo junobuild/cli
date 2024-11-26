@@ -2,10 +2,10 @@ import {satelliteBuildType, type BuildType, type SatelliteParameters} from '@jun
 import {gunzipFile, isGzip} from '@junobuild/cli-tools';
 import {isNullish, nonNullish} from '@junobuild/utils';
 import {cyan, yellow} from 'kleur';
-import {type UpgradeWasm, type UpgradeWasmModule} from '../../types/upgrade';
+import type {AssertWasmModule, UpgradeWasm} from '../../types/upgrade';
 import {NEW_CMD_LINE, confirmAndExit} from '../../utils/prompt.utils';
 
-const wasmBuildType = async ({wasmModule}: UpgradeWasmModule): Promise<BuildType | undefined> => {
+const wasmBuildType = async ({wasmModule}: AssertWasmModule): Promise<BuildType | undefined> => {
   const buffer = Buffer.from(wasmModule);
 
   const wasm = isGzip(buffer)
@@ -29,7 +29,7 @@ const wasmBuildType = async ({wasmModule}: UpgradeWasmModule): Promise<BuildType
 export const assertSatelliteBuildType = async ({
   satellite,
   wasmModule
-}: {satellite: SatelliteParameters} & UpgradeWasmModule) => {
+}: {satellite: SatelliteParameters} & AssertWasmModule) => {
   // TODO: Workaround for agent-js. Disable console.warn.
   // See https://github.com/dfinity/agent-js/issues/843
   // eslint-disable-next-line @typescript-eslint/unbound-method

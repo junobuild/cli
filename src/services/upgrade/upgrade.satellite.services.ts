@@ -10,7 +10,7 @@ import {cyan, red} from 'kleur';
 import {compare} from 'semver';
 import {junoConfigExist, readJunoConfig} from '../../configs/juno.config';
 import {SATELLITE_WASM_NAME} from '../../constants/constants';
-import type {UpgradeWasm, UpgradeWasmModule} from '../../types/upgrade';
+import type {AssertWasmModule, UpgradeWasm, UpgradeWasmModule} from '../../types/upgrade';
 import {configEnv} from '../../utils/config.utils';
 import {consoleNoConfigFound} from '../../utils/msg.utils';
 import {NEW_CMD_LINE} from '../../utils/prompt.utils';
@@ -82,7 +82,7 @@ const upgradeSatelliteCustom = async ({
   const upgrade = async (
     params: Pick<UpgradeWasm, 'upgrade' | 'reset' | 'assert'>
   ): Promise<{success: boolean; err?: unknown}> => {
-    return await upgradeWasmLocal({src, nocheck, ...params});
+    return await upgradeWasmLocal({src, assetKey: 'satellite', nocheck, ...params});
   };
 
   return await executeUpgradeSatellite({
@@ -162,7 +162,7 @@ const executeUpgradeSatellite = async ({
     });
   };
 
-  const assert = async (params: UpgradeWasmModule) => {
+  const assert = async (params: AssertWasmModule) => {
     await assertSatelliteBuildType({satellite, ...params});
   };
 
