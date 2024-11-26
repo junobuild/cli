@@ -40,7 +40,7 @@ const executeUpgradeWasm = async ({
   const onProgress = (process: UpgradeCodeProgress) => {
     switch (process) {
       case UpgradeCodeProgress.AssertingExistingCode:
-        spinner.text = 'Validating if an update is needed...';
+        spinner.text = 'Validating if an upgrade is needed...';
         break;
       case UpgradeCodeProgress.StoppingCanister:
         spinner.text = `Stopping ${assetKey} before upgrade...`;
