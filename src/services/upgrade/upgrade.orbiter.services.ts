@@ -83,7 +83,13 @@ const upgradeOrbiterCustom = async ({
     });
   };
 
-  return await upgradeWasmLocal({src, nocheck, upgrade: upgradeOrbiterWasm, reset});
+  return await upgradeWasmLocal({
+    src,
+    nocheck,
+    assetKey: 'orbiter',
+    upgrade: upgradeOrbiterWasm,
+    reset
+  });
 };
 
 const updateOrbiterRelease = async ({

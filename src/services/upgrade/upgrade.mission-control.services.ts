@@ -121,5 +121,10 @@ const upgradeMissionControlCustom = async ({
     });
   };
 
-  return await upgradeWasmLocal({src, nocheck, upgrade: upgradeMissionControlWasm});
+  return await upgradeWasmLocal({
+    src,
+    nocheck,
+    assetKey: 'mission_control',
+    upgrade: upgradeMissionControlWasm
+  });
 };
