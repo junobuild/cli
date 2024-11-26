@@ -43,7 +43,7 @@ const executeUpgradeWasm = async ({
         spinner.text = 'Validating if an update is needed...';
         break;
       case UpgradeCodeProgress.StoppingCanister:
-        spinner.text = `Stopping ${assetKey} before update...`;
+        spinner.text = `Stopping ${assetKey} before upgrade...`;
         break;
       case UpgradeCodeProgress.UpgradingCode:
         spinner.text = `Upgrading${reset ? ' and resetting state' : ''}...`;
