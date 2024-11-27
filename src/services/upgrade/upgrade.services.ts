@@ -1,10 +1,11 @@
 import {
   checkUpgradeVersion,
   setCustomDomains,
-  UpgradeCodeProgress,
+  UpgradeCodeProgressStep,
   UpgradeCodeUnchangedError,
   type CustomDomain,
-  type SatelliteParameters
+  type SatelliteParameters,
+  type UpgradeCodeProgress
 } from '@junobuild/admin';
 import {assertAnswerCtrlC, downloadFromURL, hasArgs} from '@junobuild/cli-tools';
 import {isNullish} from '@junobuild/utils';
@@ -37,18 +38,18 @@ const executeUpgradeWasm = async ({
 
   const spinner = ora().start();
 
-  const onProgress = (process: UpgradeCodeProgress) => {
-    switch (process) {
-      case UpgradeCodeProgress.AssertingExistingCode:
+  const onProgress = ({step}: UpgradeCodeProgress) => {
+    switch (step) {
+      case UpgradeCodeProgressStep.AssertingExistingCode:
         spinner.text = 'Validating if an upgrade is needed...';
         break;
-      case UpgradeCodeProgress.StoppingCanister:
+      case UpgradeCodeProgressStep.StoppingCanister:
         spinner.text = `Stopping ${assetKey} before upgrade...`;
         break;
-      case UpgradeCodeProgress.UpgradingCode:
+      case UpgradeCodeProgressStep.UpgradingCode:
         spinner.text = `Upgrading${reset ? ' and resetting state' : ''}...`;
         break;
-      case UpgradeCodeProgress.RestartingCanister:
+      case UpgradeCodeProgressStep.RestartingCanister:
         spinner.text = `Restarting ${assetKey}...`;
         break;
     }
