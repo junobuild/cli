@@ -77,7 +77,7 @@ const updateMissionControlRelease = async ({
     return {success: false};
   }
 
-  const preClearChunks = hasArgs({args, options: ['-c', '--clear-chunks']});
+  const preClearChunks = hasArgs({args, options: ['-cc', '--clear-chunks']});
 
   const upgradeMissionControlWasm = async (params: UpgradeWasmModule) => {
     await upgradeMissionControlAdmin({
@@ -108,7 +108,7 @@ const upgradeMissionControlCustom = async ({
     return {success: false};
   }
 
-  const preClearChunks = hasArgs({args, options: ['-c', '--clear-chunks']});
+  const preClearChunks = hasArgs({args, options: ['-cc', '--clear-chunks']});
 
   const upgradeMissionControlWasm = async (params: UpgradeWasmModule) => {
     await upgradeMissionControlAdmin({
