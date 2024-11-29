@@ -1,6 +1,7 @@
 import {hasArgs} from '@junobuild/cli-tools';
 import {red} from 'kleur';
 import {login, logout} from './commands/auth';
+import {backup} from './commands/backup';
 import {clear} from './commands/clear';
 import {config} from './commands/config';
 import {deploy} from './commands/deploy';
@@ -12,6 +13,7 @@ import {upgrade} from './commands/upgrade';
 import {use} from './commands/use';
 import {version as versionCommand} from './commands/version';
 import {whoami} from './commands/whoami';
+import {logHelpBackup} from './help/backup.help';
 import {logHelpClear} from './help/clear.help';
 import {logHelpConfig} from './help/config.help';
 import {logHelpDeploy} from './help/deploy.help';
@@ -81,6 +83,9 @@ export const run = async () => {
       case 'dev':
         logHelpDev(args);
         break;
+      case 'backup':
+        logHelpBackup(args);
+        break;
       case 'init':
         logHelpInit(args);
         break;
@@ -148,6 +153,9 @@ export const run = async () => {
       break;
     case 'dev':
       await dev(args);
+      break;
+    case 'backup':
+      await backup(args);
       break;
     case 'help':
       console.log(help);
