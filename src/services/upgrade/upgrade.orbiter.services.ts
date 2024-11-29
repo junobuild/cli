@@ -71,6 +71,7 @@ const upgradeOrbiterCustom = async ({
 
   const reset = await confirmReset({args, assetKey: 'orbiter'});
 
+  const noBackup = hasArgs({args, options: ['-nb', '--no-backup']});
   const preClearChunks = hasArgs({args, options: ['-cc', '--clear-chunks']});
 
   const upgradeOrbiterWasm = async (params: UpgradeWasmModule) => {
@@ -78,7 +79,8 @@ const upgradeOrbiterCustom = async ({
       orbiter: orbiterParameters,
       ...params,
       ...(reset && {reset}),
-      preClearChunks
+      preClearChunks,
+      ...(noBackup && {takeSnapshot: false})
     });
   };
 
@@ -115,6 +117,7 @@ const updateOrbiterRelease = async ({
 
   const reset = await confirmReset({args, assetKey: 'orbiter'});
 
+  const noBackup = hasArgs({args, options: ['-nb', '--no-backup']});
   const preClearChunks = hasArgs({args, options: ['-cc', '--clear-chunks']});
 
   const upgradeOrbiterWasm = async (params: UpgradeWasmModule) => {
@@ -122,7 +125,8 @@ const updateOrbiterRelease = async ({
       orbiter: orbiterParameters,
       ...params,
       ...(reset && {reset}),
-      preClearChunks
+      preClearChunks,
+      ...(noBackup && {takeSnapshot: false})
     });
   };
 
