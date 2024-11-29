@@ -2,7 +2,7 @@ import {isNullish} from '@junobuild/utils';
 import {red} from 'kleur';
 import {getCliMissionControl} from '../../configs/cli.config';
 import type {AssetKey} from '../../types/asset-key';
-import {createSnapshot, restoreSnapshot} from './backup.services';
+import {createSnapshot, deleteSnapshot, restoreSnapshot} from './backup.services';
 
 export const createSnapshotMissionControl = async () => {
   await executeBackupFn({
@@ -13,6 +13,12 @@ export const createSnapshotMissionControl = async () => {
 export const restoreSnapshotMissionControl = async () => {
   await executeBackupFn({
     fn: restoreSnapshot
+  });
+};
+
+export const deleteSnapshotMissionControl = async () => {
+  await executeBackupFn({
+    fn: deleteSnapshot
   });
 };
 

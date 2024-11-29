@@ -4,7 +4,12 @@ import {Principal} from '@dfinity/principal';
 import {isNullish, nonNullish} from '@junobuild/utils';
 import {red} from 'kleur';
 import ora from 'ora';
-import {listCanisterSnapshots, loadCanisterSnapshot, takeCanisterSnapshot} from '../../api/ic.api';
+import {
+  deleteCanisterSnapshot,
+  listCanisterSnapshots,
+  loadCanisterSnapshot,
+  takeCanisterSnapshot
+} from '../../api/ic.api';
 import type {AssetKey} from '../../types/asset-key';
 import {confirmAndExit} from '../../utils/prompt.utils';
 
@@ -59,6 +64,33 @@ export const restoreSnapshot = async ({
   });
 };
 
+export const deleteSnapshot = async ({
+  canisterId: cId,
+  segment
+}: {
+  canisterId: string;
+  segment: AssetKey;
+}) => {
+  const canisterId = Principal.fromText(cId);
+
+  const existingSnapshotId = await loadSnapshot({canisterId});
+
+  if (isNullish(existingSnapshotId)) {
+    console.log(`${red(`No backup found for your ${segment}.`)}`);
+    return;
+  }
+
+  await confirmAndExit(
+    `Deleting the backup ${encodeSnapshotId(existingSnapshotId)} of your ${segment}?`
+  );
+
+  await deleteExistingSnapshot({
+    canisterId,
+    snapshotId: existingSnapshotId,
+    segment
+  });
+};
+
 const restoreExistingSnapshot = async ({
   segment,
   ...rest
@@ -76,6 +108,25 @@ const restoreExistingSnapshot = async ({
   }
 
   console.log(`The backup for your ${segment} was restored.`);
+};
+
+const deleteExistingSnapshot = async ({
+  segment,
+  ...rest
+}: {
+  canisterId: Principal;
+  snapshotId: snapshot_id;
+  segment: AssetKey;
+}): Promise<void> => {
+  const spinner = ora('Deleting the backup...').start();
+
+  try {
+    await deleteCanisterSnapshot(rest);
+  } finally {
+    spinner.stop();
+  }
+
+  console.log(`The backup for your ${segment} was deleted.`);
 };
 
 const takeSnapshot = async ({

@@ -63,3 +63,16 @@ export const loadCanisterSnapshot = async (params: {
 
   await loadCanisterSnapshot(params);
 };
+
+export const deleteCanisterSnapshot = async (params: {
+  canisterId: Principal;
+  snapshotId: snapshot_id;
+}): Promise<void> => {
+  const agent = await initAgent();
+
+  const {deleteCanisterSnapshot} = ICManagementCanister.create({
+    agent
+  });
+
+  await deleteCanisterSnapshot(params);
+};

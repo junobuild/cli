@@ -4,17 +4,19 @@ import {logHelpBackup} from '../help/backup.help';
 import {logHelpDev} from '../help/dev.help';
 import {
   createSnapshotMissionControl,
+  deleteSnapshotMissionControl,
   restoreSnapshotMissionControl
 } from '../services/backup/backup.mission-control.services';
 import {
   createSnapshotOrbiter,
+  deleteSnapshotOrbiter,
   restoreSnapshotOrbiter
 } from '../services/backup/backup.orbiter.services';
 import {
   createSnapshotSatellite,
+  deleteSnapshotSatellite,
   restoreSnapshotSatellite
 } from '../services/backup/backup.satellite.services';
-import {start} from '../services/docker.services';
 
 export const backup = async (args?: string[]) => {
   const [subCommand] = args ?? [];
@@ -37,7 +39,12 @@ export const backup = async (args?: string[]) => {
       });
       break;
     case 'delete':
-      await start();
+      await executeBackupFn({
+        args,
+        satelliteFn: deleteSnapshotSatellite,
+        missionControlFn: deleteSnapshotMissionControl,
+        orbiterFn: deleteSnapshotOrbiter
+      });
       break;
     default:
       console.log(`${red('Unknown subcommand.')}`);
