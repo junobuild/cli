@@ -26,7 +26,7 @@ export const createSnapshot = async ({
 
   if (nonNullish(existingSnapshotId)) {
     await confirmAndExit(
-      `A backup for your ${segment} already exists with ID ${encodeSnapshotId(existingSnapshotId)}. Do you want to overwrite it?`
+      `A backup for your ${segment} already exists with ID 0x${encodeSnapshotId(existingSnapshotId)}. Do you want to overwrite it?`
     );
   }
 
@@ -54,7 +54,7 @@ export const restoreSnapshot = async ({
   }
 
   await confirmAndExit(
-    `Restoring the backup ${encodeSnapshotId(existingSnapshotId)} will permanently overwrite the current state of your ${segment}. Are you sure you want to proceed?`
+    `Restoring the backup 0x${encodeSnapshotId(existingSnapshotId)} will permanently overwrite the current state of your ${segment}. Are you sure you want to proceed?`
   );
 
   await restoreExistingSnapshot({
@@ -81,7 +81,7 @@ export const deleteSnapshot = async ({
   }
 
   await confirmAndExit(
-    `Deleting the backup ${encodeSnapshotId(existingSnapshotId)} of your ${segment}?`
+    `Deleting the backup 0x${encodeSnapshotId(existingSnapshotId)} of your ${segment}?`
   );
 
   await deleteExistingSnapshot({
