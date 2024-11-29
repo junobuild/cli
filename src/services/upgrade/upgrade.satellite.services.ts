@@ -76,6 +76,7 @@ const upgradeSatelliteCustom = async ({
     satellite
   });
 
+  const noBackup = hasArgs({args, options: ['-nb', '--no-backup']});
   const preClearChunks = hasArgs({args, options: ['-cc', '--clear-chunks']});
 
   const upgrade = async (
@@ -89,6 +90,7 @@ const upgradeSatelliteCustom = async ({
     args,
     currentVersion,
     preClearChunks,
+    noBackup,
     upgrade
   });
 };
@@ -111,6 +113,7 @@ const upgradeSatelliteRelease = async ({
     return {success: false};
   }
 
+  const noBackup = hasArgs({args, options: ['-nb', '--no-backup']});
   const preClearChunks = hasArgs({args, options: ['-cc', '--clear-chunks']});
 
   const upgrade = async (
@@ -124,6 +127,7 @@ const upgradeSatelliteRelease = async ({
     args,
     currentVersion,
     preClearChunks,
+    noBackup,
     upgrade
   });
 };
@@ -133,12 +137,14 @@ const executeUpgradeSatellite = async ({
   args,
   currentVersion,
   upgrade,
-  preClearChunks
+  preClearChunks,
+  noBackup
 }: {
   satellite: SatelliteParameters;
   args?: string[];
   currentVersion: string;
   preClearChunks: boolean;
+  noBackup: boolean;
   upgrade: (
     params: Pick<UpgradeWasm, 'upgrade' | 'reset' | 'assert'>
   ) => Promise<{success: boolean; err?: unknown}>;
@@ -156,7 +162,8 @@ const executeUpgradeSatellite = async ({
       deprecated: compare(currentVersion, '0.0.7') < 0,
       deprecatedNoScope: compare(currentVersion, '0.0.9') < 0,
       ...(reset && {reset}),
-      preClearChunks
+      preClearChunks,
+      ...(noBackup && {takeSnapshot: false})
     });
   };
 

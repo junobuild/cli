@@ -46,6 +46,9 @@ const executeUpgradeWasm = async ({
       case UpgradeCodeProgressStep.StoppingCanister:
         spinner.text = `Stopping ${assetKey} before upgrade...`;
         break;
+      case UpgradeCodeProgressStep.TakingSnapshot:
+        spinner.text = `Creating a backup for your ${assetKey}...`;
+        break;
       case UpgradeCodeProgressStep.UpgradingCode:
         spinner.text = `Upgrading${reset ? ' and resetting state' : ''}...`;
         break;
