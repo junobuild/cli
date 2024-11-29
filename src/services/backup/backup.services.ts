@@ -107,7 +107,7 @@ const restoreExistingSnapshot = async ({
     spinner.stop();
   }
 
-  console.log(`The backup for your ${segment} was restored.`);
+  console.log(`✅ The backup for your ${segment} was restored.`);
 };
 
 const deleteExistingSnapshot = async ({
@@ -126,7 +126,7 @@ const deleteExistingSnapshot = async ({
     spinner.stop();
   }
 
-  console.log(`The backup for your ${segment} was deleted.`);
+  console.log(`✅ The backup for your ${segment} was deleted.`);
 };
 
 const takeSnapshot = async ({
@@ -145,7 +145,7 @@ const takeSnapshot = async ({
     spinner.stop();
   }
 
-  console.log(`The backup for your ${segment} was created.`);
+  console.log(`✅ The backup for your ${segment} was created.`);
 };
 
 const loadSnapshot = async ({
