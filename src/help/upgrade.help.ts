@@ -17,7 +17,6 @@ Options:
 Notes:
 
 - Resetting a mission control is not possible.
-- Disabling checks bypasses the verification of the target hash and skips the validation for build types.  
 - Targets can be shortened to ${magenta('s')} for satellite, ${magenta('m')} for mission-control and ${magenta('o')} for orbiter.`;
 
 const doc = `${UPGRADE_DESCRIPTION}
