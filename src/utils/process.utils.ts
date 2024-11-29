@@ -26,3 +26,5 @@ export const isHeadless = (): boolean => {
   const [_, ...args] = process.argv.slice(2);
   return hasArgs({args, options: ['--headless']});
 };
+
+export const isNotHeadless = (): boolean => !isHeadless();

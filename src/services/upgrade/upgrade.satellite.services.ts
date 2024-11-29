@@ -76,13 +76,12 @@ const upgradeSatelliteCustom = async ({
     satellite
   });
 
-  const nocheck = hasArgs({args, options: ['-n', '--nocheck']});
   const preClearChunks = hasArgs({args, options: ['-c', '--clear-chunks']});
 
   const upgrade = async (
     params: Pick<UpgradeWasm, 'upgrade' | 'reset' | 'assert'>
   ): Promise<{success: boolean; err?: unknown}> => {
-    return await upgradeWasmLocal({src, assetKey: 'satellite', nocheck, ...params});
+    return await upgradeWasmLocal({src, assetKey: 'satellite', ...params});
   };
 
   return await executeUpgradeSatellite({
@@ -112,13 +111,12 @@ const upgradeSatelliteRelease = async ({
     return {success: false};
   }
 
-  const nocheck = hasArgs({args, options: ['-n', '--nocheck']});
   const preClearChunks = hasArgs({args, options: ['-c', '--clear-chunks']});
 
   const upgrade = async (
     params: Pick<UpgradeWasm, 'upgrade' | 'reset' | 'assert'>
   ): Promise<{success: boolean; err?: unknown}> => {
-    return await upgradeWasmCdn({version, assetKey: 'satellite', nocheck, ...params});
+    return await upgradeWasmCdn({version, assetKey: 'satellite', ...params});
   };
 
   return await executeUpgradeSatellite({
