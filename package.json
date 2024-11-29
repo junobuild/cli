@@ -29,7 +29,7 @@
     "@dfinity/ic-management": "^6.0.1",
     "@dfinity/identity": "^2.1.3",
     "@dfinity/principal": "^2.1.3",
-    "@junobuild/admin": "^0.0.59",
+    "@junobuild/admin": "^0.0.61",
     "@junobuild/cli-tools": "^0.0.16",
     "@junobuild/config-loader": "^0.0.7",
     "@junobuild/core-peer": "^0.0.29",
