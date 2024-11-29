@@ -71,7 +71,7 @@ const upgradeOrbiterCustom = async ({
 
   const reset = await confirmReset({args, assetKey: 'orbiter'});
 
-  const preClearChunks = hasArgs({args, options: ['-c', '--clear-chunks']});
+  const preClearChunks = hasArgs({args, options: ['-cc', '--clear-chunks']});
 
   const upgradeOrbiterWasm = async (params: UpgradeWasmModule) => {
     await upgradeOrbiterAdmin({
@@ -115,7 +115,7 @@ const updateOrbiterRelease = async ({
 
   const reset = await confirmReset({args, assetKey: 'orbiter'});
 
-  const preClearChunks = hasArgs({args, options: ['-c', '--clear-chunks']});
+  const preClearChunks = hasArgs({args, options: ['-cc', '--clear-chunks']});
 
   const upgradeOrbiterWasm = async (params: UpgradeWasmModule) => {
     await upgradeOrbiterAdmin({

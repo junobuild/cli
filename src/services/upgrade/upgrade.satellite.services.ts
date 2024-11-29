@@ -76,7 +76,7 @@ const upgradeSatelliteCustom = async ({
     satellite
   });
 
-  const preClearChunks = hasArgs({args, options: ['-c', '--clear-chunks']});
+  const preClearChunks = hasArgs({args, options: ['-cc', '--clear-chunks']});
 
   const upgrade = async (
     params: Pick<UpgradeWasm, 'upgrade' | 'reset' | 'assert'>
@@ -111,7 +111,7 @@ const upgradeSatelliteRelease = async ({
     return {success: false};
   }
 
-  const preClearChunks = hasArgs({args, options: ['-c', '--clear-chunks']});
+  const preClearChunks = hasArgs({args, options: ['-cc', '--clear-chunks']});
 
   const upgrade = async (
     params: Pick<UpgradeWasm, 'upgrade' | 'reset' | 'assert'>
