@@ -10,7 +10,6 @@ Options:
   ${yellow('-t, --target')}          Which module type should be upgraded? Valid targets are ${magenta('satellite')}, ${magenta('mission-control')} or ${magenta('orbiter')}.  
   ${yellow('-s, --src')}             An optional local gzipped WASM file for the upgrade. By default, the CDN will be used.
   ${yellow('-r, --reset')}           Reset to the initial state.
-  ${yellow('-n, --nocheck')}         Skip assertions and execute upgrade without prompts.
   ${yellow('-c, --clear-chunks')}    Clear any previously uploaded WASM chunks (applies if the WASM size is greater than 2MB).
   ${helpMode}
   ${yellow('-h, --help')}            Output usage information.

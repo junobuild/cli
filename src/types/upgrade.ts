@@ -11,5 +11,4 @@ export interface UpgradeWasm {
   upgrade: (params: UpgradeWasmModule) => Promise<void>;
   assert?: (params: AssertWasmModule) => Promise<void>;
   reset?: boolean;
-  nocheck: boolean;
 }

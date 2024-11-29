@@ -18,6 +18,7 @@ import {JUNO_CDN_URL} from '../../constants/constants';
 import type {AssetKey} from '../../types/asset-key';
 import type {UpgradeWasm} from '../../types/upgrade';
 import {toAssetKeys} from '../../utils/asset-key.utils';
+import {isNotHeadless} from '../../utils/process.utils';
 import {confirmAndExit} from '../../utils/prompt.utils';
 import {newerReleases as newerReleasesUtils} from '../../utils/upgrade.utils';
 import {assertUpgradeHash} from './upgrade-assert.services';
@@ -28,10 +29,9 @@ const executeUpgradeWasm = async ({
   hash,
   assert,
   reset = false,
-  nocheck,
   assetKey
 }: {assetKey: AssetKey} & UpgradeWasm) => {
-  if (!nocheck) {
+  if (isNotHeadless()) {
     await assert?.({wasmModule: wasm});
     await assertUpgradeHash({hash, reset});
   }
@@ -70,12 +70,11 @@ export const upgradeWasmLocal = async ({
   upgrade,
   reset,
   assert,
-  nocheck,
   assetKey
 }: {
   src: string;
   assetKey: AssetKey;
-} & Pick<UpgradeWasm, 'reset' | 'upgrade' | 'assert' | 'nocheck'>): Promise<{
+} & Pick<UpgradeWasm, 'reset' | 'upgrade' | 'assert'>): Promise<{
   success: boolean;
   err?: unknown;
 }> => {
@@ -95,7 +94,7 @@ export const upgradeWasmLocal = async ({
 
     spinner.stop();
 
-    await executeUpgradeWasm({upgrade, wasm, hash, reset, assert, nocheck, assetKey});
+    await executeUpgradeWasm({upgrade, wasm, hash, reset, assert, assetKey});
 
     return {success: true};
   } catch (err: unknown) {
@@ -110,12 +109,11 @@ export const upgradeWasmCdn = async ({
   assetKey,
   upgrade,
   assert,
-  reset,
-  nocheck
+  reset
 }: {
   version: string;
   assetKey: AssetKey;
-} & Pick<UpgradeWasm, 'reset' | 'upgrade' | 'assert' | 'nocheck'>): Promise<{
+} & Pick<UpgradeWasm, 'reset' | 'upgrade' | 'assert'>): Promise<{
   success: boolean;
   err?: unknown;
 }> => {
@@ -143,7 +141,7 @@ export const upgradeWasmCdn = async ({
 
     spinner.stop();
 
-    await executeUpgradeWasm({upgrade, wasm, hash, reset, assert, nocheck, assetKey});
+    await executeUpgradeWasm({upgrade, wasm, hash, reset, assert, assetKey});
 
     return {success: true};
   } catch (err: unknown) {
