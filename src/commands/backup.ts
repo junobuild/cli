@@ -1,26 +1,40 @@
-import { eject } from "../services/eject.services";
-import { build } from "../services/build.services";
-import { start, stop } from "../services/docker.services";
-import { red } from "kleur";
-import { logHelpDev } from "../help/dev.help";
-import { nextArg } from "@junobuild/cli-tools";
-import { startStopMissionControl, startStopOrbiter, startStopSatellite } from "../services/start-stop.services";
-import { logHelpStop } from "../help/stop.help";
-import { logHelpStart } from "../help/start.help";
-import { logHelpBackup } from "../help/backup.help";
-import { createSnapshotSatellite } from "../services/backup/backup.satellite.services";
-import { createSnapshotMissionControl } from "../services/backup/backup.mission-control.services";
-import { createSnapshotOrbiter } from "../services/backup/backup.orbiter.services";
+import {nextArg} from '@junobuild/cli-tools';
+import {red} from 'kleur';
+import {logHelpBackup} from '../help/backup.help';
+import {logHelpDev} from '../help/dev.help';
+import {
+  createSnapshotMissionControl,
+  restoreSnapshotMissionControl
+} from '../services/backup/backup.mission-control.services';
+import {
+  createSnapshotOrbiter,
+  restoreSnapshotOrbiter
+} from '../services/backup/backup.orbiter.services';
+import {
+  createSnapshotSatellite,
+  restoreSnapshotSatellite
+} from '../services/backup/backup.satellite.services';
+import {start} from '../services/docker.services';
 
 export const backup = async (args?: string[]) => {
   const [subCommand] = args ?? [];
 
   switch (subCommand) {
     case 'create':
-      await create();
+      await executeBackupFn({
+        args,
+        satelliteFn: createSnapshotSatellite,
+        missionControlFn: createSnapshotMissionControl,
+        orbiterFn: createSnapshotOrbiter
+      });
       break;
     case 'restore':
-      await build();
+      await executeBackupFn({
+        args,
+        satelliteFn: restoreSnapshotSatellite,
+        missionControlFn: restoreSnapshotMissionControl,
+        orbiterFn: restoreSnapshotOrbiter
+      });
       break;
     case 'delete':
       await start();
@@ -31,24 +45,34 @@ export const backup = async (args?: string[]) => {
   }
 };
 
-export const create = async (args?: string[]) => {
+const executeBackupFn = async ({
+  args,
+  satelliteFn,
+  missionControlFn,
+  orbiterFn
+}: {
+  args?: string[];
+  satelliteFn: (params: {args?: string[]}) => Promise<void>;
+  missionControlFn: () => Promise<void>;
+  orbiterFn: () => Promise<void>;
+}) => {
   const target = nextArg({args, option: '-t'}) ?? nextArg({args, option: '--target'});
 
   switch (target) {
     case 's':
     case 'satellite':
-      await createSnapshotSatellite({args});
+      await satelliteFn({args});
       break;
     case 'm':
     case 'mission-control':
-      await createSnapshotMissionControl({args});
+      await missionControlFn();
       break;
     case 'o':
     case 'orbiter':
-      await createSnapshotOrbiter({args});
+      await orbiterFn();
       break;
     default:
       console.log(`${red('Unknown target.')}`);
       logHelpBackup(args);
   }
-}
+};

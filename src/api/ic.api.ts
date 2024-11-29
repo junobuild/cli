@@ -50,3 +50,16 @@ export const listCanisterSnapshots = async (params: {
 
   return await listCanisterSnapshots(params);
 };
+
+export const loadCanisterSnapshot = async (params: {
+  canisterId: Principal;
+  snapshotId: snapshot_id;
+}): Promise<void> => {
+  const agent = await initAgent();
+
+  const {loadCanisterSnapshot} = ICManagementCanister.create({
+    agent
+  });
+
+  await loadCanisterSnapshot(params);
+};

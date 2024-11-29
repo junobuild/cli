@@ -1,13 +1,26 @@
-import { assertNonNullish, isNullish } from "@junobuild/utils";
-import {junoConfigExist, readJunoConfig} from '../../configs/juno.config';
-import {configEnv} from '../../utils/config.utils';
-import {consoleNoConfigFound} from '../../utils/msg.utils';
-import {satelliteParameters} from '../../utils/satellite.utils';
-import {createSnapshot} from './backup.services';
-import { getCliMissionControl } from "../../configs/cli.config";
-import { red } from "kleur";
+import {isNullish} from '@junobuild/utils';
+import {red} from 'kleur';
+import {getCliMissionControl} from '../../configs/cli.config';
+import type {AssetKey} from '../../types/asset-key';
+import {createSnapshot, restoreSnapshot} from './backup.services';
 
-export const createSnapshotMissionControl = async ({args}: {args?: string[]}) => {
+export const createSnapshotMissionControl = async () => {
+  await executeBackupFn({
+    fn: createSnapshot
+  });
+};
+
+export const restoreSnapshotMissionControl = async () => {
+  await executeBackupFn({
+    fn: restoreSnapshot
+  });
+};
+
+const executeBackupFn = async ({
+  fn
+}: {
+  fn: (params: {canisterId: string; segment: AssetKey}) => Promise<void>;
+}) => {
   const missionControl = await getCliMissionControl();
 
   // TODO: this can be a common assertion
@@ -20,7 +33,7 @@ export const createSnapshotMissionControl = async ({args}: {args?: string[]}) =>
     return;
   }
 
-  await createSnapshot({
+  await fn({
     canisterId: missionControl,
     segment: 'mission_control'
   });
