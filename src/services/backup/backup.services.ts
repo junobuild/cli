@@ -81,7 +81,7 @@ export const deleteSnapshot = async ({
   }
 
   await confirmAndExit(
-    `Deleting the backup 0x${encodeSnapshotId(existingSnapshotId)} of your ${segment}?`
+    `Do you want to delete the backup 0x${encodeSnapshotId(existingSnapshotId)} of your ${segment}?`
   );
 
   await deleteExistingSnapshot({
