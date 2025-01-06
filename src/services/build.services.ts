@@ -184,13 +184,15 @@ const api = async () => {
 
   const outputFile = `${DEVELOPER_PROJECT_SATELLITE_DECLARATIONS_PATH}/satellite.api.${outputLanguage}`;
 
-  const readCoreLib = async (): Promise<'core' | 'core-peer'> => {
+  const readCoreLib = async (): Promise<'core' | 'core-standalone'> => {
     try {
       const packageJson = await readFile(join(process.cwd(), 'package.json'), 'utf-8');
       const {dependencies} = JSON.parse(packageJson) as {dependencies?: Record<string, string>};
-      return Object.keys(dependencies ?? {}).includes('@junobuild/core') ? 'core-peer' : 'core';
+      return Object.keys(dependencies ?? {}).includes('@junobuild/core-standalone')
+        ? 'core-standalone'
+        : 'core';
     } catch (err: unknown) {
-      // This should not block the developer therefore we fallback to core
+      // This should not block the developer therefore we fallback to core which is the common way of using the library
       return 'core';
     }
   };
