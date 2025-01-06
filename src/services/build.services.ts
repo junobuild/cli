@@ -145,7 +145,26 @@ const didc = async () => {
     });
 
     const content = await readFile(output, 'utf-8');
-    await writeFile(output, `${AUTO_GENERATED}\n\n${content}`);
+
+    // Depending on the `tsconfig`, the `factory.did.js` file might be validated.
+    // Cleaning the file prevents errors such as:
+    // TS7031: Binding element 'IDL' implicitly has an 'any' type.
+    const cleanJs = (content: string): string => {
+      const cleanFactory = content.replace(
+        /export const idlFactory = \({ IDL }\) => {/g,
+        `// @ts-expect-error
+export const idlFactory = ({ IDL }) => {`
+      );
+      return cleanFactory.replace(
+        /export const init = \({ IDL }\) => {/g,
+        `// @ts-expect-error
+export const init = ({ IDL }) => {`
+      );
+    };
+
+    const cleanedContent = type === 'js' ? cleanJs(content) : content;
+
+    await writeFile(output, `${AUTO_GENERATED}\n\n${cleanedContent}`);
   };
 
   const promises = (['js', 'ts'] as Array<'js' | 'ts'>).map(generate);
