@@ -33,7 +33,7 @@
     "@junobuild/cli-tools": "^0.0.16",
     "@junobuild/config-loader": "^0.0.7",
     "@junobuild/core": "^0.1.0",
-    "@junobuild/did-tools": "^0.0.4",
+    "@junobuild/did-tools": "^0.0.5",
     "@junobuild/utils": "^0.0.27",
     "conf": "^13.0.1",
     "open": "^10.1.0",
