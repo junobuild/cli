@@ -188,9 +188,7 @@ const api = async () => {
     try {
       const packageJson = await readFile(join(process.cwd(), 'package.json'), 'utf-8');
       const {dependencies} = JSON.parse(packageJson) as {dependencies?: Record<string, string>};
-      return Object.keys(dependencies ?? {}).includes('@junobuild/core-peer')
-        ? 'core-peer'
-        : 'core';
+      return Object.keys(dependencies ?? {}).includes('@junobuild/core') ? 'core-peer' : 'core';
     } catch (err: unknown) {
       // This should not block the developer therefore we fallback to core
       return 'core';
