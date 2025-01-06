@@ -1,6 +1,6 @@
 import {satelliteMemorySize, satelliteVersion} from '@junobuild/admin';
-import type {Asset} from '@junobuild/core-peer';
-import {listAssets as listAssetsLib} from '@junobuild/core-peer';
+import type {Asset} from '@junobuild/core';
+import {listAssets as listAssetsLib} from '@junobuild/core';
 import {yellow} from 'kleur';
 import {compare} from 'semver';
 import {readJunoConfig} from '../configs/juno.config';

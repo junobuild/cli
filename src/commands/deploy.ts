@@ -5,7 +5,7 @@ import {
   preDeploy as cliPreDeploy,
   hasArgs
 } from '@junobuild/cli-tools';
-import {uploadBlob, type Asset} from '@junobuild/core-peer';
+import {uploadBlob, type Asset} from '@junobuild/core';
 import {red} from 'kleur';
 import {lstatSync} from 'node:fs';
 import {junoConfigExist, readJunoConfig} from '../configs/juno.config';

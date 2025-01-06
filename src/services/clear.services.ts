@@ -1,5 +1,5 @@
 import {deleteAssets, listCustomDomains, setCustomDomains} from '@junobuild/admin';
-import {deleteAsset} from '@junobuild/core-peer';
+import {deleteAsset} from '@junobuild/core';
 import ora from 'ora';
 import {readJunoConfig} from '../configs/juno.config';
 import {DAPP_COLLECTION} from '../constants/constants';
