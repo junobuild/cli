@@ -9,7 +9,6 @@ import path, {dirname} from 'node:path';
 import {fileURLToPath} from 'url';
 import util from 'util';
 import {saveCliConfig} from '../configs/cli.config';
-import {AUTH_URL} from '../constants/constants';
 import {authUrl, requestUrl} from '../utils/auth.utils';
 import {openUrl} from '../utils/open.utils';
 import {getPort} from '../utils/port.utils';
@@ -23,7 +22,9 @@ export const login = async (args?: string[]) => {
 
   const key = Ed25519KeyIdentity.generate();
   const principal = key.getPrincipal().toText();
-  const token = key.toJSON(); // save to local
+  const token = key.toJSON();
+
+  console.log(`\n🔓 Your terminal will take control as: ${green(principal)}`);
 
   const browser = nextArg({args, option: '-b'}) ?? nextArg({args, option: '--browser'});
 
@@ -59,13 +60,15 @@ export const login = async (args?: string[]) => {
     });
 
     server.listen(port, async () => {
+      const url = authUrl({port, nonce, principal});
+
       console.log();
       console.log('Visit this URL on this device to log in:');
-      console.log(bold(underline(AUTH_URL)));
+      console.log(bold(underline(url)));
       console.log();
       console.log('Waiting for authentication...');
 
-      await openUrl({url: authUrl({port, nonce, principal}), browser});
+      await openUrl({url, browser});
     });
 
     server.on('error', (err) => {
