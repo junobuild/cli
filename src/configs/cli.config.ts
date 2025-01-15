@@ -3,6 +3,7 @@ import {nonNullish} from '@junobuild/utils';
 // TODO: fix TypeScript declaration import of conf
 // @ts-expect-error
 import type Conf from 'conf';
+import {red, yellow} from 'kleur';
 import {askForPassword} from '../services/cli.settings.services';
 import {settingsStore} from '../stores/settings.store';
 import type {
@@ -24,7 +25,17 @@ const initConfig = async () => {
 
   const encryptionKey = settingsStore.isEncryptionEnabled() ? await askForPassword() : undefined;
 
-  config = loadConfig(encryptionKey);
+  try {
+    config = loadConfig(encryptionKey);
+  } catch (_: unknown) {
+    console.log(red('Your current configuration cannot be read.'));
+
+    if (settingsStore.isEncryptionEnabled()) {
+      console.log(yellow('\nDid you enter an incorrect password? 🤔'));
+    }
+
+    process.exit(1);
+  }
 };
 
 export const saveCliConfig = async ({
