@@ -23,7 +23,7 @@ export const login = async (args?: string[]) => {
 
   const identity = Ed25519KeyIdentity.fromParsedJson(token);
   console.log(
-    `🔐 Your terminal is already a controller: ${green(identity.getPrincipal().toText())}.\n`
+    `🔐 Your terminal is already a controller: ${green(identity.getPrincipal().toText())}\n`
   );
 
   const {action}: {action: string} = await prompts({
