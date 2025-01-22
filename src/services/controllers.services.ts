@@ -12,7 +12,7 @@ export const reuseController = async (controller: Principal) => {
   const segment = await selectSegment();
 
   console.log(
-    `Great. Before completing the setup, you'll need to add the controller to your ${segment} in Juno's console.\n\nHere are the steps to follow:`
+    `Before you finish setting things up, you'll need to add the controller to ${segment} in Juno's console.\n\nFollow these steps:`
   );
 
   await setControllerManually({controller, segment});
@@ -126,20 +126,31 @@ const setControllerManually = async ({
   controller: Principal;
 }) => {
   const url = `${CONSOLE_URL}${
-    segment === 'orbiter' ? '/analytics' : segment === 'satellite' ? '' : '/mission-control'
+    segment === 'orbiter'
+      ? '/analytics?tab=setup'
+      : segment === 'satellite'
+        ? ''
+        : '/mission-control?tab=setup'
   }`;
 
+  if (segment === 'satellite') {
+    console.log(
+      `\n1. Go to ${terminalLink(url)}, select your Satellite, and open the ${bold('"Setup"')} tab`
+    );
+  } else {
+    console.log(
+      `\n1. Navigate to the ${bold('"Setup"')} tab of your ${segment} on ${terminalLink(url)}`
+    );
+  }
+
+  console.log('2. Find the "Controllers" section and click "Add a controller"');
+  console.log('3. Choose "Manually enter a controller"');
+  console.log(`4. Enter your terminal controller ${green(controller.toText())} in the input field`);
+  console.log(`5. Select the ${bold('ADMIN')} scope`);
+  console.log(`6. Click ${bold('Submit')}`);
   console.log(
-    `\n1. Open the "${segment === 'orbiter' ? 'Settings' : 'Controllers'}" tab on ${terminalLink(
-      url
-    )}`
+    `7. Once it’s successful, copy the ${green(`${segment} ID`)} where the controller was added\n`
   );
-  console.log(
-    `2. Add the controller ${green(controller.toText())} to your ${segment} with the ${bold(
-      'ADMIN'
-    )} scope`
-  );
-  console.log(`3. Copy the ${green(`${segment} ID`)} to which you added the controller\n`);
 
   await confirmAndExit('Have you completed this step?');
 };
