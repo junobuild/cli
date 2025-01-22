@@ -11,6 +11,7 @@ import {
   takeCanisterSnapshot
 } from '../../api/ic.api';
 import type {AssetKey} from '../../types/asset-key';
+import {displaySegment} from '../../utils/display.utils';
 import {confirmAndExit} from '../../utils/prompt.utils';
 
 export const createSnapshot = async ({
@@ -26,7 +27,7 @@ export const createSnapshot = async ({
 
   if (nonNullish(existingSnapshotId)) {
     await confirmAndExit(
-      `A backup for your ${segment} already exists with ID 0x${encodeSnapshotId(existingSnapshotId)}. Do you want to overwrite it?`
+      `A backup for your ${displaySegment(segment)} already exists with ID 0x${encodeSnapshotId(existingSnapshotId)}. Do you want to overwrite it?`
     );
   }
 
@@ -49,12 +50,12 @@ export const restoreSnapshot = async ({
   const existingSnapshotId = await loadSnapshot({canisterId});
 
   if (isNullish(existingSnapshotId)) {
-    console.log(`${red(`No backup found for your ${segment}.`)}`);
+    console.log(`${red(`No backup found for your ${displaySegment(segment)}.`)}`);
     return;
   }
 
   await confirmAndExit(
-    `Restoring the backup 0x${encodeSnapshotId(existingSnapshotId)} will permanently overwrite the current state of your ${segment}. Are you sure you want to proceed?`
+    `Restoring the backup 0x${encodeSnapshotId(existingSnapshotId)} will permanently overwrite the current state of your ${displaySegment(segment)}. Are you sure you want to proceed?`
   );
 
   await restoreExistingSnapshot({
@@ -76,12 +77,12 @@ export const deleteSnapshot = async ({
   const existingSnapshotId = await loadSnapshot({canisterId});
 
   if (isNullish(existingSnapshotId)) {
-    console.log(`${red(`No backup found for your ${segment}.`)}`);
+    console.log(`${red(`No backup found for your ${displaySegment(segment)}.`)}`);
     return;
   }
 
   await confirmAndExit(
-    `Are you sure you want to delete the backup 0x${encodeSnapshotId(existingSnapshotId)} of your ${segment}?`
+    `Are you sure you want to delete the backup 0x${encodeSnapshotId(existingSnapshotId)} of your ${displaySegment(segment)}?`
   );
 
   await deleteExistingSnapshot({
@@ -107,7 +108,7 @@ const restoreExistingSnapshot = async ({
     spinner.stop();
   }
 
-  console.log(`✅ The backup for your ${segment} was restored.`);
+  console.log(`✅ The backup for your ${displaySegment(segment)} was restored.`);
 };
 
 const deleteExistingSnapshot = async ({
@@ -126,7 +127,7 @@ const deleteExistingSnapshot = async ({
     spinner.stop();
   }
 
-  console.log(`✅ The backup for your ${segment} was deleted.`);
+  console.log(`✅ The backup for your ${displaySegment(segment)} was deleted.`);
 };
 
 const takeSnapshot = async ({
@@ -145,7 +146,7 @@ const takeSnapshot = async ({
     spinner.stop();
   }
 
-  console.log(`✅ The backup for your ${segment} was created.`);
+  console.log(`✅ The backup for your ${displaySegment(segment)} was created.`);
 };
 
 const loadSnapshot = async ({

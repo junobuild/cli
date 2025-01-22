@@ -5,6 +5,7 @@ import prompts from 'prompts';
 import {addCliMissionControl, addCliOrbiter, addCliSatellite, getUse} from '../configs/cli.config';
 import {CONSOLE_URL} from '../constants/constants';
 import {type AssetKey} from '../types/asset-key';
+import {displaySegment} from '../utils/display.utils';
 import {terminalLink} from '../utils/links.utils';
 import {confirmAndExit} from '../utils/prompt.utils';
 
@@ -12,7 +13,7 @@ export const reuseController = async (controller: Principal) => {
   const segment = await selectSegment();
 
   console.log(
-    `Before you finish setting things up, you'll need to add the controller to ${segment} in Juno's console.\n\nFollow these steps:`
+    `Before you finish setting things up, you'll need to add the controller to ${displaySegment(segment)} in Juno's console.\n\nFollow these steps:`
   );
 
   await setControllerManually({controller, segment});
@@ -21,12 +22,12 @@ export const reuseController = async (controller: Principal) => {
     type: 'text',
     name: 'segmentId',
     message: `Good. So, what's the ${green(
-      `${segment} ID`
+      `${displaySegment(segment)} ID`
     )} to which you just added the controller?`
   });
 
   if (segmentId === undefined) {
-    console.log(`${red(`The ${segment} ID cannot be undefined.`)}`);
+    console.log(`${red(`The ${displaySegment(segment)} ID cannot be undefined.`)}`);
     return;
   }
 
@@ -44,7 +45,7 @@ export const reuseController = async (controller: Principal) => {
   }
 
   console.log(
-    `\nDone. The ${segment} ${green(`${segmentId}`)} has been configured for your terminal. ✅`
+    `\nDone. The ${displaySegment(segment)} ${green(`${segmentId}`)} has been configured for your terminal. ✅`
   );
 };
 
@@ -139,7 +140,7 @@ const setControllerManually = async ({
     );
   } else {
     console.log(
-      `\n1. Navigate to the ${bold('"Setup"')} tab of your ${segment} on ${terminalLink(url)}`
+      `\n1. Navigate to the ${bold('"Setup"')} tab of your ${displaySegment(segment)} on ${terminalLink(url)}`
     );
   }
 
@@ -149,7 +150,7 @@ const setControllerManually = async ({
   console.log(`5. Select the ${bold('ADMIN')} scope`);
   console.log(`6. Click ${bold('Submit')}`);
   console.log(
-    `7. Once it’s successful, copy the ${green(`${segment} ID`)} where the controller was added\n`
+    `7. Once it’s successful, copy the ${green(`${displaySegment(segment)} ID`)} where the controller was added\n`
   );
 
   await confirmAndExit('Have you completed this step?');
