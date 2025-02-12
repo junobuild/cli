@@ -85,7 +85,7 @@ const executeDeploy = async (args?: string[]) => {
 const assertSourceDirExists = (source: string) => {
   try {
     lstatSync(source);
-  } catch (err: unknown) {
+  } catch (_err: unknown) {
     console.log(
       `${red(
         'Cannot proceed deployment.'

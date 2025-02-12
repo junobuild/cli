@@ -13,7 +13,7 @@ export const lastRelease = async (assetKeys: AssetKeys): Promise<string | undefi
     };
 
     return last(versions);
-  } catch (err: unknown) {
+  } catch (_err: unknown) {
     return undefined;
   }
 };
@@ -31,7 +31,7 @@ export const newerReleases = async ({
     return {
       result: metadata[assetKeys].filter((version) => compare(currentVersion, version) === -1)
     };
-  } catch (err: unknown) {
+  } catch (_err: unknown) {
     return {result: undefined, error: "Cannot fetch new releases from Juno's CDN 😢."};
   }
 };

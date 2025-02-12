@@ -192,7 +192,7 @@ const api = async () => {
       return Object.keys(dependencies ?? {}).includes('@junobuild/core-standalone')
         ? 'core-standalone'
         : 'core';
-    } catch (err: unknown) {
+    } catch (_err: unknown) {
       // This should not block the developer therefore we fallback to core which is the common way of using the library
       return 'core';
     }

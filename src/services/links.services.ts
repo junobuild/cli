@@ -40,7 +40,7 @@ export const links = async (args?: string[]) => {
     domains.forEach(({domain}) => {
       console.log(`🌍 ${terminalLink(`https://${domain}`)}`);
     });
-  } catch (err: unknown) {
+  } catch (_err: unknown) {
     console.log(red('Cannot list the custom domains.'));
   }
 };

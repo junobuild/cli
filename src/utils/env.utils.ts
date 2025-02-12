@@ -47,7 +47,7 @@ export const checkRustVersion = async (): Promise<{valid: boolean | 'error'}> =>
       );
       return {valid: false};
     }
-  } catch (e: unknown) {
+  } catch (_e: unknown) {
     console.error(`Cannot detect your Rust version. Is Cargo installed on your machine?`);
     return {valid: 'error'};
   }
@@ -74,7 +74,7 @@ export const checkIcWasmVersion = async (): Promise<{valid: boolean | 'error'}> 
       );
       return {valid: false};
     }
-  } catch (e: unknown) {
+  } catch (_e: unknown) {
     return {valid: 'error'};
   }
 
@@ -100,7 +100,7 @@ export const checkDockerVersion = async (): Promise<{valid: boolean | 'error'}> 
       );
       return {valid: false};
     }
-  } catch (e: unknown) {
+  } catch (_e: unknown) {
     console.error(`Cannot detect Docker version. Is Docker installed on your machine?`);
     return {valid: 'error'};
   }
@@ -114,7 +114,7 @@ export const assertDockerRunning = async () => {
       command: 'docker',
       args: ['ps', '--quiet']
     });
-  } catch (e: unknown) {
+  } catch (_e: unknown) {
     process.exit(1);
   }
 };
@@ -134,7 +134,7 @@ export const checkCargoBinInstalled = async ({
     });
 
     return {valid: true};
-  } catch (e: unknown) {
+  } catch (_e: unknown) {
     return {valid: 'error'};
   }
 };
