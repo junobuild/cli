@@ -1,9 +1,9 @@
+import {isNullish} from '@dfinity/utils';
 import {
   missionControlVersion as missionControlVersionLib,
   orbiterVersion as orbiterVersionLib,
   satelliteVersion as satelliteVersionLib
 } from '@junobuild/admin';
-import {isNullish} from '@junobuild/utils';
 import {cyan, green, red, yellow} from 'kleur';
 import {clean, compare} from 'semver';
 import {version as cliCurrentVersion} from '../../package.json';

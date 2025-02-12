@@ -1,7 +1,7 @@
 import type {snapshot_id} from '@dfinity/ic-management';
 import {encodeSnapshotId} from '@dfinity/ic-management';
 import {Principal} from '@dfinity/principal';
-import {isNullish, nonNullish} from '@junobuild/utils';
+import {isNullish, nonNullish} from '@dfinity/utils';
 import {red} from 'kleur';
 import ora from 'ora';
 import {

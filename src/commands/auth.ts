@@ -1,6 +1,6 @@
 import {Ed25519KeyIdentity} from '@dfinity/identity';
+import {isNullish} from '@dfinity/utils';
 import {assertAnswerCtrlC} from '@junobuild/cli-tools';
-import {isNullish} from '@junobuild/utils';
 import {green} from 'kleur';
 import prompts from 'prompts';
 import {clearCliConfig, getToken} from '../configs/cli.config';

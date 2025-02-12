@@ -1,3 +1,4 @@
+import {isNullish} from '@dfinity/utils';
 import {
   listCustomDomains,
   satelliteVersion,
@@ -5,7 +6,6 @@ import {
   type SatelliteParameters
 } from '@junobuild/admin';
 import {hasArgs, nextArg} from '@junobuild/cli-tools';
-import {isNullish} from '@junobuild/utils';
 import {cyan, red} from 'kleur';
 import {compare} from 'semver';
 import {junoConfigExist, readJunoConfig} from '../../configs/juno.config';

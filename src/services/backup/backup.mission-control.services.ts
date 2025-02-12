@@ -1,4 +1,4 @@
-import {isNullish} from '@junobuild/utils';
+import {isNullish} from '@dfinity/utils';
 import {red} from 'kleur';
 import {getCliMissionControl} from '../../configs/cli.config';
 import type {AssetKey} from '../../types/asset-key';

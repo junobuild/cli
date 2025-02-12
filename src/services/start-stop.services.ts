@@ -1,5 +1,5 @@
 import {Principal} from '@dfinity/principal';
-import {assertNonNullish, isNullish} from '@junobuild/utils';
+import {assertNonNullish, isNullish} from '@dfinity/utils';
 import {cyan, red} from 'kleur';
 import ora from 'ora';
 import {canisterStart, canisterStop} from '../api/ic.api';

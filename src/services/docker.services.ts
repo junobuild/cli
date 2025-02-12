@@ -1,6 +1,6 @@
+import {nonNullish} from '@dfinity/utils';
 import {execute} from '@junobuild/cli-tools';
 import type {PartialConfigFile} from '@junobuild/config-loader';
-import {nonNullish} from '@junobuild/utils';
 import {magenta} from 'kleur';
 import {existsSync} from 'node:fs';
 import {writeFile} from 'node:fs/promises';

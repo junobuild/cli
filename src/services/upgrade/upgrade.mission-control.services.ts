@@ -1,10 +1,10 @@
+import {isNullish} from '@dfinity/utils';
 import {
   missionControlVersion,
   upgradeMissionControl as upgradeMissionControlAdmin,
   type MissionControlParameters
 } from '@junobuild/admin';
 import {hasArgs, nextArg} from '@junobuild/cli-tools';
-import {isNullish} from '@junobuild/utils';
 import {cyan, red} from 'kleur';
 import {actorParameters} from '../../api/actor.api';
 import {getCliMissionControl} from '../../configs/cli.config';

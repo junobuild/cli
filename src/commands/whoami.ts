@@ -1,5 +1,5 @@
 import {Ed25519KeyIdentity} from '@dfinity/identity';
-import {isNullish} from '@junobuild/utils';
+import {isNullish} from '@dfinity/utils';
 import {green} from 'kleur';
 import {getToken, getUse, isDefaultProfile} from '../configs/cli.config';
 import {links} from '../services/links.services';

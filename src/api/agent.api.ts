@@ -1,6 +1,6 @@
 import {HttpAgent} from '@dfinity/agent';
+import {isNullish, nonNullish} from '@dfinity/utils';
 import type {ActorParameters} from '@junobuild/admin';
-import {isNullish, nonNullish} from '@junobuild/utils';
 import {REVOKED_CONTROLLERS} from '../constants/constants';
 import {actorParameters} from './actor.api';
 
