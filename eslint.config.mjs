@@ -30,6 +30,8 @@ export default [
   {
     rules: {
       'no-console': 'off',
+      'arrow-body-style': 'off',
+      complexity: 'off',
       '@typescript-eslint/explicit-function-return-type': 'off',
       '@typescript-eslint/ban-ts-comment': 'off',
       '@typescript-eslint/no-misused-promises': 'off',
@@ -42,8 +44,7 @@ export default [
       '@typescript-eslint/no-unsafe-call': 'off',
       '@typescript-eslint/no-deprecated': 'off',
       '@typescript-eslint/no-unsafe-member-access': 'off',
-      'arrow-body-style': 'off',
-      complexity: 'off',
+      '@typescript-eslint/prefer-destructuring': 'off',
       '@typescript-eslint/no-unused-vars': [
         'warn',
         {
@@ -56,7 +57,6 @@ export default [
   },
   {
     rules: {
-      '@typescript-eslint/prefer-destructuring': 'off',
       '@typescript-eslint/no-unsafe-return': 'off',
       '@typescript-eslint/init-declarations': 'off',
       '@typescript-eslint/switch-exhaustiveness-check': 'off',
