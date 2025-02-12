@@ -18,4 +18,4 @@ export const getSettingsConfig = (): Conf<CliSettingsConfig> =>
 
 export const saveEncryption = (encryption: boolean) => {
   getSettingsConfig().set('encryption', encryption);
-}
+};

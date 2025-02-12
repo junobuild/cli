@@ -22,8 +22,8 @@ const wasmBuildType = async ({wasmModule}: AssertWasmModule): Promise<BuildType 
   const buildType = decoder.decode(metadata[0]);
 
   return nonNullish(buildType) && ['stock', 'extended'].includes(buildType)
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
-    ? (buildType as BuildType)
+    ? // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
+      (buildType as BuildType)
     : undefined;
 };
 
