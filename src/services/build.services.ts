@@ -187,6 +187,7 @@ const api = async () => {
   const readCoreLib = async (): Promise<'core' | 'core-standalone'> => {
     try {
       const packageJson = await readFile(join(process.cwd(), 'package.json'), 'utf-8');
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
       const {dependencies} = JSON.parse(packageJson) as {dependencies?: Record<string, string>};
       return Object.keys(dependencies ?? {}).includes('@junobuild/core-standalone')
         ? 'core-standalone'

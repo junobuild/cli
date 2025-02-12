@@ -102,7 +102,7 @@ const saveOrbiter = async ({
 };
 
 const selectSegment = async (): Promise<AssetKey> => {
-  const {segment}: {segment: string} = await prompts({
+  const {segment}: {segment: AssetKey} = await prompts({
     type: 'select',
     name: 'segment',
     message: 'Which new segment would you like to authorize with your controller?',
@@ -116,7 +116,7 @@ const selectSegment = async (): Promise<AssetKey> => {
 
   assertAnswerCtrlC(segment);
 
-  return segment as AssetKey;
+  return segment;
 };
 
 const setControllerManually = async ({
