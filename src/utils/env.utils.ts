@@ -21,7 +21,7 @@ export const checkNodeVersion = (): {valid: boolean | 'error'} => {
       );
       return {valid: false};
     }
-  } catch (e: unknown) {
+  } catch (_e: unknown) {
     return {valid: 'error'};
   }
 
