@@ -57,7 +57,6 @@ export default [
   },
   {
     rules: {
-      '@typescript-eslint/only-throw-error': 'off',
       'eslint-comments/require-description': 'off',
       '@typescript-eslint/no-unsafe-type-assertion': 'off',
       '@typescript-eslint/no-unused-vars': 'off',
