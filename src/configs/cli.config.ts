@@ -16,7 +16,7 @@ import type {
 import {loadConfig} from '../utils/config.utils';
 
 // Save in https://github.com/sindresorhus/env-paths#pathsconfig
-let config: Conf<CliConfig> | undefined;
+let config: Conf<CliConfig> | undefined = undefined;
 
 const initConfig = async () => {
   if (nonNullish(config)) {

@@ -10,7 +10,7 @@ export const openUrl = async ({
 }): Promise<ChildProcess> => {
   const {chrome, firefox, edge} = apps;
 
-  let app: string | readonly string[] | undefined;
+  let app: string | readonly string[] | undefined = undefined;
   switch (browser?.toLowerCase()) {
     case 'chrome':
       app = chrome;
