@@ -1,3 +1,4 @@
+import {isNullish} from '@dfinity/utils';
 import {
   checkUpgradeVersion,
   setCustomDomains,
@@ -8,7 +9,6 @@ import {
   type UpgradeCodeProgress
 } from '@junobuild/admin';
 import {assertAnswerCtrlC, downloadFromURL, hasArgs} from '@junobuild/cli-tools';
-import {isNullish} from '@junobuild/utils';
 import {createHash} from 'crypto';
 import {red, yellow} from 'kleur';
 import {readFile} from 'node:fs/promises';

@@ -1,3 +1,4 @@
+import {nonNullish} from '@dfinity/utils';
 import {DEPLOY_DEFAULT_SOURCE} from '@junobuild/cli-tools';
 import type {JunoConfig, JunoConfigEnv, JunoConfigFnOrObject} from '@junobuild/config';
 import {
@@ -9,7 +10,6 @@ import {
   type ConfigFilename,
   type PartialConfigFile
 } from '@junobuild/config-loader';
-import {nonNullish} from '@junobuild/utils';
 import {writeFile} from 'node:fs/promises';
 import {
   TEMPLATE_INIT_PATH,

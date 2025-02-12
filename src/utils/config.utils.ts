@@ -1,6 +1,6 @@
+import {nonNullish} from '@dfinity/utils';
 import {nextArg} from '@junobuild/cli-tools';
 import type {JunoConfigEnv} from '@junobuild/config';
-import {nonNullish} from '@junobuild/utils';
 import {CLI_PROJECT_NAME} from '../constants/constants';
 // TODO: fix TypeScript declaration import of conf
 // @ts-expect-error

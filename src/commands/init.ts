@@ -1,6 +1,6 @@
+import {isNullish, nonNullish} from '@dfinity/utils';
 import {assertAnswerCtrlC} from '@junobuild/cli-tools';
 import type {PartialConfigFile} from '@junobuild/config-loader';
-import {isNullish, nonNullish} from '@junobuild/utils';
 import {cyan, yellow} from 'kleur';
 import {unlink} from 'node:fs/promises';
 import {basename} from 'node:path';

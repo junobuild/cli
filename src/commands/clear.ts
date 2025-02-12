@@ -1,5 +1,5 @@
+import {isNullish} from '@dfinity/utils';
 import {hasArgs, nextArg} from '@junobuild/cli-tools';
-import {isNullish} from '@junobuild/utils';
 import {yellow} from 'kleur';
 import {junoConfigExist} from '../configs/juno.config';
 import {clearAsset, clear as clearServices} from '../services/clear.services';

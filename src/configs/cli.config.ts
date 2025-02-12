@@ -1,5 +1,5 @@
 import type {JsonnableEd25519KeyIdentity} from '@dfinity/identity/lib/cjs/identity/ed25519';
-import {nonNullish} from '@junobuild/utils';
+import {nonNullish} from '@dfinity/utils';
 // TODO: fix TypeScript declaration import of conf
 // @ts-expect-error
 import type Conf from 'conf';

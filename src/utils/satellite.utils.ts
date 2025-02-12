@@ -1,5 +1,5 @@
+import {isNullish} from '@dfinity/utils';
 import {type SatelliteParameters} from '@junobuild/admin';
-import {isNullish} from '@junobuild/utils';
 import {red} from 'kleur';
 import {actorParameters} from '../api/actor.api';
 import {getCliOrbiters, getCliSatellites} from '../configs/cli.config';

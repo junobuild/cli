@@ -1,4 +1,4 @@
-import {assertNonNullish} from '@junobuild/utils';
+import {assertNonNullish} from '@dfinity/utils';
 import {junoConfigExist, readJunoConfig} from '../../configs/juno.config';
 import type {AssetKey} from '../../types/asset-key';
 import {configEnv} from '../../utils/config.utils';
