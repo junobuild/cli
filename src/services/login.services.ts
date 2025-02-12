@@ -28,6 +28,7 @@ export const login = async (args?: string[]) => {
 
   const browser = nextArg({args, option: '-b'}) ?? nextArg({args, option: '--browser'});
 
+  // eslint-disable-next-line promise/avoid-new
   await new Promise<void>((resolve, reject) => {
     const server = createServer(async (req, res) => {
       const url = new URL(requestUrl({port, reqUrl: req.url}));
