@@ -45,6 +45,7 @@ const githubLastRelease = async (apiUrl: string): Promise<GitHubRelease | undefi
     return undefined;
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-return
   return await response.json();
 };
 

@@ -57,7 +57,6 @@ export default [
   },
   {
     rules: {
-      '@typescript-eslint/no-unsafe-return': 'off',
       '@typescript-eslint/init-declarations': 'off',
       '@typescript-eslint/switch-exhaustiveness-check': 'off',
       '@typescript-eslint/no-redundant-type-constituents': 'off',

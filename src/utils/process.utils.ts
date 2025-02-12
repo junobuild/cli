@@ -10,6 +10,7 @@ export const getProcessToken = (): JsonnableEd25519KeyIdentity | undefined => {
 
   try {
     const {token} = JSON.parse(atob(envToken));
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
     return token;
   } catch (err: unknown) {
     throw new Error('Cannot parse token provided as an environment variable.');

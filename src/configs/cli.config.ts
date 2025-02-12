@@ -98,7 +98,8 @@ export const saveUse = async (use: CliProfile) => {
 export const getUse = async (): Promise<CliProfile | undefined> => {
   await initConfig();
 
-  return config.get('use');
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+  return config?.get('use');
 };
 
 // Profile
@@ -112,7 +113,8 @@ const saveProfiles = async (profiles: Record<string, CliConfigData>) => {
 export const getProfiles = async (): Promise<Record<string, CliConfigData> | undefined> => {
   await initConfig();
 
-  return config.get('profiles');
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+  return config?.get('profiles');
 };
 
 export const isDefaultProfile = (use: CliProfile | undefined | null): boolean =>
@@ -135,7 +137,8 @@ export const getToken = async (): Promise<JsonnableEd25519KeyIdentity | undefine
     return (await getProfiles())?.[use!]?.token;
   }
 
-  return config.get('token');
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+  return config?.get('token');
 };
 
 // Satellites
@@ -155,7 +158,8 @@ export const getCliSatellites = async (): Promise<CliSatelliteConfig[]> => {
     return (await getProfiles())?.[use!]?.satellites ?? [];
   }
 
-  return config.get('satellites');
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+  return config?.get('satellites');
 };
 
 export const addCliSatellite = async ({
@@ -213,7 +217,8 @@ export const getCliMissionControl = async (): Promise<string | undefined> => {
     return (await getProfiles())?.[use!]?.missionControl;
   }
 
-  return config.get('missionControl');
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+  return config?.get('missionControl');
 };
 
 export const addCliMissionControl = async ({
@@ -262,7 +267,8 @@ export const getCliOrbiters = async (): Promise<CliOrbiterConfig[] | undefined> 
     return (await getProfiles())?.[use!]?.orbiters;
   }
 
-  return config.get('orbiters');
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+  return config?.get('orbiters');
 };
 
 export const addCliOrbiter = async ({
