@@ -45,6 +45,7 @@ export default [
       '@typescript-eslint/no-deprecated': 'off',
       '@typescript-eslint/no-unsafe-member-access': 'off',
       '@typescript-eslint/prefer-destructuring': 'off',
+      '@typescript-eslint/no-unsafe-assignment': 'off',
       '@typescript-eslint/no-unused-vars': [
         'warn',
         {
@@ -58,7 +59,6 @@ export default [
   },
   {
     rules: {
-      '@typescript-eslint/no-unsafe-assignment': 'off',
       '@typescript-eslint/no-unsafe-argument': 'off'
     }
   }
