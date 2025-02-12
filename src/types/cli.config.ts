@@ -17,6 +17,7 @@ export interface CliOrbiterConfig {
   n?: string; // name
 }
 
+// eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
 export type CliProfile = 'default' | string;
 
 // Backwards compatibility. Default is save in root of the object, profile in an optional record.

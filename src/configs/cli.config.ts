@@ -16,6 +16,7 @@ import type {
 import {loadConfig} from '../utils/config.utils';
 
 // Save in https://github.com/sindresorhus/env-paths#pathsconfig
+// eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
 let config: Conf<CliConfig> | undefined = undefined;
 
 const initConfig = async () => {
