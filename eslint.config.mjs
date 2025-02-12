@@ -56,10 +56,5 @@ export default [
       ],
       'eslint-comments/require-description': 'off'
     }
-  },
-  {
-    rules: {
-      '@typescript-eslint/no-unsafe-argument': 'off'
-    }
   }
 ];
