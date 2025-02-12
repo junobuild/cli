@@ -54,6 +54,7 @@ export const login = async (args?: string[]) => {
         // TODO: another error page
         console.error(err);
         await respondWithFile(req, res, 400, '../templates/login/failure.html');
+        // eslint-disable-next-line @typescript-eslint/prefer-promise-reject-errors
         reject(err);
       }
 
