@@ -57,7 +57,6 @@ export default [
   },
   {
     rules: {
-      '@typescript-eslint/switch-exhaustiveness-check': 'off',
       '@typescript-eslint/no-redundant-type-constituents': 'off',
       'promise/avoid-new': 'off',
       '@typescript-eslint/prefer-promise-reject-errors': 'off',

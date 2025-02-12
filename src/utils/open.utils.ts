@@ -24,6 +24,8 @@ export const openUrl = async ({
     case 'safari':
       app = 'Safari';
       break;
+    default:
+      app = undefined;
   }
 
   return await open(url, app !== undefined ? {app: {name: app}} : undefined);
