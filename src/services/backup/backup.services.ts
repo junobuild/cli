@@ -161,7 +161,7 @@ const loadSnapshot = async ({
       canisterId
     });
 
-    return snapshots?.[0]?.id;
+    return snapshots[0]?.id;
   } finally {
     spinner.stop();
   }

@@ -178,6 +178,7 @@ export const addCliSatellite = async ({
       [profile!]: {
         ...currentProfile,
         satellites: [
+          // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
           ...(currentProfile.satellites ?? []).filter(({p}) => p !== satellite.p),
           satellite
         ]
@@ -189,6 +190,7 @@ export const addCliSatellite = async ({
 
   const currentSatellites = await getCliSatellites();
   await saveCliSatellites([
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
     ...(currentSatellites ?? []).filter(({p}) => p !== satellite.p),
     satellite
   ]);

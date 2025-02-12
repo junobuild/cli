@@ -80,7 +80,7 @@ const initConfig = async () => {
 const initSatelliteConfig = async (): Promise<string> => {
   const satellites = await getCliSatellites();
 
-  const satellite = await (satellites?.length > 0
+  const satellite = await (satellites.length > 0
     ? promptSatellites(satellites)
     : promptSatellite());
 

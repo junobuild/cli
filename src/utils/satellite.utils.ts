@@ -37,5 +37,5 @@ export const satelliteKey = async (satelliteId: string): Promise<string> => {
 export const orbiterKey = async (orbiterId: string): Promise<string> => {
   const orbiters = await getCliOrbiters();
   const orbiter = orbiters?.find(({p}) => p === orbiterId);
-  return orbiter?.n !== undefined && orbiter?.n !== '' ? orbiter.n : orbiterId;
+  return orbiter?.n !== undefined && orbiter.n !== '' ? orbiter.n : orbiterId;
 };
