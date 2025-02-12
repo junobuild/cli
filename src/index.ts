@@ -105,7 +105,7 @@ export const run = async () => {
         logHelpStart(args);
         break;
       default:
-        console.log(`${red('Unknown command.')}`);
+        console.log(red('Unknown command.'));
         console.log(help);
     }
     return;
@@ -161,7 +161,7 @@ export const run = async () => {
       console.log(help);
       break;
     default:
-      console.log(`${red('Unknown command.')}`);
+      console.log(red('Unknown command.'));
       console.log(help);
   }
 };

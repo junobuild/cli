@@ -49,9 +49,7 @@ export const success = ({src}: {src: string}): string => `
 ✅ Satellite successfully ejected!
 
 You can now extend your satellite's capabilities.
-Edit the generated Rust template located in ${yellow(
-  `${src}`
-)} and customize according to your needs.
+Edit the generated Rust template located in ${yellow(src)} and customize according to your needs.
 
 Useful ${green('juno')} ${cyan('dev')} ${magenta('<subcommand>')} to continue with:
 

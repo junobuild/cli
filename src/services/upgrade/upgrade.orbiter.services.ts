@@ -65,7 +65,7 @@ const upgradeOrbiterCustom = async ({
   const src = nextArg({args, option: '-s'}) ?? nextArg({args, option: '--src'});
 
   if (src === undefined) {
-    console.log(`${red('No source file provided.')}`);
+    console.log(red('No source file provided.'));
     return {success: false};
   }
 

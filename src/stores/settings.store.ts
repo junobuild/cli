@@ -66,7 +66,7 @@ class SettingsStore {
       configEncoded.store = config.store;
     } catch (err: unknown) {
       console.log(
-        `${yellow('Your current configuration cannot be encrypted. Maybe it is already encrypted?')}`
+        yellow('Your current configuration cannot be encrypted. Maybe it is already encrypted?')
       );
       console.log(err);
     }

@@ -14,7 +14,7 @@ export const satelliteParameters = async ({
   const satelliteId = ids?.[mode] ?? id ?? deprecatedSatelliteId;
 
   if (isNullish(satelliteId)) {
-    console.log(`${red(`A satellite ID for ${mode} must be set in your configuration.`)}`);
+    console.log(red(`A satellite ID for ${mode} must be set in your configuration.`));
     process.exit(1);
   }
 

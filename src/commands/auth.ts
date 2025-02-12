@@ -10,7 +10,7 @@ import {login as consoleLogin} from '../services/login.services';
 export const logout = async () => {
   await clearCliConfig();
 
-  console.log(`${green('Logged out')}`);
+  console.log(green('Logged out'));
 };
 
 export const login = async (args?: string[]) => {

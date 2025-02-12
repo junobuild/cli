@@ -47,7 +47,7 @@ export const backup = async (args?: string[]) => {
       });
       break;
     default:
-      console.log(`${red('Unknown subcommand.')}`);
+      console.log(red('Unknown subcommand.'));
       logHelpDev();
   }
 };
@@ -79,7 +79,7 @@ const executeBackupFn = async ({
       await orbiterFn();
       break;
     default:
-      console.log(`${red('Unknown target.')}`);
+      console.log(red('Unknown target.'));
       logHelpBackup(args);
   }
 };

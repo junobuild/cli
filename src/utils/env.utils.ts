@@ -15,7 +15,7 @@ export const checkNodeVersion = (): {valid: boolean | 'error'} => {
 
     if (nodeMajor < NODE_VERSION) {
       console.log(
-        `Your version of Node is ${yellow(`${version.trim()}`)}. Juno CLI requires Node ${green(
+        `Your version of Node is ${yellow(version.trim())}. Juno CLI requires Node ${green(
           `${NODE_VERSION}`
         )} or a more recent version.`
       );
@@ -42,7 +42,7 @@ export const checkRustVersion = async (): Promise<{valid: boolean | 'error'}> =>
     if (lt(version, RUST_MIN_VERSION)) {
       console.log(
         `Your version of Rustc is ${yellow(version.trim())}. Juno CLI requires ${green(
-          `${RUST_MIN_VERSION}`
+          RUST_MIN_VERSION
         )} or a more recent version.`
       );
       return {valid: false};
@@ -69,7 +69,7 @@ export const checkIcWasmVersion = async (): Promise<{valid: boolean | 'error'}> 
     if (lt(version, IC_WASM_MIN_VERSION)) {
       console.log(
         `Your version of ic-wasm is ${yellow(version.trim())}. Juno CLI requires ${green(
-          `${IC_WASM_MIN_VERSION}`
+          IC_WASM_MIN_VERSION
         )} or a more recent version.`
       );
       return {valid: false};
@@ -95,7 +95,7 @@ export const checkDockerVersion = async (): Promise<{valid: boolean | 'error'}> 
     if (lt(version, DOCKER_MIN_VERSION)) {
       console.log(
         `Your version of Docker is ${yellow(version.trim())}. Juno CLI requires ${green(
-          `${DOCKER_MIN_VERSION}`
+          DOCKER_MIN_VERSION
         )} or a more recent version.`
       );
       return {valid: false};

@@ -22,7 +22,7 @@ export const upgrade = async (args?: string[]) => {
       await upgradeOrbiters(args);
       break;
     default:
-      console.log(`${red('Unknown target.')}`);
+      console.log(red('Unknown target.'));
       logHelpUpgrade();
   }
 };

@@ -26,7 +26,7 @@ export const startStop = async ({args, action}: {args?: string[]; action: StartS
       await startStopOrbiter({args, action});
       break;
     default:
-      console.log(`${red('Unknown target.')}`);
+      console.log(red('Unknown target.'));
 
       if (action === 'stop') {
         logHelpStop(args);

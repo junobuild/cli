@@ -33,7 +33,7 @@ const cliVersion = async () => {
   const githubRelease = await githubCliLastRelease();
 
   if (githubRelease === undefined) {
-    console.log(`${red('Cannot fetch last release version of Juno on GitHub 😢.')}`);
+    console.log(red('Cannot fetch last release version of Juno on GitHub 😢.'));
     return;
   }
 
@@ -42,7 +42,7 @@ const cliVersion = async () => {
   const latestVersion = clean(tag_name);
 
   if (isNullish(latestVersion)) {
-    console.log(`${red(`Cannot extract version from release. Reach out Juno❗️`)}`);
+    console.log(red(`Cannot extract version from release. Reach out Juno❗️`));
     return;
   }
 
@@ -154,7 +154,7 @@ const checkSegmentVersion = async ({
   const latestVersion = await lastRelease(toAssetKeys(assetKey));
 
   if (latestVersion === undefined) {
-    console.log(`${red(`Cannot fetch last release version of ${displayHint} on Juno's CDN 😢.`)}`);
+    console.log(red(`Cannot fetch last release version of ${displayHint} on Juno's CDN 😢.`));
     return;
   }
 
@@ -185,9 +185,7 @@ const checkVersion = ({
   }
 
   if (diff === 1) {
-    console.log(
-      `${yellow(`Your ${displayHint} version is more recent than the latest available 🤔.`)}`
-    );
+    console.log(yellow(`Your ${displayHint} version is more recent than the latest available 🤔.`));
     return;
   }
 

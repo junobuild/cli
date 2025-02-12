@@ -24,7 +24,7 @@ const listProfile = async () => {
   console.log('Available profiles:\n');
   console.log(
     Object.keys(profiles)
-      .map((profile) => (profile === use ? `${green(profile)} (currently selected)` : `${profile}`))
+      .map((profile) => (profile === use ? `${green(profile)} (currently selected)` : profile))
       .join('\n')
   );
 };
@@ -33,7 +33,7 @@ const switchProfile = async (args?: string[]) => {
   const profile = nextArg({args, option: '-p'}) ?? nextArg({args, option: '--profile'});
 
   if (profile === undefined) {
-    console.log(`${red('No profile provided.')}`);
+    console.log(red('No profile provided.'));
     return;
   }
 
@@ -47,7 +47,7 @@ const switchProfile = async (args?: string[]) => {
   const profiles = await getProfiles();
 
   if (profiles?.[profile] === undefined) {
-    console.log(`${red('No corresponding profile found.')}`);
+    console.log(red('No corresponding profile found.'));
     return;
   }
 

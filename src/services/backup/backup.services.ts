@@ -50,7 +50,7 @@ export const restoreSnapshot = async ({
   const existingSnapshotId = await loadSnapshot({canisterId});
 
   if (isNullish(existingSnapshotId)) {
-    console.log(`${red(`No backup found for your ${displaySegment(segment)}.`)}`);
+    console.log(red(`No backup found for your ${displaySegment(segment)}.`));
     return;
   }
 
@@ -77,7 +77,7 @@ export const deleteSnapshot = async ({
   const existingSnapshotId = await loadSnapshot({canisterId});
 
   if (isNullish(existingSnapshotId)) {
-    console.log(`${red(`No backup found for your ${displaySegment(segment)}.`)}`);
+    console.log(red(`No backup found for your ${displaySegment(segment)}.`));
     return;
   }
 

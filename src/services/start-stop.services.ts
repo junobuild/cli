@@ -20,7 +20,7 @@ export const startStopMissionControl = async ({
   const missionControl = await getCliMissionControl();
 
   if (isNullish(missionControl)) {
-    console.log(`${red(`A mission control must be set in your configuration.`)}`);
+    console.log(red(`A mission control must be set in your configuration.`));
     process.exit(1);
   }
 
@@ -39,7 +39,7 @@ export const startStopOrbiter = async ({action}: {args?: string[]; action: Start
   }
 
   if (authOrbiters.length > 0) {
-    console.log(`${red(`The CLI supports only one orbiter per project. Reach out to Juno.`)}`);
+    console.log(red(`The CLI supports only one orbiter per project. Reach out to Juno.`));
     process.exit(1);
   }
 

@@ -41,6 +41,6 @@ export const links = async (args?: string[]) => {
       console.log(`🌍 ${terminalLink(`https://${domain}`)}`);
     });
   } catch (err: unknown) {
-    console.log(`${red('Cannot list the custom domains.')}`);
+    console.log(red('Cannot list the custom domains.'));
   }
 };

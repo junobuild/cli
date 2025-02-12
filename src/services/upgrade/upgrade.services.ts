@@ -207,12 +207,12 @@ export const selectVersion = async ({
   });
 
   if (error !== undefined) {
-    console.log(`${red(error)}`);
+    console.log(red(error));
     return undefined;
   }
 
   if (newerReleases === undefined) {
-    console.log(`${red('Did not find any new releases of Juno 😢.')}`);
+    console.log(red('Did not find any new releases of Juno 😢.'));
     return undefined;
   }
 

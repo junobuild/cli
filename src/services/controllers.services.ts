@@ -27,7 +27,7 @@ export const reuseController = async (controller: Principal) => {
   });
 
   if (segmentId === undefined) {
-    console.log(`${red(`The ${displaySegment(segment)} ID cannot be undefined.`)}`);
+    console.log(red(`The ${displaySegment(segment)} ID cannot be undefined.`));
     return;
   }
 
@@ -45,7 +45,7 @@ export const reuseController = async (controller: Principal) => {
   }
 
   console.log(
-    `\nDone. The ${displaySegment(segment)} ${green(`${segmentId}`)} has been configured for your terminal. ✅`
+    `\nDone. The ${displaySegment(segment)} ${green(segmentId)} has been configured for your terminal. ✅`
   );
 };
 
@@ -63,7 +63,7 @@ const saveSatellite = async ({
   });
 
   if (name === undefined) {
-    console.log(`${red(`The name is mandatory.`)}`);
+    console.log(red(`The name is mandatory.`));
     return;
   }
 

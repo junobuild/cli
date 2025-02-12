@@ -21,7 +21,7 @@ export const dev = async (args?: string[]) => {
       await stop();
       break;
     default:
-      console.log(`${red('Unknown subcommand.')}`);
+      console.log(red('Unknown subcommand.'));
       logHelpDev();
   }
 };

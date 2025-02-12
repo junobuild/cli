@@ -56,7 +56,6 @@ export default [
   },
   {
     rules: {
-      '@typescript-eslint/no-unnecessary-template-expression': 'off',
       '@typescript-eslint/no-unnecessary-condition': 'off',
       '@typescript-eslint/prefer-destructuring': 'off',
       '@typescript-eslint/no-unsafe-return': 'off',

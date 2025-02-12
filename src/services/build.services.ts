@@ -287,7 +287,7 @@ const successMsg = async (spinner: Ora) => {
 
   spinner.succeed(
     `${green('Success!')}\n\nThe satellite has been compiled.\nOutput file: ${yellow(
-      `${relative(process.cwd(), gzipOutput)}`
+      relative(process.cwd(), gzipOutput)
     )} ${grey(`(${formatMB(size)}MB)`)}`
   );
 };
