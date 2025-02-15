@@ -20,7 +20,8 @@
     "format:check": "prettier --check .",
     "build": "tsc --noEmit && node rmdir.mjs && node esbuild.mjs",
     "dev": "node rmdir.mjs && NODE_ENV=development node esbuild.mjs",
-    "lint": "eslint --max-warnings 0 \"src/**/*\""
+    "lint": "eslint --max-warnings 0 \"src/**/*\"",
+    "prepublishOnly": "./scripts/prepublish.sh"
   },
   "dependencies": {
     "@dfinity/agent": "^2.3.0",
@@ -30,7 +31,7 @@
     "@dfinity/identity": "^2.3.0",
     "@dfinity/principal": "^2.3.0",
     "@junobuild/admin": "^0.1.4",
-    "@junobuild/cli-tools": "^0.1.0",
+    "@junobuild/cli-tools": "^0.1.1",
     "@junobuild/config-loader": "^0.1.0",
     "@junobuild/core": "^0.1.6",
     "@junobuild/did-tools": "^0.1.0",
