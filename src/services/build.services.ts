@@ -54,9 +54,12 @@ export const build = async () => {
     ...(existsSync('Cargo.lock') ? ['--locked'] : [])
   ];
 
+  const env = {...process.env, RUSTFLAGS: '--cfg getrandom_backend="custom"'};
+
   await execute({
     command: 'cargo',
-    args
+    args,
+    env
   });
 
   const spinner = ora({
