@@ -18,8 +18,8 @@
   "scripts": {
     "format": "prettier . --write",
     "format:check": "prettier --check .",
-    "build": "tsc --noEmit && node rmdir.mjs && node esbuild.mjs",
-    "dev": "node rmdir.mjs && NODE_ENV=development node esbuild.mjs",
+    "build": "tsc --noEmit && node ./scripts/rmdir.mjs && node ./scripts/esbuild.mjs",
+    "dev": "node ./scripts/rmdir.mjs && NODE_ENV=development node ./scripts/esbuild.mjs",
     "lint": "eslint --max-warnings 0 \"src/**/*\"",
     "prepublishOnly": "./scripts/prepublish.sh"
   },
