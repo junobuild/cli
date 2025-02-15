@@ -35,3 +35,5 @@ dist/
 
 target/
 templates/eject/Cargo.lock
+templates/eject/src/declarations
+templates/eject/src/satellite/satellite_extension.did
