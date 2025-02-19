@@ -1,5 +1,5 @@
 import {isNullish, nonNullish} from '@dfinity/utils';
-import {assertAnswerCtrlC} from '@junobuild/cli-tools';
+import {assertAnswerCtrlC, hasArgs} from '@junobuild/cli-tools';
 import type {PartialConfigFile} from '@junobuild/config-loader';
 import {cyan, yellow} from 'kleur';
 import {unlink} from 'node:fs/promises';
@@ -10,15 +10,32 @@ import {
   detectJunoConfigType,
   junoConfigExist,
   junoConfigFile,
-  writeJunoConfig
+  writeJunoConfig,
+  writeJunoConfigPlaceholder
 } from '../configs/juno.config';
 import {promptConfigType} from '../services/init.services';
 import {login as consoleLogin} from '../services/login.services';
 import type {CliOrbiterConfig, CliSatelliteConfig} from '../types/cli.config';
+import type {PackageManager} from '../types/pm';
 import {detectPackageManager} from '../utils/pm.utils';
 import {NEW_CMD_LINE, confirm, confirmAndExit} from '../utils/prompt.utils';
 
 export const init = async (args?: string[]) => {
+  if (hasArgs({args, options: ['-m', '--minimal']})) {
+    await initWithPlaceholder();
+    return;
+  }
+
+  await initWithSatelliteId(args);
+};
+
+const initWithPlaceholder = async () => {
+  await assertOverwrite();
+
+  await initConfigNoneInteractive();
+};
+
+const initWithSatelliteId = async (args?: string[]) => {
   const token = await getToken();
 
   if (isNullish(token)) {
@@ -33,33 +50,67 @@ export const init = async (args?: string[]) => {
     await consoleLogin(args);
   }
 
+  await assertOverwrite();
+
+  await initConfigInteractive();
+};
+
+const assertOverwrite = async () => {
   if (await junoConfigExist()) {
     await confirmAndExit(
       'Your existing configuration will be overwritten. Are you sure you want to continue?'
     );
   }
-
-  await initConfig();
 };
 
-const initConfig = async () => {
+const initConfigNoneInteractive = async () => {
+  const writeFn = async ({source, ...rest}: InitConfigParams) => {
+    await writeJunoConfigPlaceholder({
+      ...rest,
+      config: {
+        satellite: {source}
+      }
+    });
+  };
+
+  await initConfig({
+    writeFn
+  });
+};
+
+const initConfigInteractive = async () => {
   const satelliteId = await initSatelliteConfig();
   const orbiterId = await initOrbiterConfig();
 
+  const writeFn = async ({source, ...rest}: InitConfigParams) => {
+    await writeJunoConfig({
+      ...rest,
+      config: {
+        satellite: {id: satelliteId, source},
+        ...(nonNullish(orbiterId) && {orbiter: {id: orbiterId}})
+      }
+    });
+  };
+
+  await initConfig({
+    writeFn
+  });
+};
+
+type InitConfigParams = PartialConfigFile & {pm: PackageManager | undefined} & {source: string};
+
+const initConfig = async ({writeFn}: {writeFn: (params: InitConfigParams) => Promise<void>}) => {
   const source = await promptSource();
 
   const {configType, configPath: originalConfigPath} = await initConfigType();
 
   const pm = detectPackageManager();
 
-  await writeJunoConfig({
-    config: {
-      satellite: {id: satelliteId, source},
-      ...(nonNullish(orbiterId) && {orbiter: {id: orbiterId}})
-    },
+  await writeFn({
     configType,
     configPath: originalConfigPath,
-    pm
+    pm,
+    source
   });
 
   // We delete the deprecated juno.json, which is now replaced with juno.config.json|ts|js, as just created above.

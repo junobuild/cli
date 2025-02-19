@@ -18,7 +18,7 @@ import {
   TEMPLATE_SATELLITE_PREDEPLOY_CONFIG_FILENAME
 } from '../constants/config.constants';
 import {JUNO_CONFIG_FILENAME} from '../constants/constants';
-import type {JunoConfigWithSatelliteId} from '../types/config';
+import {type JunoConfigWithPlaceholder, type JunoConfigWithSatelliteId} from '../types/config';
 import type {PackageManager} from '../types/pm';
 import {readTemplateFile} from '../utils/fs.utils';
 
@@ -32,6 +32,41 @@ export const junoConfigFile = (): ConfigFile => junoConfigFileTools(JUNO_CONFIG_
 
 export const detectJunoConfigType = (): ConfigFile | undefined =>
   detectJunoConfigTypeTools(JUNO_CONFIG_FILE);
+
+export const writeJunoConfigPlaceholder = async ({
+  config,
+  configType,
+  configPath,
+  pm
+}: {config: JunoConfigWithPlaceholder} & PartialConfigFile & {
+    pm: PackageManager | undefined;
+  }): Promise<void> => {
+  switch (configType) {
+    case 'ts':
+    case 'js': {
+      const {
+        satellite: {source}
+      } = config;
+
+      const withPredeploy = nonNullish(pm);
+
+      const template = await readTemplateFile({
+        template: `${withPredeploy ? TEMPLATE_SATELLITE_PREDEPLOY_CONFIG_FILENAME : TEMPLATE_SATELLITE_CONFIG_FILENAME}.${configType}`,
+        sourceFolder: TEMPLATE_INIT_PATH
+      });
+
+      const content = template
+        .replace('<SOURCE>', source ?? DEPLOY_DEFAULT_SOURCE)
+        .replace('<COMMAND>', pm === 'npm' ? 'npm run' : (pm ?? ''));
+
+      await writeFile(configPath ?? `${JUNO_CONFIG_FILENAME}.${configType}`, content, 'utf-8');
+      break;
+    }
+    default: {
+      await writeFile(`${JUNO_CONFIG_FILENAME}.json`, JSON.stringify(config, null, 2), 'utf-8');
+    }
+  }
+};
 
 export const writeJunoConfig = async ({
   config,
