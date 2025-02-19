@@ -22,14 +22,14 @@ import {NEW_CMD_LINE, confirm, confirmAndExit} from '../utils/prompt.utils';
 
 export const init = async (args?: string[]) => {
   if (hasArgs({args, options: ['-m', '--minimal']})) {
-    await initWithPlaceholder(args);
+    await initWithPlaceholder();
     return;
   }
 
   await initWithSatelliteId(args);
 };
 
-const initWithPlaceholder = async (args?: string[]) => {
+const initWithPlaceholder = async () => {
   await assertOverwrite();
 
   await initConfigNoneInteractive();
