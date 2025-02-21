@@ -1,17 +1,15 @@
 import {isNullish, nonNullish} from '@dfinity/utils';
+import type Conf from 'conf';
+import {yellow} from 'kleur';
 import {
   type CliSettingsConfig,
   getSettingsConfig,
   saveEncryption
 } from '../configs/cli.settings.config';
-import {confirm} from '../utils/prompt.utils';
-// TODO: fix TypeScript declaration import of conf
-// @ts-expect-error
-import type Conf from 'conf';
-import {yellow} from 'kleur';
 import {askForPassword} from '../services/cli.settings.services';
 import {configFileExists, loadConfig} from '../utils/config.utils';
 import {isHeadless} from '../utils/process.utils';
+import {confirm} from '../utils/prompt.utils';
 
 class SettingsConfigStore {
   readonly #config: Conf<CliSettingsConfig>;
@@ -52,7 +50,6 @@ class SettingsConfigStore {
   }
 
   isEncryptionEnabled(): boolean {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
     return this.#config.get('encryption');
   }
 

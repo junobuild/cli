@@ -1,7 +1,5 @@
-import {CLI_SETTINGS_NAME} from '../constants/constants';
-// TODO: fix TypeScript declaration import of conf
-// @ts-expect-error
 import Conf, {type Schema} from 'conf';
+import {CLI_SETTINGS_NAME} from '../constants/constants';
 
 export interface CliSettingsConfig {
   encryption: boolean;
