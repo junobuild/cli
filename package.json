@@ -31,7 +31,7 @@
     "@dfinity/identity": "^2.3.0",
     "@dfinity/principal": "^2.3.0",
     "@junobuild/admin": "^0.1.5",
-    "@junobuild/cli-tools": "^0.1.1",
+    "@junobuild/cli-tools": "^0.1.2",
     "@junobuild/config-loader": "^0.1.1",
     "@junobuild/core": "^0.1.7",
     "@junobuild/did-tools": "^0.1.0",
