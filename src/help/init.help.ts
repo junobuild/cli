@@ -1,7 +1,6 @@
 import {cyan, green, yellow} from 'kleur';
 import {helpMode, helpOutput} from './common.help';
 import {TITLE} from './help';
-import {OPEN_DESCRIPTION} from './open.help';
 
 export const INIT_DESCRIPTION = 'Set up your project.';
 
@@ -12,7 +11,7 @@ Options:
   ${helpMode}
   ${yellow('-h, --help')}            Output usage information.`;
 
-const doc = `${OPEN_DESCRIPTION}
+const doc = `${INIT_DESCRIPTION}
 
 \`\`\`bash
 ${usage}
@@ -21,7 +20,7 @@ ${usage}
 
 const help = `${TITLE}
 
-${OPEN_DESCRIPTION}
+${INIT_DESCRIPTION}
 
 ${usage}
 `;

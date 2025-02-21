@@ -13,15 +13,15 @@ import {askForPassword} from '../services/cli.settings.services';
 import {loadConfig} from '../utils/config.utils';
 import {isHeadless} from '../utils/process.utils';
 
-class SettingsStore {
+class SettingsConfigStore {
   readonly #config: Conf<CliSettingsConfig>;
 
   private constructor(readonly config: Conf<CliSettingsConfig>) {
     this.#config = config;
   }
 
-  static async init(): Promise<SettingsStore> {
-    const store = new SettingsStore(getSettingsConfig());
+  static async init(): Promise<SettingsConfigStore> {
+    const store = new SettingsConfigStore(getSettingsConfig());
 
     if (isHeadless()) {
       return store;
@@ -74,4 +74,20 @@ class SettingsStore {
   }
 }
 
-export const settingsStore: SettingsStore = await SettingsStore.init();
+class SettingsStore {
+  #settingsConfigStore: SettingsConfigStore | undefined;
+
+  getSettingsStore = async (): Promise<SettingsConfigStore> => {
+    if (isNullish(this.#settingsConfigStore)) {
+      this.#settingsConfigStore = await SettingsConfigStore.init();
+    }
+
+    return this.#settingsConfigStore;
+  };
+}
+
+// We initialize the settings only when necessary.
+// That way, for example, a command such as "juno dev start" or "juno --version" can be run
+// on first use without asking whether the configuration should be encoded or not.
+const settingsStore = new SettingsStore();
+export const {getSettingsStore} = settingsStore;

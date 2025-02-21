@@ -4,6 +4,7 @@ import {
   orbiterVersion as orbiterVersionLib,
   satelliteVersion as satelliteVersionLib
 } from '@junobuild/admin';
+import {hasArgs} from '@junobuild/cli-tools';
 import {cyan, green, red, yellow} from 'kleur';
 import {clean, compare} from 'semver';
 import {version as cliCurrentVersion} from '../../package.json';
@@ -24,6 +25,11 @@ import {lastRelease} from '../utils/upgrade.utils';
 
 export const version = async (args?: string[]) => {
   await cliVersion();
+
+  if (hasArgs({args, options: ['-c', '--cli']})) {
+    return;
+  }
+
   await missionControlVersion();
   await satelliteVersion(args);
   await orbitersVersion();
