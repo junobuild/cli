@@ -5,7 +5,7 @@ import {nonNullish} from '@dfinity/utils';
 import type Conf from 'conf';
 import {red, yellow} from 'kleur';
 import {askForPassword} from '../services/cli.settings.services';
-import {settingsStore} from '../stores/settings.store';
+import {getSettingsStore} from '../stores/settings.store';
 import type {
   CliConfig,
   CliConfigData,
@@ -23,6 +23,8 @@ const initConfig = async () => {
   if (nonNullish(config)) {
     return;
   }
+
+  const settingsStore = await getSettingsStore();
 
   const encryptionKey = settingsStore.isEncryptionEnabled() ? await askForPassword() : undefined;
 
