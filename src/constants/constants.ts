@@ -1,5 +1,5 @@
 export const AUTH_URL = `${process.env.JUNO_URL}/cli`;
-export const CLI_PROJECT_NAME = process.env.CLI_PROJECT_NAME;
+export const CLI_PROJECT_NAME = process.env.CLI_PROJECT_NAME ?? 'juno';
 export const CLI_SETTINGS_NAME = `${CLI_PROJECT_NAME}-cli-settings`;
 export const REDIRECT_URL = 'http://localhost:{port}';
 export const JUNO_CONFIG_FILENAME = 'juno.config'; // .json | .js | .mjs | .cjs | .ts

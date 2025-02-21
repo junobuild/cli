@@ -10,7 +10,7 @@ import {confirm} from '../utils/prompt.utils';
 import type Conf from 'conf';
 import {yellow} from 'kleur';
 import {askForPassword} from '../services/cli.settings.services';
-import {loadConfig} from '../utils/config.utils';
+import {configFileExists, loadConfig} from '../utils/config.utils';
 import {isHeadless} from '../utils/process.utils';
 
 class SettingsConfigStore {
@@ -27,7 +27,14 @@ class SettingsConfigStore {
       return store;
     }
 
-    if (nonNullish(store.config.get('encryption'))) {
+    // A developer might have launched the CLI, answered the encryption question, but never actually saved any config.
+    // This can happen, for example, if the developer chooses to encrypt the config but presses Control+C
+    // when prompted for the password the first time. To avoid requesting a password that was never set,
+    // we prompt the developer again about whether to encrypt the config or not.
+    // Since the file does not exist at all, it is safe to create a new one.
+    const configExists = configFileExists();
+
+    if (configExists && nonNullish(store.config.get('encryption'))) {
       return store;
     }
 
