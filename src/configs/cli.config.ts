@@ -1,7 +1,5 @@
 import type {JsonnableEd25519KeyIdentity} from '@dfinity/identity/lib/cjs/identity/ed25519';
-import {nonNullish} from '@dfinity/utils';
-// TODO: fix TypeScript declaration import of conf
-// @ts-expect-error
+import {assertNonNullish, nonNullish} from '@dfinity/utils';
 import type Conf from 'conf';
 import {red, yellow} from 'kleur';
 import {askForPassword} from '../services/cli.settings.services';
@@ -16,7 +14,7 @@ import type {
 import {loadConfig} from '../utils/config.utils';
 
 // Save in https://github.com/sindresorhus/env-paths#pathsconfig
-// eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
+
 let config: Conf<CliConfig> | undefined = undefined;
 
 const initConfig = async () => {
@@ -91,17 +89,22 @@ export const saveCliConfig = async ({
 export const deleteUse = async () => {
   await initConfig();
 
+  // Guard for TypeScript. initConfig ensures config is initialized or exit.
+  assertNonNullish(config);
+
   config.delete('use');
 };
 export const saveUse = async (use: CliProfile) => {
   await initConfig();
+
+  // Guard for TypeScript. initConfig ensures config is initialized or exit.
+  assertNonNullish(config);
 
   config.set('use', use);
 };
 export const getUse = async (): Promise<CliProfile | undefined> => {
   await initConfig();
 
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-return
   return config?.get('use');
 };
 
@@ -110,13 +113,15 @@ export const getUse = async (): Promise<CliProfile | undefined> => {
 const saveProfiles = async (profiles: Record<string, CliConfigData>) => {
   await initConfig();
 
+  // Guard for TypeScript. initConfig ensures config is initialized or exit.
+  assertNonNullish(config);
+
   config.set('profiles', profiles);
 };
 
 export const getProfiles = async (): Promise<Record<string, CliConfigData> | undefined> => {
   await initConfig();
 
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-return
   return config?.get('profiles');
 };
 
@@ -127,6 +132,9 @@ export const isDefaultProfile = (use: CliProfile | undefined | null): boolean =>
 
 const saveToken = async (token: JsonnableEd25519KeyIdentity) => {
   await initConfig();
+
+  // Guard for TypeScript. initConfig ensures config is initialized or exit.
+  assertNonNullish(config);
 
   config.set('token', token);
 };
@@ -140,7 +148,6 @@ export const getToken = async (): Promise<JsonnableEd25519KeyIdentity | undefine
     return (await getProfiles())?.[use!]?.token;
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-return
   return config?.get('token');
 };
 
@@ -149,7 +156,10 @@ export const getToken = async (): Promise<JsonnableEd25519KeyIdentity | undefine
 const saveCliSatellites = async (satellites: CliSatelliteConfig[]) => {
   await initConfig();
 
-  await config.set('satellites', satellites);
+  // Guard for TypeScript. initConfig ensures config is initialized or exit.
+  assertNonNullish(config);
+
+  config.set('satellites', satellites);
 };
 
 export const getCliSatellites = async (): Promise<CliSatelliteConfig[]> => {
@@ -161,8 +171,10 @@ export const getCliSatellites = async (): Promise<CliSatelliteConfig[]> => {
     return (await getProfiles())?.[use!]?.satellites ?? [];
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-return
-  return config?.get('satellites');
+  // Guard for TypeScript. initConfig ensures config is initialized or exit.
+  assertNonNullish(config);
+
+  return config.get('satellites');
 };
 
 export const addCliSatellite = async ({
@@ -208,6 +220,9 @@ export const addCliSatellite = async ({
 const saveCliMissionControl = async (missionControl: string) => {
   await initConfig();
 
+  // Guard for TypeScript. initConfig ensures config is initialized or exit.
+  assertNonNullish(config);
+
   config.set('missionControl', missionControl);
 };
 
@@ -220,7 +235,6 @@ export const getCliMissionControl = async (): Promise<string | undefined> => {
     return (await getProfiles())?.[use!]?.missionControl;
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-return
   return config?.get('missionControl');
 };
 
@@ -258,6 +272,9 @@ export const addCliMissionControl = async ({
 const saveCliOrbiters = async (orbiters: CliOrbiterConfig[]) => {
   await initConfig();
 
+  // Guard for TypeScript. initConfig ensures config is initialized or exit.
+  assertNonNullish(config);
+
   config.set('orbiters', orbiters);
 };
 
@@ -270,7 +287,6 @@ export const getCliOrbiters = async (): Promise<CliOrbiterConfig[] | undefined> 
     return (await getProfiles())?.[use!]?.orbiters;
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-return
   return config?.get('orbiters');
 };
 
@@ -308,6 +324,9 @@ export const addCliOrbiter = async ({
 
 export const clearCliConfig = async () => {
   await initConfig();
+
+  // Guard for TypeScript. initConfig ensures config is initialized or exit.
+  assertNonNullish(config);
 
   config.clear();
 };

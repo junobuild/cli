@@ -1,9 +1,6 @@
+import type {Options as ConfOptions, Schema} from 'conf';
 import type {CliConfig} from '../types/cli.config';
 import {CLI_PROJECT_NAME} from './constants';
-
-// TODO: fix TypeScript declaration import of conf
-// @ts-expect-error
-import type {Options as ConfOptions, Schema} from 'conf';
 
 const schema: Schema<CliConfig> = {
   token: {

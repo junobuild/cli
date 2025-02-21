@@ -1,15 +1,12 @@
 import {nonNullish} from '@dfinity/utils';
 import {nextArg} from '@junobuild/cli-tools';
 import type {JunoConfigEnv} from '@junobuild/config';
+import Conf from 'conf';
 import envPaths from 'env-paths';
+import {existsSync} from 'node:fs';
 import {resolve} from 'node:path';
 import {CONFIG_OPTIONS} from '../constants/config.constants';
 import type {CliConfig} from '../types/cli.config';
-
-// TODO: fix TypeScript declaration import of conf
-// @ts-expect-error
-import Conf from 'conf';
-import {existsSync} from 'node:fs';
 
 export const configEnv = (args?: string[]): JunoConfigEnv => {
   const mode = nextArg({args, option: '-m'}) ?? nextArg({args, option: '--mode'});
