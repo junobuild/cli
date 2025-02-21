@@ -11,13 +11,13 @@ import {
   type PartialConfigFile
 } from '@junobuild/config-loader';
 import {writeFile} from 'node:fs/promises';
+import {JUNO_CONFIG_FILENAME} from '../constants/constants';
 import {
   TEMPLATE_INIT_PATH,
   TEMPLATE_JUNO_PREDEPLOY_CONFIG_FILENAME,
   TEMPLATE_SATELLITE_CONFIG_FILENAME,
   TEMPLATE_SATELLITE_PREDEPLOY_CONFIG_FILENAME
-} from '../constants/config.constants';
-import {JUNO_CONFIG_FILENAME} from '../constants/constants';
+} from '../constants/templates.constants';
 import {type JunoConfigWithPlaceholder, type JunoConfigWithSatelliteId} from '../types/config';
 import type {PackageManager} from '../types/pm';
 import {readTemplateFile} from '../utils/fs.utils';
