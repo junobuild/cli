@@ -8,10 +8,13 @@ import {INIT_DESCRIPTION} from './init.help';
 import {LOGIN_DESCRIPTION} from './login.help';
 import {LOGOUT_DESCRIPTION} from './logout.help';
 import {OPEN_DESCRIPTION} from './open.help';
+import {SNAPSHOT_DESCRIPTION} from './snapshot.help';
 import {UPGRADE_DESCRIPTION} from './upgrade.help';
 import {USE_DESCRIPTION} from './use.help';
 import {VERSION_DESCRIPTION} from './version.help';
 import {WHOAMI_DESCRIPTION} from './whoami.help';
+import { START_DESCRIPTION } from "./start.help";
+import { STOP_DESCRIPTION } from "./stop.help";
 
 const JUNO_LOGO = `  __  __ __  __  _  ____ 
 __) ||  |  ||  \\| |/    \\
@@ -35,6 +38,9 @@ Commands:
   ${cyan('login')}               ${LOGIN_DESCRIPTION}
   ${cyan('logout')}              ${LOGOUT_DESCRIPTION}
   ${cyan('open')}                ${OPEN_DESCRIPTION}
+  ${cyan('snapshot')}            ${SNAPSHOT_DESCRIPTION}
+  ${cyan('start')}               ${START_DESCRIPTION}
+  ${cyan('stop')}                ${STOP_DESCRIPTION}
   ${cyan('upgrade')}             ${UPGRADE_DESCRIPTION}
   ${cyan('use')}                 ${USE_DESCRIPTION}
   ${cyan('version')}             ${VERSION_DESCRIPTION}
