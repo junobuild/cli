@@ -123,8 +123,14 @@ const initConfig = async ({writeFn}: {writeFn: (params: InitConfigParams) => Pro
     return;
   }
 
+  showConfigTips({pm});
+};
+
+const showConfigTips = ({pm}: {pm: PackageManager | undefined}) => {
+  const cmd = `${pm ?? 'npm'} ${isNullish(pm) || pm === 'npm' ? 'i' : 'add'} @junobuild/config -D`;
+
   console.log(
-    `${NEW_CMD_LINE}💡 You can leverage your IDE's intellisense with type hints by installing the library: ${yellow('npm i @junobuild/config -D')}${NEW_CMD_LINE}`
+    `${NEW_CMD_LINE}💡 You can leverage your IDE's intellisense by installing the library: ${yellow(cmd)}${NEW_CMD_LINE}`
   );
 };
 
