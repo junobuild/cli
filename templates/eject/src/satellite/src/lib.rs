@@ -10,6 +10,20 @@ use junobuild_satellite::{
     OnDeleteManyDocsContext, OnSetDocContext, OnSetManyDocsContext, OnUploadAssetContext,
 };
 
+// All the available hooks and assertions for your Datastore and Storage are scaffolded by default in this `lib.rs` module.
+// However, if you don’t have to implement all of them, for example to improve readability or reduce unnecessary logic,
+// you can selectively enable only the features you need.
+//
+// To do this, disable the default features in your `Cargo.toml` and explicitly specify only the ones you want to use.
+//
+// For example, if you only need `on_set_doc`, configure your `Cargo.toml` like this:
+//
+// [dependencies]
+// junobuild-satellite = { version = "0.0.22", default-features = false, features = ["on_set_doc"] }
+//
+// With this setup, only `on_set_doc` must be implemented with custom logic,
+// and other hooks and assertions can be removed. They will not be included in your Satellite.
+
 #[on_set_doc]
 async fn on_set_doc(_context: OnSetDocContext) -> Result<(), String> {
     Ok(())
