@@ -15,12 +15,6 @@ export const detectPackageManager = (): PackageManager | undefined => {
     return 'yarn';
   }
 
-  const bun = join(process.cwd(), 'bun.lockb');
-
-  if (existsSync(bun)) {
-    return 'bun';
-  }
-
   const npm = join(process.cwd(), 'package-lock.json');
 
   if (existsSync(npm)) {
