@@ -100,11 +100,11 @@ const initConfigInteractive = async () => {
 type InitConfigParams = PartialConfigFile & {pm: PackageManager | undefined} & {source: string};
 
 const initConfig = async ({writeFn}: {writeFn: (params: InitConfigParams) => Promise<void>}) => {
-  const source = await promptSource();
+  const pm = detectPackageManager();
+
+  const source = await promptSource({pm});
 
   const {configType, configPath: originalConfigPath} = await initConfigType();
-
-  const pm = detectPackageManager();
 
   await writeFn({
     configType,
@@ -212,11 +212,13 @@ const promptSatellite = async (): Promise<string> => {
   return satellite;
 };
 
-const promptSource = async (): Promise<string> => {
+const promptSource = async ({pm}: {pm: PackageManager | undefined}): Promise<string> => {
+  const cmd = `${pm ?? 'npm'}${isNullish(pm) || pm === 'npm' ? ' run' : ''} build`;
+
   const {output}: {output: string} = await prompts({
     type: 'select',
     name: 'output',
-    message: 'What is the output folder of your `npm run build` command?',
+    message: `What is the output folder of your \`${cmd}\` command?`,
     choices: [
       {title: 'build', value: 'build'},
       {title: 'dist', value: 'dist'},
