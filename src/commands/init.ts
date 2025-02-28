@@ -220,6 +220,7 @@ const promptSource = async (): Promise<string> => {
     choices: [
       {title: 'build', value: 'build'},
       {title: 'dist', value: 'dist'},
+      {title: 'out', value: 'out'},
       {title: '<not listed, manual entry>', value: '_manual_'}
     ],
     initial: 0
