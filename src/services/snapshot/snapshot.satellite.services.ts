@@ -4,30 +4,30 @@ import type {AssetKey} from '../../types/asset-key';
 import {configEnv} from '../../utils/config.utils';
 import {consoleNoConfigFound} from '../../utils/msg.utils';
 import {satelliteParameters} from '../../utils/satellite.utils';
-import {createSnapshot, deleteSnapshot, restoreSnapshot} from './backup.services';
+import {createSnapshot, deleteSnapshot, restoreSnapshot} from './snapshot.services';
 
 export const createSnapshotSatellite = async (params: {args?: string[]}) => {
-  await executeBackupFn({
+  await executeSnapshotFn({
     ...params,
     fn: createSnapshot
   });
 };
 
 export const restoreSnapshotSatellite = async (params: {args?: string[]}) => {
-  await executeBackupFn({
+  await executeSnapshotFn({
     ...params,
     fn: restoreSnapshot
   });
 };
 
 export const deleteSnapshotSatellite = async (params: {args?: string[]}) => {
-  await executeBackupFn({
+  await executeSnapshotFn({
     ...params,
     fn: deleteSnapshot
   });
 };
 
-const executeBackupFn = async ({
+const executeSnapshotFn = async ({
   args,
   fn
 }: {

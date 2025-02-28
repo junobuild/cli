@@ -1,26 +1,26 @@
 import {getCliOrbiters} from '../../configs/cli.config';
 import type {AssetKey} from '../../types/asset-key';
-import {createSnapshot, deleteSnapshot, restoreSnapshot} from './backup.services';
+import {createSnapshot, deleteSnapshot, restoreSnapshot} from './snapshot.services';
 
 export const createSnapshotOrbiter = async () => {
-  await executeBackupFn({
+  await executeSnapshotFn({
     fn: createSnapshot
   });
 };
 
 export const restoreSnapshotOrbiter = async () => {
-  await executeBackupFn({
+  await executeSnapshotFn({
     fn: restoreSnapshot
   });
 };
 
 export const deleteSnapshotOrbiter = async () => {
-  await executeBackupFn({
+  await executeSnapshotFn({
     fn: deleteSnapshot
   });
 };
 
-const executeBackupFn = async ({
+const executeSnapshotFn = async ({
   fn
 }: {
   fn: (params: {canisterId: string; segment: AssetKey}) => Promise<void>;
