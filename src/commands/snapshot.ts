@@ -1,29 +1,29 @@
 import {nextArg} from '@junobuild/cli-tools';
 import {red} from 'kleur';
-import {logHelpBackup} from '../help/backup.help';
 import {logHelpDev} from '../help/dev.help';
+import {logHelpSnapshot} from '../help/snapshot.help';
 import {
   createSnapshotMissionControl,
   deleteSnapshotMissionControl,
   restoreSnapshotMissionControl
-} from '../services/backup/backup.mission-control.services';
+} from '../services/snapshot/snapshot.mission-control.services';
 import {
   createSnapshotOrbiter,
   deleteSnapshotOrbiter,
   restoreSnapshotOrbiter
-} from '../services/backup/backup.orbiter.services';
+} from '../services/snapshot/snapshot.orbiter.services';
 import {
   createSnapshotSatellite,
   deleteSnapshotSatellite,
   restoreSnapshotSatellite
-} from '../services/backup/backup.satellite.services';
+} from '../services/snapshot/snapshot.satellite.services';
 
-export const backup = async (args?: string[]) => {
+export const snapshot = async (args?: string[]) => {
   const [subCommand] = args ?? [];
 
   switch (subCommand) {
     case 'create':
-      await executeBackupFn({
+      await executeSnapshotFn({
         args,
         satelliteFn: createSnapshotSatellite,
         missionControlFn: createSnapshotMissionControl,
@@ -31,7 +31,7 @@ export const backup = async (args?: string[]) => {
       });
       break;
     case 'restore':
-      await executeBackupFn({
+      await executeSnapshotFn({
         args,
         satelliteFn: restoreSnapshotSatellite,
         missionControlFn: restoreSnapshotMissionControl,
@@ -39,7 +39,7 @@ export const backup = async (args?: string[]) => {
       });
       break;
     case 'delete':
-      await executeBackupFn({
+      await executeSnapshotFn({
         args,
         satelliteFn: deleteSnapshotSatellite,
         missionControlFn: deleteSnapshotMissionControl,
@@ -52,7 +52,7 @@ export const backup = async (args?: string[]) => {
   }
 };
 
-const executeBackupFn = async ({
+const executeSnapshotFn = async ({
   args,
   satelliteFn,
   missionControlFn,
@@ -80,6 +80,6 @@ const executeBackupFn = async ({
       break;
     default:
       console.log(red('Unknown target.'));
-      logHelpBackup(args);
+      logHelpSnapshot(args);
   }
 };

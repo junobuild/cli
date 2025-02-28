@@ -1,19 +1,18 @@
 import {hasArgs} from '@junobuild/cli-tools';
 import {red} from 'kleur';
 import {login, logout} from './commands/auth';
-import {backup} from './commands/backup';
 import {clear} from './commands/clear';
 import {config} from './commands/config';
 import {deploy} from './commands/deploy';
 import {dev} from './commands/dev';
 import {init} from './commands/init';
 import {open} from './commands/open';
+import {snapshot} from './commands/snapshot';
 import {startStop} from './commands/start-stop';
 import {upgrade} from './commands/upgrade';
 import {use} from './commands/use';
 import {version as versionCommand} from './commands/version';
 import {whoami} from './commands/whoami';
-import {logHelpBackup} from './help/backup.help';
 import {logHelpClear} from './help/clear.help';
 import {logHelpConfig} from './help/config.help';
 import {logHelpDeploy} from './help/deploy.help';
@@ -23,6 +22,7 @@ import {logHelpInit} from './help/init.help';
 import {logHelpLogin} from './help/login.help';
 import {logHelpLogout} from './help/logout.help';
 import {logHelpOpen} from './help/open.help';
+import {logHelpSnapshot} from './help/snapshot.help';
 import {logHelpStart} from './help/start.help';
 import {logHelpStop} from './help/stop.help';
 import {logHelpUpgrade} from './help/upgrade.help';
@@ -83,8 +83,8 @@ export const run = async () => {
       case 'dev':
         logHelpDev(args);
         break;
-      case 'backup':
-        logHelpBackup(args);
+      case 'snapshot':
+        logHelpSnapshot(args);
         break;
       case 'init':
         logHelpInit(args);
@@ -154,8 +154,8 @@ export const run = async () => {
     case 'dev':
       await dev(args);
       break;
-    case 'backup':
-      await backup(args);
+    case 'snapshot':
+      await snapshot(args);
       break;
     case 'help':
       console.log(help);

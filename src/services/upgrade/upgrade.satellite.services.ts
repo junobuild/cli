@@ -76,7 +76,7 @@ const upgradeSatelliteCustom = async ({
     satellite
   });
 
-  const noBackup = hasArgs({args, options: ['-nb', '--no-backup']});
+  const noSnapshot = hasArgs({args, options: ['-ns', '--no-snapshot']});
   const preClearChunks = hasArgs({args, options: ['-cc', '--clear-chunks']});
 
   const upgrade = async (
@@ -90,7 +90,7 @@ const upgradeSatelliteCustom = async ({
     args,
     currentVersion,
     preClearChunks,
-    noBackup,
+    noSnapshot,
     upgrade
   });
 };
@@ -113,7 +113,7 @@ const upgradeSatelliteRelease = async ({
     return {success: false};
   }
 
-  const noBackup = hasArgs({args, options: ['-nb', '--no-backup']});
+  const noSnapshot = hasArgs({args, options: ['-ns', '--no-snapshot']});
   const preClearChunks = hasArgs({args, options: ['-cc', '--clear-chunks']});
 
   const upgrade = async (
@@ -127,7 +127,7 @@ const upgradeSatelliteRelease = async ({
     args,
     currentVersion,
     preClearChunks,
-    noBackup,
+    noSnapshot,
     upgrade
   });
 };
@@ -138,13 +138,13 @@ const executeUpgradeSatellite = async ({
   currentVersion,
   upgrade,
   preClearChunks,
-  noBackup
+  noSnapshot
 }: {
   satellite: SatelliteParameters;
   args?: string[];
   currentVersion: string;
   preClearChunks: boolean;
-  noBackup: boolean;
+  noSnapshot: boolean;
   upgrade: (
     params: Pick<UpgradeWasm, 'upgrade' | 'reset' | 'assert'>
   ) => Promise<{success: boolean; err?: unknown}>;
@@ -163,7 +163,7 @@ const executeUpgradeSatellite = async ({
       deprecatedNoScope: compare(currentVersion, '0.0.9') < 0,
       ...(reset && {reset}),
       preClearChunks,
-      ...(noBackup && {takeSnapshot: false})
+      ...(noSnapshot && {takeSnapshot: false})
     });
   };
 

@@ -77,14 +77,14 @@ const updateMissionControlRelease = async ({
     return {success: false};
   }
 
-  const noBackup = hasArgs({args, options: ['-nb', '--no-backup']});
+  const noSnapshot = hasArgs({args, options: ['-ns', '--no-snapshot']});
   const preClearChunks = hasArgs({args, options: ['-cc', '--clear-chunks']});
 
   const upgradeMissionControlWasm = async (params: UpgradeWasmModule) => {
     await upgradeMissionControlAdmin({
       missionControl: missionControlParameters,
       preClearChunks,
-      ...(noBackup && {takeSnapshot: false}),
+      ...(noSnapshot && {takeSnapshot: false}),
       ...params
     });
   };
@@ -110,14 +110,14 @@ const upgradeMissionControlCustom = async ({
     return {success: false};
   }
 
-  const noBackup = hasArgs({args, options: ['-nb', '--no-backup']});
+  const noSnapshot = hasArgs({args, options: ['-ns', '--no-snapshot']});
   const preClearChunks = hasArgs({args, options: ['-cc', '--clear-chunks']});
 
   const upgradeMissionControlWasm = async (params: UpgradeWasmModule) => {
     await upgradeMissionControlAdmin({
       missionControl: missionControlParameters,
       preClearChunks,
-      ...(noBackup && {takeSnapshot: false}),
+      ...(noSnapshot && {takeSnapshot: false}),
       ...params
     });
   };

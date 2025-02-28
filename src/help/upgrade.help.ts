@@ -12,7 +12,7 @@ Options:
   ${yellow('-s, --src')}             An optional local gzipped WASM file for the upgrade. By default, the CDN will be used.
   ${yellow('-r, --reset')}           Reset to the initial state.
   ${yellow('-cc, --clear-chunks')}   Clear any previously uploaded WASM chunks (applies if the WASM size is greater than 2MB).
-  ${yellow('-nb, --no-backup')}      Skip creating a backup before upgrading.
+  ${yellow('-ns, --no-snapshot')}    Skip creating a snapshot before upgrading.
   ${helpMode}
   ${yellow('-h, --help')}            Output usage information.
   
