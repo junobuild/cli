@@ -3,12 +3,12 @@ import {helpOutput} from './common.help';
 import {TITLE} from './help';
 
 export const DEV_DESCRIPTION =
-  'Handle development-related tasks such as building and deploying locally using Cargo and Docker.';
+  'Handle development tasks like building serverless functions or running a local Internet Computer instance.';
 
-const helpDevBuild = `${magenta('build')}               Compile satellite features using Cargo.`;
+const helpDevBuild = `${magenta('build')}               Build your serverless functions.`;
 const helpDevStart = `${magenta(
   'start'
-)}               Start a local Internet Computer network, encapsulated in a Docker environment.`;
+)}               Start a local Internet Computer network in a container.`;
 
 export const helpDevContinue = `${helpDevBuild}
   ${helpDevStart}`;
@@ -19,9 +19,9 @@ Subcommands:
   ${helpDevBuild}
   ${magenta(
     'eject'
-  )}               Create a Rust template for custom satellite feature hooks and extensions.
+  )}               Scaffold the necessary files to start coding and building functions in your project.
   ${helpDevStart}
-  ${magenta('stop')}                Stop the Docker environment.`;
+  ${magenta('stop')}                Stop the local network.`;
 
 const doc = `${DEV_DESCRIPTION}
 
