@@ -5,21 +5,21 @@ import {existsSync} from 'node:fs';
 import {lstat, mkdir, readFile, rename, writeFile} from 'node:fs/promises';
 import {join, relative} from 'node:path';
 import ora, {type Ora} from 'ora';
-import {detectJunoDevConfigType} from '../configs/juno.dev.config';
+import {detectJunoDevConfigType} from '../../configs/juno.dev.config';
 import {
   DEVELOPER_PROJECT_SATELLITE_DECLARATIONS_PATH,
   DEVELOPER_PROJECT_SATELLITE_PATH,
   IC_WASM_MIN_VERSION
-} from '../constants/dev.constants';
-import {readSatelliteDid} from '../utils/did.utils';
-import {checkCargoBinInstalled, checkIcWasmVersion, checkRustVersion} from '../utils/env.utils';
-import {confirmAndExit} from '../utils/prompt.utils';
+} from '../../constants/dev.constants';
+import {readSatelliteDid} from '../../utils/did.utils';
+import {checkCargoBinInstalled, checkIcWasmVersion, checkRustVersion} from '../../utils/env.utils';
+import {confirmAndExit} from '../../utils/prompt.utils';
 
 const CARGO_RELEASE_DIR = join(process.cwd(), 'target', 'wasm32-unknown-unknown', 'release');
 const DEPLOY_DIR = join(process.cwd(), 'target', 'deploy');
 const SATELLITE_OUTPUT = join(DEPLOY_DIR, 'satellite.wasm');
 
-export const build = async () => {
+export const buildWithRust = async () => {
   const {valid: validRust} = await checkRustVersion();
 
   if (validRust === 'error' || !validRust) {

@@ -1,11 +1,11 @@
-import {cyan, green, magenta} from 'kleur';
+import { cyan, green, magenta, yellow } from "kleur";
 import {helpOutput} from './common.help';
 import {TITLE} from './help';
+import { helpDevBuild } from "./dev.build.help";
 
 export const DEV_DESCRIPTION =
   'Handle development tasks like building serverless functions or running a local Internet Computer instance.';
 
-const helpDevBuild = `${magenta('build')}               Build your serverless functions.`;
 const helpDevStart = `${magenta(
   'start'
 )}               Start a local Internet Computer network in a container.`;
@@ -13,7 +13,7 @@ const helpDevStart = `${magenta(
 export const helpDevContinue = `${helpDevBuild}
   ${helpDevStart}`;
 
-const usage = `Usage: ${green('juno')} ${cyan('dev')} ${magenta('<subcommand>')}
+const usage = `Usage: ${green('juno')} ${cyan('dev')} ${magenta('<subcommand>')} ${yellow('[options]')}
 
 Subcommands:
   ${helpDevBuild}
