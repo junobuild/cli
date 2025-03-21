@@ -9,8 +9,8 @@ export const DEVELOPER_PROJECT_SATELLITE_DECLARATIONS_PATH = join(
 );
 
 export const CARGO_TOML = 'Cargo.toml';
-export const INDEX_TS = "index.ts";
-export const INDEX_MJS = "index.mjs";
+export const INDEX_TS = 'index.ts';
+export const INDEX_MJS = 'index.mjs';
 
 export const DEVELOPER_PROJECT_SATELLITE_CARGO_TOML = join(
   DEVELOPER_PROJECT_SATELLITE_PATH,
@@ -39,5 +39,5 @@ export const DOCKER_MIN_VERSION = '24.0.0';
 
 export const DEPLOY_LOCAL_REPLICA_PATH = join(process.cwd(), 'target', 'deploy');
 
-export const SPUTNIK_INDEX_MJS = "sputnik.index.mjs";
+export const SPUTNIK_INDEX_MJS = 'sputnik.index.mjs';
 export const DEPLOY_SPUTNIK_PATH = join(DEPLOY_LOCAL_REPLICA_PATH, SPUTNIK_INDEX_MJS);

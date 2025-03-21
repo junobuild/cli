@@ -5,7 +5,7 @@ import {
   DEVELOPER_PROJECT_SATELLITE_PATH,
   RUST_TEMPLATE_PATH,
   RUST_TEMPLATE_SATELLITE_PATH
-} from "../../constants/dev.constants";
+} from '../../constants/dev.constants';
 import {copySatelliteDid} from '../../utils/did.utils';
 import {checkRustVersion} from '../../utils/env.utils';
 import {copyTemplateFile} from '../../utils/fs.utils';

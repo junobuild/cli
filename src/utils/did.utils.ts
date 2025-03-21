@@ -14,5 +14,8 @@ export const copySatelliteDid = async (overwrite?: boolean) => {
 };
 
 export const readSatelliteDid = async (): Promise<string> => {
-  return await readTemplateFile({template: 'satellite.did', sourceFolder: RUST_TEMPLATE_SATELLITE_PATH});
+  return await readTemplateFile({
+    template: 'satellite.did',
+    sourceFolder: RUST_TEMPLATE_SATELLITE_PATH
+  });
 };

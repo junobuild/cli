@@ -1,10 +1,10 @@
 import {red} from 'kleur';
 import {logHelpDevBuild} from '../help/dev.build.help';
+import {logHelpDevEject} from '../help/dev.eject.help';
 import {logHelpDev} from '../help/dev.help';
 import {build} from '../services/build/build.services';
 import {start, stop} from '../services/docker.services';
 import {eject} from '../services/eject/eject.services';
-import { logHelpDevEject } from "../help/dev.eject.help";
 
 export const dev = async (args?: string[]) => {
   const [subCommand] = args ?? [];

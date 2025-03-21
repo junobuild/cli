@@ -21,6 +21,7 @@ export const eject = async (args?: string[]) => {
 };
 
 const ejectWithCmdLang = async ({lang}: {lang: string | undefined}) => {
+  // eslint-disable-next-line @typescript-eslint/switch-exhaustiveness-check
   switch (lang?.toLowerCase()) {
     case 'rs':
     case 'rust':
@@ -42,6 +43,7 @@ const ejectWithCmdLang = async ({lang}: {lang: string | undefined}) => {
 const promptLangAndEject = async () => {
   const {lang} = await selectLang();
 
+   
   switch (lang) {
     case 'rs':
       await ejectRust();

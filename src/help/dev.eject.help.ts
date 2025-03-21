@@ -2,7 +2,8 @@ import {cyan, green, magenta, yellow} from 'kleur';
 import {helpOutput} from './common.help';
 import {TITLE} from './help';
 
-export const DEV_EJECT_DESCRIPTION = 'Generate the required files to begin developing serverless functions in your project.';
+export const DEV_EJECT_DESCRIPTION =
+  'Generate the required files to begin developing serverless functions in your project.';
 
 const usage = `Usage: ${green('juno')} ${cyan('dev')} ${magenta('eject')} ${yellow('[options]')}
 
