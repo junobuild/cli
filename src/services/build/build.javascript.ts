@@ -12,15 +12,15 @@ export const buildTypeScript = async ({path}: {path?: string | undefined} = {}) 
 };
 
 export const buildJavaScript = async ({path}: {path?: string | undefined} = {}) => {
-  await build({lang: 'js', path});
+  await build({lang: 'mjs', path});
 };
 
-const build = async ({lang, path}: {lang: 'ts' | 'js'; path?: string | undefined}) => {
+const build = async ({lang, path}: {lang: 'ts' | 'mjs'; path?: string | undefined}) => {
   // Create output target/deploy if it does not yet exist.
   await mkdir(DEPLOY_LOCAL_REPLICA_PATH, {recursive: true});
 
   const infile =
-    path ?? join(DEVELOPER_PROJECT_SATELLITE_PATH, lang === 'js' ? 'index.mjs' : 'index.ts');
+    path ?? join(DEVELOPER_PROJECT_SATELLITE_PATH, lang === 'mjs' ? 'index.mjs' : 'index.ts');
 
   const outfile = join(DEPLOY_LOCAL_REPLICA_PATH, 'index.mjs');
 
