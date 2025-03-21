@@ -30,6 +30,9 @@ const TEMPLATE_PATH = '../templates/eject';
 export const RUST_TEMPLATE_PATH = join(TEMPLATE_PATH, 'rust');
 export const RUST_TEMPLATE_SATELLITE_PATH = join(RUST_TEMPLATE_PATH, 'src', 'satellite');
 
+export const TS_TEMPLATE_PATH = join(TEMPLATE_PATH, 'typescript');
+export const MJS_TEMPLATE_PATH = join(TEMPLATE_PATH, 'javascript');
+
 export const RUST_MIN_VERSION = '1.70.0';
 export const IC_WASM_MIN_VERSION = '0.8.5';
 export const DOCKER_MIN_VERSION = '24.0.0';
