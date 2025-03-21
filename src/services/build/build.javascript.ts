@@ -4,7 +4,10 @@ import {mkdir} from 'node:fs/promises';
 import {join} from 'node:path';
 import {
   DEPLOY_LOCAL_REPLICA_PATH,
-  DEVELOPER_PROJECT_SATELLITE_PATH
+  DEPLOY_SPUTNIK_PATH,
+  DEVELOPER_PROJECT_SATELLITE_PATH,
+  INDEX_MJS,
+  INDEX_TS
 } from '../../constants/dev.constants';
 
 export const buildTypeScript = async ({path}: {path?: string | undefined} = {}) => {
@@ -20,13 +23,11 @@ const build = async ({lang, path}: {lang: 'ts' | 'mjs'; path?: string | undefine
   await mkdir(DEPLOY_LOCAL_REPLICA_PATH, {recursive: true});
 
   const infile =
-    path ?? join(DEVELOPER_PROJECT_SATELLITE_PATH, lang === 'mjs' ? 'index.mjs' : 'index.ts');
-
-  const outfile = join(DEPLOY_LOCAL_REPLICA_PATH, 'index.mjs');
+    path ?? join(DEVELOPER_PROJECT_SATELLITE_PATH, lang === 'mjs' ? INDEX_MJS : INDEX_TS);
 
   const {metafile, errors, warnings, version} = await buildEsm({
     infile,
-    outfile
+    outfile: DEPLOY_SPUTNIK_PATH
   });
 
   for (const {text} of warnings) {
