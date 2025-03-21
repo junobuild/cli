@@ -1,11 +1,27 @@
 import {buildEsm} from '@junobuild/cli-tools';
 import {green, red, yellow} from 'kleur';
+import {mkdir} from 'node:fs/promises';
 import {join} from 'node:path';
+import {
+  DEPLOY_LOCAL_REPLICA_PATH,
+  DEVELOPER_PROJECT_SATELLITE_PATH
+} from '../../constants/dev.constants';
 
 export const buildTypeScript = async () => {
-  const infile = join(process.cwd(), 'src/tests/fixtures/test_sputnik/resources/index.ts');
-  const dist = join(process.cwd(), 'target', 'fixtures');
-  const outfile = join(dist, 'index.mjs');
+  await build({lang: "ts"})
+};
+
+export const buildJavaScript = async () => {
+  await build({lang: "js"})
+};
+
+const build = async ({lang}: {lang: 'ts' | 'js'}) => {
+  // Create output target/deploy if it does not yet exist.
+  await mkdir(DEPLOY_LOCAL_REPLICA_PATH, {recursive: true});
+
+  const infile = join(DEVELOPER_PROJECT_SATELLITE_PATH, lang === 'js' ? 'index.mjs' : 'index.ts');
+
+  const outfile = join(DEPLOY_LOCAL_REPLICA_PATH, 'index.mjs');
 
   const {metafile, errors, warnings, version} = await buildEsm({
     infile,
