@@ -50,7 +50,7 @@ const selectLang = async (): Promise<{lang: Lang}> => {
 export const success = ({src}: {src: string}): string => `
 🚀 Satellite successfully ejected!
 
-Your serverless function has been generated.
+The serverless function has been generated.
 You can now start coding in: ${yellow(src)}
 
 Useful ${green('juno')} ${cyan('dev')} ${magenta('<subcommand>')} to continue with:
