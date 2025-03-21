@@ -16,6 +16,7 @@ export const build = async (args?: string[]) => {
 
   const lang = nextArg({args, option: '-l'}) ?? nextArg({args, option: '--lang'});
 
+  // eslint-disable-next-line @typescript-eslint/switch-exhaustiveness-check
   switch (lang?.toLowerCase()) {
     case 'rs':
     case 'rust':
