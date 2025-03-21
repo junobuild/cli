@@ -43,7 +43,6 @@ const ejectWithCmdLang = async ({lang}: {lang: string | undefined}) => {
 const promptLangAndEject = async () => {
   const {lang} = await selectLang();
 
-  // eslint-disable-next-line @typescript-eslint/switch-exhaustiveness-check
   switch (lang) {
     case 'rs':
       await ejectRust();
@@ -54,9 +53,6 @@ const promptLangAndEject = async () => {
     case 'mjs':
       await ejectJavaScript();
       break;
-    default:
-      unsupportedLang();
-      return;
   }
 
   console.log(success());
