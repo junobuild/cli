@@ -3,7 +3,7 @@ import {mkdir} from 'node:fs/promises';
 import {join} from 'node:path';
 import {
   DEVELOPER_PROJECT_SATELLITE_PATH,
-  TEMPLATE_PATH,
+  RUST_TEMPLATE_PATH,
   TEMPLATE_SATELLITE_PATH
 } from '../constants/dev.constants';
 import {helpDevContinue} from '../help/dev.help';
@@ -20,7 +20,7 @@ export const eject = async () => {
 
   await copyTemplateFile({
     template: 'Cargo.toml',
-    sourceFolder: TEMPLATE_PATH,
+    sourceFolder: RUST_TEMPLATE_PATH,
     destinationFolder: '.'
   });
 

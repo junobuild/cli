@@ -21,8 +21,10 @@ export const DEVELOPER_PROJECT_SATELLITE_INDEX_MJS = join(
   'index.mjs'
 );
 
-export const TEMPLATE_PATH = '../templates/eject';
-export const TEMPLATE_SATELLITE_PATH = join(TEMPLATE_PATH, 'src', 'satellite');
+const TEMPLATE_PATH = '../templates/eject';
+
+export const RUST_TEMPLATE_PATH = join(TEMPLATE_PATH, 'rust');
+export const TEMPLATE_SATELLITE_PATH = join(RUST_TEMPLATE_PATH, 'src', 'satellite');
 
 export const RUST_MIN_VERSION = '1.70.0';
 export const IC_WASM_MIN_VERSION = '0.8.5';
