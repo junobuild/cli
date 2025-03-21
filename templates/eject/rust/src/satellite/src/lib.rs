@@ -68,6 +68,7 @@ async fn on_delete_many_assets(_context: OnDeleteManyAssetsContext) -> Result<()
 async fn on_delete_filtered_assets(_context: OnDeleteFilteredAssetsContext) -> Result<(), String> {
     Ok(())
 }
+
 #[assert_set_doc]
 fn assert_set_doc(_context: AssertSetDocContext) -> Result<(), String> {
     Ok(())
