@@ -2,7 +2,7 @@ import {cyan, green, magenta, yellow} from 'kleur';
 import {helpOutput} from './common.help';
 import {TITLE} from './help';
 
-export const DEV_BUILD_DESCRIPTION = 'Build your serverless functions.';
+const DEV_BUILD_DESCRIPTION = 'Build your serverless functions.';
 
 const usage = `Usage: ${green('juno')} ${cyan('dev')} ${magenta('build')} ${yellow('[options]')}
 
@@ -15,7 +15,7 @@ Notes:
 
 - If no language is provided, the CLI attempts to determine the appropriate build.
 - Language can be shortened to ${magenta('rs')} for Rust, ${magenta('ts')} for TypeScript and ${magenta('js')} for JavaScript.
-- The path option maps to ${magenta('--manifest-path')} for Rust (Cargo) or to the source file for TypeScript and JavaScript (e.g. ${magenta('index.ts')} or ${magenta('index.mjs')}) .`;
+- The path option maps to ${magenta('--manifest-path')} for Rust (Cargo) or to the source file for TypeScript and JavaScript (e.g. ${magenta('index.ts')} or ${magenta('index.mjs')}).`;
 
 const doc = `${DEV_BUILD_DESCRIPTION}
 
