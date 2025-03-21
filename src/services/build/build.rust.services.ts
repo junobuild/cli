@@ -1,3 +1,4 @@
+import {nonNullish} from '@dfinity/utils';
 import {execute, gzipFile, spawn} from '@junobuild/cli-tools';
 import {generateApi} from '@junobuild/did-tools';
 import {green, grey, magenta, yellow} from 'kleur';
@@ -11,7 +12,7 @@ import {
   DEVELOPER_PROJECT_SATELLITE_DECLARATIONS_PATH,
   DEVELOPER_PROJECT_SATELLITE_PATH,
   IC_WASM_MIN_VERSION
-} from "../../constants/dev.constants";
+} from '../../constants/dev.constants';
 import {readSatelliteDid} from '../../utils/did.utils';
 import {checkCargoBinInstalled, checkIcWasmVersion, checkRustVersion} from '../../utils/env.utils';
 import {confirmAndExit} from '../../utils/prompt.utils';
@@ -19,7 +20,7 @@ import {confirmAndExit} from '../../utils/prompt.utils';
 const CARGO_RELEASE_DIR = join(process.cwd(), 'target', 'wasm32-unknown-unknown', 'release');
 const SATELLITE_OUTPUT = join(DEPLOY_LOCAL_REPLICA_PATH, 'satellite.wasm');
 
-export const buildRust = async () => {
+export const buildRust = async ({path}: {path?: string | undefined} = {}) => {
   const {valid: validRust} = await checkRustVersion();
 
   if (validRust === 'error' || !validRust) {
@@ -44,12 +45,13 @@ export const buildRust = async () => {
     return;
   }
 
+  const defaultProjectArgs = ['-p', 'satellite'];
+
   const args = [
     'build',
     '--target',
     'wasm32-unknown-unknown',
-    '-p',
-    'satellite',
+    ...(nonNullish(path) ? ['--manifest-path', path] : defaultProjectArgs),
     '--release',
     ...(existsSync('Cargo.lock') ? ['--locked'] : [])
   ];

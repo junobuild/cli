@@ -1,7 +1,7 @@
-import { cyan, green, magenta, yellow } from "kleur";
+import {cyan, green, magenta, yellow} from 'kleur';
 import {helpOutput} from './common.help';
+import {helpDevBuild} from './dev.build.help';
 import {TITLE} from './help';
-import { helpDevBuild } from "./dev.build.help";
 
 export const DEV_DESCRIPTION =
   'Handle development tasks like building serverless functions or running a local Internet Computer instance.';

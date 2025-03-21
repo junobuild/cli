@@ -1,9 +1,9 @@
 import {red} from 'kleur';
+import {logHelpDevBuild} from '../help/dev.build.help';
 import {logHelpDev} from '../help/dev.help';
 import {build} from '../services/build/build.services';
 import {start, stop} from '../services/docker.services';
 import {eject} from '../services/eject.services';
-import { logHelpDevBuild } from "../help/dev.build.help";
 
 export const dev = async (args?: string[]) => {
   const [subCommand] = args ?? [];
@@ -37,4 +37,4 @@ export const helpDev = (args?: string[]) => {
     default:
       logHelpDev(args);
   }
-}
+};
