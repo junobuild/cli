@@ -1,4 +1,5 @@
-import {assertAnswerCtrlC} from '@junobuild/cli-tools';
+import {notEmptyString} from '@dfinity/utils';
+import {assertAnswerCtrlC, nextArg} from '@junobuild/cli-tools';
 import {cyan, green, magenta, red, yellow} from 'kleur';
 import prompts from 'prompts';
 import {DEVELOPER_PROJECT_SATELLITE_PATH} from '../../constants/dev.constants';
@@ -8,7 +9,37 @@ import {ejectRust} from './eject.rust.services';
 
 type Lang = 'ts' | 'mjs' | 'rs';
 
-export const eject = async () => {
+export const eject = async (args?: string[]) => {
+  const cmdLang = nextArg({args, option: '-l'}) ?? nextArg({args, option: '--lang'});
+
+  if (notEmptyString(cmdLang)) {
+    await ejectWithCmdLang({lang: cmdLang});
+    return;
+  }
+
+  await promptLangAndEject();
+};
+
+const ejectWithCmdLang = async ({lang}: {lang: string | undefined}) => {
+  switch (lang?.toLowerCase()) {
+    case 'rs':
+    case 'rust':
+      await ejectRust();
+      break;
+    case 'ts':
+    case 'typescript':
+      await ejectTypeScript();
+      break;
+    case 'js':
+    case 'javascript':
+      unsupportedLang();
+      return;
+  }
+
+  console.log(success());
+};
+
+const promptLangAndEject = async () => {
   const {lang} = await selectLang();
 
   switch (lang) {
@@ -22,11 +53,16 @@ export const eject = async () => {
       await ejectJavaScript();
       break;
     default:
-      console.log(red('Unsupported language. No serverless function was generated.'));
-      process.exit(1);
+      unsupportedLang();
+      return;
   }
 
-  console.log(success({src: DEVELOPER_PROJECT_SATELLITE_PATH}));
+  console.log(success());
+};
+
+const unsupportedLang = () => {
+  console.log(red('Unsupported language. No serverless function was generated.'));
+  process.exit(1);
 };
 
 const selectLang = async (): Promise<{lang: Lang}> => {
@@ -47,11 +83,11 @@ const selectLang = async (): Promise<{lang: Lang}> => {
   return {lang};
 };
 
-export const success = ({src}: {src: string}): string => `
+export const success = (): string => `
 🚀 Satellite successfully ejected!
 
 The serverless function has been generated.
-You can now start coding in: ${yellow(src)}
+You can now start coding in: ${yellow(DEVELOPER_PROJECT_SATELLITE_PATH)}
 
 Useful ${green('juno')} ${cyan('dev')} ${magenta('<subcommand>')} to continue with:
 
