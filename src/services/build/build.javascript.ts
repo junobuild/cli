@@ -1,5 +1,5 @@
-import {buildEsm} from '@junobuild/cli-tools';
-import {red, yellow} from 'kleur';
+import {buildEsm, execute} from '@junobuild/cli-tools';
+import {magenta, red, yellow} from 'kleur';
 import {mkdir} from 'node:fs/promises';
 import {join} from 'node:path';
 import {
@@ -9,6 +9,8 @@ import {
   INDEX_MJS,
   INDEX_TS
 } from '../../constants/dev.constants';
+import {detectPackageManager} from '../../utils/pm.utils';
+import {confirmAndExit} from '../../utils/prompt.utils';
 
 export const buildTypeScript = async ({path}: {path?: string | undefined} = {}) => {
   await build({lang: 'ts', path});
@@ -18,10 +20,15 @@ export const buildJavaScript = async ({path}: {path?: string | undefined} = {}) 
   await build({lang: 'mjs', path});
 };
 
-const build = async ({lang, path}: {lang: 'ts' | 'mjs'; path?: string | undefined}) => {
-  // Create output target/deploy if it does not yet exist.
-  await mkdir(DEPLOY_LOCAL_REPLICA_PATH, {recursive: true});
+const build = async (params: {lang: 'ts' | 'mjs'; path?: string | undefined}) => {
+  await installEsbuild();
 
+  await createTargetDir();
+
+  await buildWithEsbuild(params);
+};
+
+const buildWithEsbuild = async ({lang, path}: {lang: 'ts' | 'mjs'; path?: string | undefined}) => {
   const infile =
     path ?? join(DEVELOPER_PROJECT_SATELLITE_PATH, lang === 'mjs' ? INDEX_MJS : INDEX_TS);
 
@@ -62,4 +69,37 @@ const build = async ({lang, path}: {lang: 'ts' | 'mjs'; path?: string | undefine
   console.log(
     `➡️  ${key} (${formatter.format(bytes / (unit === 'megabyte' ? 1_000_000 : 1_000))})`
   );
+};
+
+const createTargetDir = async () => {
+  // Create output target/deploy if it does not yet exist.
+  await mkdir(DEPLOY_LOCAL_REPLICA_PATH, {recursive: true});
+};
+
+const installEsbuild = async () => {
+  const esbuildInstalled = await hasEsbuild();
+
+  if (esbuildInstalled) {
+    return;
+  }
+
+  await confirmAndExit(
+    `${magenta('esbuild')} is required to build the serverless functions. Install it now?`
+  );
+
+  const pm = detectPackageManager();
+
+  await execute({
+    command: pm ?? 'npm',
+    args: [pm === 'npm' ? 'i' : 'add', 'esbuild', '-D']
+  });
+};
+
+const hasEsbuild = async (): Promise<boolean> => {
+  try {
+    await import('esbuild');
+    return true;
+  } catch (_err: unknown) {
+    return false;
+  }
 };
