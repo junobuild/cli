@@ -1,3 +1,4 @@
+import {nonNullish} from '@dfinity/utils';
 import {execute, gzipFile, spawn} from '@junobuild/cli-tools';
 import {generateApi} from '@junobuild/did-tools';
 import {green, grey, magenta, yellow} from 'kleur';
@@ -5,21 +6,21 @@ import {existsSync} from 'node:fs';
 import {lstat, mkdir, readFile, rename, writeFile} from 'node:fs/promises';
 import {join, relative} from 'node:path';
 import ora, {type Ora} from 'ora';
-import {detectJunoDevConfigType} from '../configs/juno.dev.config';
+import {detectJunoDevConfigType} from '../../configs/juno.dev.config';
 import {
+  DEPLOY_LOCAL_REPLICA_PATH,
   DEVELOPER_PROJECT_SATELLITE_DECLARATIONS_PATH,
   DEVELOPER_PROJECT_SATELLITE_PATH,
   IC_WASM_MIN_VERSION
-} from '../constants/dev.constants';
-import {readSatelliteDid} from '../utils/did.utils';
-import {checkCargoBinInstalled, checkIcWasmVersion, checkRustVersion} from '../utils/env.utils';
-import {confirmAndExit} from '../utils/prompt.utils';
+} from '../../constants/dev.constants';
+import {readSatelliteDid} from '../../utils/did.utils';
+import {checkCargoBinInstalled, checkIcWasmVersion, checkRustVersion} from '../../utils/env.utils';
+import {confirmAndExit} from '../../utils/prompt.utils';
 
 const CARGO_RELEASE_DIR = join(process.cwd(), 'target', 'wasm32-unknown-unknown', 'release');
-const DEPLOY_DIR = join(process.cwd(), 'target', 'deploy');
-const SATELLITE_OUTPUT = join(DEPLOY_DIR, 'satellite.wasm');
+const SATELLITE_OUTPUT = join(DEPLOY_LOCAL_REPLICA_PATH, 'satellite.wasm');
 
-export const build = async () => {
+export const buildRust = async ({path}: {path?: string | undefined} = {}) => {
   const {valid: validRust} = await checkRustVersion();
 
   if (validRust === 'error' || !validRust) {
@@ -44,12 +45,13 @@ export const build = async () => {
     return;
   }
 
+  const defaultProjectArgs = ['-p', 'satellite'];
+
   const args = [
     'build',
     '--target',
     'wasm32-unknown-unknown',
-    '-p',
-    'satellite',
+    ...(nonNullish(path) ? ['--manifest-path', path] : defaultProjectArgs),
     '--release',
     ...(existsSync('Cargo.lock') ? ['--locked'] : [])
   ];
@@ -214,7 +216,7 @@ const api = async () => {
 };
 
 const icWasm = async () => {
-  await mkdir(DEPLOY_DIR, {recursive: true});
+  await mkdir(DEPLOY_LOCAL_REPLICA_PATH, {recursive: true});
 
   // Remove unused functions and debug info.
   await spawn({

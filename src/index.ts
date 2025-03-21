@@ -4,7 +4,7 @@ import {login, logout} from './commands/auth';
 import {clear} from './commands/clear';
 import {config} from './commands/config';
 import {deploy} from './commands/deploy';
-import {dev} from './commands/dev';
+import {dev, helpDev} from './commands/dev';
 import {init} from './commands/init';
 import {open} from './commands/open';
 import {snapshot} from './commands/snapshot';
@@ -16,7 +16,6 @@ import {whoami} from './commands/whoami';
 import {logHelpClear} from './help/clear.help';
 import {logHelpConfig} from './help/config.help';
 import {logHelpDeploy} from './help/deploy.help';
-import {logHelpDev} from './help/dev.help';
 import {help} from './help/help';
 import {logHelpInit} from './help/init.help';
 import {logHelpLogin} from './help/login.help';
@@ -81,7 +80,7 @@ export const run = async () => {
         logHelpDeploy(args);
         break;
       case 'dev':
-        logHelpDev(args);
+        helpDev(args);
         break;
       case 'snapshot':
         logHelpSnapshot(args);
