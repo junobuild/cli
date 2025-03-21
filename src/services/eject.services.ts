@@ -46,10 +46,10 @@ export const eject = async () => {
 };
 
 export const success = ({src}: {src: string}): string => `
-✅ Satellite successfully ejected!
+🚀 Satellite successfully ejected!
 
-You can now extend your satellite's capabilities.
-Edit the generated Rust template located in ${yellow(src)} and customize according to your needs.
+Your Rust serverless function has been generated.
+You can now start coding in: ${yellow(src)}
 
 Useful ${green('juno')} ${cyan('dev')} ${magenta('<subcommand>')} to continue with:
 
