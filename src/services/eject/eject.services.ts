@@ -70,8 +70,8 @@ const selectLang = async (): Promise<{lang: Lang}> => {
     message: 'What language do you want to use for your serverless function?',
     choices: [
       {title: 'Rust', value: 'rs'},
-      {title: 'TypeScript', value: 'ts'},
-      {title: 'JavaScript', value: 'mjs'}
+      {title: 'TypeScript (experimental)', value: 'ts'},
+      {title: 'JavaScript (experimental)', value: 'mjs'}
     ],
     initial: 0
   });
