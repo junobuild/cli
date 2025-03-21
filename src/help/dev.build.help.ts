@@ -4,8 +4,6 @@ import {TITLE} from './help';
 
 export const DEV_BUILD_DESCRIPTION = 'Build your serverless functions.';
 
-export const helpDevBuild = `${magenta('build')}               ${DEV_BUILD_DESCRIPTION}`;
-
 const usage = `Usage: ${green('juno')} ${cyan('dev')} ${magenta('build')} ${yellow('[options]')}
 
 Options:

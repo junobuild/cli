@@ -1,6 +1,5 @@
 import {cyan, green, magenta, yellow} from 'kleur';
 import {helpOutput} from './common.help';
-import {helpDevBuild} from './dev.build.help';
 import {TITLE} from './help';
 
 export const DEV_DESCRIPTION =
@@ -9,6 +8,8 @@ export const DEV_DESCRIPTION =
 const helpDevStart = `${magenta(
   'start'
 )}               Start a local Internet Computer network in a container.`;
+
+const helpDevBuild = `${magenta('build')}               Build your serverless functions. The local server supports live reloading.`;
 
 export const helpDevContinue = `${helpDevBuild}
   ${helpDevStart}`;
