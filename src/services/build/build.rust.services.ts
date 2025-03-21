@@ -19,7 +19,7 @@ const CARGO_RELEASE_DIR = join(process.cwd(), 'target', 'wasm32-unknown-unknown'
 const DEPLOY_DIR = join(process.cwd(), 'target', 'deploy');
 const SATELLITE_OUTPUT = join(DEPLOY_DIR, 'satellite.wasm');
 
-export const buildWithRust = async () => {
+export const buildRust = async () => {
   const {valid: validRust} = await checkRustVersion();
 
   if (validRust === 'error' || !validRust) {
