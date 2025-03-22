@@ -1,6 +1,6 @@
 import {notEmptyString} from '@dfinity/utils';
 import {assertAnswerCtrlC, nextArg} from '@junobuild/cli-tools';
-import {cyan, green, magenta, red, yellow} from 'kleur';
+import {cyan, green, magenta, yellow} from 'kleur';
 import prompts from 'prompts';
 import {DEVELOPER_PROJECT_SATELLITE_PATH} from '../../constants/dev.constants';
 import {helpDevContinue} from '../../help/dev.help';
@@ -28,12 +28,14 @@ const ejectWithCmdLang = async ({lang}: {lang: string | undefined}) => {
       await ejectRust();
       break;
     case 'ts':
+    case 'mts':
     case 'typescript':
       await ejectTypeScript();
       break;
     case 'js':
+    case 'mjs':
     case 'javascript':
-      unsupportedLang();
+      await ejectJavaScript();
       return;
   }
 
@@ -56,11 +58,6 @@ const promptLangAndEject = async () => {
   }
 
   console.log(success());
-};
-
-const unsupportedLang = () => {
-  console.log(red('Unsupported language. No serverless function was generated.'));
-  process.exit(1);
 };
 
 const selectLang = async (): Promise<{lang: Lang}> => {
