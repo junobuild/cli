@@ -1,6 +1,6 @@
 import {notEmptyString} from '@dfinity/utils';
 import {assertAnswerCtrlC, nextArg} from '@junobuild/cli-tools';
-import {cyan, green, magenta, red, yellow} from 'kleur';
+import {cyan, green, magenta, yellow} from 'kleur';
 import prompts from 'prompts';
 import {DEVELOPER_PROJECT_SATELLITE_PATH} from '../../constants/dev.constants';
 import {helpDevContinue} from '../../help/dev.help';
