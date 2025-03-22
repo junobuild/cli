@@ -22,6 +22,8 @@ __) ||  |  ||  \\| |/    \\
 
 export const TITLE = `${JUNO_LOGO} CLI ${grey(`v${version}`)}`;
 
+export const SMALL_TITLE = `Juno CLI ${grey(`v${version}`)}`;
+
 export const help = `
 ${TITLE}
 
