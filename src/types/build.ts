@@ -1,4 +1,6 @@
+export type BuildLang = 'ts' | 'mjs' | 'rs';
+
 export interface BuildArgs {
-  lang?: 'ts' | 'mjs' | 'rs';
+  lang?: BuildLang;
   path?: string | undefined;
 }
