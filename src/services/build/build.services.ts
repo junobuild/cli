@@ -104,7 +104,7 @@ const watchBuild = ({watch, path, ...params}: BuildArgs) => {
 
   const watchPath = nonNullish(path) ? dirname(path) : DEVELOPER_PROJECT_SATELLITE_PATH;
 
-  console.log(`${SMALL_TITLE}`);
+  console.log(SMALL_TITLE);
   console.log('👀 Watching for file changes.');
 
   chokidar
