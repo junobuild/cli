@@ -8,26 +8,22 @@ import {
   DEVELOPER_PROJECT_SATELLITE_INDEX_MJS,
   DEVELOPER_PROJECT_SATELLITE_INDEX_TS
 } from '../../constants/dev.constants';
+import {type BuildArgs} from '../../types/build';
 import {buildJavaScript, buildTypeScript} from './build.javascript';
 import {buildRust} from './build.rust.services';
 
 export const build = async (args?: string[]) => {
-  const path = nextArg({args, option: '-p'}) ?? nextArg({args, option: '--path'});
-
-  const lang = nextArg({args, option: '-l'}) ?? nextArg({args, option: '--lang'});
+  const {lang, path} = buildArgs(args);
 
   // eslint-disable-next-line @typescript-eslint/switch-exhaustiveness-check
-  switch (lang?.toLowerCase()) {
+  switch (lang) {
     case 'rs':
-    case 'rust':
       await buildRust({path});
       return;
     case 'ts':
-    case 'typescript':
       await buildTypeScript({path});
       return;
-    case 'js':
-    case 'javascript':
+    case 'mjs':
       await buildJavaScript({path});
       return;
   }
@@ -76,4 +72,35 @@ export const build = async (args?: string[]) => {
       'No source found for Satellite serverless functions. Expected a Rust, TypeScript, or JavaScript project.'
     )
   );
+};
+
+const buildArgs = (args?: string[]): BuildArgs => {
+  const path = nextArg({args, option: '-p'}) ?? nextArg({args, option: '--path'});
+
+  const {lang} = buildLang(args);
+
+  return {
+    path,
+    lang
+  };
+};
+
+const buildLang = (args?: string[]): Pick<BuildArgs, 'lang'> => {
+  const lang = nextArg({args, option: '-l'}) ?? nextArg({args, option: '--lang'});
+
+  switch (lang?.toLowerCase()) {
+    case 'rs':
+    case 'rust':
+      return {lang: 'rs'};
+    case 'ts':
+    case 'mts':
+    case 'typescript':
+      return {lang: 'ts'};
+    case 'js':
+    case 'mjs':
+    case 'javascript':
+      return {lang: 'mjs'};
+    default:
+      return {};
+  }
 };
