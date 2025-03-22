@@ -13,6 +13,7 @@ import {
   DEVELOPER_PROJECT_SATELLITE_PATH,
   IC_WASM_MIN_VERSION
 } from '../../constants/dev.constants';
+import type {BuildArgs} from '../../types/build';
 import {readSatelliteDid} from '../../utils/did.utils';
 import {checkCargoBinInstalled, checkIcWasmVersion, checkRustVersion} from '../../utils/env.utils';
 import {confirmAndExit} from '../../utils/prompt.utils';
@@ -20,7 +21,7 @@ import {confirmAndExit} from '../../utils/prompt.utils';
 const CARGO_RELEASE_DIR = join(process.cwd(), 'target', 'wasm32-unknown-unknown', 'release');
 const SATELLITE_OUTPUT = join(DEPLOY_LOCAL_REPLICA_PATH, 'satellite.wasm');
 
-export const buildRust = async ({path}: {path?: string | undefined} = {}) => {
+export const buildRust = async ({path}: Pick<BuildArgs, 'path'> = {}) => {
   const {valid: validRust} = await checkRustVersion();
 
   if (validRust === 'error' || !validRust) {

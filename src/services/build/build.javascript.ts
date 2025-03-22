@@ -9,18 +9,21 @@ import {
   INDEX_MJS,
   INDEX_TS
 } from '../../constants/dev.constants';
+import type {BuildArgs, BuildLang} from '../../types/build';
 import {detectPackageManager} from '../../utils/pm.utils';
 import {confirmAndExit} from '../../utils/prompt.utils';
 
-export const buildTypeScript = async ({path}: {path?: string | undefined} = {}) => {
+export const buildTypeScript = async ({path}: Pick<BuildArgs, 'path'> = {}) => {
   await build({lang: 'ts', path});
 };
 
-export const buildJavaScript = async ({path}: {path?: string | undefined} = {}) => {
+export const buildJavaScript = async ({path}: Pick<BuildArgs, 'path'> = {}) => {
   await build({lang: 'mjs', path});
 };
 
-const build = async (params: {lang: 'ts' | 'mjs'; path?: string | undefined}) => {
+type BuildArgsTsJs = {lang: Omit<BuildLang, 'rs'>} & Pick<BuildArgs, 'path'>;
+
+const build = async (params: BuildArgsTsJs) => {
   await installEsbuild();
 
   await createTargetDir();
@@ -28,7 +31,7 @@ const build = async (params: {lang: 'ts' | 'mjs'; path?: string | undefined}) =>
   await buildWithEsbuild(params);
 };
 
-const buildWithEsbuild = async ({lang, path}: {lang: 'ts' | 'mjs'; path?: string | undefined}) => {
+const buildWithEsbuild = async ({lang, path}: BuildArgsTsJs) => {
   const infile =
     path ?? join(DEVELOPER_PROJECT_SATELLITE_PATH, lang === 'mjs' ? INDEX_MJS : INDEX_TS);
 
