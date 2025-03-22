@@ -14,7 +14,7 @@ Options:
 Notes:
 
 - If no language is provided, the CLI attempts to determine the appropriate build.
-- Language can be shortened to ${magenta('rs')} for Rust, ${magenta('ts')} for TypeScript and ${magenta('js')} for JavaScript.
+- Language can be shortened to ${magenta('rs')} for Rust, ${magenta('ts')} for TypeScript and ${magenta('mjs')} for JavaScript.
 - The path option maps to ${magenta('--manifest-path')} for Rust (Cargo) or to the source file for TypeScript and JavaScript (e.g. ${magenta('index.ts')} or ${magenta('index.mjs')}).`;
 
 const doc = `${DEV_BUILD_DESCRIPTION}

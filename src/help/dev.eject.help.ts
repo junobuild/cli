@@ -13,7 +13,7 @@ Options:
   
 Notes:
 
-- Language can be shortened to ${magenta('rs')} for Rust, ${magenta('ts')} for TypeScript and ${magenta('js')} for JavaScript.`;
+- Language can be shortened to ${magenta('rs')} for Rust, ${magenta('ts')} for TypeScript and ${magenta('mjs')} for JavaScript.`;
 
 const doc = `${DEV_EJECT_DESCRIPTION}
 
