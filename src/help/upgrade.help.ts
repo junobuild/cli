@@ -23,7 +23,7 @@ ${TARGET_OPTION_NOTE}`;
 
 const doc = `${UPGRADE_DESCRIPTION}
 
-\`\`\`bash
+\`\`\`
 ${usage}
 \`\`\`
 `;

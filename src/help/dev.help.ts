@@ -26,7 +26,7 @@ Subcommands:
 
 const doc = `${DEV_DESCRIPTION}
 
-\`\`\`bash
+\`\`\`
 ${usage}
 \`\`\`
 `;

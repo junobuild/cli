@@ -14,7 +14,7 @@ Options:
 
 const doc = `${OPEN_DESCRIPTION}
 
-\`\`\`bash
+\`\`\`
 ${usage}
 \`\`\`
 `;

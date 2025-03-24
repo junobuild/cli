@@ -23,7 +23,7 @@ ${TARGET_OPTION_NOTE}`;
 
 const doc = `${SNAPSHOT_DESCRIPTION}
 
-\`\`\`bash
+\`\`\`
 ${usage}
 \`\`\`
 `;

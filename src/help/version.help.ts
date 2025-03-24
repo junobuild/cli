@@ -13,7 +13,7 @@ Options:
 
 const doc = `${VERSION_DESCRIPTION}
 
-\`\`\`bash
+\`\`\`
 ${usage}
 \`\`\`
 `;

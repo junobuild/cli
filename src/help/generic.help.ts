@@ -26,7 +26,7 @@ ${usage(command)}
 
 const doc = ({command, description}: {command: string; description: string}) => `${description}
 
-\`\`\`bash
+\`\`\`
 ${usage(command)}
 \`\`\`
 `;
@@ -39,7 +39,7 @@ const docWithMode = ({
   description: string;
 }) => `${description}
 
-\`\`\`bash
+\`\`\`
 ${usage(command)}
   ${helpMode}
 \`\`\`

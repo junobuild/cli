@@ -13,7 +13,7 @@ Options:
 
 const doc = `${LOGIN_DESCRIPTION}
 
-\`\`\`bash
+\`\`\`
 ${usage}
 \`\`\`
 `;

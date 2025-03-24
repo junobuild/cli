@@ -13,7 +13,7 @@ Options:
 
 const doc = `${DEPLOY_DESCRIPTION}
 
-\`\`\`bash
+\`\`\`
 ${usage}
 \`\`\`
 `;

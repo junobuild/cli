@@ -17,7 +17,7 @@ Notes:
 
 const doc = `${START_DESCRIPTION}
 
-\`\`\`bash
+\`\`\`
 ${usage}
 \`\`\`
 `;

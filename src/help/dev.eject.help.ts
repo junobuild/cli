@@ -17,7 +17,7 @@ Notes:
 
 const doc = `${DEV_EJECT_DESCRIPTION}
 
-\`\`\`bash
+\`\`\`
 ${usage}
 \`\`\`
 `;

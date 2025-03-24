@@ -13,7 +13,7 @@ Options:
 
 const doc = `${INIT_DESCRIPTION}
 
-\`\`\`bash
+\`\`\`
 ${usage}
 \`\`\`
 `;

@@ -21,7 +21,7 @@ Notes:
 
 const doc = `${DEV_BUILD_DESCRIPTION}
 
-\`\`\`bash
+\`\`\`
 ${usage}
 \`\`\`
 `;
