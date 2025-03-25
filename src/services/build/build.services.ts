@@ -18,7 +18,7 @@ import {buildRust} from './build.rust.services';
 export const build = async (args?: string[]) => {
   const {watch, ...params} = buildArgs(args);
 
-  if (watch === true || nonNullish(watch)) {
+  if (nonNullish(watch) && watch !== false) {
     watchBuild({watch, ...params});
     return;
   }
