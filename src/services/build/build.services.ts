@@ -88,7 +88,7 @@ const executeBuild = async ({lang, path}: Omit<BuildArgs, 'watch'>) => {
 
 const watchBuild = ({watch, path, ...params}: BuildArgs) => {
   const doBuild = async () => {
-    console.log('Rebuilding serverless functions...');
+    console.log(`\n⏱ Rebuilding serverless functions...`);
     await executeBuild({path, ...params});
   };
 
@@ -105,7 +105,7 @@ const watchBuild = ({watch, path, ...params}: BuildArgs) => {
   const watchPath = nonNullish(path) ? dirname(path) : DEVELOPER_PROJECT_SATELLITE_PATH;
 
   console.log(SMALL_TITLE);
-  console.log('👀 Watching for file changes.');
+  console.log('👀 Watching for file changes');
 
   chokidar
     .watch(watchPath, {
