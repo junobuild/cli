@@ -1,5 +1,5 @@
 import {buildEsm, execute} from '@junobuild/cli-tools';
-import {magenta, red, yellow} from 'kleur';
+import {green, magenta, red, yellow} from 'kleur';
 import {mkdir} from 'node:fs/promises';
 import {join} from 'node:path';
 import {
@@ -10,6 +10,7 @@ import {
   INDEX_TS
 } from '../../constants/dev.constants';
 import type {BuildArgs, BuildLang} from '../../types/build';
+import {formatBytes, formatTime} from '../../utils/format.utils';
 import {detectPackageManager} from '../../utils/pm.utils';
 import {confirmAndExit} from '../../utils/prompt.utils';
 
@@ -61,17 +62,8 @@ const buildWithEsbuild = async ({lang, path}: BuildArgsTsJs) => {
 
   const [key, {bytes}] = entry[0];
 
-  const unit = bytes >= 1000 ? 'megabyte' : 'kilobyte';
-
-  const formatter = new Intl.NumberFormat('en', {
-    style: 'unit',
-    unit
-  });
-
-  console.log(`✅ Build complete (esbuild ${version}).`);
-  console.log(
-    `➡️  ${key} (${formatter.format(bytes / (unit === 'megabyte' ? 1_000_000 : 1_000))})`
-  );
+  console.log(`${green('✔')} Build complete at ${formatTime()} (esbuild ${version})`);
+  console.log(`→ ${yellow(key)} (${formatBytes(bytes)})`);
 };
 
 const createTargetDir = async () => {

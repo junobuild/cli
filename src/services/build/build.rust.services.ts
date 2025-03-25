@@ -1,7 +1,7 @@
 import {nonNullish} from '@dfinity/utils';
 import {execute, gzipFile, spawn} from '@junobuild/cli-tools';
 import {generateApi} from '@junobuild/did-tools';
-import {green, grey, magenta, yellow} from 'kleur';
+import {magenta, yellow} from 'kleur';
 import {existsSync} from 'node:fs';
 import {lstat, mkdir, readFile, rename, writeFile} from 'node:fs/promises';
 import {join, relative} from 'node:path';
@@ -16,6 +16,7 @@ import {
 import type {BuildArgs} from '../../types/build';
 import {readSatelliteDid} from '../../utils/did.utils';
 import {checkCargoBinInstalled, checkIcWasmVersion, checkRustVersion} from '../../utils/env.utils';
+import {formatBytes, formatTime} from '../../utils/format.utils';
 import {confirmAndExit} from '../../utils/prompt.utils';
 
 const CARGO_RELEASE_DIR = join(process.cwd(), 'target', 'wasm32-unknown-unknown', 'release');
@@ -287,15 +288,10 @@ const successMsg = async (spinner: Ora) => {
   const gzipOutput = `${SATELLITE_OUTPUT}.gz`;
   const {size} = await lstat(gzipOutput);
 
-  const formatMB = (value: number): string =>
-    Intl.NumberFormat('en-US', {
-      maximumSignificantDigits: 2
-    }).format(value / (1024 * 1024));
-
   spinner.succeed(
-    `${green('Success!')}\n\nThe satellite has been compiled.\nOutput file: ${yellow(
+    `Build complete at ${formatTime()}\n→ Output file: ${yellow(
       relative(process.cwd(), gzipOutput)
-    )} ${grey(`(${formatMB(size)}MB)`)}`
+    )} (${formatBytes(size)})`
   );
 };
 
