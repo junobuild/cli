@@ -31,6 +31,8 @@ export const startContainer = async () => {
   await assertJunoDevConfig();
   await assertDockerCompose();
 
+  console.log('🧪 Launching local emulator...');
+
   await execute({
     command: 'docker',
     args: ['compose', 'up']
