@@ -1,8 +1,7 @@
 import {cyan, green, magenta, yellow} from 'kleur';
+import {START_DESCRIPTION} from '../constants/help.constants';
 import {helpMode, helpOutput} from './common.help';
 import {TITLE} from './help';
-
-export const START_DESCRIPTION = 'Start a module.';
 
 const usage = `Usage: ${green('juno')} ${cyan('start')} ${yellow('[options]')}
 

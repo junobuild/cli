@@ -1,20 +1,22 @@
 import {cyan, green, grey} from 'kleur';
 import {version} from '../../package.json';
-import {CLEAR_DESCRIPTION} from './clear.help';
-import {CONFIG_DESCRIPTION} from './config.help';
-import {DEPLOY_DESCRIPTION} from './deploy.help';
-import {DEV_DESCRIPTION} from './dev.help';
-import {INIT_DESCRIPTION} from './init.help';
-import {LOGIN_DESCRIPTION} from './login.help';
-import {LOGOUT_DESCRIPTION} from './logout.help';
-import {OPEN_DESCRIPTION} from './open.help';
-import {SNAPSHOT_DESCRIPTION} from './snapshot.help';
-import {START_DESCRIPTION} from './start.help';
-import {STOP_DESCRIPTION} from './stop.help';
-import {UPGRADE_DESCRIPTION} from './upgrade.help';
-import {USE_DESCRIPTION} from './use.help';
-import {VERSION_DESCRIPTION} from './version.help';
-import {WHOAMI_DESCRIPTION} from './whoami.help';
+import {
+  CLEAR_DESCRIPTION,
+  CONFIG_DESCRIPTION,
+  DEPLOY_DESCRIPTION,
+  DEV_DESCRIPTION,
+  INIT_DESCRIPTION,
+  LOGIN_DESCRIPTION,
+  LOGOUT_DESCRIPTION,
+  OPEN_DESCRIPTION,
+  SNAPSHOT_DESCRIPTION,
+  START_DESCRIPTION,
+  STOP_DESCRIPTION,
+  UPGRADE_DESCRIPTION,
+  USE_DESCRIPTION,
+  VERSION_DESCRIPTION,
+  WHOAMI_DESCRIPTION
+} from '../constants/help.constants';
 
 const JUNO_LOGO = `  __  __ __  __  _  ____ 
 __) ||  |  ||  \\| |/    \\

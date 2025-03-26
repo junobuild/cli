@@ -1,9 +1,7 @@
 import {cyan, green, magenta, yellow} from 'kleur';
+import {DEV_DESCRIPTION} from '../constants/help.constants';
 import {helpOutput} from './common.help';
 import {TITLE} from './help';
-
-export const DEV_DESCRIPTION =
-  'Handle development tasks like building serverless functions or running a local Internet Computer instance.';
 
 const helpDevStart = `${magenta(
   'start'

@@ -1,8 +1,7 @@
 import {cyan, green, magenta, yellow} from 'kleur';
+import {STOP_DESCRIPTION} from '../constants/help.constants';
 import {helpMode, helpOutput} from './common.help';
 import {TITLE} from './help';
-
-export const STOP_DESCRIPTION = 'Stop a module.';
 
 const usage = `Usage: ${green('juno')} ${cyan('stop')} ${yellow('[options]')}
 

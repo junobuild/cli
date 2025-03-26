@@ -1,8 +1,7 @@
 import {cyan, green, yellow} from 'kleur';
+import {VERSION_DESCRIPTION} from '../constants/help.constants';
 import {helpMode, helpOutput} from './common.help';
 import {TITLE} from './help';
-
-export const VERSION_DESCRIPTION = 'Check the version of the modules and CLI.';
 
 const usage = `Usage: ${green('juno')} ${cyan('init')} ${yellow('[options]')}
 

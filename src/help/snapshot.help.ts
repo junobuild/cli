@@ -1,9 +1,8 @@
 import {cyan, green, magenta, yellow} from 'kleur';
+import {SNAPSHOT_DESCRIPTION} from '../constants/help.constants';
 import {helpMode, helpOutput} from './common.help';
 import {TITLE} from './help';
 import {TARGET_OPTION_NOTE, targetOption} from './target.help';
-
-export const SNAPSHOT_DESCRIPTION = 'Handle snapshot-related tasks.';
 
 const usage = `Usage: ${green('juno')} ${cyan('snapshot')} ${magenta('<subcommand>')} ${yellow('[options]')}
 

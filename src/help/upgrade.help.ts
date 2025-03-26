@@ -1,9 +1,8 @@
 import {cyan, green, yellow} from 'kleur';
+import {UPGRADE_DESCRIPTION} from '../constants/help.constants';
 import {helpMode, helpOutput} from './common.help';
 import {TITLE} from './help';
 import {TARGET_OPTION_NOTE, targetOption} from './target.help';
-
-export const UPGRADE_DESCRIPTION = 'Upgrade a module to a new version.';
 
 const usage = `Usage: ${green('juno')} ${cyan('upgrade')} ${yellow('[options]')}
 

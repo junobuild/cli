@@ -1,8 +1,7 @@
 import {cyan, green, yellow} from 'kleur';
+import {CONFIG_DESCRIPTION} from '../constants/help.constants';
 import {helpMode, helpOutput} from './common.help';
 import {TITLE} from './help';
-
-export const CONFIG_DESCRIPTION = 'Apply configuration to satellite.';
 
 const usage = `Usage: ${green('juno')} ${cyan('config')} ${yellow('[options]')}
 

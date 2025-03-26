@@ -1,8 +1,7 @@
 import {cyan, green, yellow} from 'kleur';
+import {DEPLOY_DESCRIPTION} from '../constants/help.constants';
 import {helpMode, helpOutput} from './common.help';
 import {TITLE} from './help';
-
-export const DEPLOY_DESCRIPTION = 'Deploy your dapp to your satellite.';
 
 const usage = `Usage: ${green('juno')} ${cyan('deploy')} ${yellow('[options]')}
 
