@@ -1,8 +1,7 @@
 import {cyan, green, yellow} from 'kleur';
+import {USE_DESCRIPTION} from '../constants/help.constants';
 import {helpOutput} from './common.help';
 import {TITLE} from './help';
-
-export const USE_DESCRIPTION = 'Switch between multiple profiles.';
 
 const usage = `Usage: ${green('juno')} ${cyan('use')} ${yellow('[options]')}
 

@@ -1,8 +1,7 @@
 import {cyan, green, yellow} from 'kleur';
+import {OPEN_DESCRIPTION} from '../constants/help.constants';
 import {helpMode, helpOutput} from './common.help';
 import {TITLE} from './help';
-
-export const OPEN_DESCRIPTION = 'Open your satellite in your browser.';
 
 const usage = `Usage: ${green('juno')} ${cyan('open')} ${yellow('[options]')}
 
