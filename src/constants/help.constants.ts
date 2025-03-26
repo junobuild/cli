@@ -19,6 +19,7 @@ export const VERSION_DESCRIPTION = 'Check the version of the modules and CLI.';
 export const WHOAMI_DESCRIPTION =
   'Display your current profile, controller, and links to your satellite.';
 
+export const DEV_START_DESCRIPTION = "Start a local Internet Computer network in a container.";
 export const DEV_BUILD_DESCRIPTION = 'Build your serverless functions.';
 export const DEV_EJECT_DESCRIPTION =
   'Generate the required files to begin developing serverless functions in your project.';

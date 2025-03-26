@@ -2,6 +2,7 @@ import {red} from 'kleur';
 import {logHelpDevBuild} from '../help/dev.build.help';
 import {logHelpDevEject} from '../help/dev.eject.help';
 import {logHelpDev} from '../help/dev.help';
+import {logHelpDevStart} from '../help/dev.start.help';
 import {build} from '../services/build/build.services';
 import {start, stop} from '../services/docker.services';
 import {eject} from '../services/eject/eject.services';
@@ -32,6 +33,9 @@ export const helpDev = (args?: string[]) => {
   const [subCommand] = args ?? [];
 
   switch (subCommand) {
+    case 'start':
+      logHelpDevStart(args);
+      break;
     case 'build':
       logHelpDevBuild(args);
       break;
