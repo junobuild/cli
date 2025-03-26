@@ -1,5 +1,5 @@
 import {cyan, green, magenta, yellow} from 'kleur';
-import {DEV_BUILD_DESCRIPTION} from '../constants/help.constants';
+import {DEV_BUILD_DESCRIPTION, DEV_BUILD_NOTES} from '../constants/help.constants';
 import {helpOutput} from './common.help';
 import {TITLE} from './help';
 
@@ -13,10 +13,7 @@ Options:
   
 Notes:
 
-- If no language is provided, the CLI attempts to determine the appropriate build.
-- Language can be shortened to ${magenta('rs')} for Rust, ${magenta('ts')} for TypeScript and ${magenta('mjs')} for JavaScript.
-- The path option maps to ${magenta('--manifest-path')} for Rust (Cargo) or to the source file for TypeScript and JavaScript (e.g. ${magenta('index.ts')} or ${magenta('index.mjs')}).
-- The watch option rebuilds when source files change, with a default debounce delay of 10 seconds; optionally, pass a delay in milliseconds.`;
+${DEV_BUILD_NOTES}`;
 
 const doc = `${DEV_BUILD_DESCRIPTION}
 

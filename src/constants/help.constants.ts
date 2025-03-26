@@ -1,3 +1,5 @@
+import {magenta} from 'kleur';
+
 export const CLEAR_DESCRIPTION =
   'Clear existing dapp code by removing JavaScript, HTML, CSS, and other files from your satellite.';
 export const CONFIG_DESCRIPTION = 'Apply configuration to satellite.';
@@ -19,6 +21,12 @@ export const VERSION_DESCRIPTION = 'Check the version of the modules and CLI.';
 export const WHOAMI_DESCRIPTION =
   'Display your current profile, controller, and links to your satellite.';
 
+export const DEV_START_DESCRIPTION = 'Start a local Internet Computer network in a container.';
 export const DEV_BUILD_DESCRIPTION = 'Build your serverless functions.';
 export const DEV_EJECT_DESCRIPTION =
   'Generate the required files to begin developing serverless functions in your project.';
+
+export const DEV_BUILD_NOTES = `- If no language is provided, the CLI attempts to determine the appropriate build.
+- Language can be shortened to ${magenta('rs')} for Rust, ${magenta('ts')} for TypeScript and ${magenta('mjs')} for JavaScript.
+- The path option maps to ${magenta('--manifest-path')} for Rust (Cargo) or to the source file for TypeScript and JavaScript (e.g. ${magenta('index.ts')} or ${magenta('index.mjs')}).
+- The watch option rebuilds when source files change, with a default debounce delay of 10 seconds; optionally, pass a delay in milliseconds.`;

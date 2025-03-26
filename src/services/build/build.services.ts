@@ -1,5 +1,4 @@
 import {debounce, nonNullish} from '@dfinity/utils';
-import {hasArgs, nextArg} from '@junobuild/cli-tools';
 import chokidar from 'chokidar';
 import {red} from 'kleur';
 import {existsSync} from 'node:fs';
@@ -12,6 +11,7 @@ import {
 } from '../../constants/dev.constants';
 import {SMALL_TITLE} from '../../help/help';
 import {type BuildArgs} from '../../types/build';
+import {buildArgs} from '../../utils/build.utils';
 import {buildJavaScript, buildTypeScript} from './build.javascript';
 import {buildRust} from './build.rust.services';
 
@@ -86,7 +86,7 @@ const executeBuild = async ({lang, path}: Omit<BuildArgs, 'watch'>) => {
   );
 };
 
-const watchBuild = ({watch, path, ...params}: BuildArgs) => {
+export const watchBuild = ({watch, path, ...params}: BuildArgs) => {
   const doBuild = async () => {
     console.log(`\n⏱ Rebuilding serverless functions...`);
     await executeBuild({path, ...params});
@@ -117,39 +117,4 @@ const watchBuild = ({watch, path, ...params}: BuildArgs) => {
     .on('error', (err) => {
       console.log(red('️‼️  Unexpected error while live reloading:'), err);
     });
-};
-
-const buildArgs = (args?: string[]): BuildArgs => {
-  const path = nextArg({args, option: '-p'}) ?? nextArg({args, option: '--path'});
-
-  const {lang} = buildLang(args);
-
-  const watch = hasArgs({args, options: ['-w', '--watch']});
-  const watchValue = nextArg({args, option: '-w'}) ?? nextArg({args, option: '--watch'});
-
-  return {
-    path,
-    lang,
-    watch: watchValue ?? watch
-  };
-};
-
-const buildLang = (args?: string[]): Pick<BuildArgs, 'lang'> => {
-  const lang = nextArg({args, option: '-l'}) ?? nextArg({args, option: '--lang'});
-
-  switch (lang?.toLowerCase()) {
-    case 'rs':
-    case 'rust':
-      return {lang: 'rs'};
-    case 'ts':
-    case 'mts':
-    case 'typescript':
-      return {lang: 'ts'};
-    case 'js':
-    case 'mjs':
-    case 'javascript':
-      return {lang: 'mjs'};
-    default:
-      return {};
-  }
 };
