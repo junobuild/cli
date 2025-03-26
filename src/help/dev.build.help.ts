@@ -1,8 +1,7 @@
 import {cyan, green, magenta, yellow} from 'kleur';
+import {DEV_BUILD_DESCRIPTION} from '../constants/help.constants';
 import {helpOutput} from './common.help';
 import {TITLE} from './help';
-
-const DEV_BUILD_DESCRIPTION = 'Build your serverless functions.';
 
 const usage = `Usage: ${green('juno')} ${cyan('dev')} ${magenta('build')} ${yellow('[options]')}
 

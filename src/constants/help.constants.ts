@@ -18,3 +18,7 @@ export const USE_DESCRIPTION = 'Switch between multiple profiles.';
 export const VERSION_DESCRIPTION = 'Check the version of the modules and CLI.';
 export const WHOAMI_DESCRIPTION =
   'Display your current profile, controller, and links to your satellite.';
+
+export const DEV_BUILD_DESCRIPTION = 'Build your serverless functions.';
+export const DEV_EJECT_DESCRIPTION =
+  'Generate the required files to begin developing serverless functions in your project.';
