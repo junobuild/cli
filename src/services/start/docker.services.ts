@@ -9,17 +9,17 @@ import {
   detectJunoDevConfigType,
   junoDevConfigExist,
   junoDevConfigFile
-} from '../configs/juno.dev.config';
-import {JUNO_DEV_CONFIG_FILENAME} from '../constants/constants';
-import {assertDockerRunning, checkDockerVersion} from '../utils/env.utils';
-import {copyTemplateFile, readTemplateFile} from '../utils/fs.utils';
-import {confirmAndExit} from '../utils/prompt.utils';
-import {promptConfigType} from './init.services';
+} from '../../configs/juno.dev.config';
+import {JUNO_DEV_CONFIG_FILENAME} from '../../constants/constants';
+import {assertDockerRunning, checkDockerVersion} from '../../utils/env.utils';
+import {copyTemplateFile, readTemplateFile} from '../../utils/fs.utils';
+import {confirmAndExit} from '../../utils/prompt.utils';
+import {promptConfigType} from '../init.services';
 
 const TEMPLATE_PATH = '../templates/docker';
 const DESTINATION_PATH = process.cwd();
 
-export const start = async () => {
+export const startContainer = async () => {
   const {valid} = await checkDockerVersion();
 
   if (valid === 'error' || !valid) {

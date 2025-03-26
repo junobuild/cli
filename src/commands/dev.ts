@@ -4,8 +4,9 @@ import {logHelpDevEject} from '../help/dev.eject.help';
 import {logHelpDev} from '../help/dev.help';
 import {logHelpDevStart} from '../help/dev.start.help';
 import {build} from '../services/build/build.services';
-import {start, stop} from '../services/docker.services';
 import {eject} from '../services/eject/eject.services';
+import {stop} from '../services/start/docker.services';
+import {start} from '../services/start/start.services';
 
 export const dev = async (args?: string[]) => {
   const [subCommand] = args ?? [];
@@ -18,7 +19,7 @@ export const dev = async (args?: string[]) => {
       await build(args);
       break;
     case 'start':
-      await start();
+      await start(args);
       break;
     case 'stop':
       await stop();
