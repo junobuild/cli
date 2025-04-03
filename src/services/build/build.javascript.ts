@@ -1,5 +1,4 @@
-import {notEmptyString} from '@dfinity/utils';
-import {isEmptyString} from '@dfinity/utils/dist/types/utils/nullish.utils';
+import {isEmptyString, notEmptyString} from '@dfinity/utils';
 import {buildEsm, execute} from '@junobuild/cli-tools';
 import {green, magenta, red, yellow} from 'kleur';
 import {existsSync} from 'node:fs';
