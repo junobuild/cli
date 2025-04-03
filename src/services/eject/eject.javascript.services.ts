@@ -1,6 +1,6 @@
 import {execute} from '@junobuild/cli-tools';
 import {magenta} from 'kleur';
-import {mkdir, readFile} from 'node:fs/promises';
+import {mkdir} from 'node:fs/promises';
 import {join} from 'node:path';
 import {
   DEVELOPER_PROJECT_SATELLITE_PATH,
@@ -10,6 +10,7 @@ import {
   TS_TEMPLATE_PATH
 } from '../../constants/dev.constants';
 import {copyTemplateFile} from '../../utils/fs.utils';
+import {readPackageJson} from '../../utils/pkg.utils';
 import {detectPackageManager} from '../../utils/pm.utils';
 import {confirmAndExit} from '../../utils/prompt.utils';
 
@@ -77,9 +78,7 @@ const installFunctionsLib = async () => {
 
 const hasFunctionsLib = async (): Promise<boolean> => {
   try {
-    const packageJson = await readFile(join(process.cwd(), 'package.json'), 'utf-8');
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
-    const {dependencies} = JSON.parse(packageJson) as {dependencies?: Record<string, string>};
+    const {dependencies} = await readPackageJson();
     return Object.keys(dependencies ?? {}).includes('@junobuild/functions');
   } catch (_err: unknown) {
     // This should not block the developer therefore we fallback to asking for installing the library.
