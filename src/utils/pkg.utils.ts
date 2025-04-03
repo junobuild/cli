@@ -1,6 +1,6 @@
 import {readFile} from 'node:fs/promises';
 import {PACKAGE_JSON_PATH} from '../constants/dev.constants';
-import { PackageJson } from "../types/pkg";
+import type {PackageJson} from '../types/pkg';
 
 export const readPackageJson = async (): Promise<PackageJson> => {
   const packageJson = await readFile(PACKAGE_JSON_PATH, 'utf-8');
