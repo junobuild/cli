@@ -29,7 +29,7 @@ export const config = async (args?: string[]) => {
 
   const spinner = ora(`Configuring...`).start();
 
-  let results: PromiseSettledResult<void>[];
+  let results: Array<PromiseSettledResult<void>> = [];
 
   try {
     results = await Promise.allSettled([
@@ -69,7 +69,7 @@ export const config = async (args?: string[]) => {
   printResults(results);
 };
 
-const printResults = (results: PromiseSettledResult<void>[]) => {
+const printResults = (results: Array<PromiseSettledResult<void>>) => {
   const errors = results.filter((result) => result.status === 'rejected');
 
   if (errors.length === 0) {
