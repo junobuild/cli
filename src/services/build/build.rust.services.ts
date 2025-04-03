@@ -17,6 +17,7 @@ import type {BuildArgs} from '../../types/build';
 import {readSatelliteDid} from '../../utils/did.utils';
 import {checkCargoBinInstalled, checkIcWasmVersion, checkRustVersion} from '../../utils/env.utils';
 import {formatBytes, formatTime} from '../../utils/format.utils';
+import {readPackageJson} from '../../utils/pkg.utils';
 import {confirmAndExit} from '../../utils/prompt.utils';
 
 const CARGO_RELEASE_DIR = join(process.cwd(), 'target', 'wasm32-unknown-unknown', 'release');
@@ -193,9 +194,7 @@ const api = async () => {
 
   const readCoreLib = async (): Promise<'core' | 'core-standalone'> => {
     try {
-      const packageJson = await readFile(join(process.cwd(), 'package.json'), 'utf-8');
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
-      const {dependencies} = JSON.parse(packageJson) as {dependencies?: Record<string, string>};
+      const {dependencies} = await readPackageJson();
       return Object.keys(dependencies ?? {}).includes('@junobuild/core-standalone')
         ? 'core-standalone'
         : 'core';
