@@ -35,6 +35,8 @@ const build = async (params: BuildArgsTsJs) => {
 
   await createTargetDir();
 
+  await copyMetadata();
+
   await buildWithEsbuild(params);
 };
 
