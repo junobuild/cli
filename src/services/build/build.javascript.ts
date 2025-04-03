@@ -129,7 +129,7 @@ const copyMetadata = async (): Promise<void> => {
     };
 
     await writeFile(PACKAGE_JSON_SPUTNIK_PATH, JSON.stringify(packageJson, null, 2), 'utf-8');
-  } catch (err: unknown) {
+  } catch (_err: unknown) {
     // We want to continue the build process even if copying package.json fails,
     // since it's only used to set the extended custom version.
     console.log('⚠️ Could not copy package.json for the build.');
