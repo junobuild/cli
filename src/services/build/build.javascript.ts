@@ -1,16 +1,22 @@
+import {notEmptyString} from '@dfinity/utils';
+import {isEmptyString} from '@dfinity/utils/dist/types/utils/nullish.utils';
 import {buildEsm, execute} from '@junobuild/cli-tools';
 import {green, magenta, red, yellow} from 'kleur';
-import {mkdir} from 'node:fs/promises';
+import {existsSync} from 'node:fs';
+import {mkdir, writeFile} from 'node:fs/promises';
 import {join} from 'node:path';
 import {
   DEPLOY_LOCAL_REPLICA_PATH,
   DEPLOY_SPUTNIK_PATH,
   DEVELOPER_PROJECT_SATELLITE_PATH,
   INDEX_MJS,
-  INDEX_TS
+  INDEX_TS,
+  PACKAGE_JSON_PATH,
+  PACKAGE_JSON_SPUTNIK_PATH
 } from '../../constants/dev.constants';
 import type {BuildArgs, BuildLang} from '../../types/build';
 import {formatBytes, formatTime} from '../../utils/format.utils';
+import {readPackageJson} from '../../utils/pkg.utils';
 import {detectPackageManager} from '../../utils/pm.utils';
 import {confirmAndExit} from '../../utils/prompt.utils';
 
@@ -96,5 +102,34 @@ const hasEsbuild = async (): Promise<boolean> => {
     return true;
   } catch (_err: unknown) {
     return false;
+  }
+};
+
+const copyMetadata = async (): Promise<void> => {
+  if (!existsSync(PACKAGE_JSON_PATH)) {
+    // No package.json therefore no metadata to pass to the build in the container.
+    return;
+  }
+
+  try {
+    const {juno, version} = await readPackageJson();
+
+    if (isEmptyString(juno?.functions?.version) && isEmptyString(version)) {
+      // No version detected therefore no metadata to the build in the container.
+      return;
+    }
+
+    const functionsVersion = juno?.functions?.version;
+
+    const packageJson = {
+      ...(notEmptyString(version) && {version}),
+      ...(notEmptyString(functionsVersion) && {juno})
+    };
+
+    await writeFile(PACKAGE_JSON_SPUTNIK_PATH, JSON.stringify(packageJson, null, 2), 'utf-8');
+  } catch (err: unknown) {
+    // We want to continue the build process even if copying package.json fails,
+    // since it's only used to set the extended custom version.
+    console.log('⚠️ Could not copy package.json for the build.');
   }
 };

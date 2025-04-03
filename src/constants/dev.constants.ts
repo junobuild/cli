@@ -38,6 +38,10 @@ export const IC_WASM_MIN_VERSION = '0.8.5';
 export const DOCKER_MIN_VERSION = '24.0.0';
 
 export const DEPLOY_LOCAL_REPLICA_PATH = join(process.cwd(), 'target', 'deploy');
+export const PACKAGE_JSON_PATH = join(process.cwd(), 'package.json');
 
 export const SPUTNIK_INDEX_MJS = 'sputnik.index.mjs';
 export const DEPLOY_SPUTNIK_PATH = join(DEPLOY_LOCAL_REPLICA_PATH, SPUTNIK_INDEX_MJS);
+
+export const SPUTNIK_PACKAGE_JSON = 'sputnik.package.json';
+export const PACKAGE_JSON_SPUTNIK_PATH = join(DEPLOY_LOCAL_REPLICA_PATH, SPUTNIK_PACKAGE_JSON);
