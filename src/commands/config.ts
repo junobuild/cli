@@ -8,6 +8,7 @@ import {
   setStorageConfig
 } from '@junobuild/admin';
 import type {ModuleSettings} from '@junobuild/config';
+import {red} from 'kleur';
 import ora from 'ora';
 import {initAgent} from '../api/agent.api';
 import {junoConfigExist, readJunoConfig} from '../configs/juno.config';
@@ -28,8 +29,10 @@ export const config = async (args?: string[]) => {
 
   const spinner = ora(`Configuring...`).start();
 
+  let results: Array<PromiseSettledResult<void>> = [];
+
   try {
-    await Promise.allSettled([
+    results = await Promise.allSettled([
       setStorageConfig({
         config: {
           headers: storage?.headers ?? [],
@@ -62,6 +65,25 @@ export const config = async (args?: string[]) => {
   } finally {
     spinner.stop();
   }
+
+  printResults(results);
+};
+
+const printResults = (results: Array<PromiseSettledResult<void>>) => {
+  const errors = results.filter((result) => result.status === 'rejected');
+
+  if (errors.length === 0) {
+    console.log('✅ Configuration applied.');
+    return;
+  }
+
+  console.log(
+    red(`The configuration failed with ${errors.length} error${errors.length > 1 ? 's' : ''} 😢.`)
+  );
+
+  errors.forEach((error, index) => {
+    console.log(`${index}:`, error.reason);
+  });
 };
 
 const setSettings = async ({
