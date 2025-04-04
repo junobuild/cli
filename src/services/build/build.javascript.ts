@@ -1,16 +1,22 @@
-import {buildEsm, execute} from '@junobuild/cli-tools';
+import {isEmptyString, isNullish, notEmptyString} from '@dfinity/utils';
+import {buildEsm, execute, type PackageJson} from '@junobuild/cli-tools';
+import type {Metafile} from 'esbuild';
 import {green, magenta, red, yellow} from 'kleur';
-import {mkdir} from 'node:fs/promises';
+import {existsSync} from 'node:fs';
+import {mkdir, writeFile} from 'node:fs/promises';
 import {join} from 'node:path';
 import {
   DEPLOY_LOCAL_REPLICA_PATH,
   DEPLOY_SPUTNIK_PATH,
   DEVELOPER_PROJECT_SATELLITE_PATH,
   INDEX_MJS,
-  INDEX_TS
+  INDEX_TS,
+  PACKAGE_JSON_PATH,
+  PACKAGE_JSON_SPUTNIK_PATH
 } from '../../constants/dev.constants';
 import type {BuildArgs, BuildLang} from '../../types/build';
 import {formatBytes, formatTime} from '../../utils/format.utils';
+import {readPackageJson} from '../../utils/pkg.utils';
 import {detectPackageManager} from '../../utils/pm.utils';
 import {confirmAndExit} from '../../utils/prompt.utils';
 
@@ -29,10 +35,21 @@ const build = async (params: BuildArgsTsJs) => {
 
   await createTargetDir();
 
-  await buildWithEsbuild(params);
+  const metadata = await prepareMetadata();
+
+  await copyMetadata(metadata);
+
+  const buildResult = await buildWithEsbuild(params);
+
+  printResults({metadata, buildResult});
 };
 
-const buildWithEsbuild = async ({lang, path}: BuildArgsTsJs) => {
+interface BuildResult {
+  version: string;
+  output: [string, Metafile['outputs'][0]];
+}
+
+const buildWithEsbuild = async ({lang, path}: BuildArgsTsJs): Promise<BuildResult> => {
   const infile =
     path ?? join(DEVELOPER_PROJECT_SATELLITE_PATH, lang === 'mjs' ? INDEX_MJS : INDEX_TS);
 
@@ -60,10 +77,10 @@ const buildWithEsbuild = async ({lang, path}: BuildArgsTsJs) => {
     process.exit(1);
   }
 
-  const [key, {bytes}] = entry[0];
-
-  console.log(`${green('✔')} Build complete at ${formatTime()} (esbuild ${version})`);
-  console.log(`→ ${yellow(key)} (${formatBytes(bytes)})`);
+  return {
+    output: entry[0],
+    version
+  };
 };
 
 const createTargetDir = async () => {
@@ -97,4 +114,69 @@ const hasEsbuild = async (): Promise<boolean> => {
   } catch (_err: unknown) {
     return false;
   }
+};
+
+type BuildMetadata = Omit<PackageJson, 'dependencies'> | undefined;
+
+const prepareMetadata = async (): Promise<BuildMetadata> => {
+  if (!existsSync(PACKAGE_JSON_PATH)) {
+    // No package.json therefore no metadata to pass to the build in the container.
+    return undefined;
+  }
+
+  try {
+    const {juno, version} = await readPackageJson();
+
+    if (isEmptyString(juno?.functions?.version) && isEmptyString(version)) {
+      // No version detected therefore no metadata to the build in the container.
+      return undefined;
+    }
+
+    const functionsVersion = juno?.functions?.version;
+
+    return {
+      ...(notEmptyString(version) && {version}),
+      ...(notEmptyString(functionsVersion) && {juno})
+    };
+  } catch (_err: unknown) {
+    // We want to continue the build process even if copying package.json fails,
+    // since it's only used to set the extended custom version.
+    console.log('⚠️ Could not read build metadata from package.json.');
+    return undefined;
+  }
+};
+
+const copyMetadata = async (metadata: BuildMetadata): Promise<void> => {
+  if (isNullish(metadata)) {
+    // No metadata to pass to the build in the container.
+    return;
+  }
+
+  try {
+    await writeFile(PACKAGE_JSON_SPUTNIK_PATH, JSON.stringify(metadata, null, 2), 'utf-8');
+  } catch (_err: unknown) {
+    // We want to continue the build process even if copying package.json fails,
+    // since it's only used to set the extended custom version.
+    console.log('⚠️ Could not copy package.json for the build.');
+  }
+};
+
+const printResults = ({
+  metadata,
+  buildResult
+}: {
+  metadata: BuildMetadata;
+  buildResult: BuildResult;
+}) => {
+  const {output, version: esbuildVersion} = buildResult;
+  const [key, {bytes}] = output;
+
+  // The version defined by the developer for their serverless functions - not the version of the Satellite provided by Juno.
+  const extendedVersion = metadata?.juno?.functions?.version ?? metadata?.version;
+  const version = notEmptyString(extendedVersion) ? `version ${extendedVersion}, ` : ' ';
+
+  console.log(
+    `${green('✔')} Build complete at ${formatTime()} (${version}esbuild ${esbuildVersion})`
+  );
+  console.log(`→ ${yellow(key)} (${formatBytes(bytes)})`);
 };
