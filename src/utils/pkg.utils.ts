@@ -6,9 +6,11 @@ export const readPackageJson = async (): Promise<PackageJson> => {
   const packageJson = await readFile(PACKAGE_JSON_PATH, 'utf-8');
 
   // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
-  const {dependencies} = JSON.parse(packageJson) as {dependencies?: Record<string, string>};
+  const {dependencies, version, juno} = JSON.parse(packageJson) as PackageJson;
 
   return {
-    dependencies
+    dependencies,
+    version,
+    juno
   };
 };
