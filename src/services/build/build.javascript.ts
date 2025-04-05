@@ -125,7 +125,7 @@ const prepareMetadata = async (): Promise<BuildMetadata> => {
   }
 
   try {
-    const {juno, version} = await readPackageJson();
+    const {juno, version, name} = await readPackageJson();
 
     if (isEmptyString(juno?.functions?.version) && isEmptyString(version)) {
       // No version detected therefore no metadata to the build in the container.
@@ -135,14 +135,13 @@ const prepareMetadata = async (): Promise<BuildMetadata> => {
     const functionsVersion = juno?.functions?.version;
 
     return {
+      ...(notEmptyString(name) && {name}),
       ...(notEmptyString(version) && {version}),
       ...(notEmptyString(functionsVersion) && {juno})
     };
   } catch (_err: unknown) {
-    // We want to continue the build process even if copying package.json fails,
-    // since it's only used to set the extended custom version.
-    console.log('⚠️ Could not read build metadata from package.json.');
-    return undefined;
+    console.log(red('⚠️ Could not read build metadata from package.json.'));
+    process.exit(1);
   }
 };
 
@@ -155,9 +154,8 @@ const copyMetadata = async (metadata: BuildMetadata): Promise<void> => {
   try {
     await writeFile(PACKAGE_JSON_SPUTNIK_PATH, JSON.stringify(metadata, null, 2), 'utf-8');
   } catch (_err: unknown) {
-    // We want to continue the build process even if copying package.json fails,
-    // since it's only used to set the extended custom version.
-    console.log('⚠️ Could not copy package.json for the build.');
+    console.log(red('⚠️ Could not copy package.json metadata for the build.'));
+    process.exit(1);
   }
 };
 
