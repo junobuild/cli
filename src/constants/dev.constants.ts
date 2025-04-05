@@ -42,6 +42,3 @@ export const PACKAGE_JSON_PATH = join(process.cwd(), 'package.json');
 
 export const SPUTNIK_INDEX_MJS = 'sputnik.index.mjs';
 export const DEPLOY_SPUTNIK_PATH = join(DEPLOY_LOCAL_REPLICA_PATH, SPUTNIK_INDEX_MJS);
-
-export const SPUTNIK_PACKAGE_JSON = 'sputnik.package.json';
-export const PACKAGE_JSON_SPUTNIK_PATH = join(DEPLOY_LOCAL_REPLICA_PATH, SPUTNIK_PACKAGE_JSON);
