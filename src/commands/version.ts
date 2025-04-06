@@ -1,10 +1,14 @@
-import {isNullish} from '@dfinity/utils';
+import {isNullish, nonNullish, notEmptyString} from '@dfinity/utils';
 import {
+  findJunoPackageDependency,
+  getJunoPackage,
+  getJunoPackageVersion,
   missionControlVersion as missionControlVersionLib,
   orbiterVersion as orbiterVersionLib,
   satelliteVersion as satelliteVersionLib
 } from '@junobuild/admin';
 import {hasArgs} from '@junobuild/cli-tools';
+import {JUNO_PACKAGE_SATELLITE_ID} from '@junobuild/config';
 import {cyan, green, red, yellow} from 'kleur';
 import {clean, compare} from 'semver';
 import {version as cliCurrentVersion} from '../../package.json';
@@ -72,14 +76,30 @@ const missionControlVersion = async () => {
     return;
   }
 
-  const missionControlParameters = {
-    missionControlId: missionControl,
-    ...(await actorParameters())
+  const actorParams = await actorParameters();
+
+  const getVersion = async (): Promise<string> => {
+    const version = await getJunoPackageVersion({
+      moduleId: missionControl,
+      ...actorParams
+    });
+
+    if (nonNullish(version) && notEmptyString(version)) {
+      return version;
+    }
+
+    // Legacy
+    const missionControlParameters = {
+      missionControlId: missionControl,
+      ...actorParams
+    };
+
+    return await missionControlVersionLib({
+      missionControl: missionControlParameters
+    });
   };
 
-  const currentVersion = await missionControlVersionLib({
-    missionControl: missionControlParameters
-  });
+  const currentVersion = await getVersion();
 
   const displayHint = `mission control`;
 
@@ -100,13 +120,50 @@ const satelliteVersion = async (args?: string[]) => {
   const {satellite: satelliteConfig} = await readJunoConfig(env);
 
   const satellite = await satelliteParameters({satellite: satelliteConfig, env});
-  const {satelliteId} = satellite;
+  const {satelliteId, ...actorParams} = satellite;
 
-  const currentVersion = await satelliteVersionLib({
-    satellite
-  });
+  const getVersion = async (): Promise<string | undefined> => {
+    const pkg = await getJunoPackage({
+      moduleId: satelliteId,
+      ...actorParams
+    });
+
+    if (nonNullish(pkg)) {
+      const {dependencies, version} = pkg;
+
+      // It's a stock Satellite
+      if (isNullish(dependencies)) {
+        return version;
+      }
+
+      // It's extended, we search for the dependency.
+      const satelliteDependency = findJunoPackageDependency({
+        dependencies,
+        dependencyId: JUNO_PACKAGE_SATELLITE_ID
+      });
+
+      if (isNullish(satelliteDependency)) {
+        return undefined;
+      }
+
+      const [_, versionSatellite] = satelliteDependency;
+      return versionSatellite;
+    }
+
+    // Legacy
+    return await satelliteVersionLib({
+      satellite
+    });
+  };
 
   const displayHint = `satellite "${await satelliteKey(satelliteId)}"`;
+
+  const currentVersion = await getVersion();
+
+  if (isNullish(currentVersion)) {
+    console.log(red(`Cannot retrieve the current version of ${displayHint} 😢.`));
+    return;
+  }
 
   await checkSegmentVersion({
     currentVersion,
@@ -123,14 +180,30 @@ const orbitersVersion = async () => {
   }
 
   const checkOrbiterVersion = async (orbiterId: string) => {
+    const actorParams = await actorParameters();
+
     const orbiterParameters = {
       orbiterId,
-      ...(await actorParameters())
+      ...actorParams
     };
 
-    const currentVersion = await orbiterVersionLib({
-      orbiter: orbiterParameters
-    });
+    const getVersion = async (): Promise<string> => {
+      const version = await getJunoPackageVersion({
+        moduleId: orbiterId,
+        ...actorParams
+      });
+
+      if (nonNullish(version) && notEmptyString(version)) {
+        return version;
+      }
+
+      // Legacy
+      return await orbiterVersionLib({
+        orbiter: orbiterParameters
+      });
+    };
+
+    const currentVersion = await getVersion();
 
     const displayHint = `orbiter "${await orbiterKey(orbiterId)}"`;
 
