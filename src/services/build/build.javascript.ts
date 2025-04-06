@@ -58,7 +58,7 @@ const buildWithEsbuild = async ({
 
   // We pass the package information as metadata so the Docker container can read it and embed it into the `juno:package` custom section of the WASM’s public metadata.
   const banner = {
-    js: `export const __juno_package__ = ${JSON.stringify(metadata)};`
+    js: `// @juno:package ${JSON.stringify(metadata)};`
   };
 
   const {metafile, errors, warnings, version} = await buildEsm({
