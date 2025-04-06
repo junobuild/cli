@@ -24,12 +24,12 @@
     "prepublishOnly": "./scripts/prepublish.sh"
   },
   "dependencies": {
-    "@dfinity/agent": "^2.3.0",
-    "@dfinity/auth-client": "^2.3.0",
-    "@dfinity/candid": "^2.3.0",
+    "@dfinity/agent": "^2.4.0",
+    "@dfinity/auth-client": "^2.4.0",
+    "@dfinity/candid": "^2.4.0",
     "@dfinity/ic-management": "^6.0.6",
-    "@dfinity/identity": "^2.3.0",
-    "@dfinity/principal": "^2.3.0",
+    "@dfinity/identity": "^2.4.0",
+    "@dfinity/principal": "^2.4.0",
     "@junobuild/admin": "^0.1.7",
     "@junobuild/cli-tools": "^0.1.8",
     "@junobuild/config": "^0.1.4",
@@ -48,20 +48,20 @@
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3.3.1",
-    "@eslint/js": "^9.23.0",
+    "@eslint/js": "^9.24.0",
     "@junobuild/functions": "^0.0.14",
     "@types/node": "^22.14.0",
     "@types/prompts": "^2.4.9",
     "@types/semver": "^7.7.0",
     "dotenv": "^16.4.7",
     "esbuild": "^0.25.2",
-    "eslint": "^9.23.0",
+    "eslint": "^9.24.0",
     "eslint-config-love": "^119.0.0",
     "eslint-config-prettier": "^10.1.1",
     "globals": "^16.0.0",
     "prettier": "^3.5.3",
     "prettier-plugin-organize-imports": "^4.1.0",
-    "typescript": "^5.8.2"
+    "typescript": "^5.8.3"
   },
   "repository": {
     "type": "git",
