@@ -1,9 +1,9 @@
-import {isEmptyString, isNullish, notEmptyString} from '@dfinity/utils';
+import {isEmptyString, notEmptyString} from '@dfinity/utils';
 import {buildEsm, execute, type PackageJson} from '@junobuild/cli-tools';
 import type {Metafile} from 'esbuild';
 import {green, magenta, red, yellow} from 'kleur';
 import {existsSync} from 'node:fs';
-import {mkdir, writeFile} from 'node:fs/promises';
+import {mkdir} from 'node:fs/promises';
 import {join} from 'node:path';
 import {
   DEPLOY_LOCAL_REPLICA_PATH,
@@ -11,8 +11,7 @@ import {
   DEVELOPER_PROJECT_SATELLITE_PATH,
   INDEX_MJS,
   INDEX_TS,
-  PACKAGE_JSON_PATH,
-  PACKAGE_JSON_SPUTNIK_PATH
+  PACKAGE_JSON_PATH
 } from '../../constants/dev.constants';
 import type {BuildArgs, BuildLang} from '../../types/build';
 import {formatBytes, formatTime} from '../../utils/format.utils';
@@ -37,9 +36,7 @@ const build = async (params: BuildArgsTsJs) => {
 
   const metadata = await prepareMetadata();
 
-  await copyMetadata(metadata);
-
-  const buildResult = await buildWithEsbuild(params);
+  const buildResult = await buildWithEsbuild({params, metadata});
 
   printResults({metadata, buildResult});
 };
@@ -49,13 +46,25 @@ interface BuildResult {
   output: [string, Metafile['outputs'][0]];
 }
 
-const buildWithEsbuild = async ({lang, path}: BuildArgsTsJs): Promise<BuildResult> => {
+const buildWithEsbuild = async ({
+  params: {lang, path},
+  metadata
+}: {
+  params: BuildArgsTsJs;
+  metadata: BuildMetadata;
+}): Promise<BuildResult> => {
   const infile =
     path ?? join(DEVELOPER_PROJECT_SATELLITE_PATH, lang === 'mjs' ? INDEX_MJS : INDEX_TS);
 
+  // We pass the package information as metadata so the Docker container can read it and embed it into the `juno:package` custom section of the WASM’s public metadata.
+  const banner = {
+    js: `// @juno:package ${JSON.stringify(metadata)};`
+  };
+
   const {metafile, errors, warnings, version} = await buildEsm({
     infile,
-    outfile: DEPLOY_SPUTNIK_PATH
+    outfile: DEPLOY_SPUTNIK_PATH,
+    banner
   });
 
   for (const {text} of warnings) {
@@ -141,20 +150,6 @@ const prepareMetadata = async (): Promise<BuildMetadata> => {
     };
   } catch (_err: unknown) {
     console.log(red('⚠️ Could not read build metadata from package.json.'));
-    process.exit(1);
-  }
-};
-
-const copyMetadata = async (metadata: BuildMetadata): Promise<void> => {
-  if (isNullish(metadata)) {
-    // No metadata to pass to the build in the container.
-    return;
-  }
-
-  try {
-    await writeFile(PACKAGE_JSON_SPUTNIK_PATH, JSON.stringify(metadata, null, 2), 'utf-8');
-  } catch (_err: unknown) {
-    console.log(red('⚠️ Could not copy package.json metadata for the build.'));
     process.exit(1);
   }
 };
