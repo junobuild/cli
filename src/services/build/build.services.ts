@@ -26,17 +26,17 @@ export const build = async (args?: string[]) => {
   await executeBuild(params);
 };
 
-const executeBuild = async ({lang, path}: Omit<BuildArgs, 'watch'>) => {
+const executeBuild = async ({lang, path, exitOnError}: Omit<BuildArgs, 'watch'>) => {
   // eslint-disable-next-line @typescript-eslint/switch-exhaustiveness-check
   switch (lang) {
     case 'rs':
       await buildRust({path});
       return;
     case 'ts':
-      await buildTypeScript({path});
+      await buildTypeScript({path, exitOnError});
       return;
     case 'mjs':
-      await buildJavaScript({path});
+      await buildJavaScript({path, exitOnError});
       return;
   }
 
@@ -52,7 +52,7 @@ const executeBuild = async ({lang, path}: Omit<BuildArgs, 'watch'>) => {
     nonNullish(path) && extname(path) === extname(DEVELOPER_PROJECT_SATELLITE_INDEX_TS);
 
   if (isPathTypeScript) {
-    await buildTypeScript({path});
+    await buildTypeScript({path, exitOnError});
     return;
   }
 
@@ -60,7 +60,7 @@ const executeBuild = async ({lang, path}: Omit<BuildArgs, 'watch'>) => {
     nonNullish(path) && extname(path) === extname(DEVELOPER_PROJECT_SATELLITE_INDEX_MJS);
 
   if (isPathJavaScript) {
-    await buildJavaScript({path});
+    await buildJavaScript({path, exitOnError});
     return;
   }
 
@@ -70,12 +70,12 @@ const executeBuild = async ({lang, path}: Omit<BuildArgs, 'watch'>) => {
   }
 
   if (existsSync(DEVELOPER_PROJECT_SATELLITE_INDEX_TS)) {
-    await buildTypeScript();
+    await buildTypeScript({exitOnError});
     return;
   }
 
   if (existsSync(DEVELOPER_PROJECT_SATELLITE_INDEX_MJS)) {
-    await buildJavaScript();
+    await buildJavaScript({exitOnError});
     return;
   }
 
@@ -89,7 +89,7 @@ const executeBuild = async ({lang, path}: Omit<BuildArgs, 'watch'>) => {
 export const watchBuild = ({watch, path, ...params}: BuildArgs) => {
   const doBuild = async () => {
     console.log(`\n⏱ Rebuilding serverless functions...`);
-    await executeBuild({path, ...params});
+    await executeBuild({path, exitOnError: false, ...params});
   };
 
   const DEFAULT_TIMEOUT = 10_000;

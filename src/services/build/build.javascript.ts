@@ -19,26 +19,38 @@ import {readPackageJson} from '../../utils/pkg.utils';
 import {detectPackageManager} from '../../utils/pm.utils';
 import {confirmAndExit} from '../../utils/prompt.utils';
 
-export const buildTypeScript = async ({path}: Pick<BuildArgs, 'path'> = {}) => {
-  await build({lang: 'ts', path});
+export const buildTypeScript = async ({
+  path,
+  exitOnError
+}: Pick<BuildArgs, 'path' | 'exitOnError'> = {}) => {
+  await build({lang: 'ts', path, exitOnError});
 };
 
-export const buildJavaScript = async ({path}: Pick<BuildArgs, 'path'> = {}) => {
-  await build({lang: 'mjs', path});
+export const buildJavaScript = async ({
+  path,
+  exitOnError
+}: Pick<BuildArgs, 'path' | 'exitOnError'> = {}) => {
+  await build({lang: 'mjs', path, exitOnError});
 };
 
-type BuildArgsTsJs = {lang: Omit<BuildLang, 'rs'>} & Pick<BuildArgs, 'path'>;
+type BuildArgsTsJs = {lang: Omit<BuildLang, 'rs'>} & Pick<BuildArgs, 'path' | 'exitOnError'>;
 
-const build = async (params: BuildArgsTsJs) => {
+const build = async ({exitOnError, ...params}: BuildArgsTsJs) => {
   await installEsbuild();
 
   await createTargetDir();
 
-  const metadata = await prepareMetadata();
+  try {
+    const metadata = await prepareMetadata();
 
-  const buildResult = await buildWithEsbuild({params, metadata});
+    const buildResult = await buildWithEsbuild({params, metadata});
 
-  printResults({metadata, buildResult});
+    printResults({metadata, buildResult});
+  } catch (_error: unknown) {
+    if (exitOnError !== false) {
+      process.exit(1);
+    }
+  }
 };
 
 interface BuildResult {
@@ -50,7 +62,7 @@ const buildWithEsbuild = async ({
   params: {lang, path},
   metadata
 }: {
-  params: BuildArgsTsJs;
+  params: Omit<BuildArgsTsJs, 'exitOnError'>;
   metadata: BuildMetadata;
 }): Promise<BuildResult> => {
   const infile =
@@ -76,14 +88,14 @@ const buildWithEsbuild = async ({
   }
 
   if (errors.length > 0) {
-    process.exit(1);
+    throw new Error();
   }
 
   const entry = Object.entries(metafile.outputs);
 
   if (entry.length === 0) {
     console.log(red('Unexpected: No metafile resulting from the build was found.'));
-    process.exit(1);
+    throw new Error();
   }
 
   return {
@@ -148,9 +160,9 @@ const prepareMetadata = async (): Promise<BuildMetadata> => {
       ...(notEmptyString(version) && {version}),
       ...(notEmptyString(functionsVersion) && {juno})
     };
-  } catch (_err: unknown) {
+  } catch (err: unknown) {
     console.log(red('⚠️ Could not read build metadata from package.json.'));
-    process.exit(1);
+    throw err;
   }
 };
 
