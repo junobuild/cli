@@ -287,6 +287,5 @@ export const consoleUpgradeResult = ({
     return;
   }
 
-   
   throw err;
 };
