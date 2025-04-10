@@ -46,6 +46,7 @@ export default [
       '@typescript-eslint/no-unsafe-member-access': 'off',
       '@typescript-eslint/prefer-destructuring': 'off',
       '@typescript-eslint/no-unsafe-assignment': 'off',
+      '@typescript-eslint/only-throw-error': 'off',
       '@typescript-eslint/no-unused-vars': [
         'warn',
         {
