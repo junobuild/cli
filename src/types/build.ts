@@ -4,4 +4,5 @@ export interface BuildArgs {
   lang?: BuildLang;
   path?: string | undefined;
   watch?: boolean | string;
+  exitOnError?: boolean;
 }
