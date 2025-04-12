@@ -11,8 +11,9 @@ services:
     volumes:
       # Persistent volume to store internal state
       - juno_skylab:/juno/.juno
-      # Local dev config file to customize Satellite behavior
-      - ./<JUNO_DEV_CONFIG>:/juno/<JUNO_DEV_CONFIG>
+      # Your Juno configuration file.
+      # Notably used to provide your development Satellite ID to the emulator.
+      - ./<JUNO_CONFIG>:/juno/<JUNO_CONFIG>
       # Shared folder for deploying and hot-reloading serverless functions
       # For example, when building functions in TypeScript, the output `.mjs` files are placed here.
       # The container then bundles them into your Satellite WASM (also placed here),
