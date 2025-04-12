@@ -1,0 +1,21 @@
+services:
+  juno-satellite:
+    image: junobuild/satellite:latest
+    ports:
+      # Local replica used to simulate execution
+      - 5987:5987
+      # Little admin server (e.g. to transfer ICP from the ledger)
+      - 5999:5999
+    volumes:
+      # Persistent volume to store internal state
+      - juno_satellite:/juno/.juno
+      # Local dev config file to customize Satellite behavior
+      - ./<JUNO_DEV_CONFIG>:/juno/<JUNO_DEV_CONFIG>
+      # Shared folder for deploying and hot-reloading serverless functions
+      # For example, when building functions in TypeScript, the output `.mjs` files are placed here.
+      # The container then bundles them into your Satellite WASM (also placed here),
+      # and automatically upgrades the environment.
+      - ./target/deploy:/juno/target/deploy/
+
+volumes:
+  juno_satellite:
