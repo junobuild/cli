@@ -94,7 +94,7 @@ export const writeJunoConfig = async ({
       });
 
       const content = template
-        .replace('<SATELLITE_ID>', id)
+        .replace('<PROD_SATELLITE_ID>', id)
         .replace('<SOURCE>', source ?? DEPLOY_DEFAULT_SOURCE)
         .replace('<COMMAND>', pm === 'npm' ? 'npm run' : (pm ?? ''))
         .replace('<ORBITER_ID>', orbiter?.id ?? '');

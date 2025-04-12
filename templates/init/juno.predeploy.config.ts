@@ -2,7 +2,10 @@ import {defineConfig} from '@junobuild/config';
 
 export default defineConfig({
   satellite: {
-    id: '<SATELLITE_ID>',
+    ids: {
+      development: '<DEV_SATELLITE_ID>',
+      production: '<PROD_SATELLITE_ID>'
+    },
     source: '<SOURCE>',
     predeploy: ['<COMMAND> build']
   },
