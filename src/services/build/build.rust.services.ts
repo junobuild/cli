@@ -26,6 +26,7 @@ import {confirmAndExit} from '../../utils/prompt.utils';
 
 const CARGO_RELEASE_DIR = join(process.cwd(), 'target', 'wasm32-unknown-unknown', 'release');
 const SATELLITE_OUTPUT = join(DEPLOY_LOCAL_REPLICA_PATH, 'satellite.wasm');
+const SATELLITE_PROJECT_NAME = 'satellite';
 
 export const buildRust = async ({path}: Pick<BuildArgs, 'path'> = {}) => {
   const {valid: validRust} = await checkRustVersion();
@@ -52,7 +53,7 @@ export const buildRust = async ({path}: Pick<BuildArgs, 'path'> = {}) => {
     return;
   }
 
-  const defaultProjectArgs = ['-p', 'satellite'];
+  const defaultProjectArgs = ['-p', SATELLITE_PROJECT_NAME];
 
   const args = [
     'build',
@@ -241,7 +242,7 @@ const prepareJunoPkg = async ({buildType}: {buildType: BuildType}) => {
 
   const pkg: JunoPackage = {
     version,
-    name: 'satellite',
+    name: SATELLITE_PROJECT_NAME,
     dependencies: {
       '@junobuild/satellite': satelliteVersion
     }
@@ -266,7 +267,9 @@ const extractBuildType = async ({path}: Pick<BuildArgs, 'path'> = {}): Promise<
 
   const metadata = JSON.parse(output);
 
-  const satellitedPkg = (metadata?.packages ?? []).find((pkg) => pkg?.name === 'satellite');
+  const satellitedPkg = (metadata?.packages ?? []).find(
+    (pkg) => pkg?.name === SATELLITE_PROJECT_NAME
+  );
 
   const version: string | null | undefined = satellitedPkg?.version;
 
