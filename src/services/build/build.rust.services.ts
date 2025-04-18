@@ -264,7 +264,7 @@ const extractBuildType = async (): Promise<BuildType | {error: string}> => {
 
   const satellitedPkg = (metadata?.packages ?? []).find((pkg) => pkg?.name === 'satellite');
 
-  const version = satellitedPkg?.version;
+  const version: string | null | undefined = satellitedPkg?.version;
 
   if (isNullish(version) || isEmptyString(version)) {
     return {
@@ -272,7 +272,7 @@ const extractBuildType = async (): Promise<BuildType | {error: string}> => {
     };
   }
 
-  const satDependency = (satellitedPkg?.dependencies ?? []).find(
+  const satDependency: {req?: string | null | undefined} = (satellitedPkg?.dependencies ?? []).find(
     ({name}) => name === 'junobuild-satellite'
   );
 
@@ -287,7 +287,8 @@ const extractBuildType = async (): Promise<BuildType | {error: string}> => {
   }
 
   const satPackages = (metadata?.packages ?? []).filter(
-    (pkg) => pkg?.name === 'junobuild-satellite' && satisfies(pkg?.version, requiredSatVersion)
+    (pkg: {name?: string; version?: string}) =>
+      pkg.name === 'junobuild-satellite' && satisfies(pkg.version ?? '0.0.0', requiredSatVersion)
   );
 
   if (satPackages.length === 0) {
@@ -306,7 +307,7 @@ const extractBuildType = async (): Promise<BuildType | {error: string}> => {
 
   const [satPackage] = satPackages;
 
-  const satelliteVersion = satPackage.metadata?.juno?.satellite?.version;
+  const satelliteVersion: string | null | undefined = satPackage.metadata?.juno?.satellite?.version;
 
   if (isNullish(satelliteVersion) || isEmptyString(satelliteVersion)) {
     const normalizeVersion = (version: string): string =>
