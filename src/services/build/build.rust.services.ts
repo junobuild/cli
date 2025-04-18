@@ -77,7 +77,7 @@ export const buildRust = async ({path}: Pick<BuildArgs, 'path'> = {}) => {
   }).start();
 
   try {
-    const buildType = await extractBuildType();
+    const buildType = await extractBuildType({path});
 
     if ('error' in buildType) {
       console.log(red(buildType.error));
@@ -250,13 +250,17 @@ const prepareJunoPkg = async ({buildType}: {buildType: BuildType}) => {
   await writeFile(JUNO_PACKAGE_JSON_PATH, JSON.stringify(pkg, null, 2), 'utf-8');
 };
 
-const extractBuildType = async (): Promise<BuildType | {error: string}> => {
+const extractBuildType = async ({path}: Pick<BuildArgs, 'path'> = {}): Promise<
+  BuildType | {error: string}
+> => {
   await mkdir(TARGET_PATH, {recursive: true});
+
+  const manifestArgs = nonNullish(path) ? ['--manifest-path', path] : [];
 
   let output = '';
   await spawn({
     command: 'cargo',
-    args: ['metadata', '--format-version', '1'],
+    args: ['metadata', '--format-version', '1', ...manifestArgs],
     stdout: (o) => (output += o)
   });
 
