@@ -37,7 +37,10 @@ export const RUST_MIN_VERSION = '1.70.0';
 export const IC_WASM_MIN_VERSION = '0.8.5';
 export const DOCKER_MIN_VERSION = '24.0.0';
 
-export const DEPLOY_LOCAL_REPLICA_PATH = join(process.cwd(), 'target', 'deploy');
+export const TARGET_PATH = join(process.cwd(), 'target');
+export const DEPLOY_LOCAL_REPLICA_PATH = join(TARGET_PATH, 'deploy');
+export const JUNO_PACKAGE_JSON_PATH = join(TARGET_PATH, 'juno.package.json');
+
 export const PACKAGE_JSON_PATH = join(process.cwd(), 'package.json');
 
 export const SPUTNIK_INDEX_MJS = 'sputnik.index.mjs';
