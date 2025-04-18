@@ -1,17 +1,21 @@
-import {nonNullish} from '@dfinity/utils';
+import {isEmptyString, isNullish, nonNullish} from '@dfinity/utils';
 import {execute, gzipFile, spawn} from '@junobuild/cli-tools';
+import {type JunoPackage} from '@junobuild/config';
 import {generateApi} from '@junobuild/did-tools';
-import {magenta, yellow} from 'kleur';
+import {magenta, red, yellow} from 'kleur';
 import {existsSync} from 'node:fs';
 import {lstat, mkdir, readFile, rename, writeFile} from 'node:fs/promises';
 import {join, relative} from 'node:path';
 import ora, {type Ora} from 'ora';
+import {compare, satisfies} from 'semver';
 import {detectJunoDevConfigType} from '../../configs/juno.dev.config';
 import {
   DEPLOY_LOCAL_REPLICA_PATH,
   DEVELOPER_PROJECT_SATELLITE_DECLARATIONS_PATH,
   DEVELOPER_PROJECT_SATELLITE_PATH,
-  IC_WASM_MIN_VERSION
+  IC_WASM_MIN_VERSION,
+  JUNO_PACKAGE_JSON_PATH,
+  TARGET_PATH
 } from '../../constants/dev.constants';
 import type {BuildArgs} from '../../types/build';
 import {readSatelliteDid} from '../../utils/did.utils';
@@ -22,6 +26,7 @@ import {confirmAndExit} from '../../utils/prompt.utils';
 
 const CARGO_RELEASE_DIR = join(process.cwd(), 'target', 'wasm32-unknown-unknown', 'release');
 const SATELLITE_OUTPUT = join(DEPLOY_LOCAL_REPLICA_PATH, 'satellite.wasm');
+const SATELLITE_PROJECT_NAME = 'satellite';
 
 export const buildRust = async ({path}: Pick<BuildArgs, 'path'> = {}) => {
   const {valid: validRust} = await checkRustVersion();
@@ -48,7 +53,7 @@ export const buildRust = async ({path}: Pick<BuildArgs, 'path'> = {}) => {
     return;
   }
 
-  const defaultProjectArgs = ['-p', 'satellite'];
+  const defaultProjectArgs = ['-p', SATELLITE_PROJECT_NAME];
 
   const args = [
     'build',
@@ -73,11 +78,20 @@ export const buildRust = async ({path}: Pick<BuildArgs, 'path'> = {}) => {
   }).start();
 
   try {
+    const buildType = await extractBuildType({path});
+
+    if ('error' in buildType) {
+      console.log(red(buildType.error));
+      return;
+    }
+
+    await prepareJunoPkg({buildType});
+
     await did();
     await didc();
     await api();
 
-    await icWasm();
+    await icWasm({buildType});
 
     spinner.text = 'Compressing...';
 
@@ -216,7 +230,117 @@ const api = async () => {
   });
 };
 
-const icWasm = async () => {
+type BuildType = {build: 'legacy'} | {build: 'modern'; version: string; satelliteVersion: string};
+
+const prepareJunoPkg = async ({buildType}: {buildType: BuildType}) => {
+  // We do not write a juno.package.json for legacy build
+  if (buildType.build === 'legacy') {
+    return;
+  }
+
+  const {version, satelliteVersion} = buildType;
+
+  const pkg: JunoPackage = {
+    version,
+    name: SATELLITE_PROJECT_NAME,
+    dependencies: {
+      '@junobuild/satellite': satelliteVersion
+    }
+  };
+
+  await writeFile(JUNO_PACKAGE_JSON_PATH, JSON.stringify(pkg, null, 2), 'utf-8');
+};
+
+const extractBuildType = async ({path}: Pick<BuildArgs, 'path'> = {}): Promise<
+  BuildType | {error: string}
+> => {
+  await mkdir(TARGET_PATH, {recursive: true});
+
+  const manifestArgs = nonNullish(path) ? ['--manifest-path', path] : [];
+
+  let output = '';
+  await spawn({
+    command: 'cargo',
+    args: ['metadata', '--format-version', '1', ...manifestArgs],
+    stdout: (o) => (output += o)
+  });
+
+  const metadata = JSON.parse(output);
+
+  const satellitedPkg = (metadata?.packages ?? []).find(
+    (pkg) => pkg?.name === SATELLITE_PROJECT_NAME
+  );
+
+  const version: string | null | undefined = satellitedPkg?.version;
+
+  if (isNullish(version) || isEmptyString(version)) {
+    return {
+      error: 'No version specified. Please add one to the Cargo.toml file of your Satellite.'
+    };
+  }
+
+  const satDependency: {req?: string | null | undefined} = (satellitedPkg?.dependencies ?? []).find(
+    ({name}) => name === 'junobuild-satellite'
+  );
+
+  if (isNullish(satDependency)) {
+    return {error: 'No Satellite dependency. Your project is not a Satellite.'};
+  }
+
+  const {req: requiredSatVersion} = satDependency;
+
+  if (isNullish(requiredSatVersion) || isEmptyString(requiredSatVersion)) {
+    return {error: 'Cannot determine which junobuild-satellite dependency version is required.'};
+  }
+
+  const satPackages = (metadata?.packages ?? []).filter(
+    (pkg: {name?: string; version?: string}) =>
+      pkg.name === 'junobuild-satellite' && satisfies(pkg.version ?? '0.0.0', requiredSatVersion)
+  );
+
+  if (satPackages.length === 0) {
+    return {error: 'No junobuild-satellite package found in the dependency tree.'};
+  }
+
+  // If the developer has multiple crates within the workspace depending on different versions of the junobuild-satellite library.
+  // This is unusual, as the convention is to have one Satellite per project.
+  // For now, we throw an error and ask the developer to reach out.
+  if (satPackages.length > 1) {
+    return {
+      error:
+        'Multiple junobuild-satellite crates found in the dependency tree. This is not supported at the moment. Please reach out.'
+    };
+  }
+
+  const [satPackage] = satPackages;
+
+  const satelliteVersion: string | null | undefined = satPackage.metadata?.juno?.satellite?.version;
+
+  if (isNullish(satelliteVersion) || isEmptyString(satelliteVersion)) {
+    const normalizeVersion = (version: string): string =>
+      version
+        .trim()
+        .replace(/^[=^~><]+/, '') // Remove leading =, ^, ~, >, <, >=, <=
+        .replace(/\s+/, ''); // In case there's a trailing space
+
+    // juno.package.json (used for the WASM custom public section) was introduced after Satellite v0.0.22.
+    // If the Satellite version is newer, the absence of this metadata is unexpected and we throw an error.
+    if (compare(normalizeVersion(requiredSatVersion), '0.0.22') > 0) {
+      return {
+        error:
+          'The metadata required to specify the Satellite version is missing. This is unexpected.'
+      };
+    }
+
+    // For backward compatibility with older versions, we fall back to the legacy ic-wasm approach,
+    // appending build=extended to the custom section.
+    return {build: 'legacy'};
+  }
+
+  return {build: 'modern', version, satelliteVersion};
+};
+
+const icWasm = async ({buildType}: {buildType: BuildType}) => {
   await mkdir(DEPLOY_LOCAL_REPLICA_PATH, {recursive: true});
 
   // Remove unused functions and debug info.
@@ -248,22 +372,46 @@ const icWasm = async () => {
     ]
   });
 
-  // Add the type of build "extended" to the satellite. This way, we can identify whether it's the standard canister ("stock") or a custom build of the developer.
-  await spawn({
-    command: 'ic-wasm',
-    args: [
-      SATELLITE_OUTPUT,
-      '-o',
-      SATELLITE_OUTPUT,
-      'metadata',
-      'juno:build',
-      '-d',
-      'extended',
-      '-v',
-      'public',
-      '--keep-name-section'
-    ]
-  });
+  // @deprecated
+  const appendJunoBuild = async () => {
+    // Add the type of build "extended" to the satellite. This way, we can identify whether it's the standard canister ("stock") or a custom build of the developer.
+    await spawn({
+      command: 'ic-wasm',
+      args: [
+        SATELLITE_OUTPUT,
+        '-o',
+        SATELLITE_OUTPUT,
+        'metadata',
+        'juno:build',
+        '-d',
+        'extended',
+        '-v',
+        'public',
+        '--keep-name-section'
+      ]
+    });
+  };
+
+  const appendJunoPackage = async () => {
+    await spawn({
+      command: 'ic-wasm',
+      args: [
+        SATELLITE_OUTPUT,
+        '-o',
+        SATELLITE_OUTPUT,
+        'metadata',
+        'juno:package',
+        '-f',
+        JUNO_PACKAGE_JSON_PATH,
+        '-v',
+        'public',
+        '--keep-name-section'
+      ]
+    });
+  };
+
+  const appendMetadata = buildType.build === 'legacy' ? appendJunoBuild : appendJunoPackage;
+  await appendMetadata();
 
   // Indicate support for certificate version 1 and 2 in the canister metadata
   await spawn({
