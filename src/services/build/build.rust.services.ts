@@ -7,7 +7,7 @@ import {existsSync} from 'node:fs';
 import {lstat, mkdir, readFile, rename, writeFile} from 'node:fs/promises';
 import {join, relative} from 'node:path';
 import ora, {type Ora} from 'ora';
-import {compare, satisfies} from 'semver';
+import {compare, minVersion, satisfies} from 'semver';
 import {detectJunoDevConfigType} from '../../configs/juno.dev.config';
 import {
   DEPLOY_LOCAL_REPLICA_PATH,
@@ -317,15 +317,11 @@ const extractBuildType = async ({path}: Pick<BuildArgs, 'path'> = {}): Promise<
   const satelliteVersion: string | null | undefined = satPackage.metadata?.juno?.satellite?.version;
 
   if (isNullish(satelliteVersion) || isEmptyString(satelliteVersion)) {
-    const normalizeVersion = (version: string): string =>
-      version
-        .trim()
-        .replace(/^[=^~><]+/, '') // Remove leading =, ^, ~, >, <, >=, <=
-        .replace(/\s+/, ''); // In case there's a trailing space
+    const minSatVersion = minVersion(requiredSatVersion);
 
     // juno.package.json (used for the WASM custom public section) was introduced after Satellite v0.0.22.
     // If the Satellite version is newer, the absence of this metadata is unexpected and we throw an error.
-    if (compare(normalizeVersion(requiredSatVersion), '0.0.22') > 0) {
+    if (isNullish(minSatVersion) || compare(minSatVersion.version, '0.0.22') > 0) {
       return {
         error:
           'The metadata required to specify the Satellite version is missing. This is unexpected.'
