@@ -100,13 +100,7 @@ const buildConfigType = async (context: ConfigContext): Promise<PartialConfigFil
   return {configType};
 };
 
-const assertDockerCompose = async (): Promise<{
-  dockerImage: 'skylab' | 'satellite' | 'unknown';
-}> => {
-  if (existsSync(DOCKER_COMPOSE_FILENAME)) {
-    return {dockerImage: 'unknown'};
-  }
-
+const assertDockerCompose = async () => {
   const {image}: {image: 'skylab' | 'satellite' | undefined} = await prompts({
     type: 'select',
     name: 'image',
@@ -127,6 +121,9 @@ const assertDockerCompose = async (): Promise<{
     sourceFolder: TEMPLATE_PATH
   });
 
+  // We should assert the config before creating the docker file otherwise we cannot know if the docker file should reference a TS, JS or JSON config file.
+  await assertAndInitJunoConfig(image === 'skylab');
+
   const readConfig = image === 'satellite' ? junoDevConfigFile : junoConfigFile;
   const {configPath} = readConfig();
   const configFile = basename(configPath);
@@ -141,14 +138,19 @@ const assertDockerCompose = async (): Promise<{
 };
 
 const assertAndInitConfig = async () => {
-  const {dockerImage} = await assertDockerCompose();
-
-  const isSkylab = async (): Promise<boolean> => {
+  if (existsSync(DOCKER_COMPOSE_FILENAME)) {
     const dockerCompose = await readFile(DOCKER_COMPOSE_FILENAME, 'utf-8');
-    return /image:\s*junobuild\/skylab(:[^\s]*)?/.test(dockerCompose);
-  };
+    const isSkylab = /image:\s*junobuild\/skylab(:[^\s]*)?/.test(dockerCompose);
 
-  if (dockerImage === 'skylab' || (dockerImage === 'unknown' && (await isSkylab()))) {
+    await assertAndInitJunoConfig(isSkylab);
+    return;
+  }
+
+  await assertDockerCompose();
+};
+
+const assertAndInitJunoConfig = async (skylab: boolean) => {
+  if (skylab) {
     await assertJunoConfig();
     return;
   }
