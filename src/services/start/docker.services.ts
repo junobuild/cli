@@ -100,12 +100,14 @@ const buildConfigType = async (context: ConfigContext): Promise<PartialConfigFil
   return {configType};
 };
 
-const assertDockerCompose = async () => {
+const assertDockerCompose = async (): Promise<{
+  dockerImage: 'skylab' | 'satellite' | 'unknown';
+}> => {
   if (existsSync(DOCKER_COMPOSE_FILENAME)) {
-    return;
+    return {dockerImage: 'unknown'};
   }
 
-  const {image}: {image: string} = await prompts({
+  const {image}: {image: 'skylab' | 'satellite' | undefined} = await prompts({
     type: 'select',
     name: 'image',
     message: 'What kind of emulator would you like to run locally?',
@@ -134,15 +136,19 @@ const assertDockerCompose = async () => {
     .replaceAll('<JUNO_CONFIG>', configFile);
 
   await writeFile(join(DESTINATION_PATH, DOCKER_COMPOSE_FILENAME), content, 'utf-8');
+
+  return {dockerImage: image};
 };
 
 const assertAndInitConfig = async () => {
-  await assertDockerCompose();
+  const {dockerImage} = await assertDockerCompose();
 
-  const dockerCompose = await readFile(DOCKER_COMPOSE_FILENAME, 'utf-8');
-  const isSkylab = /image:\s*junobuild\/skylab(:[^\s]*)?/.test(dockerCompose);
+  const isSkylab = async (): Promise<boolean> => {
+    const dockerCompose = await readFile(DOCKER_COMPOSE_FILENAME, 'utf-8');
+    return /image:\s*junobuild\/skylab(:[^\s]*)?/.test(dockerCompose);
+  };
 
-  if (isSkylab) {
+  if (dockerImage === 'skylab' || (dockerImage === 'unknown' && (await isSkylab()))) {
     await assertJunoConfig();
     return;
   }
