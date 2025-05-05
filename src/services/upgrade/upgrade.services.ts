@@ -10,7 +10,7 @@ import {
 } from '@junobuild/admin';
 import {assertAnswerCtrlC, downloadFromURL, hasArgs} from '@junobuild/cli-tools';
 import {createHash} from 'crypto';
-import {red, yellow} from 'kleur';
+import {green, red, yellow} from 'kleur';
 import {readFile} from 'node:fs/promises';
 import ora from 'ora';
 import prompts from 'prompts';
@@ -217,8 +217,15 @@ export const selectVersion = async ({
   }
 
   if (newerReleases.length === 0) {
-    console.log(`Currently, there are no new releases available.`);
+    console.log('Currently, there are no new releases available.');
     return undefined;
+  }
+
+  // If there is a single newer release then it can be upgraded because all previous versions have been upgraded iteratively.
+  if (newerReleases.length === 1) {
+    const [version] = newerReleases;
+    console.log(`Auto-selecting upgrade to ${green(`v${version}`)}.`);
+    return version;
   }
 
   const selectedVersion = await promptReleases({
