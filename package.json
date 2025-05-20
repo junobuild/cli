@@ -30,7 +30,7 @@
     "@dfinity/ic-management": "^6.1.1",
     "@dfinity/identity": "^2.3.0",
     "@dfinity/principal": "^2.3.0",
-    "@junobuild/admin": "^0.3.0",
+    "@junobuild/admin": "^0.4.0",
     "@junobuild/cli-tools": "^0.1.9",
     "@junobuild/config": "^0.1.8",
     "@junobuild/config-loader": "^0.2.1",
