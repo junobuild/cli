@@ -1,12 +1,18 @@
-import {satelliteMemorySize} from '@junobuild/admin';
+import {satelliteMemorySize, satelliteVersion} from '@junobuild/admin';
 import type {Asset} from '@junobuild/core';
 import {listAssets as listAssetsLib} from '@junobuild/core';
+import {yellow} from 'kleur';
+import {compare} from 'semver';
 import {readJunoConfig} from '../configs/juno.config';
 import {DAPP_COLLECTION} from '../constants/constants';
-import {DEPLOY_LIST_ASSETS_PAGINATION, MEMORY_HEAP_WARNING} from '../constants/deploy.constants';
+import {
+  DEPLOY_LIST_ASSETS_PAGINATION,
+  MEMORY_HEAP_WARNING,
+  MEMORY_SIZE_ENDPOINT_VERSION
+} from '../constants/deploy.constants';
 import type {SatelliteConfigEnv} from '../types/config';
 import {configEnv} from '../utils/config.utils';
-import {confirmAndExit} from '../utils/prompt.utils';
+import {NEW_CMD_LINE, confirmAndExit} from '../utils/prompt.utils';
 import {satelliteParameters} from '../utils/satellite.utils';
 
 export const assertSatelliteMemorySize = async (args?: string[]) => {
@@ -20,6 +26,19 @@ export const assertSatelliteMemorySize = async (args?: string[]) => {
   }
 
   const satellite = await satelliteParameters({satellite: satelliteConfig, env});
+
+  const currentVersion = await satelliteVersion({
+    satellite
+  });
+
+  if (compare(currentVersion, MEMORY_SIZE_ENDPOINT_VERSION) < 0) {
+    console.log(
+      `Your satellite (${yellow(
+        `v${currentVersion}`
+      )}) is not up-to-date, and the memory size cannot be verified.${NEW_CMD_LINE}`
+    );
+    return;
+  }
 
   const maxMemorySize =
     assertions?.heapMemory !== undefined && typeof assertions.heapMemory !== 'boolean'
