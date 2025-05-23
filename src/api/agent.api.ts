@@ -24,7 +24,7 @@ export class AgentApi {
     return this.#agents[key];
   }
 
-  private async createAgent({identity, container, fetch}: ActorParameters): Promise<HttpAgent> {
+  private async createAgent({identity, container}: ActorParameters): Promise<HttpAgent> {
     const localActor = nonNullish(container) && container !== false;
 
     const host = localActor
@@ -37,7 +37,6 @@ export class AgentApi {
       identity,
       host,
       retryTimes: 10,
-      fetch,
       shouldFetchRootKey: localActor
     });
   }
