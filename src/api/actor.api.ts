@@ -20,7 +20,6 @@ export const actorParameters = async (): Promise<
 
   const params: Omit<ActorParameters, 'agent'> = {
     identity,
-    fetch,
     ...(nonNullish(process.env.CONTAINER_URL) && {container: process.env.CONTAINER_URL})
   };
 
