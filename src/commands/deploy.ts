@@ -71,13 +71,17 @@ const executeDeploy = async (args?: string[]) => {
 
   await cliPreDeploy({config: satelliteConfig});
 
-  await cliDeploy({
+  const {result} = await cliDeploy({
     config: satelliteConfig,
     listAssets: listExistingAssets,
     assertSourceDirExists,
     assertMemory,
     uploadFile
   });
+
+  if (result === 'skipped') {
+    process.exit(0);
+  }
 
   await cliPostDeploy({config: satelliteConfig});
 };
