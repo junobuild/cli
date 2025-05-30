@@ -1,19 +1,27 @@
-import type {UploadFileStorage} from '@junobuild/cli-tools';
-import {
-  deploy as cliDeploy,
-  postDeploy as cliPostDeploy,
-  preDeploy as cliPreDeploy
-} from '@junobuild/cli-tools';
+import type {DeployParams, DeployResult, UploadFileStorage} from '@junobuild/cli-tools';
+import {postDeploy as cliPostDeploy, preDeploy as cliPreDeploy} from '@junobuild/cli-tools';
 import {type Asset, uploadBlob} from '@junobuild/core';
 import {red} from 'kleur';
 import {lstatSync} from 'node:fs';
 import {readJunoConfig} from '../../configs/juno.config';
+import {type SatelliteParametersWithId} from '../../types/satellite';
 import {configEnv} from '../../utils/config.utils';
 import {satelliteParameters} from '../../utils/satellite.utils';
 import {assertSatelliteMemorySize} from './deploy.assert.services';
 import {listAssets} from './deploy.assets.services';
 
-export const executeDeploy = async (args?: string[]) => {
+export interface DeployFnParams {
+  deploy: DeployParams;
+  satellite: SatelliteParametersWithId;
+}
+
+export const executeDeploy = async ({
+  args,
+  deployFn
+}: {
+  args?: string[];
+  deployFn: (params: DeployFnParams) => Promise<DeployResult>;
+}) => {
   const env = configEnv(args);
   const {satellite: satelliteConfig} = await readJunoConfig(env);
 
@@ -54,12 +62,15 @@ export const executeDeploy = async (args?: string[]) => {
 
   await cliPreDeploy({config: satelliteConfig});
 
-  const {result} = await cliDeploy({
-    config: satelliteConfig,
-    listAssets: listExistingAssets,
-    assertSourceDirExists,
-    assertMemory,
-    uploadFile
+  const {result} = await deployFn({
+    deploy: {
+      config: satelliteConfig,
+      listAssets: listExistingAssets,
+      assertSourceDirExists,
+      assertMemory,
+      uploadFile
+    },
+    satellite
   });
 
   if (result === 'skipped') {
