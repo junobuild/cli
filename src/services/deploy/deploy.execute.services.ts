@@ -8,7 +8,7 @@ import {type SatelliteParametersWithId} from '../../types/satellite';
 import {configEnv} from '../../utils/config.utils';
 import {satelliteParameters} from '../../utils/satellite.utils';
 import {assertSatelliteMemorySize} from './deploy.assert.services';
-import {listAssets} from './deploy.assets.services';
+import {listAssets} from './deploy.list.services';
 
 export interface DeployFnParams {
   deploy: DeployParams;
