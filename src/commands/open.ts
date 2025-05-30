@@ -1,26 +1,15 @@
 import {listCustomDomains, type CustomDomain} from '@junobuild/admin';
 import {assertAnswerCtrlC, hasArgs, nextArg} from '@junobuild/cli-tools';
 import prompts from 'prompts';
-import {junoConfigExist, readJunoConfig} from '../configs/juno.config';
-import {configEnv} from '../utils/config.utils';
 import {consoleUrl, defaultSatelliteDomain} from '../utils/domain.utils';
-import {consoleNoConfigFound} from '../utils/msg.utils';
 import {openUrl} from '../utils/open.utils';
-import {satelliteParameters} from '../utils/satellite.utils';
+import {assertConfigAndLoadSatelliteContext} from '../utils/satellite.utils';
 
 export const open = async (args?: string[]) => {
-  if (!(await junoConfigExist())) {
-    consoleNoConfigFound();
-    return;
-  }
+  const {satellite} = await assertConfigAndLoadSatelliteContext(args);
+  const {satelliteId} = satellite;
 
   const browser = nextArg({args, option: '-b'}) ?? nextArg({args, option: '--browser'});
-
-  const env = configEnv(args);
-  const {satellite: satelliteConfig} = await readJunoConfig(env);
-
-  const satellite = await satelliteParameters({satellite: satelliteConfig, env});
-  const {satelliteId} = satellite;
 
   if (hasArgs({args, options: ['-c', '--console']})) {
     await openUrl({url: consoleUrl(satelliteId), browser});
