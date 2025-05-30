@@ -6,7 +6,7 @@ import {TITLE} from './help';
 const usage = `Usage: ${green('juno')} ${cyan('deploy')} ${yellow('[options]')}
 
 Options:
-  ${yellow('-c, --clear')}           Clear existing dapp files before proceeding with deployment.
+  ${yellow('-c, --clear')}           Clear existing app files before proceeding with deployment.
   ${helpMode}
   ${yellow('-h, --help')}            Output usage information.`;
 

@@ -1,9 +1,9 @@
 import {magenta} from 'kleur';
 
 export const CLEAR_DESCRIPTION =
-  'Clear existing dapp code by removing JavaScript, HTML, CSS, and other files from your satellite.';
+  'Clear existing app code by removing JavaScript, HTML, CSS, and other files from your satellite.';
 export const CONFIG_DESCRIPTION = 'Apply configuration to satellite.';
-export const DEPLOY_DESCRIPTION = 'Deploy your dapp to your satellite.';
+export const DEPLOY_DESCRIPTION = 'Deploy your app to your satellite.';
 export const DEV_DESCRIPTION =
   'Handle development tasks like building serverless functions or running a local Internet Computer instance.';
 export const INIT_DESCRIPTION = 'Set up your project.';

@@ -196,7 +196,7 @@ const promptSatellites = async (satellites: CliSatelliteConfig[]): Promise<strin
   const {satellite}: {satellite: string} = await prompts({
     type: 'select',
     name: 'satellite',
-    message: 'Which satellite should be linked with this dapp?',
+    message: 'Which satellite should be linked with this app?',
     choices: [
       ...satellites.map(({p, n}) => ({title: n, value: p})),
       {title: '<not listed, manual entry>', value: '_manual_'}
@@ -228,7 +228,7 @@ const promptOrbiters = async (orbiters: CliOrbiterConfig[]): Promise<string> => 
   const {orbiter}: {orbiter: string} = await prompts({
     type: 'select',
     name: 'orbiter',
-    message: 'Which orbiter do you use for the analytics in this dapp?',
+    message: 'Which orbiter do you use for the analytics in this app?',
     choices: [
       ...orbiters.map(({p, n}) => ({title: n ?? p, value: p})),
       {title: '<none>', value: '_none_'}

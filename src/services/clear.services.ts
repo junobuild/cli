@@ -12,7 +12,7 @@ export const clear = async (args?: string[]) => {
 
   const satellite = await satelliteParameters({satellite: satelliteConfig, env});
 
-  const spinner = ora('Clearing dapp assets...').start();
+  const spinner = ora('Clearing app assets...').start();
 
   try {
     // TODO: to be removed. Workaround as temporary solution of https://github.com/junobuild/juno/issues/484.
