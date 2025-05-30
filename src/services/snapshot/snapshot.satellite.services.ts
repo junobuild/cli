@@ -1,9 +1,8 @@
 import {assertNonNullish} from '@dfinity/utils';
-import {junoConfigExist, readJunoConfig} from '../../configs/juno.config';
+import {junoConfigExist} from '../../configs/juno.config';
 import type {AssetKey} from '../../types/asset-key';
-import {configEnv} from '../../utils/config.utils';
 import {consoleNoConfigFound} from '../../utils/msg.utils';
-import {satelliteParameters} from '../../utils/satellite.utils';
+import {assertConfigAndLoadSatelliteContext} from '../../utils/satellite.utils';
 import {createSnapshot, deleteSnapshot, restoreSnapshot} from './snapshot.services';
 
 export const createSnapshotSatellite = async (params: {args?: string[]}) => {
@@ -48,10 +47,7 @@ const executeSnapshotFn = async ({
 };
 
 const loadSatelliteId = async ({args}: {args?: string[]}): Promise<string> => {
-  const env = configEnv(args);
-  const {satellite: satelliteConfig} = await readJunoConfig(env);
-
-  const satellite = await satelliteParameters({satellite: satelliteConfig, env});
+  const {satellite} = await assertConfigAndLoadSatelliteContext(args);
   const {satelliteId} = satellite;
 
   // TS guard. satelliteParameters exit if satelliteId is undefined.
