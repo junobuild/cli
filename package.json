@@ -45,7 +45,7 @@
     "ora": "^8.2.0",
     "portfinder": "^1.0.37",
     "prompts": "^2.4.2",
-    "semver": "^7.7.1",
+    "semver": "^7.7.2",
     "terminal-link": "^4.0.0"
   },
   "devDependencies": {
