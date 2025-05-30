@@ -12,7 +12,7 @@ export const authUrl = ({
   const callbackUrl = authCallbackUrl({port, nonce});
 
   const authUrl = new URL(AUTH_URL);
-  authUrl.searchParams.set('redirect_uri', encodeURIComponent(callbackUrl.toString()));
+  authUrl.searchParams.set('redirect_uri', encodeURIComponent(callbackUrl));
   authUrl.searchParams.set('principal', principal);
 
   return authUrl.toString();
