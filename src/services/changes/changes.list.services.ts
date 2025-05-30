@@ -1,6 +1,5 @@
 import {fromNullable, nonNullish, toNullable, uint8ArrayToHexString} from '@dfinity/utils';
-import {listProposals as listProposalsLib} from '@junobuild/cdn';
-import {Proposal} from '@junobuild/cdn';
+import {listProposals as listProposalsLib, Proposal, ProposalKey} from '@junobuild/cdn';
 import {hasArgs} from '@junobuild/cli-tools';
 import {junoConfigExist, readJunoConfig} from '../../configs/juno.config';
 import {SatelliteParametersWithId} from '../../types/satellite';
