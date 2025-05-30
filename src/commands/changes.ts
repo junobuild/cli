@@ -2,8 +2,8 @@ import {red} from 'kleur';
 import {logHelpChangesApply} from '../help/changes.apply.help';
 import {logHelpChanges} from '../help/changes.help';
 import {logHelpChangesList} from '../help/changes.list.help';
-import {listChanges} from '../services/changes/changes.list.services';
 import {applyChanges} from '../services/changes/changes.apply.services';
+import {listChanges} from '../services/changes/changes.list.services';
 
 export const changes = async (args?: string[]) => {
   const [subCommand] = args ?? [];

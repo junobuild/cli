@@ -1,5 +1,4 @@
-import {assertNonNullish} from '@dfinity/utils';
-import {hexStringToUint8Array} from '@dfinity/utils/dist/types/utils/arrays.utils';
+import {assertNonNullish, hexStringToUint8Array} from '@dfinity/utils';
 import {commitProposal} from '@junobuild/cdn';
 import {nextArg} from '@junobuild/cli-tools';
 import {assertConfigAndLoadSatelliteContext} from '../../utils/satellite.utils';
