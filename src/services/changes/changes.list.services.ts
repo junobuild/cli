@@ -1,7 +1,7 @@
 import {fromNullable, nonNullish, toNullable, uint8ArrayToHexString} from '@dfinity/utils';
-import {listProposals as listProposalsLib, Proposal, ProposalKey} from '@junobuild/cdn';
+import {listProposals as listProposalsLib, type Proposal, type ProposalKey} from '@junobuild/cdn';
 import {hasArgs} from '@junobuild/cli-tools';
-import {SatelliteParametersWithId} from '../../types/satellite';
+import {type SatelliteParametersWithId} from '../../types/satellite';
 import {formatTime} from '../../utils/format.utils';
 import {assertConfigAndLoadSatelliteContext} from '../../utils/satellite.utils';
 
@@ -17,17 +17,20 @@ export const listChanges = async (args?: string[]) => {
 
   const changes = items
     .filter(([_, {status}]) => 'Open' in status)
-    .reduce((acc, [proposalId, {sha256, created_at}]) => {
-      const hash: Uint8Array | number[] | undefined = fromNullable(sha256);
+    .reduce<Record<string, {hash: string; created_at: string}>>(
+      (acc, [{proposal_id}, {sha256, created_at}]) => {
+        const hash: Uint8Array | number[] | undefined = fromNullable(sha256);
 
-      return {
-        ...acc,
-        [`${proposalId}`]: {
-          hash: nonNullish(hash) ? uint8ArrayToHexString(hash) : '',
-          created_at: formatTime(new Date(Number(created_at / 1_000_000n)))
-        }
-      };
-    }, {});
+        return {
+          ...acc,
+          [`${proposal_id}`]: {
+            hash: nonNullish(hash) ? uint8ArrayToHexString(hash) : '',
+            created_at: formatTime(new Date(Number(created_at / 1_000_000n)))
+          }
+        };
+      },
+      {}
+    );
 
   if (Object.keys(changes).length === 0) {
     console.log('There are no open changes right now.');
@@ -45,7 +48,7 @@ const listProposals = async ({
   startAfter?: bigint;
   satellite: SatelliteParametersWithId;
   traverseAll: boolean;
-}): Promise<[ProposalKey, Proposal][]> => {
+}): Promise<Array<[ProposalKey, Proposal]>> => {
   const {items, items_length, matches_length} = await listProposalsLib({
     cdn: {satellite},
     filter: {
