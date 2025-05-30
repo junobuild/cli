@@ -1,16 +1,14 @@
 import {isNullish} from '@dfinity/utils';
-import {type SatelliteParameters} from '@junobuild/admin';
 import {red} from 'kleur';
 import {actorParameters} from '../api/actor.api';
 import {getCliOrbiters, getCliSatellites} from '../configs/cli.config';
 import type {SatelliteConfigEnv} from '../types/config';
+import type {SatelliteParametersWithId} from '../types/satellite';
 
 export const satelliteParameters = async ({
   satellite: {satelliteId: deprecatedSatelliteId, id, ids},
   env: {mode}
-}: SatelliteConfigEnv): Promise<
-  Omit<SatelliteParameters, 'satelliteId'> & Required<Pick<SatelliteParameters, 'satelliteId'>>
-> => {
+}: SatelliteConfigEnv): Promise<SatelliteParametersWithId> => {
   const satelliteId = ids?.[mode] ?? id ?? deprecatedSatelliteId;
 
   if (isNullish(satelliteId)) {
