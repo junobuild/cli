@@ -54,7 +54,8 @@ const deployImmediate = async ({args, clearOption}: {args?: string[]; clearOptio
     await clear(args);
   }
 
-  const deployFn = async ({deploy}: DeployFnParams): Promise<DeployResult> => await cliDeploy(deploy);
+  const deployFn = async ({deploy}: DeployFnParams): Promise<DeployResult> =>
+    await cliDeploy(deploy);
 
   await executeDeploy({
     args,
