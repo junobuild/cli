@@ -1,15 +1,12 @@
 import {Principal} from '@dfinity/principal';
-import {assertNonNullish, isNullish} from '@dfinity/utils';
+import {isNullish} from '@dfinity/utils';
 import {cyan, red} from 'kleur';
 import ora from 'ora';
 import {canisterStart, canisterStop} from '../api/ic.api';
 import {getCliMissionControl, getCliOrbiters} from '../configs/cli.config';
-import {junoConfigExist, readJunoConfig} from '../configs/juno.config';
 import type {AssetKey} from '../types/asset-key';
 import type {StartStopAction} from '../types/start-stop';
-import {configEnv} from '../utils/config.utils';
-import {consoleNoConfigFound} from '../utils/msg.utils';
-import {satelliteParameters} from '../utils/satellite.utils';
+import {assertConfigAndLoadSatelliteContext} from '../utils/satellite.utils';
 
 export const startStopMissionControl = async ({
   action
@@ -59,19 +56,8 @@ export const startStopSatellite = async ({
   args?: string[];
   action: StartStopAction;
 }) => {
-  if (!(await junoConfigExist())) {
-    consoleNoConfigFound();
-    return;
-  }
-
-  const env = configEnv(args);
-  const {satellite: satelliteConfig} = await readJunoConfig(env);
-
-  const satellite = await satelliteParameters({satellite: satelliteConfig, env});
+  const {satellite} = await assertConfigAndLoadSatelliteContext(args);
   const {satelliteId} = satellite;
-
-  // TS guard. satelliteParameters exit if satelliteId is undefined.
-  assertNonNullish(satelliteId);
 
   await startStop({
     action,

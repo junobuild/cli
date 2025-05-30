@@ -1,11 +1,9 @@
 import {listCustomDomains} from '@junobuild/admin';
 import {red} from 'kleur';
-import {junoConfigExist, readJunoConfig} from '../configs/juno.config';
-import {configEnv} from '../utils/config.utils';
 import {consoleUrl, defaultSatelliteDomain} from '../utils/domain.utils';
 import {terminalLink} from '../utils/links.utils';
 import {isHeadless} from '../utils/process.utils';
-import {satelliteParameters} from '../utils/satellite.utils';
+import {assertConfigAndLoadSatelliteContext} from '../utils/satellite.utils';
 
 export const links = async (args?: string[]) => {
   // If a developer is using a JUNO_TOKEN to execute command(s), the links will not be printed.
@@ -14,14 +12,7 @@ export const links = async (args?: string[]) => {
     return;
   }
 
-  if (!(await junoConfigExist())) {
-    return;
-  }
-
-  const env = configEnv(args);
-  const {satellite: satelliteConfig} = await readJunoConfig(env);
-
-  const satellite = await satelliteParameters({satellite: satelliteConfig, env});
+  const {satellite} = await assertConfigAndLoadSatelliteContext(args);
   const {satelliteId} = satellite;
 
   const defaultUrl = defaultSatelliteDomain(satelliteId);

@@ -11,21 +11,11 @@ import type {ModuleSettings} from '@junobuild/config';
 import {red} from 'kleur';
 import ora from 'ora';
 import {initAgent} from '../api/agent.api';
-import {junoConfigExist, readJunoConfig} from '../configs/juno.config';
-import {configEnv} from '../utils/config.utils';
-import {satelliteParameters} from '../utils/satellite.utils';
-import {init} from './init';
+import {assertConfigAndLoadSatelliteContext} from '../utils/satellite.utils';
 
 export const config = async (args?: string[]) => {
-  if (!(await junoConfigExist())) {
-    await init();
-  }
-
-  const env = configEnv(args);
-  const {satellite: satelliteConfig} = await readJunoConfig(env);
+  const {satellite, satelliteConfig} = await assertConfigAndLoadSatelliteContext(args);
   const {storage, authentication, datastore, settings} = satelliteConfig;
-
-  const satellite = await satelliteParameters({satellite: satelliteConfig, env});
 
   const spinner = ora(`Configuring...`).start();
 

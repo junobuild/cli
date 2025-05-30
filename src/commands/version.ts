@@ -14,7 +14,6 @@ import {clean, compare} from 'semver';
 import {version as cliCurrentVersion} from '../../package.json';
 import {actorParameters} from '../api/actor.api';
 import {getCliMissionControl, getCliOrbiters} from '../configs/cli.config';
-import {junoConfigExist, readJunoConfig} from '../configs/juno.config';
 import {
   MISSION_CONTROL_WASM_NAME,
   ORBITER_WASM_NAME,
@@ -23,8 +22,11 @@ import {
 import {githubCliLastRelease} from '../rest/github.rest';
 import type {AssetKey} from '../types/asset-key';
 import {toAssetKeys} from '../utils/asset-key.utils';
-import {configEnv} from '../utils/config.utils';
-import {orbiterKey, satelliteKey, satelliteParameters} from '../utils/satellite.utils';
+import {
+  assertConfigAndLoadSatelliteContext,
+  orbiterKey,
+  satelliteKey
+} from '../utils/satellite.utils';
 import {lastRelease} from '../utils/upgrade.utils';
 
 export const version = async (args?: string[]) => {
@@ -111,15 +113,7 @@ const missionControlVersion = async () => {
 };
 
 const satelliteVersion = async (args?: string[]) => {
-  if (!(await junoConfigExist())) {
-    console.log(`No ${yellow('config')} file found.`);
-    return;
-  }
-
-  const env = configEnv(args);
-  const {satellite: satelliteConfig} = await readJunoConfig(env);
-
-  const satellite = await satelliteParameters({satellite: satelliteConfig, env});
+  const {satellite} = await assertConfigAndLoadSatelliteContext(args);
   const {satelliteId, ...actorParams} = satellite;
 
   const getVersion = async (): Promise<string | undefined> => {

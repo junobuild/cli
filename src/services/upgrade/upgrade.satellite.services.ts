@@ -8,13 +8,10 @@ import {
 import {hasArgs, nextArg} from '@junobuild/cli-tools';
 import {cyan, red} from 'kleur';
 import {compare} from 'semver';
-import {junoConfigExist, readJunoConfig} from '../../configs/juno.config';
 import {SATELLITE_WASM_NAME} from '../../constants/constants';
 import type {AssertWasmModule, UpgradeWasm, UpgradeWasmModule} from '../../types/upgrade';
-import {configEnv} from '../../utils/config.utils';
-import {consoleNoConfigFound} from '../../utils/msg.utils';
 import {NEW_CMD_LINE} from '../../utils/prompt.utils';
-import {satelliteKey, satelliteParameters} from '../../utils/satellite.utils';
+import {assertConfigAndLoadSatelliteContext, satelliteKey} from '../../utils/satellite.utils';
 import {assertSatelliteBuildType} from './upgrade-assert.services';
 import {
   confirmReset,
@@ -26,15 +23,7 @@ import {
 } from './upgrade.services';
 
 export const upgradeSatellite = async (args?: string[]) => {
-  if (!(await junoConfigExist())) {
-    consoleNoConfigFound();
-    return;
-  }
-
-  const env = configEnv(args);
-  const {satellite: satelliteConfig} = await readJunoConfig(env);
-
-  const satellite = await satelliteParameters({satellite: satelliteConfig, env});
+  const {satellite} = await assertConfigAndLoadSatelliteContext(args);
   const {satelliteId} = satellite;
 
   console.log(
