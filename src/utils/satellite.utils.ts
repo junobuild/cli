@@ -33,7 +33,7 @@ export const assertConfigAndLoadSatelliteContext = async (
   return {satellite, satelliteConfig, env};
 };
 
-export const satelliteParameters = async ({
+const satelliteParameters = async ({
   satellite: {satelliteId: deprecatedSatelliteId, id, ids},
   env: {mode}
 }: SatelliteConfigEnv): Promise<SatelliteParametersWithId> => {
