@@ -45,7 +45,7 @@ export const listChanges = async (args?: string[]) => {
     }, {});
 
   if (Object.keys(changes).length === 0) {
-    console.log('No changes open at the moment.');
+    console.log('There are no open changes right now.');
     return;
   }
 
