@@ -1,7 +1,9 @@
 import {fromNullable, nonNullish, toNullable, uint8ArrayToHexString} from '@dfinity/utils';
-import {listProposals} from '@junobuild/cdn';
-import {nextArg} from '@junobuild/cli-tools';
+import {listProposals as listProposalsLib} from '@junobuild/cdn';
+import {Proposal} from '@junobuild/cdn';
+import {hasArgs} from '@junobuild/cli-tools';
 import {junoConfigExist, readJunoConfig} from '../../configs/juno.config';
+import {SatelliteParametersWithId} from '../../types/satellite';
 import {configEnv} from '../../utils/config.utils';
 import {formatTime} from '../../utils/format.utils';
 import {consoleNoConfigFound} from '../../utils/msg.utils';
@@ -18,22 +20,17 @@ export const listChanges = async (args?: string[]) => {
 
   const satellite = await satelliteParameters({satellite: satelliteConfig, env});
 
-  const all = nextArg({args, option: '-a'}) ?? nextArg({args, option: '--all'});
+  const all = hasArgs({args, options: ['-a', '--all']});
 
-  const {items} = await listProposals({
-    cdn: {satellite},
-    filter: {
-      order: toNullable({
-        desc: true
-      }),
-      paginate: toNullable()
-    }
+  const items = await listProposals({
+    satellite,
+    traverseAll: all
   });
 
   const changes = items
     .filter(([_, {status}]) => 'Open' in status)
     .reduce((acc, [proposalId, {sha256, created_at}]) => {
-      const hash = fromNullable(sha256);
+      const hash: Uint8Array | number[] | undefined = fromNullable(sha256);
 
       return {
         ...acc,
@@ -50,4 +47,45 @@ export const listChanges = async (args?: string[]) => {
   }
 
   console.table(changes);
+};
+
+const listProposals = async ({
+  startAfter,
+  satellite,
+  traverseAll
+}: {
+  startAfter?: bigint;
+  satellite: SatelliteParametersWithId;
+  traverseAll: boolean;
+}): Promise<[ProposalKey, Proposal][]> => {
+  const {items, items_length, matches_length} = await listProposalsLib({
+    cdn: {satellite},
+    filter: {
+      order: toNullable({
+        desc: true
+      }),
+      paginate: nonNullish(startAfter)
+        ? toNullable({
+            start_after: toNullable(startAfter),
+            limit: toNullable()
+          })
+        : toNullable()
+    }
+  });
+
+  const last = <T>(elements: T[]): T | undefined => {
+    const {length, [length - 1]: last} = elements;
+    return last;
+  };
+
+  if (items_length > matches_length && traverseAll) {
+    const nextItems = await listProposals({
+      startAfter: last(items)?.[0].proposal_id,
+      satellite,
+      traverseAll
+    });
+    return [...items, ...nextItems];
+  }
+
+  return items;
 };
