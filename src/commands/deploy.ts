@@ -1,7 +1,12 @@
-import {deploy as cliDeploy, deployWithProposal as cliDeployWithProposal, type DeployParams, type DeployResult, hasArgs} from '@junobuild/cli-tools';
+import {
+  deploy as cliDeploy,
+  deployWithProposal as cliDeployWithProposal,
+  type DeployResult,
+  hasArgs
+} from '@junobuild/cli-tools';
 import {junoConfigExist} from '../configs/juno.config';
 import {clear} from '../services/clear.services';
-import {executeDeploy} from '../services/deploy/deploy.execute.services';
+import {type DeployFnParams, executeDeploy} from '../services/deploy/deploy.execute.services';
 import {links} from '../services/links.services';
 import {init} from './init';
 
@@ -24,20 +29,21 @@ export const deploy = async (args?: string[]) => {
 const deployWithProposal = async ({args, clearOption}: {args?: string[]; clearOption: boolean}) => {
   const noCommit = hasArgs({args, options: ['-n', '--no-commit']});
 
-  const cliDeploy = (params: DeployParams): Promise<DeployResult> => {
-      await cliDeployWithProposal({
-        deploy: params,
-        proposal: {
-          clearAssets: clearOption,
-          autoCommit: !noCommit,
-          cdn
+  const deployFn = async ({deploy, satellite}: DeployFnParams): Promise<DeployResult> =>
+    await cliDeployWithProposal({
+      deploy,
+      proposal: {
+        clearAssets: clearOption,
+        autoCommit: !noCommit,
+        cdn: {
+          satellite
         }
-      })
-  }
+      }
+    });
 
   await executeDeploy({
     args,
-    deployFn: cliDeploy
+    deployFn
   });
 
   await links(args);
@@ -48,9 +54,11 @@ const deployImmediate = async ({args, clearOption}: {args?: string[]; clearOptio
     await clear(args);
   }
 
+  const deployFn = async ({deploy}: DeployFnParams): Promise<DeployResult> => await cliDeploy(deploy);
+
   await executeDeploy({
     args,
-    deployFn: cliDeploy
+    deployFn
   });
 
   await links(args);

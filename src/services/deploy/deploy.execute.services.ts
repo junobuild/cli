@@ -4,17 +4,23 @@ import {type Asset, uploadBlob} from '@junobuild/core';
 import {red} from 'kleur';
 import {lstatSync} from 'node:fs';
 import {readJunoConfig} from '../../configs/juno.config';
+import {type SatelliteParametersWithId} from '../../types/satellite';
 import {configEnv} from '../../utils/config.utils';
 import {satelliteParameters} from '../../utils/satellite.utils';
 import {assertSatelliteMemorySize} from './deploy.assert.services';
 import {listAssets} from './deploy.assets.services';
+
+export interface DeployFnParams {
+  deploy: DeployParams;
+  satellite: SatelliteParametersWithId;
+}
 
 export const executeDeploy = async ({
   args,
   deployFn
 }: {
   args?: string[];
-  deployFn: (params: DeployParams) => Promise<DeployResult>;
+  deployFn: (params: DeployFnParams) => Promise<DeployResult>;
 }) => {
   const env = configEnv(args);
   const {satellite: satelliteConfig} = await readJunoConfig(env);
@@ -57,11 +63,14 @@ export const executeDeploy = async ({
   await cliPreDeploy({config: satelliteConfig});
 
   const {result} = await deployFn({
-    config: satelliteConfig,
-    listAssets: listExistingAssets,
-    assertSourceDirExists,
-    assertMemory,
-    uploadFile
+    deploy: {
+      config: satelliteConfig,
+      listAssets: listExistingAssets,
+      assertSourceDirExists,
+      assertMemory,
+      uploadFile
+    },
+    satellite
   });
 
   if (result === 'skipped') {
