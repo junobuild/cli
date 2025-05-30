@@ -6,6 +6,7 @@ import {TITLE} from './help';
 const usage = `Usage: ${green('juno')} ${cyan('changes')} ${magenta('list')} ${yellow('[options]')}
 
 Options:
+  ${yellow('-a, --all')}           Search through all changes, not just the 100 most recent.
   ${yellow('-h, --help')}          Output usage information.`;
 
 const doc = `${CHANGES_LIST_DESCRIPTION}

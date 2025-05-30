@@ -2,13 +2,14 @@ import {red} from 'kleur';
 import {logHelpChangesApply} from '../help/changes.apply.help';
 import {logHelpChanges} from '../help/changes.help';
 import {logHelpChangesList} from '../help/changes.list.help';
+import {listChanges} from '../services/changes/changes.list.services';
 
 export const changes = async (args?: string[]) => {
   const [subCommand] = args ?? [];
 
   switch (subCommand) {
     case 'list':
-      // TODO
+      await listChanges(args);
       break;
     case 'apply':
       // TODO
