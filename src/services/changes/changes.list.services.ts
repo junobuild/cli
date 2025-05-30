@@ -1,23 +1,12 @@
 import {fromNullable, nonNullish, toNullable, uint8ArrayToHexString} from '@dfinity/utils';
 import {listProposals as listProposalsLib, Proposal, ProposalKey} from '@junobuild/cdn';
 import {hasArgs} from '@junobuild/cli-tools';
-import {junoConfigExist, readJunoConfig} from '../../configs/juno.config';
 import {SatelliteParametersWithId} from '../../types/satellite';
-import {configEnv} from '../../utils/config.utils';
 import {formatTime} from '../../utils/format.utils';
-import {consoleNoConfigFound} from '../../utils/msg.utils';
-import {satelliteParameters} from '../../utils/satellite.utils';
+import {assertConfigAndLoadSatelliteContext} from '../../utils/satellite.utils';
 
 export const listChanges = async (args?: string[]) => {
-  if (!(await junoConfigExist())) {
-    consoleNoConfigFound();
-    return;
-  }
-
-  const env = configEnv(args);
-  const {satellite: satelliteConfig} = await readJunoConfig(env);
-
-  const satellite = await satelliteParameters({satellite: satelliteConfig, env});
+  const {satellite} = await assertConfigAndLoadSatelliteContext(args);
 
   const all = hasArgs({args, options: ['-a', '--all']});
 
