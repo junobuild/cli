@@ -1,5 +1,6 @@
 import {magenta} from 'kleur';
 
+export const CHANGES_DESCRIPTION = 'Review and apply changes submitted to your module.';
 export const CLEAR_DESCRIPTION =
   'Clear existing app code by removing JavaScript, HTML, CSS, and other files from your satellite.';
 export const CONFIG_DESCRIPTION = 'Apply configuration to satellite.';
@@ -30,3 +31,6 @@ export const DEV_BUILD_NOTES = `- If no language is provided, the CLI attempts t
 - Language can be shortened to ${magenta('rs')} for Rust, ${magenta('ts')} for TypeScript and ${magenta('mjs')} for JavaScript.
 - The path option maps to ${magenta('--manifest-path')} for Rust (Cargo) or to the source file for TypeScript and JavaScript (e.g. ${magenta('index.ts')} or ${magenta('index.mjs')}).
 - The watch option rebuilds when source files change, with a default debounce delay of 10 seconds; optionally, pass a delay in milliseconds.`;
+
+export const CHANGES_LIST_DESCRIPTION = 'List all submitted or applied changes.';
+export const CHANGES_APPLY_DESCRIPTION = 'Apply a submitted change.';

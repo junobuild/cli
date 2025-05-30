@@ -1,6 +1,7 @@
 import {hasArgs} from '@junobuild/cli-tools';
 import {red} from 'kleur';
 import {login, logout} from './commands/auth';
+import {changes, helpChanges} from './commands/changes';
 import {clear} from './commands/clear';
 import {config} from './commands/config';
 import {deploy} from './commands/deploy';
@@ -103,6 +104,9 @@ export const run = async () => {
       case 'start':
         logHelpStart(args);
         break;
+      case 'changes':
+        helpChanges(args);
+        break;
       default:
         console.log(red('Unknown command.'));
         console.log(help);
@@ -155,6 +159,9 @@ export const run = async () => {
       break;
     case 'snapshot':
       await snapshot(args);
+      break;
+    case 'changes':
+      await changes(args);
       break;
     case 'help':
       console.log(help);
