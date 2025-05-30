@@ -24,15 +24,12 @@ export const executeDeploy = async ({
     await assertSatelliteMemorySize(args);
   };
 
-  const {satellite, env, satelliteConfig} = await assertConfigAndLoadSatelliteContext(args);
+  const {satellite, satelliteConfig} = await assertConfigAndLoadSatelliteContext(args);
 
   const listExistingAssets = async ({startAfter}: {startAfter?: string}): Promise<Asset[]> =>
     await listAssets({
       startAfter,
-      env: {
-        env,
-        satellite: satelliteConfig
-      }
+      satellite
     });
 
   const uploadFile = async ({
