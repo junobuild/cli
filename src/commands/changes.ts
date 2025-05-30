@@ -3,6 +3,7 @@ import {logHelpChangesApply} from '../help/changes.apply.help';
 import {logHelpChanges} from '../help/changes.help';
 import {logHelpChangesList} from '../help/changes.list.help';
 import {listChanges} from '../services/changes/changes.list.services';
+import {applyChanges} from '../services/changes/changes.apply.services';
 
 export const changes = async (args?: string[]) => {
   const [subCommand] = args ?? [];
@@ -12,7 +13,7 @@ export const changes = async (args?: string[]) => {
       await listChanges(args);
       break;
     case 'apply':
-      // TODO
+      await applyChanges(args);
       break;
     default:
       console.log(red('Unknown subcommand.'));
