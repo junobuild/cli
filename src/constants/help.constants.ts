@@ -34,3 +34,4 @@ export const DEV_BUILD_NOTES = `- If no language is provided, the CLI attempts t
 
 export const CHANGES_LIST_DESCRIPTION = 'List all submitted or applied changes.';
 export const CHANGES_APPLY_DESCRIPTION = 'Apply a submitted change.';
+export const CHANGES_REJECT_DESCRIPTION = 'Reject a change.';

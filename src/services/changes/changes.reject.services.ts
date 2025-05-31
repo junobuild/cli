@@ -1,14 +1,14 @@
 import {hexStringToUint8Array} from '@dfinity/utils';
-import {commitProposal} from '@junobuild/cdn';
+import {rejectProposal} from '@junobuild/cdn';
 import {readChangesIdAndHash} from '../../utils/changes.utils';
 import {assertConfigAndLoadSatelliteContext} from '../../utils/satellite.utils';
 
-export const applyChanges = async (args?: string[]) => {
+export const rejectChanges = async (args?: string[]) => {
   const {satellite} = await assertConfigAndLoadSatelliteContext(args);
 
   const {proposalId, hash} = readChangesIdAndHash(args);
 
-  await commitProposal({
+  await rejectProposal({
     cdn: {
       satellite
     },
@@ -18,5 +18,5 @@ export const applyChanges = async (args?: string[]) => {
     }
   });
 
-  console.log(`🎯 Change ID ${proposalId} applied.`);
+  console.log(`🚫 Change ID ${proposalId} rejected.`);
 };
