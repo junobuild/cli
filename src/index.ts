@@ -178,7 +178,7 @@ export const run = async () => {
     await run();
   } catch (err: unknown) {
     console.log(`${red('An unexpected error happened 😫.')}\n`);
-    console.log(err);
+    console.log(typeof err === 'string' ? err : err instanceof Error ? err.message : undefined);
     process.exit(1);
   }
 })();
