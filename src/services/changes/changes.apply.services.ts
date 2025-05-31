@@ -1,5 +1,6 @@
 import {hexStringToUint8Array} from '@dfinity/utils';
 import {commitProposal} from '@junobuild/cdn';
+import ora from 'ora';
 import {readChangesIdAndHash} from '../../utils/changes.utils';
 import {assertConfigAndLoadSatelliteContext} from '../../utils/satellite.utils';
 
@@ -8,15 +9,21 @@ export const applyChanges = async (args?: string[]) => {
 
   const {proposalId, hash} = readChangesIdAndHash(args);
 
-  await commitProposal({
-    cdn: {
-      satellite
-    },
-    proposal: {
-      proposal_id: proposalId,
-      sha256: hexStringToUint8Array(hash)
-    }
-  });
+  const spinner = ora('Applying...').start();
 
-  console.log(`🎯 Change ID ${proposalId} applied.`);
+  try {
+    await commitProposal({
+      cdn: {
+        satellite
+      },
+      proposal: {
+        proposal_id: proposalId,
+        sha256: hexStringToUint8Array(hash)
+      }
+    });
+
+    console.log(`🎯 Change ID ${proposalId} applied.`);
+  } finally {
+    spinner.stop();
+  }
 };
