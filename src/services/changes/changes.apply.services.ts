@@ -22,7 +22,7 @@ export const applyChanges = async (args?: string[]) => {
       }
     });
 
-    console.log(`🎯 Change ID ${proposalId} applied.`);
+    console.log(`\n🎯 Change ID ${proposalId} applied.`);
   } finally {
     spinner.stop();
   }

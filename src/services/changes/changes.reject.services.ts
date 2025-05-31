@@ -22,7 +22,7 @@ export const rejectChanges = async (args?: string[]) => {
       }
     });
 
-    console.log(`🚫 Change ID ${proposalId} rejected.`);
+    console.log(`\n🚫 Change ID ${proposalId} rejected.`);
   } finally {
     spinner.stop();
   }
