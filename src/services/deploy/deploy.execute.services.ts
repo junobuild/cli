@@ -1,25 +1,73 @@
-import type {DeployParams, DeployResult, UploadFileStorage} from '@junobuild/cli-tools';
+import type {
+  DeployParams,
+  DeployResult,
+  DeployResultWithProposal,
+  UploadFile,
+  UploadFileStorage,
+  UploadFileStorageWithProposal,
+  UploadFileWithProposal
+} from '@junobuild/cli-tools';
 import {postDeploy as cliPostDeploy, preDeploy as cliPreDeploy} from '@junobuild/cli-tools';
-import {type Asset, uploadBlob} from '@junobuild/core';
+import {type Asset} from '@junobuild/core';
 import {red} from 'kleur';
 import {lstatSync} from 'node:fs';
-import {type SatelliteParametersWithId} from '../../types/satellite';
+import type {SatelliteParametersWithId} from '../../types/satellite';
 import {assertConfigAndLoadSatelliteContext} from '../../utils/satellite.utils';
 import {assertSatelliteMemorySize} from './deploy.assert.services';
 import {listAssets} from './deploy.list.services';
 
-export interface DeployFnParams {
-  deploy: DeployParams;
+export interface DeployFnParams<T = UploadFile> {
+  deploy: DeployParams<T>;
   satellite: SatelliteParametersWithId;
 }
 
-export const executeDeploy = async ({
+export type UploadFileFnParams = UploadFileStorage & {satellite: SatelliteParametersWithId};
+export type UploadFileFnParamsWithProposal = UploadFileFnParams & {proposalId: bigint};
+
+export const executeDeployWithProposal = async ({
   args,
-  deployFn
+  deployFn,
+  uploadFileFn
+}: {
+  args?: string[];
+  deployFn: (params: DeployFnParams<UploadFileWithProposal>) => Promise<DeployResultWithProposal>;
+  uploadFileFn: (params: UploadFileFnParamsWithProposal) => Promise<void>;
+}): Promise<DeployResultWithProposal> => {
+  return await executeDeploy<UploadFileStorageWithProposal, DeployResultWithProposal>({
+    args,
+    deployFn,
+    uploadFileFn
+  });
+};
+
+export const executeDeployImmediate = async ({
+  args,
+  deployFn,
+  uploadFileFn
 }: {
   args?: string[];
   deployFn: (params: DeployFnParams) => Promise<DeployResult>;
-}) => {
+  uploadFileFn: (params: UploadFileFnParams) => Promise<void>;
+}): Promise<DeployResult> => {
+  return await executeDeploy<UploadFileStorage, DeployResult>({
+    args,
+    deployFn,
+    uploadFileFn
+  });
+};
+
+const executeDeploy = async <
+  P extends UploadFileStorage,
+  R extends DeployResult | DeployResultWithProposal
+>({
+  args,
+  deployFn,
+  uploadFileFn
+}: {
+  args?: string[];
+  deployFn: (params: DeployFnParams<(params: P) => Promise<void>>) => Promise<R>;
+  uploadFileFn: (params: P & {satellite: SatelliteParametersWithId}) => Promise<void>;
+}): Promise<R> => {
   const assertMemory = async () => {
     await assertSatelliteMemorySize(args);
   };
@@ -32,29 +80,18 @@ export const executeDeploy = async ({
       satellite
     });
 
-  const uploadFile = async ({
-    filename,
-    fullPath,
-    data,
-    collection,
-    headers,
-    encoding
-  }: UploadFileStorage) => {
-    await uploadBlob({
-      satellite,
-      filename,
-      fullPath,
-      // @ts-expect-error type incompatibility NodeJS vs bundle
-      data,
-      collection,
-      headers,
-      encoding
-    });
+  const uploadFile = async (params: P) => {
+    const paramsWithSatellite: P & {satellite: SatelliteParametersWithId} = {
+      ...params,
+      satellite
+    };
+
+    await uploadFileFn(paramsWithSatellite);
   };
 
   await cliPreDeploy({config: satelliteConfig});
 
-  const {result} = await deployFn({
+  const result = await deployFn({
     deploy: {
       config: satelliteConfig,
       listAssets: listExistingAssets,
@@ -65,11 +102,13 @@ export const executeDeploy = async ({
     satellite
   });
 
-  if (result === 'skipped') {
+  if (result.result === 'skipped') {
     process.exit(0);
   }
 
   await cliPostDeploy({config: satelliteConfig});
+
+  return result;
 };
 
 const assertSourceDirExists = (source: string) => {
