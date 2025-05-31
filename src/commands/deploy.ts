@@ -37,14 +37,17 @@ export const deploy = async (args?: string[]) => {
 };
 
 const deployWithProposal = async ({args, clearOption}: {args?: string[]; clearOption: boolean}) => {
-  const noCommit = hasArgs({args, options: ['-n', '--no-commit']});
+  const noCommit = hasArgs({args, options: ['-n', '--no-apply']});
 
   const deployFn = async ({
     deploy,
     satellite
   }: DeployFnParams<UploadFileWithProposal>): Promise<DeployResultWithProposal> =>
     await cliDeployWithProposal({
-      deploy,
+      deploy: {
+        ...deploy,
+        includeAllFiles: clearOption
+      },
       proposal: {
         clearAssets: clearOption,
         autoCommit: !noCommit,
