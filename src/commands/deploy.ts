@@ -2,6 +2,7 @@ import {
   deploy as cliDeploy,
   deployWithProposal as cliDeployWithProposal,
   type DeployResult,
+  type DeployResultWithProposal,
   hasArgs
 } from '@junobuild/cli-tools';
 import {junoConfigExist} from '../configs/juno.config';
@@ -29,7 +30,7 @@ export const deploy = async (args?: string[]) => {
 const deployWithProposal = async ({args, clearOption}: {args?: string[]; clearOption: boolean}) => {
   const noCommit = hasArgs({args, options: ['-n', '--no-commit']});
 
-  const deployFn = async ({deploy, satellite}: DeployFnParams): Promise<DeployResult> =>
+  const deployFn = async ({deploy, satellite}: DeployFnParams): Promise<DeployResultWithProposal> =>
     await cliDeployWithProposal({
       deploy,
       proposal: {
@@ -41,10 +42,14 @@ const deployWithProposal = async ({args, clearOption}: {args?: string[]; clearOp
       }
     });
 
-  await executeDeploy({
+  const {result} = await executeDeploy({
     args,
     deployFn
   });
+
+  if (result !== 'deployed') {
+    return;
+  }
 
   await links(args);
 };

@@ -1,4 +1,9 @@
-import type {DeployParams, DeployResult, UploadFileStorage} from '@junobuild/cli-tools';
+import type {
+  DeployParams,
+  DeployResult,
+  DeployResultWithProposal,
+  UploadFileStorage
+} from '@junobuild/cli-tools';
 import {postDeploy as cliPostDeploy, preDeploy as cliPreDeploy} from '@junobuild/cli-tools';
 import {type Asset, uploadBlob} from '@junobuild/core';
 import {red} from 'kleur';
@@ -18,8 +23,8 @@ export const executeDeploy = async ({
   deployFn
 }: {
   args?: string[];
-  deployFn: (params: DeployFnParams) => Promise<DeployResult>;
-}) => {
+  deployFn: (params: DeployFnParams) => Promise<DeployResult | DeployResultWithProposal>;
+}): Promise<DeployResult | DeployResultWithProposal> => {
   const assertMemory = async () => {
     await assertSatelliteMemorySize(args);
   };
@@ -54,7 +59,7 @@ export const executeDeploy = async ({
 
   await cliPreDeploy({config: satelliteConfig});
 
-  const {result} = await deployFn({
+  const result = await deployFn({
     deploy: {
       config: satelliteConfig,
       listAssets: listExistingAssets,
@@ -65,11 +70,13 @@ export const executeDeploy = async ({
     satellite
   });
 
-  if (result === 'skipped') {
+  if (result.result === 'skipped') {
     process.exit(0);
   }
 
   await cliPostDeploy({config: satelliteConfig});
+
+  return result;
 };
 
 const assertSourceDirExists = (source: string) => {
