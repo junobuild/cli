@@ -9,6 +9,7 @@ export const listChanges = async (args?: string[]) => {
   const {satellite} = await assertConfigAndLoadSatelliteContext(args);
 
   const all = hasArgs({args, options: ['-a', '--all']});
+  const every = hasArgs({args, options: ['-e', '--every']});
 
   const items = await listProposals({
     satellite,
@@ -16,7 +17,7 @@ export const listChanges = async (args?: string[]) => {
   });
 
   const changes = items
-    .filter(([_, {status}]) => 'Open' in status)
+    .filter(([_, {status}]) => 'Open' in status || every)
     .reduce<Record<string, {hash: string; created_at: string}>>(
       (acc, [{proposal_id}, {sha256, created_at}]) => {
         const hash: Uint8Array | number[] | undefined = fromNullable(sha256);
