@@ -1,13 +1,22 @@
+import {uploadAssetWithProposal} from '@junobuild/cdn';
 import {
   deploy as cliDeploy,
   deployWithProposal as cliDeployWithProposal,
   type DeployResult,
   type DeployResultWithProposal,
-  hasArgs
+  hasArgs,
+  type UploadFileWithProposal
 } from '@junobuild/cli-tools';
+import {uploadBlob} from '@junobuild/core';
 import {junoConfigExist} from '../configs/juno.config';
 import {clear} from '../services/clear.services';
-import {type DeployFnParams, executeDeploy} from '../services/deploy/deploy.execute.services';
+import {
+  type DeployFnParams,
+  executeDeployImmediate,
+  executeDeployWithProposal,
+  type UploadFileFnParams,
+  type UploadFileFnParamsWithProposal
+} from '../services/deploy/deploy.execute.services';
 import {links} from '../services/links.services';
 import {init} from './init';
 
@@ -30,7 +39,10 @@ export const deploy = async (args?: string[]) => {
 const deployWithProposal = async ({args, clearOption}: {args?: string[]; clearOption: boolean}) => {
   const noCommit = hasArgs({args, options: ['-n', '--no-commit']});
 
-  const deployFn = async ({deploy, satellite}: DeployFnParams): Promise<DeployResultWithProposal> =>
+  const deployFn = async ({
+    deploy,
+    satellite
+  }: DeployFnParams<UploadFileWithProposal>): Promise<DeployResultWithProposal> =>
     await cliDeployWithProposal({
       deploy,
       proposal: {
@@ -42,9 +54,40 @@ const deployWithProposal = async ({args, clearOption}: {args?: string[]; clearOp
       }
     });
 
-  const {result} = await executeDeploy({
+  const uploadFileFn = async ({
+    filename: storageFilename,
+    fullPath: storagePath,
+    data,
+    collection,
+    headers = [],
+    encoding,
+    satellite,
+    proposalId
+  }: UploadFileFnParamsWithProposal) => {
+    // Similar as in Juno Core SDK
+    // The IC certification does not currently support encoding
+    const filename = decodeURI(storageFilename);
+    const fullPath = storagePath ?? `/${collection}/${filename}`;
+
+    await uploadAssetWithProposal({
+      cdn: {satellite},
+      proposalId,
+      asset: {
+        filename,
+        fullPath,
+        // @ts-expect-error type incompatibility NodeJS vs bundle
+        data,
+        collection,
+        headers,
+        encoding
+      }
+    });
+  };
+
+  const {result} = await executeDeployWithProposal({
     args,
-    deployFn
+    deployFn,
+    uploadFileFn
   });
 
   if (result !== 'deployed') {
@@ -62,9 +105,31 @@ const deployImmediate = async ({args, clearOption}: {args?: string[]; clearOptio
   const deployFn = async ({deploy}: DeployFnParams): Promise<DeployResult> =>
     await cliDeploy(deploy);
 
-  await executeDeploy({
+  const uploadFileFn = async ({
+    filename,
+    fullPath,
+    data,
+    collection,
+    headers,
+    encoding,
+    satellite
+  }: UploadFileFnParams) => {
+    await uploadBlob({
+      satellite,
+      filename,
+      fullPath,
+      // @ts-expect-error type incompatibility NodeJS vs bundle
+      data,
+      collection,
+      headers,
+      encoding
+    });
+  };
+
+  await executeDeployImmediate({
     args,
-    deployFn
+    deployFn,
+    uploadFileFn
   });
 
   await links(args);
