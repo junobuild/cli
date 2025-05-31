@@ -44,7 +44,10 @@ const deployWithProposal = async ({args, clearOption}: {args?: string[]; clearOp
     satellite
   }: DeployFnParams<UploadFileWithProposal>): Promise<DeployResultWithProposal> =>
     await cliDeployWithProposal({
-      deploy,
+      deploy: {
+        ...deploy,
+        includeAllFiles: clearOption
+      },
       proposal: {
         clearAssets: clearOption,
         autoCommit: !noCommit,
