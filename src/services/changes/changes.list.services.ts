@@ -2,7 +2,7 @@ import {fromNullable, nonNullish, toNullable, uint8ArrayToHexString} from '@dfin
 import {listProposals as listProposalsLib, type Proposal, type ProposalKey} from '@junobuild/cdn';
 import {hasArgs} from '@junobuild/cli-tools';
 import {type SatelliteParametersWithId} from '../../types/satellite';
-import {formatTime} from '../../utils/format.utils';
+import {formatDate} from '../../utils/format.utils';
 import {assertConfigAndLoadSatelliteContext} from '../../utils/satellite.utils';
 
 export const listChanges = async (args?: string[]) => {
@@ -25,7 +25,7 @@ export const listChanges = async (args?: string[]) => {
           ...acc,
           [`${proposal_id}`]: {
             hash: nonNullish(hash) ? uint8ArrayToHexString(hash) : '',
-            created_at: formatTime(new Date(Number(created_at / 1_000_000n)))
+            created_at: formatDate(new Date(Number(created_at / 1_000_000n)))
           }
         };
       },
