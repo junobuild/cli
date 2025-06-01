@@ -1,5 +1,6 @@
 import {deleteAssets, listCustomDomains, setCustomDomains} from '@junobuild/admin';
 import {deleteAsset} from '@junobuild/core';
+import {green} from 'kleur';
 import ora from 'ora';
 import {DAPP_COLLECTION} from '../constants/constants';
 import {assertConfigAndLoadSatelliteContext} from '../utils/satellite.utils';
@@ -22,6 +23,8 @@ export const clear = async (args?: string[]) => {
       satellite,
       domains
     });
+
+    console.log(`${green('✔')} App assets cleared.`);
   } finally {
     spinner.stop();
   }
@@ -43,6 +46,8 @@ export const clearAsset = async ({fullPath, args}: {fullPath: string; args?: str
       satellite,
       fullPath: cleanFullPath(fullPath)
     });
+
+    console.log(`${green('✔')} ${fullPath} cleared.`);
   } finally {
     spinner.stop();
   }
