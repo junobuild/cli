@@ -10,11 +10,11 @@ export const clearProposalStagedAssets = async ({
 }: {
   args?: string[];
   proposalId: bigint;
-}): Promise<{result: 'skipped' | 'deleted' | 'error'}> => {
+}) => {
   const keepAssets = hasArgs({args, options: ['-k', '--keep-staged']});
 
   if (keepAssets) {
-    return {result: 'skipped'};
+    return;
   }
 
   console.log('');
@@ -32,11 +32,9 @@ export const clearProposalStagedAssets = async ({
     spinner.stop();
 
     console.log(`${green('✔')} Staged assets deleted.`);
-
-    return {result: 'deleted'};
   } catch (err: unknown) {
     spinner.stop();
 
-    return {result: 'error'};
+    throw err;
   }
 };
