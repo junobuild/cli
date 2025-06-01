@@ -9,6 +9,7 @@ import {
 } from '@junobuild/cli-tools';
 import {uploadBlob} from '@junobuild/core';
 import {junoConfigExist} from '../configs/juno.config';
+import {clearProposalStagedAssets} from '../services/changes/changes.clear.services';
 import {clear} from '../services/clear.services';
 import {
   type DeployFnParams,
@@ -87,15 +88,22 @@ const deployWithProposal = async ({args, clearOption}: {args?: string[]; clearOp
     });
   };
 
-  const {result} = await executeDeployWithProposal({
+  const result = await executeDeployWithProposal({
     args,
     deployFn,
     uploadFileFn
   });
 
-  if (result !== 'deployed') {
+  if (result.result !== 'deployed') {
     return;
   }
+
+  const {proposalId} = result;
+
+  await clearProposalStagedAssets({
+    args,
+    proposalId
+  });
 
   await links(args);
 };

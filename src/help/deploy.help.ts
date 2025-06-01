@@ -8,9 +8,14 @@ const usage = `Usage: ${green('juno')} ${cyan('deploy')} ${yellow('[options]')}
 Options:
   ${yellow('-c, --clear')}           Clear existing app files before proceeding with deployment.
   ${yellow('-n, --no-apply')}        Submit the deployment as a change but do not apply it yet.
+  ${yellow('-k, --keep-staged')}     Keep staged assets in memory after applying the change.
   ${yellow('-i, --immediate')}       Deploy files instantly (bypasses the change workflow).
   ${helpMode}
-  ${yellow('-h, --help')}            Output usage information.`;
+  ${yellow('-h, --help')}            Output usage information.
+    
+Notes:
+
+- The option ${yellow('--keep-staged')} only applies when ${yellow('--no-apply')} is NOT used (i.e. the change is applied immediately).`;
 
 const doc = `${DEPLOY_DESCRIPTION}
 
