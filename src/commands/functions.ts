@@ -5,7 +5,7 @@ import {logHelpFunctions} from '../help/functions.help';
 import {logHelpFunctionsUpgrade} from '../help/functions.upgrade.help';
 import {build} from '../services/functions/build/build.services';
 import {eject} from '../services/functions/eject/eject.services';
-import {upgradeFunctions} from '../services/functions/upgrade.services';
+import {upgradeFunctions} from '../services/functions/upgrade/upgrade.services';
 
 export const functions = async (args?: string[]) => {
   const [subCommand] = args ?? [];
