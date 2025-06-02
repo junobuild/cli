@@ -6,7 +6,8 @@ export const CLEAR_DESCRIPTION =
 export const CONFIG_DESCRIPTION = 'Apply configuration to satellite.';
 export const DEPLOY_DESCRIPTION = 'Deploy your app to your satellite.';
 export const DEV_DESCRIPTION =
-  'Handle development tasks like building serverless functions or running a local Internet Computer instance.';
+  'Handle local development tasks like starting or stopping a local Internet Computer instance.';
+export const FUNCTIONS_DESCRIPTION = "Build and upgrade your satellite's serverless functions.";
 export const INIT_DESCRIPTION = 'Set up your project.';
 export const LOGIN_DESCRIPTION =
   'Generate an authentication for use in non-interactive environments.';
@@ -23,11 +24,12 @@ export const WHOAMI_DESCRIPTION =
   'Display your current profile, controller, and links to your satellite.';
 
 export const DEV_START_DESCRIPTION = 'Start a local Internet Computer network in a container.';
-export const DEV_BUILD_DESCRIPTION = 'Build your serverless functions.';
-export const DEV_EJECT_DESCRIPTION =
+
+export const FUNCTIONS_BUILD_DESCRIPTION = 'Build your serverless functions.';
+export const FUNCTIONS_EJECT_DESCRIPTION =
   'Generate the required files to begin developing serverless functions in your project.';
 
-export const DEV_BUILD_NOTES = `- If no language is provided, the CLI attempts to determine the appropriate build.
+export const FUNCTIONS_BUILD_NOTES = `- If no language is provided, the CLI attempts to determine the appropriate build.
 - Language can be shortened to ${magenta('rs')} for Rust, ${magenta('ts')} for TypeScript and ${magenta('mjs')} for JavaScript.
 - The path option maps to ${magenta('--manifest-path')} for Rust (Cargo) or to the source file for TypeScript and JavaScript (e.g. ${magenta('index.ts')} or ${magenta('index.mjs')}).
 - The watch option rebuilds when source files change, with a default debounce delay of 10 seconds; optionally, pass a delay in milliseconds.`;

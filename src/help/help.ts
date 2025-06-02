@@ -5,6 +5,7 @@ import {
   CONFIG_DESCRIPTION,
   DEPLOY_DESCRIPTION,
   DEV_DESCRIPTION,
+  FUNCTIONS_DESCRIPTION,
   INIT_DESCRIPTION,
   LOGIN_DESCRIPTION,
   LOGOUT_DESCRIPTION,
@@ -37,6 +38,7 @@ Commands:
   ${cyan('config')}              ${CONFIG_DESCRIPTION}
   ${cyan('deploy')}              ${DEPLOY_DESCRIPTION}
   ${cyan('dev')}                 ${DEV_DESCRIPTION}
+  ${cyan('functions')}           ${FUNCTIONS_DESCRIPTION}
   ${cyan('init')}                ${INIT_DESCRIPTION}
   ${cyan('help')}                Display help information.
   ${cyan('login')}               ${LOGIN_DESCRIPTION}

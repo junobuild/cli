@@ -1,9 +1,8 @@
 import {notEmptyString} from '@dfinity/utils';
 import {assertAnswerCtrlC, nextArg} from '@junobuild/cli-tools';
-import {cyan, green, magenta, yellow} from 'kleur';
+import {yellow} from 'kleur';
 import prompts from 'prompts';
 import {DEVELOPER_PROJECT_SATELLITE_PATH} from '../../constants/dev.constants';
-import {helpDevContinue} from '../../help/dev.help';
 import {ejectJavaScript, ejectTypeScript} from './eject.javascript.services';
 import {ejectRust} from './eject.rust.services';
 
@@ -79,13 +78,6 @@ const selectLang = async (): Promise<{lang: Lang}> => {
 };
 
 export const success = (): string => `
-🚀 Satellite successfully ejected!
+✨ Functions initialized and good to go!
 
-The serverless function has been generated.
-You can now start coding in: ${yellow(DEVELOPER_PROJECT_SATELLITE_PATH)}
-
-Useful ${green('juno')} ${cyan('dev')} ${magenta('<subcommand>')} to continue with:
-
-Subcommands:
-  ${helpDevContinue}
-`;
+You can now start coding in: ${yellow(DEVELOPER_PROJECT_SATELLITE_PATH)}`;

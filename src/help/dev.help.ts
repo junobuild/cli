@@ -3,21 +3,10 @@ import {DEV_DESCRIPTION, DEV_START_DESCRIPTION} from '../constants/help.constant
 import {helpOutput} from './common.help';
 import {TITLE} from './help';
 
-const helpDevStart = `${magenta('start')}               ${DEV_START_DESCRIPTION}`;
-
-const helpDevBuild = `${magenta('build')}               Build your serverless functions. The local server supports live reloading.`;
-
-export const helpDevContinue = `${helpDevBuild}
-  ${helpDevStart}`;
-
 const usage = `Usage: ${green('juno')} ${cyan('dev')} ${magenta('<subcommand>')} ${yellow('[options]')}
 
 Subcommands:
-  ${helpDevBuild}
-  ${magenta(
-    'eject'
-  )}               Scaffold the necessary files to start coding and building functions in your project.
-  ${helpDevStart}
+  ${magenta('start')}               ${DEV_START_DESCRIPTION}
   ${magenta('stop')}                Stop the local network.`;
 
 const doc = `${DEV_DESCRIPTION}
