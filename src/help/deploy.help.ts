@@ -1,5 +1,5 @@
 import {cyan, green, yellow} from 'kleur';
-import {DEPLOY_DESCRIPTION, OPTION_KEEP_STAGED} from '../constants/help.constants';
+import {DEPLOY_DESCRIPTION, OPTION_HELP, OPTION_KEEP_STAGED} from '../constants/help.constants';
 import {helpMode, helpOutput} from './common.help';
 import {TITLE} from './help';
 
@@ -11,7 +11,7 @@ Options:
   ${OPTION_KEEP_STAGED}
   ${yellow('-i, --immediate')}       Deploy files instantly (bypasses the change workflow).
   ${helpMode}
-  ${yellow('-h, --help')}            Output usage information.
+  ${OPTION_HELP}
     
 Notes:
 

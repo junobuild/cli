@@ -1,5 +1,5 @@
 import {cyan, green, yellow} from 'kleur';
-import {LOGIN_DESCRIPTION} from '../constants/help.constants';
+import {LOGIN_DESCRIPTION, OPTION_HELP} from '../constants/help.constants';
 import {helpOutput} from './common.help';
 import {TITLE} from './help';
 
@@ -7,7 +7,7 @@ const usage = `Usage: ${green('juno')} ${cyan('login')} ${yellow('[options]')}
 
 Options:
   ${yellow('-b, --browser')}         A particular browser to open. supported: chrome|firefox|edge.
-  ${yellow('-h, --help')}            Output usage information.`;
+  ${OPTION_HELP}`;
 
 const doc = `${LOGIN_DESCRIPTION}
 

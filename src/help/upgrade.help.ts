@@ -1,5 +1,5 @@
 import {cyan, green, yellow} from 'kleur';
-import {UPGRADE_DESCRIPTION} from '../constants/help.constants';
+import {OPTION_HELP, UPGRADE_DESCRIPTION} from '../constants/help.constants';
 import {helpMode, helpOutput} from './common.help';
 import {TITLE} from './help';
 import {TARGET_OPTION_NOTE, targetOption} from './target.help';
@@ -13,7 +13,7 @@ Options:
   ${yellow('-cc, --clear-chunks')}   Clear any previously uploaded WASM chunks (applies if the WASM size is greater than 2MB).
   ${yellow('-ns, --no-snapshot')}    Skip creating a snapshot before upgrading.
   ${helpMode}
-  ${yellow('-h, --help')}            Output usage information.
+  ${OPTION_HELP}
   
 Notes:
 

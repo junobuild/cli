@@ -1,5 +1,5 @@
 import {cyan, green, magenta, yellow} from 'kleur';
-import {DEV_EJECT_DESCRIPTION} from '../constants/help.constants';
+import {DEV_EJECT_DESCRIPTION, OPTION_HELP} from '../constants/help.constants';
 import {helpOutput} from './common.help';
 import {TITLE} from './help';
 
@@ -7,7 +7,7 @@ const usage = `Usage: ${green('juno')} ${cyan('dev')} ${magenta('eject')} ${yell
 
 Options:
   ${yellow('-l, --lang')}            Specify the language for building the serverless functions: ${magenta('rust')}, ${magenta('typescript')} or ${magenta('javascript')}.
-  ${yellow('-h, --help')}            Output usage information.
+  ${OPTION_HELP}
   
 Notes:
 

@@ -1,5 +1,5 @@
 import {cyan, green, magenta, yellow} from 'kleur';
-import {START_DESCRIPTION} from '../constants/help.constants';
+import {OPTION_HELP, START_DESCRIPTION} from '../constants/help.constants';
 import {helpMode, helpOutput} from './common.help';
 import {TITLE} from './help';
 
@@ -8,7 +8,7 @@ const usage = `Usage: ${green('juno')} ${cyan('start')} ${yellow('[options]')}
 Options:
   ${yellow('-t, --target')}          Which module type should be started? Valid targets are ${magenta('satellite')}, ${magenta('mission-control')} or ${magenta('orbiter')}.  
   ${helpMode}
-  ${yellow('-h, --help')}            Output usage information.
+  ${OPTION_HELP}
   
 Notes:
 

@@ -2,6 +2,7 @@ import {cyan, green, magenta, yellow} from 'kleur';
 import {
   CHANGES_APPLY_DESCRIPTION,
   OPTION_HASH,
+  OPTION_HELP,
   OPTION_KEEP_STAGED
 } from '../constants/help.constants';
 import {helpOutput} from './common.help';
@@ -13,7 +14,7 @@ Options:
   ${yellow('-i, --id')}              The ID of the change to apply.
   ${OPTION_HASH}
   ${OPTION_KEEP_STAGED}
-  ${yellow('-h, --help')}            Output usage information.`;
+  ${OPTION_HELP}`;
 
 const doc = `${CHANGES_APPLY_DESCRIPTION}
 

@@ -1,4 +1,5 @@
 import {cyan, green, yellow} from 'kleur';
+import {OPTION_HELP} from '../constants/help.constants';
 import {helpMode, helpOutput} from './common.help';
 import {TITLE} from './help';
 
@@ -7,7 +8,7 @@ const usage = (
 ): string => `Usage: ${green('juno')} ${cyan(command)} ${yellow('[options]')}
 
 Options:
-  ${yellow('-h, --help')}            Output usage information.`;
+  ${OPTION_HELP}`;
 
 const help = ({command, description}: {command: string; description: string}) => `${TITLE}
 

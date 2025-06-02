@@ -1,5 +1,5 @@
 import {cyan, green, magenta, yellow} from 'kleur';
-import {DEV_BUILD_DESCRIPTION, DEV_BUILD_NOTES} from '../constants/help.constants';
+import {DEV_BUILD_DESCRIPTION, DEV_BUILD_NOTES, OPTION_HELP} from '../constants/help.constants';
 import {helpOutput} from './common.help';
 import {TITLE} from './help';
 
@@ -9,7 +9,7 @@ Options:
   ${yellow('-l, --lang')}            Specify the language for building the serverless functions: ${magenta('rust')}, ${magenta('typescript')} or ${magenta('javascript')}.
   ${yellow('-p, --path')}            Path to the source to bundle.
   ${yellow('-w, --watch')}           Rebuild your functions automatically when source files change.
-  ${yellow('-h, --help')}            Output usage information.
+  ${OPTION_HELP}
   
 Notes:
 
