@@ -1,4 +1,4 @@
-import {magenta} from 'kleur';
+import {magenta, yellow} from 'kleur';
 
 export const CHANGES_DESCRIPTION = 'Review and apply changes submitted to your module.';
 export const CLEAR_DESCRIPTION =
@@ -35,3 +35,5 @@ export const DEV_BUILD_NOTES = `- If no language is provided, the CLI attempts t
 export const CHANGES_LIST_DESCRIPTION = 'List all submitted or applied changes.';
 export const CHANGES_APPLY_DESCRIPTION = 'Apply a submitted change.';
 export const CHANGES_REJECT_DESCRIPTION = 'Reject a change.';
+
+export const OPTION_KEEP_STAGED = `${yellow('-k, --keep-staged')}     Keep staged assets in memory after applying the change.`;

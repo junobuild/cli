@@ -1,5 +1,5 @@
 import {cyan, green, yellow} from 'kleur';
-import {DEPLOY_DESCRIPTION} from '../constants/help.constants';
+import {DEPLOY_DESCRIPTION, OPTION_KEEP_STAGED} from '../constants/help.constants';
 import {helpMode, helpOutput} from './common.help';
 import {TITLE} from './help';
 
@@ -8,7 +8,7 @@ const usage = `Usage: ${green('juno')} ${cyan('deploy')} ${yellow('[options]')}
 Options:
   ${yellow('-c, --clear')}           Clear existing app files before proceeding with deployment.
   ${yellow('-n, --no-apply')}        Submit the deployment as a change but do not apply it yet.
-  ${yellow('-k, --keep-staged')}     Keep staged assets in memory after applying the change.
+  ${OPTION_KEEP_STAGED}
   ${yellow('-i, --immediate')}       Deploy files instantly (bypasses the change workflow).
   ${helpMode}
   ${yellow('-h, --help')}            Output usage information.
