@@ -6,6 +6,7 @@ import {clear} from './commands/clear';
 import {config} from './commands/config';
 import {deploy} from './commands/deploy';
 import {dev, helpDev} from './commands/dev';
+import {functions, helpFunctions} from './commands/functions';
 import {init} from './commands/init';
 import {open} from './commands/open';
 import {snapshot} from './commands/snapshot';
@@ -83,6 +84,10 @@ export const run = async () => {
       case 'dev':
         helpDev(args);
         break;
+      case 'fn':
+      case 'functions':
+        helpFunctions(args);
+        break;
       case 'snapshot':
         logHelpSnapshot(args);
         break;
@@ -156,6 +161,10 @@ export const run = async () => {
       break;
     case 'dev':
       await dev(args);
+      break;
+    case 'fn':
+    case 'functions':
+      await functions(args);
       break;
     case 'snapshot':
       await snapshot(args);

@@ -1,5 +1,9 @@
 import {cyan, green, magenta, yellow} from 'kleur';
-import {DEV_BUILD_NOTES, DEV_START_DESCRIPTION, OPTION_HELP} from '../constants/help.constants';
+import {
+  DEV_START_DESCRIPTION,
+  FUNCTIONS_BUILD_NOTES,
+  OPTION_HELP
+} from '../constants/help.constants';
 import {helpOutput} from './common.help';
 import {TITLE} from './help';
 
@@ -14,7 +18,7 @@ Options:
 Notes:
 
 - The language and path options are only used in combination with watch.
-${DEV_BUILD_NOTES}`;
+${FUNCTIONS_BUILD_NOTES}`;
 
 const doc = `${DEV_START_DESCRIPTION}
 
