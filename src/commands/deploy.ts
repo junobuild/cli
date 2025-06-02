@@ -9,15 +9,15 @@ import {
 } from '@junobuild/cli-tools';
 import {uploadBlob} from '@junobuild/core';
 import {junoConfigExist} from '../configs/juno.config';
-import {clearProposalStagedAssets} from '../services/changes/changes.clear.services';
-import {clear} from '../services/clear.services';
+import {clear} from '../services/assets/clear.services';
 import {
   type DeployFnParams,
   executeDeployImmediate,
   executeDeployWithProposal,
   type UploadFileFnParams,
   type UploadFileFnParamsWithProposal
-} from '../services/deploy/deploy.execute.services';
+} from '../services/assets/deploy/deploy.execute.services';
+import {clearProposalStagedAssets} from '../services/changes/changes.clear.services';
 import {links} from '../services/links.services';
 import {init} from './init';
 

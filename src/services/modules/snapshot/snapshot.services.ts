@@ -9,10 +9,10 @@ import {
   listCanisterSnapshots,
   loadCanisterSnapshot,
   takeCanisterSnapshot
-} from '../../api/ic.api';
-import type {AssetKey} from '../../types/asset-key';
-import {displaySegment} from '../../utils/display.utils';
-import {confirmAndExit} from '../../utils/prompt.utils';
+} from '../../../api/ic.api';
+import type {AssetKey} from '../../../types/asset-key';
+import {displaySegment} from '../../../utils/display.utils';
+import {confirmAndExit} from '../../../utils/prompt.utils';
 
 export const createSnapshot = async ({
   canisterId: cId,

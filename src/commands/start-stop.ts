@@ -6,7 +6,7 @@ import {
   startStopMissionControl,
   startStopOrbiter,
   startStopSatellite
-} from '../services/start-stop.services';
+} from '../services/modules/start-stop.services';
 import type {StartStopAction} from '../types/start-stop';
 
 export const startStop = async ({args, action}: {args?: string[]; action: StartStopAction}) => {

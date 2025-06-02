@@ -8,11 +8,11 @@ import {
 import {hasArgs, nextArg} from '@junobuild/cli-tools';
 import {cyan, red} from 'kleur';
 import {compare} from 'semver';
-import {SATELLITE_WASM_NAME} from '../../constants/constants';
-import type {AssertWasmModule, UpgradeWasm, UpgradeWasmModule} from '../../types/upgrade';
-import {NEW_CMD_LINE} from '../../utils/prompt.utils';
-import {assertConfigAndLoadSatelliteContext, satelliteKey} from '../../utils/satellite.utils';
-import {readUpgradeOptions} from '../../utils/upgrade.utils';
+import {SATELLITE_WASM_NAME} from '../../../constants/constants';
+import type {AssertWasmModule, UpgradeWasm, UpgradeWasmModule} from '../../../types/upgrade';
+import {NEW_CMD_LINE} from '../../../utils/prompt.utils';
+import {assertConfigAndLoadSatelliteContext, satelliteKey} from '../../../utils/satellite.utils';
+import {readUpgradeOptions} from '../../../utils/upgrade.utils';
 import {assertSatelliteBuildType} from './upgrade-assert.services';
 import {
   confirmReset,

@@ -8,10 +8,10 @@ import {
   DEVELOPER_PROJECT_SATELLITE_INDEX_MJS,
   DEVELOPER_PROJECT_SATELLITE_INDEX_TS,
   DEVELOPER_PROJECT_SATELLITE_PATH
-} from '../../constants/dev.constants';
-import {SMALL_TITLE} from '../../help/help';
-import {type BuildArgs} from '../../types/build';
-import {buildArgs} from '../../utils/build.utils';
+} from '../../../constants/dev.constants';
+import {SMALL_TITLE} from '../../../help/help';
+import {type BuildArgs} from '../../../types/build';
+import {buildArgs} from '../../../utils/build.utils';
 import {buildJavaScript, buildTypeScript} from './build.javascript';
 import {buildRust} from './build.rust.services';
 

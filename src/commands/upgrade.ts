@@ -1,9 +1,9 @@
 import {nextArg} from '@junobuild/cli-tools';
 import {red} from 'kleur';
 import {logHelpUpgrade} from '../help/upgrade.help';
-import {upgradeMissionControl} from '../services/upgrade/upgrade.mission-control.services';
-import {upgradeOrbiters} from '../services/upgrade/upgrade.orbiter.services';
-import {upgradeSatellite} from '../services/upgrade/upgrade.satellite.services';
+import {upgradeMissionControl} from '../services/modules/upgrade/upgrade.mission-control.services';
+import {upgradeOrbiters} from '../services/modules/upgrade/upgrade.orbiter.services';
+import {upgradeSatellite} from '../services/modules/upgrade/upgrade.satellite.services';
 
 export const upgrade = async (args?: string[]) => {
   const target = nextArg({args, option: '-t'}) ?? nextArg({args, option: '--target'});

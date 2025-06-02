@@ -1,5 +1,5 @@
-import {getCliOrbiters} from '../../configs/cli.config';
-import type {AssetKey} from '../../types/asset-key';
+import {getCliOrbiters} from '../../../configs/cli.config';
+import type {AssetKey} from '../../../types/asset-key';
 import {createSnapshot, deleteSnapshot, restoreSnapshot} from './snapshot.services';
 
 export const createSnapshotOrbiter = async () => {

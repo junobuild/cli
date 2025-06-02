@@ -14,13 +14,13 @@ import {green, red, yellow} from 'kleur';
 import {readFile} from 'node:fs/promises';
 import ora from 'ora';
 import prompts from 'prompts';
-import {JUNO_CDN_URL} from '../../constants/constants';
-import type {AssetKey} from '../../types/asset-key';
-import type {UpgradeWasm} from '../../types/upgrade';
-import {toAssetKeys} from '../../utils/asset-key.utils';
-import {isNotHeadless} from '../../utils/process.utils';
-import {confirmAndExit} from '../../utils/prompt.utils';
-import {newerReleases as newerReleasesUtils} from '../../utils/upgrade.utils';
+import {JUNO_CDN_URL} from '../../../constants/constants';
+import type {AssetKey} from '../../../types/asset-key';
+import type {UpgradeWasm} from '../../../types/upgrade';
+import {toAssetKeys} from '../../../utils/asset-key.utils';
+import {isNotHeadless} from '../../../utils/process.utils';
+import {confirmAndExit} from '../../../utils/prompt.utils';
+import {newerReleases as newerReleasesUtils} from '../../../utils/upgrade.utils';
 import {assertUpgradeHash} from './upgrade-assert.services';
 
 const executeUpgradeWasm = async ({
