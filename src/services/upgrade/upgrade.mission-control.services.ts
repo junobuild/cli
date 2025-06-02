@@ -11,6 +11,7 @@ import {getCliMissionControl} from '../../configs/cli.config';
 import {MISSION_CONTROL_WASM_NAME} from '../../constants/constants';
 import type {UpgradeWasmModule} from '../../types/upgrade';
 import {NEW_CMD_LINE} from '../../utils/prompt.utils';
+import {readUpgradeOptions} from '../../utils/upgrade.utils';
 import {
   consoleUpgradeResult,
   selectVersion,
@@ -77,8 +78,7 @@ const updateMissionControlRelease = async ({
     return {success: false};
   }
 
-  const noSnapshot = hasArgs({args, options: ['-ns', '--no-snapshot']});
-  const preClearChunks = hasArgs({args, options: ['-cc', '--clear-chunks']});
+  const {noSnapshot, preClearChunks} = readUpgradeOptions(args);
 
   const upgradeMissionControlWasm = async (params: UpgradeWasmModule) => {
     await upgradeMissionControlAdmin({
@@ -110,8 +110,7 @@ const upgradeMissionControlCustom = async ({
     return {success: false};
   }
 
-  const noSnapshot = hasArgs({args, options: ['-ns', '--no-snapshot']});
-  const preClearChunks = hasArgs({args, options: ['-cc', '--clear-chunks']});
+  const {noSnapshot, preClearChunks} = readUpgradeOptions(args);
 
   const upgradeMissionControlWasm = async (params: UpgradeWasmModule) => {
     await upgradeMissionControlAdmin({

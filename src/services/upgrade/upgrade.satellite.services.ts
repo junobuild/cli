@@ -12,6 +12,7 @@ import {SATELLITE_WASM_NAME} from '../../constants/constants';
 import type {AssertWasmModule, UpgradeWasm, UpgradeWasmModule} from '../../types/upgrade';
 import {NEW_CMD_LINE} from '../../utils/prompt.utils';
 import {assertConfigAndLoadSatelliteContext, satelliteKey} from '../../utils/satellite.utils';
+import {readUpgradeOptions} from '../../utils/upgrade.utils';
 import {assertSatelliteBuildType} from './upgrade-assert.services';
 import {
   confirmReset,
@@ -65,8 +66,7 @@ const upgradeSatelliteCustom = async ({
     satellite
   });
 
-  const noSnapshot = hasArgs({args, options: ['-ns', '--no-snapshot']});
-  const preClearChunks = hasArgs({args, options: ['-cc', '--clear-chunks']});
+  const {noSnapshot, preClearChunks} = readUpgradeOptions(args);
 
   const upgrade = async (
     params: Pick<UpgradeWasm, 'upgrade' | 'reset' | 'assert'>
@@ -102,8 +102,7 @@ const upgradeSatelliteRelease = async ({
     return {success: false};
   }
 
-  const noSnapshot = hasArgs({args, options: ['-ns', '--no-snapshot']});
-  const preClearChunks = hasArgs({args, options: ['-cc', '--clear-chunks']});
+  const {noSnapshot, preClearChunks} = readUpgradeOptions(args);
 
   const upgrade = async (
     params: Pick<UpgradeWasm, 'upgrade' | 'reset' | 'assert'>

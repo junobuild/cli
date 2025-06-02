@@ -11,6 +11,7 @@ import {ORBITER_WASM_NAME} from '../../constants/constants';
 import type {UpgradeWasmModule} from '../../types/upgrade';
 import {NEW_CMD_LINE} from '../../utils/prompt.utils';
 import {orbiterKey} from '../../utils/satellite.utils';
+import {readUpgradeOptions} from '../../utils/upgrade.utils';
 import {
   confirmReset,
   consoleUpgradeResult,
@@ -71,8 +72,7 @@ const upgradeOrbiterCustom = async ({
 
   const reset = await confirmReset({args, assetKey: 'orbiter'});
 
-  const noSnapshot = hasArgs({args, options: ['-ns', '--no-snapshot']});
-  const preClearChunks = hasArgs({args, options: ['-cc', '--clear-chunks']});
+  const {noSnapshot, preClearChunks} = readUpgradeOptions(args);
 
   const upgradeOrbiterWasm = async (params: UpgradeWasmModule) => {
     await upgradeOrbiterAdmin({
@@ -117,8 +117,7 @@ const updateOrbiterRelease = async ({
 
   const reset = await confirmReset({args, assetKey: 'orbiter'});
 
-  const noSnapshot = hasArgs({args, options: ['-ns', '--no-snapshot']});
-  const preClearChunks = hasArgs({args, options: ['-cc', '--clear-chunks']});
+  const {noSnapshot, preClearChunks} = readUpgradeOptions(args);
 
   const upgradeOrbiterWasm = async (params: UpgradeWasmModule) => {
     await upgradeOrbiterAdmin({

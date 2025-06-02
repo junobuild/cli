@@ -1,5 +1,9 @@
 import {cyan, green, magenta, yellow} from 'kleur';
-import {CHANGES_REJECT_DESCRIPTION, OPTION_HASH, OPTION_KEEP_STAGED} from '../constants/help.constants';
+import {
+  CHANGES_REJECT_DESCRIPTION,
+  OPTION_HASH,
+  OPTION_KEEP_STAGED
+} from '../constants/help.constants';
 import {helpOutput} from './common.help';
 import {TITLE} from './help';
 

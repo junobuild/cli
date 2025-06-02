@@ -1,3 +1,4 @@
+import {hasArgs} from '@junobuild/cli-tools';
 import {compare} from 'semver';
 import {getReleasesMetadata} from '../rest/cdn.rest';
 import {type AssetKeys} from '../types/asset-key';
@@ -34,4 +35,13 @@ export const newerReleases = async ({
   } catch (_err: unknown) {
     return {result: undefined, error: "Cannot fetch new releases from Juno's CDN 😢."};
   }
+};
+
+export const readUpgradeOptions = (
+  args?: string[]
+): {noSnapshot: boolean; preClearChunks: boolean} => {
+  const noSnapshot = hasArgs({args, options: ['-ns', '--no-snapshot']});
+  const preClearChunks = hasArgs({args, options: ['-cc', '--clear-chunks']});
+
+  return {noSnapshot, preClearChunks};
 };
