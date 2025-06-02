@@ -15,6 +15,7 @@ import {
   DEVELOPER_PROJECT_SATELLITE_PATH,
   IC_WASM_MIN_VERSION,
   JUNO_PACKAGE_JSON_PATH,
+  SATELLITE_OUTPUT,
   TARGET_PATH
 } from '../../../constants/dev.constants';
 import type {BuildArgs} from '../../../types/build';
@@ -29,7 +30,6 @@ import {readPackageJson} from '../../../utils/pkg.utils';
 import {confirmAndExit} from '../../../utils/prompt.utils';
 
 const CARGO_RELEASE_DIR = join(process.cwd(), 'target', 'wasm32-unknown-unknown', 'release');
-const SATELLITE_OUTPUT = join(DEPLOY_LOCAL_REPLICA_PATH, 'satellite.wasm');
 const SATELLITE_PROJECT_NAME = 'satellite';
 
 export const buildRust = async ({path}: Pick<BuildArgs, 'path'> = {}) => {

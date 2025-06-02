@@ -1,5 +1,10 @@
 import {cyan, green, yellow} from 'kleur';
-import {DEPLOY_DESCRIPTION, OPTION_HELP, OPTION_KEEP_STAGED} from '../constants/help.constants';
+import {
+  DEPLOY_DESCRIPTION,
+  NOTE_KEEP_STAGED,
+  OPTION_HELP,
+  OPTION_KEEP_STAGED
+} from '../constants/help.constants';
 import {helpMode, helpOutput} from './common.help';
 import {TITLE} from './help';
 
@@ -15,7 +20,7 @@ Options:
     
 Notes:
 
-- The option ${yellow('--keep-staged')} only applies when ${yellow('--no-apply')} is NOT used (i.e. the change is applied immediately).`;
+- ${NOTE_KEEP_STAGED}`;
 
 const doc = `${DEPLOY_DESCRIPTION}
 
