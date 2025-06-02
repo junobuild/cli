@@ -1,8 +1,8 @@
 import {assertNonNullish} from '@dfinity/utils';
-import {junoConfigExist} from '../../configs/juno.config';
-import type {AssetKey} from '../../types/asset-key';
-import {consoleNoConfigFound} from '../../utils/msg.utils';
-import {assertConfigAndLoadSatelliteContext} from '../../utils/satellite.utils';
+import {junoConfigExist} from '../../../configs/juno.config';
+import type {AssetKey} from '../../../types/asset-key';
+import {consoleNoConfigFound} from '../../../utils/msg.utils';
+import {assertConfigAndLoadSatelliteContext} from '../../../utils/satellite.utils';
 import {createSnapshot, deleteSnapshot, restoreSnapshot} from './snapshot.services';
 
 export const createSnapshotSatellite = async (params: {args?: string[]}) => {

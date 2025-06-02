@@ -2,8 +2,8 @@ import {isNullish, nonNullish} from '@dfinity/utils';
 import {satelliteBuildType, type BuildType, type SatelliteParameters} from '@junobuild/admin';
 import {gunzipFile, isGzip} from '@junobuild/cli-tools';
 import {cyan, yellow} from 'kleur';
-import type {AssertWasmModule, UpgradeWasm} from '../../types/upgrade';
-import {NEW_CMD_LINE, confirmAndExit} from '../../utils/prompt.utils';
+import type {AssertWasmModule, UpgradeWasm} from '../../../types/upgrade';
+import {NEW_CMD_LINE, confirmAndExit} from '../../../utils/prompt.utils';
 
 const wasmBuildType = async ({wasmModule}: AssertWasmModule): Promise<BuildType | undefined> => {
   const buffer = Buffer.from(wasmModule);

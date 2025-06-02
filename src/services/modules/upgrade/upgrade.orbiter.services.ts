@@ -5,13 +5,13 @@ import {
 } from '@junobuild/admin';
 import {hasArgs, nextArg} from '@junobuild/cli-tools';
 import {cyan, red} from 'kleur';
-import {actorParameters} from '../../api/actor.api';
-import {getCliOrbiters} from '../../configs/cli.config';
-import {ORBITER_WASM_NAME} from '../../constants/constants';
-import type {UpgradeWasmModule} from '../../types/upgrade';
-import {NEW_CMD_LINE} from '../../utils/prompt.utils';
-import {orbiterKey} from '../../utils/satellite.utils';
-import {readUpgradeOptions} from '../../utils/upgrade.utils';
+import {actorParameters} from '../../../api/actor.api';
+import {getCliOrbiters} from '../../../configs/cli.config';
+import {ORBITER_WASM_NAME} from '../../../constants/constants';
+import type {UpgradeWasmModule} from '../../../types/upgrade';
+import {NEW_CMD_LINE} from '../../../utils/prompt.utils';
+import {orbiterKey} from '../../../utils/satellite.utils';
+import {readUpgradeOptions} from '../../../utils/upgrade.utils';
 import {
   confirmReset,
   consoleUpgradeResult,

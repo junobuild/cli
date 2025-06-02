@@ -1,9 +1,12 @@
 import {satelliteMemorySize, satelliteVersion} from '@junobuild/admin';
 import {yellow} from 'kleur';
 import {compare} from 'semver';
-import {MEMORY_HEAP_WARNING, MEMORY_SIZE_ENDPOINT_VERSION} from '../../constants/deploy.constants';
-import {NEW_CMD_LINE, confirmAndExit} from '../../utils/prompt.utils';
-import {assertConfigAndLoadSatelliteContext} from '../../utils/satellite.utils';
+import {
+  MEMORY_HEAP_WARNING,
+  MEMORY_SIZE_ENDPOINT_VERSION
+} from '../../../constants/deploy.constants';
+import {NEW_CMD_LINE, confirmAndExit} from '../../../utils/prompt.utils';
+import {assertConfigAndLoadSatelliteContext} from '../../../utils/satellite.utils';
 
 export const assertSatelliteMemorySize = async (args?: string[]) => {
   const {satellite, satelliteConfig} = await assertConfigAndLoadSatelliteContext(args);

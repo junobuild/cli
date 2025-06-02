@@ -11,8 +11,8 @@ import {postDeploy as cliPostDeploy, preDeploy as cliPreDeploy} from '@junobuild
 import {type Asset} from '@junobuild/core';
 import {red} from 'kleur';
 import {lstatSync} from 'node:fs';
-import type {SatelliteParametersWithId} from '../../types/satellite';
-import {assertConfigAndLoadSatelliteContext} from '../../utils/satellite.utils';
+import type {SatelliteParametersWithId} from '../../../types/satellite';
+import {assertConfigAndLoadSatelliteContext} from '../../../utils/satellite.utils';
 import {assertSatelliteMemorySize} from './deploy.assert.services';
 import {listAssets} from './deploy.list.services';
 

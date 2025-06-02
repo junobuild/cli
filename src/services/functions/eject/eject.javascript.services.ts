@@ -8,11 +8,11 @@ import {
   INDEX_TS,
   MJS_TEMPLATE_PATH,
   TS_TEMPLATE_PATH
-} from '../../constants/dev.constants';
-import {copyTemplateFile} from '../../utils/fs.utils';
-import {readPackageJson} from '../../utils/pkg.utils';
-import {detectPackageManager} from '../../utils/pm.utils';
-import {confirmAndExit} from '../../utils/prompt.utils';
+} from '../../../constants/dev.constants';
+import {copyTemplateFile} from '../../../utils/fs.utils';
+import {readPackageJson} from '../../../utils/pkg.utils';
+import {detectPackageManager} from '../../../utils/pm.utils';
+import {confirmAndExit} from '../../../utils/prompt.utils';
 
 export const ejectTypeScript = async () => {
   await eject({lang: 'ts'});

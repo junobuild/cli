@@ -12,12 +12,12 @@ import {
   INDEX_MJS,
   INDEX_TS,
   PACKAGE_JSON_PATH
-} from '../../constants/dev.constants';
-import type {BuildArgs, BuildLang} from '../../types/build';
-import {formatBytes, formatTime} from '../../utils/format.utils';
-import {readPackageJson} from '../../utils/pkg.utils';
-import {detectPackageManager} from '../../utils/pm.utils';
-import {confirmAndExit} from '../../utils/prompt.utils';
+} from '../../../constants/dev.constants';
+import type {BuildArgs, BuildLang} from '../../../types/build';
+import {formatBytes, formatTime} from '../../../utils/format.utils';
+import {readPackageJson} from '../../../utils/pkg.utils';
+import {detectPackageManager} from '../../../utils/pm.utils';
+import {confirmAndExit} from '../../../utils/prompt.utils';
 
 export const buildTypeScript = async ({
   path,

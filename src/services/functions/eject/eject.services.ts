@@ -2,7 +2,7 @@ import {notEmptyString} from '@dfinity/utils';
 import {assertAnswerCtrlC, nextArg} from '@junobuild/cli-tools';
 import {yellow} from 'kleur';
 import prompts from 'prompts';
-import {DEVELOPER_PROJECT_SATELLITE_PATH} from '../../constants/dev.constants';
+import {DEVELOPER_PROJECT_SATELLITE_PATH} from '../../../constants/dev.constants';
 import {ejectJavaScript, ejectTypeScript} from './eject.javascript.services';
 import {ejectRust} from './eject.rust.services';
 

@@ -2,8 +2,8 @@ import {deleteAssets, listCustomDomains, setCustomDomains} from '@junobuild/admi
 import {deleteAsset} from '@junobuild/core';
 import {green} from 'kleur';
 import ora from 'ora';
-import {DAPP_COLLECTION} from '../constants/constants';
-import {assertConfigAndLoadSatelliteContext} from '../utils/satellite.utils';
+import {DAPP_COLLECTION} from '../../constants/constants';
+import {assertConfigAndLoadSatelliteContext} from '../../utils/satellite.utils';
 
 export const clear = async (args?: string[]) => {
   const {satellite} = await assertConfigAndLoadSatelliteContext(args);

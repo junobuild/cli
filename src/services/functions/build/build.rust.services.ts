@@ -8,7 +8,7 @@ import {lstat, mkdir, readFile, rename, writeFile} from 'node:fs/promises';
 import {join, relative} from 'node:path';
 import ora, {type Ora} from 'ora';
 import {compare, minVersion, satisfies} from 'semver';
-import {detectJunoDevConfigType} from '../../configs/juno.dev.config';
+import {detectJunoDevConfigType} from '../../../configs/juno.dev.config';
 import {
   DEPLOY_LOCAL_REPLICA_PATH,
   DEVELOPER_PROJECT_SATELLITE_DECLARATIONS_PATH,
@@ -16,13 +16,17 @@ import {
   IC_WASM_MIN_VERSION,
   JUNO_PACKAGE_JSON_PATH,
   TARGET_PATH
-} from '../../constants/dev.constants';
-import type {BuildArgs} from '../../types/build';
-import {readSatelliteDid} from '../../utils/did.utils';
-import {checkCargoBinInstalled, checkIcWasmVersion, checkRustVersion} from '../../utils/env.utils';
-import {formatBytes, formatTime} from '../../utils/format.utils';
-import {readPackageJson} from '../../utils/pkg.utils';
-import {confirmAndExit} from '../../utils/prompt.utils';
+} from '../../../constants/dev.constants';
+import type {BuildArgs} from '../../../types/build';
+import {readSatelliteDid} from '../../../utils/did.utils';
+import {
+  checkCargoBinInstalled,
+  checkIcWasmVersion,
+  checkRustVersion
+} from '../../../utils/env.utils';
+import {formatBytes, formatTime} from '../../../utils/format.utils';
+import {readPackageJson} from '../../../utils/pkg.utils';
+import {confirmAndExit} from '../../../utils/prompt.utils';
 
 const CARGO_RELEASE_DIR = join(process.cwd(), 'target', 'wasm32-unknown-unknown', 'release');
 const SATELLITE_OUTPUT = join(DEPLOY_LOCAL_REPLICA_PATH, 'satellite.wasm');

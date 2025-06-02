@@ -1,8 +1,8 @@
 import {red} from 'kleur';
 import {logHelpDev} from '../help/dev.help';
 import {logHelpDevStart} from '../help/dev.start.help';
-import {stop} from '../services/start/docker.services';
-import {start} from '../services/start/start.services';
+import {stop} from '../services/dev/start/docker.services';
+import {start} from '../services/dev/start/start.services';
 
 export const dev = async (args?: string[]) => {
   const [subCommand] = args ?? [];

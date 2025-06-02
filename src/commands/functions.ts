@@ -3,8 +3,8 @@ import {logHelpFunctionsBuild} from '../help/functions.build.help';
 import {logHelpFunctionsEject} from '../help/functions.eject.help';
 import {logHelpFunctions} from '../help/functions.help';
 import {logHelpFunctionsUpgrade} from '../help/functions.upgrade.help';
-import {build} from '../services/build/build.services';
-import {eject} from '../services/eject/eject.services';
+import {build} from '../services/functions/build/build.services';
+import {eject} from '../services/functions/eject/eject.services';
 
 export const functions = async (args?: string[]) => {
   const [subCommand] = args ?? [];

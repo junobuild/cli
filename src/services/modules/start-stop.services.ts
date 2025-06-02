@@ -2,11 +2,11 @@ import {Principal} from '@dfinity/principal';
 import {isNullish} from '@dfinity/utils';
 import {cyan, red} from 'kleur';
 import ora from 'ora';
-import {canisterStart, canisterStop} from '../api/ic.api';
-import {getCliMissionControl, getCliOrbiters} from '../configs/cli.config';
-import type {AssetKey} from '../types/asset-key';
-import type {StartStopAction} from '../types/start-stop';
-import {assertConfigAndLoadSatelliteContext} from '../utils/satellite.utils';
+import {canisterStart, canisterStop} from '../../api/ic.api';
+import {getCliMissionControl, getCliOrbiters} from '../../configs/cli.config';
+import type {AssetKey} from '../../types/asset-key';
+import type {StartStopAction} from '../../types/start-stop';
+import {assertConfigAndLoadSatelliteContext} from '../../utils/satellite.utils';
 
 export const startStopMissionControl = async ({
   action

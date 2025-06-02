@@ -6,17 +6,17 @@ import {
   createSnapshotMissionControl,
   deleteSnapshotMissionControl,
   restoreSnapshotMissionControl
-} from '../services/snapshot/snapshot.mission-control.services';
+} from '../services/modules/snapshot/snapshot.mission-control.services';
 import {
   createSnapshotOrbiter,
   deleteSnapshotOrbiter,
   restoreSnapshotOrbiter
-} from '../services/snapshot/snapshot.orbiter.services';
+} from '../services/modules/snapshot/snapshot.orbiter.services';
 import {
   createSnapshotSatellite,
   deleteSnapshotSatellite,
   restoreSnapshotSatellite
-} from '../services/snapshot/snapshot.satellite.services';
+} from '../services/modules/snapshot/snapshot.satellite.services';
 
 export const snapshot = async (args?: string[]) => {
   const [subCommand] = args ?? [];
