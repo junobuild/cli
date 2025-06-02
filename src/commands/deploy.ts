@@ -38,7 +38,7 @@ export const deploy = async (args?: string[]) => {
 };
 
 const deployWithProposal = async ({args, clearOption}: {args?: string[]; clearOption: boolean}) => {
-  const noCommit = hasArgs({args, options: ['-n', '--no-apply']});
+  const noCommit = hasArgs({args, options: ['-na', '--no-apply']});
 
   const deployFn = async ({
     deploy,
