@@ -25,6 +25,7 @@ export const WHOAMI_DESCRIPTION =
 
 export const DEV_START_DESCRIPTION = 'Start a local Internet Computer network in a container.';
 
+export const FUNCTIONS_UPGRADE_DESCRIPTION = 'Upgrade your serverless functions.';
 export const FUNCTIONS_BUILD_DESCRIPTION = 'Build your serverless functions.';
 export const FUNCTIONS_EJECT_DESCRIPTION =
   'Generate the required files to begin developing serverless functions in your project.';

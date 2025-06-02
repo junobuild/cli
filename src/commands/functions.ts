@@ -2,6 +2,7 @@ import {red} from 'kleur';
 import {logHelpFunctionsBuild} from '../help/functions.build.help';
 import {logHelpFunctionsEject} from '../help/functions.eject.help';
 import {logHelpFunctions} from '../help/functions.help';
+import {logHelpFunctionsUpgrade} from '../help/functions.upgrade.help';
 import {build} from '../services/build/build.services';
 import {eject} from '../services/eject/eject.services';
 
@@ -30,6 +31,9 @@ export const helpFunctions = (args?: string[]) => {
       break;
     case 'eject':
       logHelpFunctionsEject(args);
+      break;
+    case 'upgrade':
+      logHelpFunctionsUpgrade(args);
       break;
     default:
       logHelpFunctions(args);
