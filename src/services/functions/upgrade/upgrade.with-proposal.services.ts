@@ -8,6 +8,7 @@ import {
   type UploadFileStorageWithProposal
 } from '@junobuild/cli-tools';
 import {red} from 'kleur';
+import {dirname} from 'node:path';
 import {CDN_RELEASES_FULL_PATH} from '../../../constants/functions.constants';
 import {type UpgradeFunctionsParams} from '../../../types/functions';
 import type {SatelliteParametersWithId} from '../../../types/satellite';
@@ -123,11 +124,14 @@ const uploadWasmWithProposal = async ({
     await assertSatelliteMemorySize(args);
   };
 
+  const sourceAbsolutePath = dirname(filePath);
+
   return await deploySatelliteWasmWithProposal({
     deploy: {
       uploadFile,
       fullPath,
       filePath,
+      sourceAbsolutePath,
       token: crypto.randomUUID(),
       assertMemory
     },
