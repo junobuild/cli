@@ -10,7 +10,7 @@ import {
 import {red} from 'kleur';
 import {type UpgradeFunctionsParams} from '../../../types/functions';
 import type {SatelliteParametersWithId} from '../../../types/satellite';
-import {readCustomSectionJunoPackage} from '../../../utils/wasm.utils';
+import {readWasmMetadata} from '../../../utils/wasm.utils';
 import {assertSatelliteMemorySize} from '../../assets/deploy/deploy.assert.services';
 import {type UploadFileFnParamsWithProposal} from '../../assets/deploy/deploy.execute.services';
 import {clearProposalStagedAssets} from '../../changes/changes.clear.services';
@@ -30,18 +30,21 @@ const deployWasmWithProposal = async ({
   args,
   src,
   satellite
-}: UpgradeFunctionsParams): Promise<DeployResultWithProposal> => {
-  const junoPackage = await readCustomSectionJunoPackage({path: src});
+}: UpgradeFunctionsParams): Promise<DeployResultWithProposal | {result: 'error'}> => {
+  const {junoPackage, gzipped} = await readWasmMetadata({path: src});
 
   if (isNullish(junoPackage)) {
     console.log(red('No Juno Package metadata detected.'));
     console.log('Are you using the latest libraries and tooling?');
-    process.exit(1);
+    return {result: 'error'};
   }
 
   const {version} = junoPackage;
 
-  // TODO: isGzip
+  if (!gzipped) {
+    console.log(red('The submitted WASM file must be gzipped.'));
+    return {result: 'error'};
+  }
 
   const fullPath = `/_juno/releases/${crypto.randomUUID()}/satellite-v${version}.wasm.gz`;
 
