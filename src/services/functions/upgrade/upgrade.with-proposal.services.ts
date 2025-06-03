@@ -8,6 +8,7 @@ import {
   type UploadFileStorageWithProposal
 } from '@junobuild/cli-tools';
 import {red} from 'kleur';
+import {CDN_RELEASES_FULL_PATH} from '../../../constants/functions.constants';
 import {type UpgradeFunctionsParams} from '../../../types/functions';
 import type {SatelliteParametersWithId} from '../../../types/satellite';
 import {readWasmMetadata} from '../../../utils/wasm.utils';
@@ -46,7 +47,7 @@ const deployWasmWithProposal = async ({
     return {result: 'error'};
   }
 
-  const fullPath = `/_juno/releases/${crypto.randomUUID()}/satellite-v${version}.wasm.gz`;
+  const fullPath = `${CDN_RELEASES_FULL_PATH}/satellite-v${version}-${crypto.randomUUID()}.wasm.gz`;
 
   const result = await uploadWasmWithProposal({
     satellite,
