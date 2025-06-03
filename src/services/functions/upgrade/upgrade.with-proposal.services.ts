@@ -85,26 +85,22 @@ const uploadWasmWithProposal = async ({
   const noCommit = hasArgs({args, options: ['-na', '--no-apply']});
 
   const uploadFileFn = async ({
-    filename,
     fullPath: storagePath,
-    data,
-    collection,
     headers = [],
-    encoding,
     satellite,
-    proposalId
+    proposalId,
+    data,
+    ...restAsset
   }: UploadFileFnParamsWithProposal) => {
     await uploadAssetWithProposal({
       cdn: {satellite},
       proposalId,
       asset: {
-        filename,
-        fullPath: storagePath ?? fullPath,
+        ...restAsset,
         // @ts-expect-error type incompatibility NodeJS vs bundle
         data,
-        collection,
+        fullPath: storagePath ?? fullPath,
         headers,
-        encoding
       }
     });
   };
