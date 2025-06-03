@@ -1,31 +1,9 @@
-import {isNullish, nonNullish} from '@dfinity/utils';
-import {satelliteBuildType, type BuildType, type SatelliteParameters} from '@junobuild/admin';
-import {gunzipFile, isGzip} from '@junobuild/cli-tools';
+import {isNullish} from '@dfinity/utils';
+import {satelliteBuildType, type SatelliteParameters} from '@junobuild/admin';
 import {cyan, yellow} from 'kleur';
 import type {AssertWasmModule, UpgradeWasm} from '../../../types/upgrade';
 import {NEW_CMD_LINE, confirmAndExit} from '../../../utils/prompt.utils';
-
-const wasmBuildType = async ({wasmModule}: AssertWasmModule): Promise<BuildType | undefined> => {
-  const buffer = Buffer.from(wasmModule);
-
-  const wasm = isGzip(buffer)
-    ? await gunzipFile({
-        source: buffer
-      })
-    : buffer;
-
-  const mod = new WebAssembly.Module(wasm);
-
-  const metadata = WebAssembly.Module.customSections(mod, 'icp:public juno:build');
-
-  const decoder = new TextDecoder();
-  const buildType = decoder.decode(metadata[0]);
-
-  return nonNullish(buildType) && ['stock', 'extended'].includes(buildType)
-    ? // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
-      (buildType as BuildType)
-    : undefined;
-};
+import {readWasmModuleMetadata} from '../../../utils/wasm.utils';
 
 export const assertSatelliteBuildType = async ({
   satellite,
@@ -36,8 +14,8 @@ export const assertSatelliteBuildType = async ({
   const hideAgentJsConsoleWarn = globalThis.console.warn;
   globalThis.console.warn = (): null => null;
 
-  const [wasmTypeResult, satelliteTypeResult] = await Promise.allSettled([
-    wasmBuildType({wasmModule}),
+  const [wasmMetadataResult, satelliteTypeResult] = await Promise.allSettled([
+    readWasmModuleMetadata({wasmModule}),
     satelliteBuildType({
       satellite
     })
@@ -46,7 +24,7 @@ export const assertSatelliteBuildType = async ({
   // Redo console.warn
   globalThis.console.warn = hideAgentJsConsoleWarn;
 
-  if (wasmTypeResult.status === 'rejected') {
+  if (wasmMetadataResult.status === 'rejected') {
     throw new Error(`The custom sections of the WASM module you try to upgrade cannot be read.`);
   }
 
@@ -55,8 +33,10 @@ export const assertSatelliteBuildType = async ({
     return;
   }
 
-  const {value: wasmType} = wasmTypeResult;
+  const {value: wasmMetadata} = wasmMetadataResult;
   const {value: satelliteType} = satelliteTypeResult;
+
+  const {buildType: wasmType} = wasmMetadata;
 
   if (satelliteType === 'extended' && (wasmType === 'stock' || isNullish(wasmType))) {
     await confirmAndExit(

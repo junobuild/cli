@@ -11,7 +11,7 @@ import {red} from 'kleur';
 import {CDN_RELEASES_FULL_PATH} from '../../../constants/functions.constants';
 import {type UpgradeFunctionsParams} from '../../../types/functions';
 import type {SatelliteParametersWithId} from '../../../types/satellite';
-import {readWasmMetadata} from '../../../utils/wasm.utils';
+import {readWasmFileMetadata} from '../../../utils/wasm.utils';
 import {assertSatelliteMemorySize} from '../../assets/deploy/deploy.assert.services';
 import {type UploadFileFnParamsWithProposal} from '../../assets/deploy/deploy.execute.services';
 import {clearProposalStagedAssets} from '../../changes/changes.clear.services';
@@ -34,7 +34,7 @@ const deployWasmWithProposal = async ({
   src,
   satellite
 }: UpgradeFunctionsParams): Promise<DeployResultWithProposal | {result: 'error'}> => {
-  const {junoPackage, gzipped} = await readWasmMetadata({path: src});
+  const {junoPackage, gzipped} = await readWasmFileMetadata({path: src});
 
   if (isNullish(junoPackage)) {
     console.log(red('No Juno Package metadata detected.'));
