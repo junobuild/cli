@@ -102,7 +102,7 @@ const uploadWasmWithProposal = async ({
         fullPath: storagePath ?? fullPath,
         headers,
         token: crypto.randomUUID(),
-        description: `change=${Number(proposalId)};version=${version}`
+        description: `change=${proposalId};version=${version}`
       }
     });
   };
