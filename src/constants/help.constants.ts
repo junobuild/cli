@@ -6,7 +6,7 @@ export const CLEAR_DESCRIPTION =
 export const CONFIG_DESCRIPTION = 'Apply configuration to satellite.';
 export const DEPLOY_DESCRIPTION = 'Deploy your app to your satellite.';
 export const DEV_DESCRIPTION =
-  'Handle local development tasks like starting or stopping a local Internet Computer instance.';
+  'Handle developer tasks like starting/stopping a local network or building functions.';
 export const FUNCTIONS_DESCRIPTION = "Build and upgrade your satellite's serverless functions.";
 export const INIT_DESCRIPTION = 'Set up your project.';
 export const LOGIN_DESCRIPTION =
