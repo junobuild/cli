@@ -26,7 +26,7 @@ export const clearProposalStagedAssets = async ({
 
     await deleteProposalAssets({
       cdn: {satellite},
-      proposalIds: [proposalId]
+      proposal_ids: [proposalId]
     });
 
     spinner.stop();
