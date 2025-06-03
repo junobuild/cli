@@ -1,3 +1,4 @@
+import {isNullish} from '@dfinity/utils';
 import {uploadAssetWithProposal} from '@junobuild/cdn';
 import {
   type DeployResultWithProposal,
@@ -6,6 +7,7 @@ import {
   hasArgs,
   type UploadFileStorageWithProposal
 } from '@junobuild/cli-tools';
+import {red} from 'kleur';
 import {type UpgradeFunctionsParams} from '../../../types/functions';
 import type {SatelliteParametersWithId} from '../../../types/satellite';
 import {readCustomSectionJunoPackage} from '../../../utils/wasm.utils';
@@ -29,7 +31,15 @@ const deployWasmWithProposal = async ({
   src,
   satellite
 }: UpgradeFunctionsParams): Promise<DeployResultWithProposal> => {
-  const {version} = await readCustomSectionJunoPackage({path: src});
+  const junoPackage = await readCustomSectionJunoPackage({path: src});
+
+  if (isNullish(junoPackage)) {
+    console.log(red('No Juno Package metadata detected.'));
+    console.log('Are you using the latest libraries and tooling?');
+    process.exit(1);
+  }
+
+  const {version} = junoPackage;
 
   // TODO: isGzip
 

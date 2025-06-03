@@ -1,3 +1,4 @@
+import {isNullish, nonNullish} from '@dfinity/utils';
 import {gunzipFile, isGzip} from '@junobuild/cli-tools';
 import type {JunoPackage} from '@junobuild/config';
 import {readFile} from 'node:fs/promises';
@@ -7,8 +8,13 @@ export const readCustomSectionJunoPackage = async ({
   path
 }: {
   path: string;
-}): Promise<JunoPackage> => {
+}): Promise<JunoPackage | undefined> => {
   const section = await customSection({path, sectionName: 'icp:public juno:package'});
+
+  if (isNullish(section)) {
+    return undefined;
+  }
+
   return JSON.parse(section);
 };
 
@@ -18,7 +24,7 @@ const customSection = async ({
 }: {
   path: string;
   sectionName: string;
-}): Promise<string> => {
+}): Promise<string | undefined> => {
   const buffer = await readFile(path);
 
   const wasm = isGzip(buffer)
@@ -32,5 +38,6 @@ const customSection = async ({
   const pkgSections = WebAssembly.Module.customSections(wasmModule, sectionName);
 
   const [pkgBuffer] = pkgSections;
-  return uint8ArrayToString(pkgBuffer);
+
+  return nonNullish(pkgBuffer) ? uint8ArrayToString(pkgBuffer) : undefined;
 };
