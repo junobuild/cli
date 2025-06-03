@@ -50,7 +50,7 @@ const deployWasmWithProposal = async ({
     return {result: 'error'};
   }
 
-  const fullPath = `${CDN_RELEASES_FULL_PATH}/satellite-v${version}-${crypto.randomUUID()}.wasm.gz`;
+  const fullPath = `${CDN_RELEASES_FULL_PATH}/satellite-${crypto.randomUUID()}.wasm.gz`;
 
   const result = await uploadWasmWithProposal({
     satellite,
@@ -100,7 +100,9 @@ const uploadWasmWithProposal = async ({
         // @ts-expect-error type incompatibility NodeJS vs bundle
         data,
         fullPath: storagePath ?? fullPath,
-        headers
+        headers,
+        token: crypto.randomUUID(),
+        description: `change=${Number(proposalId)};version=${version}`
       }
     });
   };
@@ -128,7 +130,6 @@ const uploadWasmWithProposal = async ({
       fullPath,
       filePath,
       sourceAbsolutePath,
-      token: crypto.randomUUID(),
       assertMemory
     },
     proposal: {
