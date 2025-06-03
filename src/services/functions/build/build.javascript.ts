@@ -1,5 +1,5 @@
 import {isEmptyString, notEmptyString} from '@dfinity/utils';
-import {buildEsm, execute, type PackageJson} from '@junobuild/cli-tools';
+import {buildEsm, execute, formatBytes, type PackageJson} from '@junobuild/cli-tools';
 import type {Metafile} from 'esbuild';
 import {green, magenta, red, yellow} from 'kleur';
 import {existsSync} from 'node:fs';
@@ -14,7 +14,7 @@ import {
   PACKAGE_JSON_PATH
 } from '../../../constants/dev.constants';
 import type {BuildArgs, BuildLang} from '../../../types/build';
-import {formatBytes, formatTime} from '../../../utils/format.utils';
+import {formatTime} from '../../../utils/format.utils';
 import {readPackageJson} from '../../../utils/pkg.utils';
 import {detectPackageManager} from '../../../utils/pm.utils';
 import {confirmAndExit} from '../../../utils/prompt.utils';

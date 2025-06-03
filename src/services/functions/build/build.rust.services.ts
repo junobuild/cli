@@ -1,5 +1,5 @@
 import {isEmptyString, isNullish, nonNullish} from '@dfinity/utils';
-import {execute, gzipFile, spawn} from '@junobuild/cli-tools';
+import {execute, formatBytes, gzipFile, spawn} from '@junobuild/cli-tools';
 import {type JunoPackage} from '@junobuild/config';
 import {generateApi} from '@junobuild/did-tools';
 import {magenta, red, yellow} from 'kleur';
@@ -25,7 +25,7 @@ import {
   checkIcWasmVersion,
   checkRustVersion
 } from '../../../utils/env.utils';
-import {formatBytes, formatTime} from '../../../utils/format.utils';
+import {formatTime} from '../../../utils/format.utils';
 import {readPackageJson} from '../../../utils/pkg.utils';
 import {confirmAndExit} from '../../../utils/prompt.utils';
 
