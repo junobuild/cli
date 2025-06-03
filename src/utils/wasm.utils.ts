@@ -93,7 +93,9 @@ const readCustomSectionJunoPackage = async ({
     return undefined;
   }
 
-  const {success, data} = JunoPackageSchema.safeParse(section);
+  const pkg = JSON.parse(section);
+
+  const {success, data} = JunoPackageSchema.safeParse(pkg);
   return success ? data : undefined;
 };
 
