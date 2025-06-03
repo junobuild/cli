@@ -24,6 +24,8 @@ export const upgradeFunctionsWithProposal = async (params: UpgradeFunctionsParam
     return;
   }
 
+  console.log('');
+
   await upgradeSatelliteWithSrc(params);
 };
 
