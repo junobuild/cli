@@ -98,7 +98,7 @@ const executeApplyChanges = async ({
 
     spinner.stop();
 
-    console.log(`\n🎯 Change ID ${proposalId} applied.`);
+    console.log(`🎯 Change ID ${proposalId} applied.`);
   } catch (err: unknown) {
     spinner.stop();
 

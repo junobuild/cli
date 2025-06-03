@@ -43,7 +43,7 @@ const executeRejectChanges = async ({
 
     spinner.stop();
 
-    console.log(`\n🚫 Change ID ${proposalId} rejected.`);
+    console.log(`🚫 Change ID ${proposalId} rejected.`);
   } catch (err: unknown) {
     spinner.stop();
 
