@@ -25,6 +25,7 @@ export const WHOAMI_DESCRIPTION =
 
 export const DEV_START_DESCRIPTION = 'Start a local Internet Computer network in a container.';
 
+export const FUNCTIONS_UPGRADE_DESCRIPTION = 'Upgrade your serverless functions.';
 export const FUNCTIONS_BUILD_DESCRIPTION = 'Build your serverless functions.';
 export const FUNCTIONS_EJECT_DESCRIPTION =
   'Generate the required files to begin developing serverless functions in your project.';
@@ -41,3 +42,9 @@ export const CHANGES_REJECT_DESCRIPTION = 'Reject a change.';
 export const OPTION_KEEP_STAGED = `${yellow('-k, --keep-staged')}     Keep staged assets in memory after applying the change.`;
 export const OPTION_HASH = `${yellow('-s, --hash')}            The expected hash of all included changes (for verification).`;
 export const OPTION_HELP = `${yellow('-h, --help')}            Output usage information.`;
+
+export const OPTIONS_UPGRADE = `${yellow('-r, --reset')}           Reset to the initial state.
+  ${yellow('-cc, --clear-chunks')}   Clear any previously uploaded WASM chunks (applies if the WASM size is greater than 2MB).
+  ${yellow('-ns, --no-snapshot')}    Skip creating a snapshot before upgrading.`;
+
+export const NOTE_KEEP_STAGED = `The option ${yellow('--keep-staged')} only applies when ${yellow('--no-apply')} is NOT used (i.e. the change is applied immediately).`;

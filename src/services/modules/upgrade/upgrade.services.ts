@@ -73,7 +73,7 @@ const executeUpgradeWasm = async ({
     spinner.stop();
 
     if (err instanceof UpgradeCodeUnchangedError) {
-      console.log(`${yellow(err.message)}`);
+      console.log(yellow(err.message));
       return;
     }
 

@@ -56,11 +56,26 @@ const upgradeSatelliteCustom = async ({
 }): Promise<{success: boolean; err?: unknown}> => {
   const src = nextArg({args, option: '-s'}) ?? nextArg({args, option: '--src'});
 
-  if (src === undefined) {
+  if (isNullish(src)) {
     console.log(red('No source file provided.'));
     return {success: false};
   }
 
+  return await upgradeSatelliteWithSrc({
+    satellite,
+    src
+  });
+};
+
+export const upgradeSatelliteWithSrc = async ({
+  satellite,
+  src,
+  args
+}: {
+  satellite: SatelliteParameters;
+  src: string;
+  args?: string[];
+}): Promise<{success: boolean; err?: unknown}> => {
   // TODO: option to be removed
   const currentVersion = await satelliteVersion({
     satellite

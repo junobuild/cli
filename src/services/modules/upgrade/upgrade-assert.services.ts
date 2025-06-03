@@ -54,6 +54,6 @@ export const assertUpgradeHash = async ({
   reset
 }: Required<Pick<UpgradeWasm, 'hash' | 'reset'>>) => {
   await confirmAndExit(
-    `The Wasm hash to be applied for the upgrade is ${cyan(hash)}.${NEW_CMD_LINE}Start upgrade${reset ? ' and reset' : ''} now?`
+    `The Wasm hash for the upgrade is ${cyan(hash)}.${NEW_CMD_LINE}Start upgrade${reset ? ' and reset' : ''} now?`
   );
 };
