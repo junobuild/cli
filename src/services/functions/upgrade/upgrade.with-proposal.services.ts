@@ -84,6 +84,7 @@ const uploadWasmWithProposal = async ({
   FilePaths & {version: string}): Promise<DeployResultWithProposal> => {
   const noCommit = hasArgs({args, options: ['-na', '--no-apply']});
 
+
   const uploadFileFn = async ({
     fullPath: storagePath,
     headers = [],
