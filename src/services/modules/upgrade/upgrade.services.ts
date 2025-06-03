@@ -36,6 +36,8 @@ const executeUpgradeWasm = async ({
     await assertUpgradeHash({hash, reset});
   }
 
+  console.log('');
+
   const spinner = ora().start();
 
   const onProgress = ({step}: UpgradeCodeProgress) => {
@@ -63,8 +65,19 @@ const executeUpgradeWasm = async ({
       wasmModule: wasm,
       onProgress
     });
-  } finally {
+
     spinner.stop();
+
+    console.log('🚀 All systems go. Upgrade complete!');
+  } catch (err: unknown) {
+    spinner.stop();
+
+    if (err instanceof UpgradeCodeUnchangedError) {
+      console.log(`${yellow(err.message)}`);
+      return;
+    }
+
+    throw err;
   }
 };
 
