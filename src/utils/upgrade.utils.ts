@@ -1,3 +1,5 @@
+import {isNullish} from '@dfinity/utils';
+import {UpgradeCodeUnchangedError} from '@junobuild/admin';
 import {hasArgs} from '@junobuild/cli-tools';
 import {compare} from 'semver';
 import {getReleasesMetadata} from '../rest/cdn.rest';
@@ -44,4 +46,30 @@ export const readUpgradeOptions = (
   const preClearChunks = hasArgs({args, options: ['--clear-chunks']});
 
   return {noSnapshot, preClearChunks};
+};
+
+export const logUpgradeResult = ({
+  success,
+  err,
+  successMessage
+}: {
+  successMessage: string;
+  success: boolean;
+  err?: unknown;
+}) => {
+  if (success) {
+    console.log(`✅ ${successMessage}`);
+    return;
+  }
+
+  if (isNullish(err)) {
+    return;
+  }
+
+  if (err instanceof UpgradeCodeUnchangedError) {
+    console.log(`🙅‍♂️ ${err.message}`);
+    return;
+  }
+
+  throw err;
 };

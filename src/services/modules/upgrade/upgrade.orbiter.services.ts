@@ -11,12 +11,11 @@ import {ORBITER_WASM_NAME} from '../../../constants/constants';
 import type {UpgradeWasmModule} from '../../../types/upgrade';
 import {NEW_CMD_LINE} from '../../../utils/prompt.utils';
 import {orbiterKey} from '../../../utils/satellite.utils';
-import {readUpgradeOptions} from '../../../utils/upgrade.utils';
+import {logUpgradeResult, readUpgradeOptions} from '../../../utils/upgrade.utils';
 import {
   confirmReset,
-  consoleUpgradeResult,
   selectVersion,
-  upgradeWasmCdn,
+  upgradeWasmJunoCdn,
   upgradeWasmLocal
 } from './upgrade.services';
 
@@ -35,20 +34,20 @@ export const upgradeOrbiters = async (args?: string[]) => {
       ...(await actorParameters())
     };
 
-    const consoleResult = (result: {success: boolean; err?: unknown}) => {
-      consoleUpgradeResult({...result, successMessage: 'Orbiter successfully upgraded.'});
+    const logResult = (result: {success: boolean; err?: unknown}) => {
+      logUpgradeResult({...result, successMessage: 'Orbiter successfully upgraded.'});
     };
 
     if (hasArgs({args, options: ['-s', '--src']})) {
       const result = await upgradeOrbiterCustom({args, orbiterParameters});
 
-      consoleResult(result);
+      logResult(result);
       return;
     }
 
     const result = await updateOrbiterRelease(orbiterParameters);
 
-    consoleResult(result);
+    logResult(result);
   };
 
   for (const orbiter of authOrbiters) {
@@ -129,7 +128,7 @@ const updateOrbiterRelease = async ({
     });
   };
 
-  return await upgradeWasmCdn({
+  return await upgradeWasmJunoCdn({
     version,
     assetKey: 'orbiter',
     upgrade: upgradeOrbiterWasm,
