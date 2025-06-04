@@ -1,8 +1,10 @@
 import {isEmptyString} from '@dfinity/utils';
 import {assertAnswerCtrlC, nextArg} from '@junobuild/cli-tools';
+import {Asset} from '@junobuild/core';
 import prompts from 'prompts';
 import {type SatelliteParametersWithId} from '../../../types/satellite';
 import {defaultSatelliteDomain} from '../../../utils/domain.utils';
+import {listCdnAssets} from './upgrade.cdn.list.services';
 
 export const upgradeWithCdn = async ({
   args,
@@ -16,6 +18,11 @@ export const upgradeWithCdn = async ({
   if (isEmptyString(cdnPath)) {
   }
 };
+
+
+
+const collectCdnAssets = (params: {satellite: SatelliteParametersWithId}): Promise<Asset[]> =>
+  listCdnAssets(params);
 
 const promptCdnFullPath = async ({
   satellite

@@ -4,14 +4,14 @@ import {DEPLOY_LIST_ASSETS_PAGINATION} from '../../../constants/deploy.constants
 import type {SatelliteParametersWithId} from '../../../types/satellite';
 import {last} from '../../../utils/array.utils';
 
-const listCdnAssets = async ({
+export const listCdnAssets = async ({
   startAfter,
   satellite,
-  traverseAll
+  traverseAll = false
 }: {
   startAfter?: string;
   satellite: SatelliteParametersWithId;
-  traverseAll: boolean;
+  traverseAll?: boolean;
 }): Promise<Asset[]> => {
   const {items, items_length, matches_length} = await listAssets({
     collection: COLLECTION_CDN,
