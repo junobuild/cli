@@ -5,30 +5,38 @@ import {
   deploySatelliteWasmWithProposal,
   type FilePaths,
   hasArgs,
+  nextArg,
   type UploadFileStorageWithProposal
 } from '@junobuild/cli-tools';
 import {red} from 'kleur';
 import {dirname} from 'node:path';
-import {CDN_RELEASES_FULL_PATH} from '../../../constants/functions.constants';
-import {type UpgradeFunctionsParams} from '../../../types/functions';
-import type {SatelliteParametersWithId} from '../../../types/satellite';
-import {readWasmFileMetadata} from '../../../utils/wasm.utils';
-import {assertSatelliteMemorySize} from '../../assets/deploy/deploy.assert.services';
-import {type UploadFileFnParamsWithProposal} from '../../assets/deploy/deploy.execute.services';
-import {clearProposalStagedAssets} from '../../changes/changes.clear.services';
-import {upgradeSatelliteWithSrc} from '../../modules/upgrade/upgrade.satellite.services';
+import {SATELLITE_OUTPUT} from '../../constants/dev.constants';
+import {CDN_RELEASES_FULL_PATH} from '../../constants/functions.constants';
+import type {SatelliteParametersWithId} from '../../types/satellite';
+import {assertConfigAndLoadSatelliteContext} from '../../utils/satellite.utils';
+import {readWasmFileMetadata} from '../../utils/wasm.utils';
+import {assertSatelliteMemorySize} from '../assets/deploy/deploy.assert.services';
+import {type UploadFileFnParamsWithProposal} from '../assets/deploy/deploy.execute.services';
+import {clearProposalStagedAssets} from '../changes/changes.clear.services';
 
-export const upgradeFunctionsWithProposal = async (params: UpgradeFunctionsParams) => {
-  const result = await deployWasmWithProposal(params);
+export const publish = async (args?: string[]) => {
+  const {satellite} = await assertConfigAndLoadSatelliteContext(args);
 
-  if (result.result !== 'deployed') {
-    return;
-  }
+  const srcArgs = nextArg({args, option: '-s'}) ?? nextArg({args, option: '--src'});
+  const src = srcArgs ?? `${SATELLITE_OUTPUT}.gz`;
 
-  console.log('');
-
-  await upgradeSatelliteWithSrc(params);
+  await deployWasmWithProposal({
+    args,
+    src,
+    satellite
+  });
 };
+
+interface UpgradeFunctionsParams {
+  src: string;
+  satellite: SatelliteParametersWithId;
+  args?: string[];
+}
 
 const deployWasmWithProposal = async ({
   args,
