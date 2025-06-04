@@ -1,9 +1,8 @@
-import {isEmptyString} from '@dfinity/utils';
+import {isNullish, notEmptyString} from '@dfinity/utils';
 import {assertAnswerCtrlC, nextArg} from '@junobuild/cli-tools';
-import {Asset} from '@junobuild/core';
+import {red} from 'kleur';
 import prompts from 'prompts';
 import {type SatelliteParametersWithId} from '../../../types/satellite';
-import {defaultSatelliteDomain} from '../../../utils/domain.utils';
 import {listCdnAssets} from './upgrade.cdn.list.services';
 
 export const upgradeWithCdn = async ({
@@ -15,28 +14,52 @@ export const upgradeWithCdn = async ({
 }) => {
   const cdnPath = nextArg({args, option: '-c'}) ?? nextArg({args, option: '--cdn'});
 
-  if (isEmptyString(cdnPath)) {
+  const fullPath = cdnPath ?? (await selectCdnFullPath({satellite}));
+
+  if (isNullish(fullPath)) {
+    return;
   }
+
+
 };
 
-
-
-const collectCdnAssets = (params: {satellite: SatelliteParametersWithId}): Promise<Asset[]> =>
-  listCdnAssets(params);
-
-const promptCdnFullPath = async ({
-  satellite
-}: {
+const selectCdnFullPath = async (params: {
   satellite: SatelliteParametersWithId;
-}): Promise<string> => {
-  const {fullPath}: {fullPath: string} = await prompts({
+}): Promise<AssetFullPath | undefined> => {
+  const assets = await collectCdnAssets(params);
+
+  if (assets.length === 0) {
+    console.log(red('No published WASM files found in the CDN.'));
+    return undefined;
+  }
+
+  return await promptCdnFullPath({assets});
+};
+
+type AssetFullPath = string;
+
+interface AssetForPrompt {
+  title: string;
+  value: AssetFullPath;
+}
+
+const collectCdnAssets = async (params: {
+  satellite: SatelliteParametersWithId;
+}): Promise<AssetForPrompt[]> => {
+  const assets = await listCdnAssets(params);
+
+  return assets.map(({fullPath, description}) => ({
+    title: `${fullPath}${notEmptyString(description) ? ` (${description})` : ''}`,
+    value: fullPath
+  }));
+};
+
+const promptCdnFullPath = async ({assets}: {assets: AssetForPrompt[]}): Promise<AssetFullPath> => {
+  const {fullPath}: {fullPath: AssetFullPath} = await prompts({
     type: 'select',
     name: 'fullPath',
     message: 'Which published WASM would you like to use?',
-    choices: [
-      ...domains.map(({domain}) => ({title: `https://${domain}`, value: `https://${domain}`})),
-      {title: defaultSatelliteDomain(satelliteId), value: defaultSatelliteDomain(satelliteId)}
-    ]
+    choices: assets
   });
 
   assertAnswerCtrlC(fullPath);
