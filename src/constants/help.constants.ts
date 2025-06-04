@@ -44,8 +44,8 @@ export const OPTION_KEEP_STAGED = `${yellow('-k, --keep-staged')}     Keep stage
 export const OPTION_HASH = `${yellow('--hash')}                The expected hash of all included changes (for verification).`;
 export const OPTION_HELP = `${yellow('-h, --help')}            Output usage information.`;
 export const OPTION_SRC = `${yellow('-s, --src')}             A path to a specific local gzipped WASM file to publish.`;
-export const OPTIONS_UPGRADE = `${yellow('-r, --reset')}           Reset to the initial state.
-  ${yellow('--clear-chunks')}        Clear any previously uploaded WASM chunks (applies if the WASM size is greater than 2MB).
-  ${yellow('--no-snapshot')}         Skip creating a snapshot before upgrading.`;
+export const OPTIONS_UPGRADE = `${yellow('--clear-chunks')}        Clear any previously uploaded WASM chunks (applies if the WASM size is greater than 2MB).
+  ${yellow('--no-snapshot')}         Skip creating a snapshot before upgrading.
+  ${yellow('-r, --reset')}           Reset to the initial state.`;
 
 export const NOTE_KEEP_STAGED = `The option ${yellow('--keep-staged')} only applies when ${yellow('--no-apply')} is NOT used (i.e. the change is applied immediately).`;

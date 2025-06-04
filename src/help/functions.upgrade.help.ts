@@ -11,10 +11,10 @@ import {TITLE} from './help';
 const usage = `Usage: ${green('juno')} ${cyan('functions')} ${magenta('upgrade')} ${yellow('[options]')}
 
 Options:
-  ${yellow('-c, --cdn')}             Select a previously published WASM file from the CDN (interactive).
-  ${yellow('-p, --cdn-path')}        Use a specific published WASM file from the CDN.
-  ${OPTION_SRC}
+  ${yellow('--cdn')}                 Select a previously published WASM file from the CDN (interactive).
+  ${yellow('--cdn-path')}            Use a specific published WASM file from the CDN.
   ${OPTIONS_UPGRADE}
+  ${OPTION_SRC}
   ${OPTION_HELP}
   
 Notes:
