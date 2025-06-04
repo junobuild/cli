@@ -12,7 +12,7 @@ export const listAssets = async ({
   startAfter?: string;
   satellite: SatelliteParametersWithId;
 }): Promise<Asset[]> => {
-  const {assets, items_page, matches_pages} = await listAssetsLib({
+  const {items, items_page, matches_pages} = await listAssetsLib({
     collection: COLLECTION_DAPP,
     satellite,
     filter: {
@@ -28,12 +28,12 @@ export const listAssets = async ({
   });
 
   if ((items_page ?? 0n) < (matches_pages ?? 0n)) {
-    const nextAssets = await listAssets({
-      startAfter: last(assets)?.fullPath,
+    const nextItems = await listAssets({
+      startAfter: last(items)?.fullPath,
       satellite
     });
-    return [...assets, ...nextAssets];
+    return [...items, ...nextItems];
   }
 
-  return assets;
+  return items;
 };
