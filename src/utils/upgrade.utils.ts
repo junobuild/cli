@@ -40,8 +40,8 @@ export const newerReleases = async ({
 export const readUpgradeOptions = (
   args?: string[]
 ): {noSnapshot: boolean; preClearChunks: boolean} => {
-  const noSnapshot = hasArgs({args, options: ['-ns', '--no-snapshot']});
-  const preClearChunks = hasArgs({args, options: ['-cc', '--clear-chunks']});
+  const noSnapshot = hasArgs({args, options: ['--no-snapshot']});
+  const preClearChunks = hasArgs({args, options: ['--clear-chunks']});
 
   return {noSnapshot, preClearChunks};
 };

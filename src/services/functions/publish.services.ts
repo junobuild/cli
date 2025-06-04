@@ -90,7 +90,7 @@ const publishWasmWithProposal = async ({
   version
 }: Omit<UpgradeFunctionsParams, 'src'> &
   FilePaths & {version: string}): Promise<DeployResultWithProposal> => {
-  const noCommit = hasArgs({args, options: ['-na', '--no-apply']});
+  const noCommit = hasArgs({args, options: ['--no-apply']});
 
   const uploadFileFn = async ({
     fullPath: storagePath,
