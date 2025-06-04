@@ -1,4 +1,4 @@
-import {COLLECTION_CDN} from '@junobuild/cli-tools';
+import {COLLECTION_CDN_RELEASES} from '@junobuild/cli-tools';
 import {type Asset, listAssets} from '@junobuild/core';
 import {DEPLOY_LIST_ASSETS_PAGINATION} from '../../../constants/deploy.constants';
 import type {SatelliteParametersWithId} from '../../../types/satellite';
@@ -14,7 +14,7 @@ export const listCdnAssets = async ({
   traverseAll?: boolean;
 }): Promise<Asset[]> => {
   const {items, items_length, matches_length} = await listAssets({
-    collection: COLLECTION_CDN,
+    collection: COLLECTION_CDN_RELEASES,
     satellite,
     filter: {
       order: {
