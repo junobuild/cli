@@ -8,6 +8,7 @@ const usage = `Usage: ${green('juno')} ${cyan('functions')} ${magenta('<subcomma
 Subcommands:
   ${magenta('build')}                Build your functions.
   ${magenta('eject')}                Scaffold the necessary files for developing your serverless functions.
+  ${magenta('publish')}              Publish a new version of your functions.
   ${magenta('upgrade')}              Upgrade your satellite's serverless functions.
   
 Notes:
