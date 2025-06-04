@@ -11,7 +11,8 @@ import {TITLE} from './help';
 const usage = `Usage: ${green('juno')} ${cyan('functions')} ${magenta('upgrade')} ${yellow('[options]')}
 
 Options:
-  ${yellow('-c, --cdn [path]')}      Upgrade from a previously published CDN WASM file.
+  ${yellow('-c, --cdn')}             Select a previously published WASM file from the CDN (interactive).
+  ${yellow('-p, --cdn-path')}        Use a specific published WASM file from the CDN.
   ${OPTION_SRC}
   ${OPTIONS_UPGRADE}
   ${OPTION_HELP}
@@ -19,8 +20,8 @@ Options:
 Notes:
 
 - If no option is provided, the default local build output will be used.
-- If both ${yellow('--src')} and ${yellow('--cdn')} are specified, ${yellow('--src')} takes precedence.
-- If ${yellow('--cdn')} is used without a path, an interactive menu will let you choose from recent releases.`;
+- If ${yellow('--src')} is specified, it takes precedence over any CDN options.
+- Use ${yellow('--cdn')} to interactively select from recent published releases.`;
 
 const doc = `${FUNCTIONS_UPGRADE_DESCRIPTION}
 
