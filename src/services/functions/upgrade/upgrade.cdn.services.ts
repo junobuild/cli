@@ -1,6 +1,6 @@
 import {isNullish, notEmptyString} from '@dfinity/utils';
 import {assertAnswerCtrlC, nextArg} from '@junobuild/cli-tools';
-import {red} from 'kleur';
+import {yellow} from 'kleur';
 import prompts from 'prompts';
 import {type SatelliteParametersWithId} from '../../../types/satellite';
 import {listCdnAssets} from './upgrade.cdn.list.services';
@@ -19,8 +19,6 @@ export const upgradeWithCdn = async ({
   if (isNullish(fullPath)) {
     return;
   }
-
-
 };
 
 const selectCdnFullPath = async (params: {
@@ -29,7 +27,7 @@ const selectCdnFullPath = async (params: {
   const assets = await collectCdnAssets(params);
 
   if (assets.length === 0) {
-    console.log(red('No published WASM files found in the CDN.'));
+    console.log(yellow('No published WASM files found in the CDN.'));
     return undefined;
   }
 
