@@ -3,6 +3,7 @@ import type {Asset} from '@junobuild/core';
 import {listAssets as listAssetsLib} from '@junobuild/core';
 import {DEPLOY_LIST_ASSETS_PAGINATION} from '../../../constants/deploy.constants';
 import type {SatelliteParametersWithId} from '../../../types/satellite';
+import {last} from '../../../utils/array.utils';
 
 export const listAssets = async ({
   startAfter,
@@ -25,11 +26,6 @@ export const listAssets = async ({
       }
     }
   });
-
-  const last = <T>(elements: T[]): T | undefined => {
-    const {length, [length - 1]: last} = elements;
-    return last;
-  };
 
   if ((items_page ?? 0n) < (matches_pages ?? 0n)) {
     const nextAssets = await listAssets({
