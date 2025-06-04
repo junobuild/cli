@@ -8,7 +8,7 @@ import {upgradeWithCdn} from './upgrade.cdn.services';
 export const upgradeFunctions = async (args?: string[]) => {
   const {satellite} = await assertConfigAndLoadSatelliteContext(args);
 
-  const cdnOption = hasArgs({args, options: ['-c', '--cdn']});
+  const cdnOption = hasArgs({args, options: ['--cdn', '--cdn-path']});
 
   const fn = cdnOption ? upgradeWithCdn : upgradeWithSrc;
 

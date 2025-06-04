@@ -1,5 +1,5 @@
 import {isNullish, notEmptyString} from '@dfinity/utils';
-import {assertAnswerCtrlC, nextArg} from '@junobuild/cli-tools';
+import {assertAnswerCtrlC, hasArgs, nextArg} from '@junobuild/cli-tools';
 import {yellow} from 'kleur';
 import prompts from 'prompts';
 import {type SatelliteParametersWithId} from '../../../types/satellite';
@@ -12,7 +12,9 @@ export const upgradeWithCdn = async ({
   args?: string[];
   satellite: SatelliteParametersWithId;
 }) => {
-  const cdnPath = nextArg({args, option: '-c'}) ?? nextArg({args, option: '--cdn'});
+  const cdnPath = hasArgs({args, options: ['--cdn-path']})
+    ? nextArg({args, option: '--cdn-path'})
+    : undefined;
 
   const fullPath = cdnPath ?? (await selectCdnFullPath({satellite}));
 
