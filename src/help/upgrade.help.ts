@@ -1,5 +1,10 @@
 import {cyan, green, yellow} from 'kleur';
-import {OPTION_HELP, OPTIONS_UPGRADE, UPGRADE_DESCRIPTION} from '../constants/help.constants';
+import {
+  OPTION_HELP,
+  OPTION_SRC,
+  OPTIONS_UPGRADE,
+  UPGRADE_DESCRIPTION
+} from '../constants/help.constants';
 import {helpMode, helpOutput} from './common.help';
 import {TITLE} from './help';
 import {TARGET_OPTION_NOTE, targetOption} from './target.help';
@@ -8,7 +13,7 @@ const usage = `Usage: ${green('juno')} ${cyan('upgrade')} ${yellow('[options]')}
 
 Options:
   ${targetOption('upgrade')}  
-  ${yellow('-s, --src')}             An optional local gzipped WASM file for the upgrade. By default, the CDN will be used.
+  ${OPTION_SRC}
   ${OPTIONS_UPGRADE}
   ${helpMode}
   ${OPTION_HELP}

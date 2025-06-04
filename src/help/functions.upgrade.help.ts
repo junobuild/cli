@@ -2,6 +2,7 @@ import {cyan, green, magenta, yellow} from 'kleur';
 import {
   FUNCTIONS_UPGRADE_DESCRIPTION,
   OPTION_HELP,
+  OPTION_SRC,
   OPTIONS_UPGRADE
 } from '../constants/help.constants';
 import {helpOutput} from './common.help';
@@ -10,7 +11,7 @@ import {TITLE} from './help';
 const usage = `Usage: ${green('juno')} ${cyan('functions')} ${magenta('upgrade')} ${yellow('[options]')}
 
 Options:
-  ${yellow('-s, --src')}             A path to a specific local gzipped WASM file for the upgrade.
+  ${OPTION_SRC}
   ${OPTIONS_UPGRADE}
   ${OPTION_HELP}`;
 
