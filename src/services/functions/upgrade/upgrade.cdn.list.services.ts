@@ -1,26 +1,25 @@
-import {nonNullish, toNullable} from '@dfinity/utils';
-import type {Proposal, ProposalKey} from '@junobuild/cdn';
-import type {SatelliteParametersWithId} from '../../../types/satellite';
-import {listAssets} from '@junobuild/core';
-import {DAPP_COLLECTION} from '../../../constants/constants';
+import {COLLECTION_CDN} from '@junobuild/cli-tools';
+import {type Asset, listAssets} from '@junobuild/core';
 import {DEPLOY_LIST_ASSETS_PAGINATION} from '../../../constants/deploy.constants';
+import type {SatelliteParametersWithId} from '../../../types/satellite';
+import {last} from '../../../utils/array.utils';
 
 const listCdnAssets = async ({
   startAfter,
   satellite,
   traverseAll
 }: {
-  startAfter?: bigint;
+  startAfter?: string;
   satellite: SatelliteParametersWithId;
   traverseAll: boolean;
-}): Promise<Array<[ProposalKey, Proposal]>> => {
+}): Promise<Asset[]> => {
   const {items, items_length, matches_length} = await listAssets({
-    collection: DAPP_COLLECTION,
+    collection: COLLECTION_CDN,
     satellite,
     filter: {
       order: {
         desc: true,
-        field: 'keys'
+        field: 'created_at'
       },
       paginate: {
         startAfter,
@@ -29,14 +28,9 @@ const listCdnAssets = async ({
     }
   });
 
-  const last = <T>(elements: T[]): T | undefined => {
-    const {length, [length - 1]: last} = elements;
-    return last;
-  };
-
   if (items_length > matches_length && traverseAll) {
-    const nextItems = await listProposals({
-      startAfter: last(items)?.[0].proposal_id,
+    const nextItems = await listCdnAssets({
+      startAfter: last(items)?.fullPath,
       satellite,
       traverseAll
     });
