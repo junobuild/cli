@@ -2,10 +2,10 @@ import {isNullish} from '@dfinity/utils';
 import {uploadAssetWithProposal} from '@junobuild/cdn';
 import {
   type DeployResultWithProposal,
-  deploySatelliteWasmWithProposal,
   type FilePaths,
   hasArgs,
   nextArg,
+  publishSatelliteWasmWithProposal,
   type UploadFileStorageWithProposal
 } from '@junobuild/cli-tools';
 import {red} from 'kleur';
@@ -25,7 +25,7 @@ export const publish = async (args?: string[]) => {
   const srcArgs = nextArg({args, option: '-s'}) ?? nextArg({args, option: '--src'});
   const src = srcArgs ?? `${SATELLITE_OUTPUT}.gz`;
 
-  await deployWasmWithProposal({
+  await executePublish({
     args,
     src,
     satellite
@@ -38,7 +38,7 @@ interface UpgradeFunctionsParams {
   args?: string[];
 }
 
-const deployWasmWithProposal = async ({
+const executePublish = async ({
   args,
   src,
   satellite
@@ -60,7 +60,7 @@ const deployWasmWithProposal = async ({
 
   const fullPath = `${CDN_RELEASES_FULL_PATH}/satellite-${crypto.randomUUID()}.wasm.gz`;
 
-  const result = await uploadWasmWithProposal({
+  const result = await publishWasmWithProposal({
     satellite,
     version,
     args,
@@ -82,7 +82,7 @@ const deployWasmWithProposal = async ({
   return result;
 };
 
-const uploadWasmWithProposal = async ({
+const publishWasmWithProposal = async ({
   args,
   satellite,
   fullPath,
@@ -132,8 +132,8 @@ const uploadWasmWithProposal = async ({
 
   const sourceAbsolutePath = dirname(filePath);
 
-  return await deploySatelliteWasmWithProposal({
-    deploy: {
+  return await publishSatelliteWasmWithProposal({
+    publish: {
       uploadFile,
       fullPath,
       filePath,
