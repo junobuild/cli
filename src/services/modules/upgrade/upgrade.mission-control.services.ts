@@ -11,11 +11,10 @@ import {getCliMissionControl} from '../../../configs/cli.config';
 import {MISSION_CONTROL_WASM_NAME} from '../../../constants/constants';
 import type {UpgradeWasmModule} from '../../../types/upgrade';
 import {NEW_CMD_LINE} from '../../../utils/prompt.utils';
-import {readUpgradeOptions} from '../../../utils/upgrade.utils';
+import {logUpgradeResult, readUpgradeOptions} from '../../../utils/upgrade.utils';
 import {
-  consoleUpgradeResult,
   selectVersion,
-  upgradeWasmCdn,
+  upgradeWasmJunoCdn,
   upgradeWasmLocal
 } from './upgrade.services';
 
@@ -40,20 +39,20 @@ export const upgradeMissionControl = async (args?: string[]) => {
     ...(await actorParameters())
   };
 
-  const consoleResult = (result: {success: boolean; err?: unknown}) => {
-    consoleUpgradeResult({...result, successMessage: 'Mission control successfully upgraded.'});
+  const logResult = (result: {success: boolean; err?: unknown}) => {
+    logUpgradeResult({...result, successMessage: 'Mission control successfully upgraded.'});
   };
 
   if (hasArgs({args, options: ['-s', '--src']})) {
     const result = await upgradeMissionControlCustom({args, missionControlParameters});
 
-    consoleResult(result);
+    logResult(result);
     return;
   }
 
   const result = await updateMissionControlRelease({args, missionControlParameters});
 
-  consoleResult(result);
+  logResult(result);
 };
 
 const updateMissionControlRelease = async ({
@@ -89,7 +88,7 @@ const updateMissionControlRelease = async ({
     });
   };
 
-  return await upgradeWasmCdn({
+  return await upgradeWasmJunoCdn({
     version,
     assetKey: 'mission_control',
     upgrade: upgradeMissionControlWasm

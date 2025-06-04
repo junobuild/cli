@@ -16,7 +16,7 @@ import ora from 'ora';
 import prompts from 'prompts';
 import {JUNO_CDN_URL} from '../../../constants/constants';
 import type {AssetKey} from '../../../types/asset-key';
-import type {UpgradeWasm} from '../../../types/upgrade';
+import {UpgradeCdn, UpgradeWasm, UpgradeWasmParams} from '../../../types/upgrade';
 import {toAssetKeys} from '../../../utils/asset-key.utils';
 import {isNotHeadless} from '../../../utils/process.utils';
 import {confirmAndExit} from '../../../utils/prompt.utils';
@@ -90,7 +90,7 @@ export const upgradeWasmLocal = async ({
 }: {
   src: string;
   assetKey: AssetKey;
-} & Pick<UpgradeWasm, 'reset' | 'upgrade' | 'assert'>): Promise<{
+} & UpgradeWasmParams): Promise<{
   success: boolean;
   err?: unknown;
 }> => {
@@ -120,25 +120,51 @@ export const upgradeWasmLocal = async ({
   }
 };
 
-export const upgradeWasmCdn = async ({
+export const upgradeWasmJunoCdn = async ({
   version,
   assetKey,
-  upgrade,
-  assert,
-  reset
+  ...rest
 }: {
   version: string;
   assetKey: AssetKey;
-} & Pick<UpgradeWasm, 'reset' | 'upgrade' | 'assert'>): Promise<{
+  cdn?: UpgradeCdn;
+} & UpgradeWasmParams): Promise<{
+  success: boolean;
+  err?: unknown;
+}> => {
+  const cdn = {
+    url: JUNO_CDN_URL,
+    path: `/releases/${assetKey}-v${version}.wasm.gz`
+  };
+
+  return await upgradeWasmCdn({
+    ...rest,
+    assetKey,
+    cdn
+  });
+};
+
+export const upgradeWasmCdn = async ({
+  assetKey,
+  upgrade,
+  assert,
+  reset,
+  cdn
+}: {
+  assetKey: AssetKey;
+  cdn: UpgradeCdn;
+} & UpgradeWasmParams): Promise<{
   success: boolean;
   err?: unknown;
 }> => {
   const downloadWasm = async (): Promise<{hash: string; wasm: Buffer}> => {
-    const {hostname} = new URL(JUNO_CDN_URL);
+    const {url, path} = cdn;
+
+    const {hostname} = new URL(url);
 
     const wasm = await downloadFromURL({
       hostname,
-      path: `/releases/${assetKey}-v${version}.wasm.gz`,
+      path,
       headers: {
         'Accept-Encoding': 'gzip, deflate, br'
       }
@@ -282,30 +308,4 @@ export const confirmReset = async ({
   );
 
   return true;
-};
-
-export const consoleUpgradeResult = ({
-  success,
-  err,
-  successMessage
-}: {
-  successMessage: string;
-  success: boolean;
-  err?: unknown;
-}) => {
-  if (success) {
-    console.log(`✅ ${successMessage}`);
-    return;
-  }
-
-  if (isNullish(err)) {
-    return;
-  }
-
-  if (err instanceof UpgradeCodeUnchangedError) {
-    console.log(`🙅‍♂️ ${err.message}`);
-    return;
-  }
-
-  throw err;
 };

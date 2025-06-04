@@ -9,17 +9,22 @@ import {hasArgs, nextArg} from '@junobuild/cli-tools';
 import {cyan, red} from 'kleur';
 import {compare} from 'semver';
 import {SATELLITE_WASM_NAME} from '../../../constants/constants';
-import type {AssertWasmModule, UpgradeWasm, UpgradeWasmModule} from '../../../types/upgrade';
+import {
+  AssertWasmModule,
+  UpgradeCdn,
+  UpgradeWasmModule,
+  UpgradeWasmParams
+} from '../../../types/upgrade';
 import {NEW_CMD_LINE} from '../../../utils/prompt.utils';
 import {assertConfigAndLoadSatelliteContext, satelliteKey} from '../../../utils/satellite.utils';
-import {readUpgradeOptions} from '../../../utils/upgrade.utils';
+import {logUpgradeResult, readUpgradeOptions} from '../../../utils/upgrade.utils';
 import {assertSatelliteBuildType} from './upgrade-assert.services';
 import {
   confirmReset,
-  consoleUpgradeResult,
   redoCustomDomains,
   selectVersion,
   upgradeWasmCdn,
+  upgradeWasmJunoCdn,
   upgradeWasmLocal
 } from './upgrade.services';
 
@@ -31,20 +36,20 @@ export const upgradeSatellite = async (args?: string[]) => {
     `${NEW_CMD_LINE}Initiating upgrade for satellite ${cyan(satelliteId)}.${NEW_CMD_LINE}`
   );
 
-  const consoleResult = (result: {success: boolean; err?: unknown}) => {
-    consoleUpgradeResult({...result, successMessage: 'Satellite successfully upgraded.'});
+  const logResult = (result: {success: boolean; err?: unknown}) => {
+    logUpgradeResult({...result, successMessage: 'Satellite successfully upgraded.'});
   };
 
   if (hasArgs({args, options: ['-s', '--src']})) {
     const result = await upgradeSatelliteCustom({satellite, args});
 
-    consoleResult(result);
+    logResult(result);
     return;
   }
 
   const result = await upgradeSatelliteRelease({satellite, args});
 
-  consoleResult(result);
+  logResult(result);
 };
 
 const upgradeSatelliteCustom = async ({
@@ -68,13 +73,49 @@ const upgradeSatelliteCustom = async ({
 };
 
 export const upgradeSatelliteWithSrc = async ({
-  satellite,
   src,
-  args
+  ...rest
 }: {
   satellite: SatelliteParameters;
   src: string;
   args?: string[];
+}): Promise<{success: boolean; err?: unknown}> => {
+  const upgrade = async (params: UpgradeWasmParams): Promise<{success: boolean; err?: unknown}> => {
+    return await upgradeWasmLocal({src, assetKey: 'satellite', ...params});
+  };
+
+  return await upgradeSatelliteWithUpgradeFn({
+    ...rest,
+    upgradeFn: upgrade
+  });
+};
+
+export const upgradeSatelliteWithCdn = async ({
+  cdn,
+  ...rest
+}: {
+  satellite: SatelliteParameters;
+  cdn: UpgradeCdn;
+  args?: string[];
+}): Promise<{success: boolean; err?: unknown}> => {
+  const upgrade = async (params: UpgradeWasmParams): Promise<{success: boolean; err?: unknown}> => {
+    return await upgradeWasmCdn({cdn, assetKey: 'satellite', ...params});
+  };
+
+  return await upgradeSatelliteWithUpgradeFn({
+    ...rest,
+    upgradeFn: upgrade
+  });
+};
+
+const upgradeSatelliteWithUpgradeFn = async ({
+  satellite,
+  args,
+  upgradeFn
+}: {
+  satellite: SatelliteParameters;
+  args?: string[];
+  upgradeFn: (params: UpgradeWasmParams) => Promise<{success: boolean; err?: unknown}>;
 }): Promise<{success: boolean; err?: unknown}> => {
   // TODO: option to be removed
   const currentVersion = await satelliteVersion({
@@ -83,19 +124,13 @@ export const upgradeSatelliteWithSrc = async ({
 
   const {noSnapshot, preClearChunks} = readUpgradeOptions(args);
 
-  const upgrade = async (
-    params: Pick<UpgradeWasm, 'upgrade' | 'reset' | 'assert'>
-  ): Promise<{success: boolean; err?: unknown}> => {
-    return await upgradeWasmLocal({src, assetKey: 'satellite', ...params});
-  };
-
   return await executeUpgradeSatellite({
     satellite,
     args,
     currentVersion,
     preClearChunks,
     noSnapshot,
-    upgrade
+    upgrade: upgradeFn
   });
 };
 
@@ -119,10 +154,8 @@ const upgradeSatelliteRelease = async ({
 
   const {noSnapshot, preClearChunks} = readUpgradeOptions(args);
 
-  const upgrade = async (
-    params: Pick<UpgradeWasm, 'upgrade' | 'reset' | 'assert'>
-  ): Promise<{success: boolean; err?: unknown}> => {
-    return await upgradeWasmCdn({version, assetKey: 'satellite', ...params});
+  const upgrade = async (params: UpgradeWasmParams): Promise<{success: boolean; err?: unknown}> => {
+    return await upgradeWasmJunoCdn({version, assetKey: 'satellite', ...params});
   };
 
   return await executeUpgradeSatellite({
@@ -148,9 +181,7 @@ const executeUpgradeSatellite = async ({
   currentVersion: string;
   preClearChunks: boolean;
   noSnapshot: boolean;
-  upgrade: (
-    params: Pick<UpgradeWasm, 'upgrade' | 'reset' | 'assert'>
-  ) => Promise<{success: boolean; err?: unknown}>;
+  upgrade: (params: UpgradeWasmParams) => Promise<{success: boolean; err?: unknown}>;
 }): Promise<{success: boolean; err?: unknown}> => {
   const reset = await confirmReset({args, assetKey: 'satellite'});
 

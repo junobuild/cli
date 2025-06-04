@@ -12,3 +12,7 @@ export interface UpgradeWasm {
   assert?: (params: AssertWasmModule) => Promise<void>;
   reset?: boolean;
 }
+
+export interface UpgradeCdn {url: string; path: string}
+
+export type UpgradeWasmParams = Pick<UpgradeWasm, 'upgrade' | 'reset' | 'assert'>;

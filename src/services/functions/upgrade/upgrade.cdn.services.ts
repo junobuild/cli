@@ -2,8 +2,12 @@ import {isNullish, notEmptyString} from '@dfinity/utils';
 import {assertAnswerCtrlC, hasArgs, nextArg} from '@junobuild/cli-tools';
 import {yellow} from 'kleur';
 import prompts from 'prompts';
+import {CDN_RELEASES_FULL_PATH} from '../../../constants/functions.constants';
 import {type SatelliteParametersWithId} from '../../../types/satellite';
+import {defaultSatelliteDomain} from '../../../utils/domain.utils';
+import {upgradeSatelliteWithCdn} from '../../modules/upgrade/upgrade.satellite.services';
 import {listCdnAssets} from './upgrade.cdn.list.services';
+import {logUpgradeResult} from '../../../utils/upgrade.utils';
 
 export const upgradeWithCdn = async ({
   args,
@@ -21,6 +25,17 @@ export const upgradeWithCdn = async ({
   if (isNullish(fullPath)) {
     return;
   }
+
+  const result = await upgradeSatelliteWithCdn({
+    args,
+    cdn: {
+      url: defaultSatelliteDomain(satellite.satelliteId),
+      path: fullPath
+    },
+    satellite
+  });
+
+  logUpgradeResult({...result, successMessage: 'Satellite successfully upgraded with serverless functions.'});
 };
 
 const selectCdnFullPath = async (params: {
@@ -49,7 +64,7 @@ const collectCdnAssets = async (params: {
   const assets = await listCdnAssets(params);
 
   return assets.map(({fullPath, description}) => ({
-    title: `${fullPath}${notEmptyString(description) ? ` (${description})` : ''}`,
+    title: `${fullPath.replace(`${CDN_RELEASES_FULL_PATH}/`, '')}${notEmptyString(description) ? ` (${description})` : ''}`,
     value: fullPath
   }));
 };
