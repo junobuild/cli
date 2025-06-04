@@ -10,10 +10,10 @@ import {cyan, red} from 'kleur';
 import {compare} from 'semver';
 import {SATELLITE_WASM_NAME} from '../../../constants/constants';
 import {
-  AssertWasmModule,
-  UpgradeCdn,
-  UpgradeWasmModule,
-  UpgradeWasmParams
+  type AssertWasmModule,
+  type UpgradeCdn,
+  type UpgradeWasmModule,
+  type UpgradeWasmParams
 } from '../../../types/upgrade';
 import {NEW_CMD_LINE} from '../../../utils/prompt.utils';
 import {assertConfigAndLoadSatelliteContext, satelliteKey} from '../../../utils/satellite.utils';

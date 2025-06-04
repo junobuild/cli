@@ -16,7 +16,7 @@ import ora from 'ora';
 import prompts from 'prompts';
 import {JUNO_CDN_URL} from '../../../constants/constants';
 import type {AssetKey} from '../../../types/asset-key';
-import {UpgradeCdn, UpgradeWasm, UpgradeWasmParams} from '../../../types/upgrade';
+import {type UpgradeCdn, type UpgradeWasm, type UpgradeWasmParams} from '../../../types/upgrade';
 import {toAssetKeys} from '../../../utils/asset-key.utils';
 import {isNotHeadless} from '../../../utils/process.utils';
 import {confirmAndExit} from '../../../utils/prompt.utils';
