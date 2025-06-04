@@ -1,8 +1,8 @@
 import {deleteAssets, listCustomDomains, setCustomDomains} from '@junobuild/admin';
+import {COLLECTION_DAPP} from '@junobuild/cli-tools';
 import {deleteAsset} from '@junobuild/core';
 import {green} from 'kleur';
 import ora from 'ora';
-import {DAPP_COLLECTION} from '../../constants/constants';
 import {assertConfigAndLoadSatelliteContext} from '../../utils/satellite.utils';
 
 export const clear = async (args?: string[]) => {
@@ -15,7 +15,7 @@ export const clear = async (args?: string[]) => {
     const domains = await listCustomDomains({satellite});
 
     await deleteAssets({
-      collection: DAPP_COLLECTION,
+      collection: COLLECTION_DAPP,
       satellite
     });
 
@@ -42,7 +42,7 @@ export const clearAsset = async ({fullPath, args}: {fullPath: string; args?: str
 
   try {
     await deleteAsset({
-      collection: DAPP_COLLECTION,
+      collection: COLLECTION_DAPP,
       satellite,
       fullPath: cleanFullPath(fullPath)
     });
