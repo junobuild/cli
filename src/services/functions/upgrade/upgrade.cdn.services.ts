@@ -1,8 +1,7 @@
 import {isEmptyString} from '@dfinity/utils';
 import {assertAnswerCtrlC, nextArg} from '@junobuild/cli-tools';
-import {SatelliteParametersWithId} from '../../../types/satellite';
-import type {CustomDomain} from '@junobuild/admin';
 import prompts from 'prompts';
+import {type SatelliteParametersWithId} from '../../../types/satellite';
 import {defaultSatelliteDomain} from '../../../utils/domain.utils';
 
 export const upgradeWithCdn = async ({
@@ -19,12 +18,10 @@ export const upgradeWithCdn = async ({
 };
 
 const promptCdnFullPath = async ({
-                                   satellite
-                                }: {
+  satellite
+}: {
   satellite: SatelliteParametersWithId;
 }): Promise<string> => {
-
-
   const {fullPath}: {fullPath: string} = await prompts({
     type: 'select',
     name: 'fullPath',
