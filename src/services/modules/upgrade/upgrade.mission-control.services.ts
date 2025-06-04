@@ -12,11 +12,7 @@ import {MISSION_CONTROL_WASM_NAME} from '../../../constants/constants';
 import type {UpgradeWasmModule} from '../../../types/upgrade';
 import {NEW_CMD_LINE} from '../../../utils/prompt.utils';
 import {logUpgradeResult, readUpgradeOptions} from '../../../utils/upgrade.utils';
-import {
-  selectVersion,
-  upgradeWasmJunoCdn,
-  upgradeWasmLocal
-} from './upgrade.services';
+import {selectVersion, upgradeWasmJunoCdn, upgradeWasmLocal} from './upgrade.services';
 
 export const upgradeMissionControl = async (args?: string[]) => {
   const missionControl = await getCliMissionControl();
