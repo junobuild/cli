@@ -1,6 +1,6 @@
+import {COLLECTION_DAPP} from '@junobuild/cli-tools';
 import type {Asset} from '@junobuild/core';
 import {listAssets as listAssetsLib} from '@junobuild/core';
-import {DAPP_COLLECTION} from '../../../constants/constants';
 import {DEPLOY_LIST_ASSETS_PAGINATION} from '../../../constants/deploy.constants';
 import type {SatelliteParametersWithId} from '../../../types/satellite';
 
@@ -12,7 +12,7 @@ export const listAssets = async ({
   satellite: SatelliteParametersWithId;
 }): Promise<Asset[]> => {
   const {assets, items_page, matches_pages} = await listAssetsLib({
-    collection: DAPP_COLLECTION,
+    collection: COLLECTION_DAPP,
     satellite,
     filter: {
       order: {
