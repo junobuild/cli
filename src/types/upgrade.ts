@@ -13,6 +13,6 @@ export interface UpgradeWasm {
   reset?: boolean;
 }
 
-export interface UpgradeCdn {url: string; path: string}
+export interface UpgradeCdn {url: string; path: string, customHost?: string}
 
 export type UpgradeWasmParams = Pick<UpgradeWasm, 'upgrade' | 'reset' | 'assert'>;

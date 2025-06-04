@@ -1,4 +1,4 @@
-import {isNullish} from '@dfinity/utils';
+import {nonNullish, notEmptyString} from '@dfinity/utils';
 import {
   checkUpgradeVersion,
   setCustomDomains,
@@ -158,15 +158,18 @@ export const upgradeWasmCdn = async ({
   err?: unknown;
 }> => {
   const downloadWasm = async (): Promise<{hash: string; wasm: Buffer}> => {
-    const {url, path} = cdn;
+    const {url, path, customHost} = cdn;
 
-    const {hostname} = new URL(url);
+    const {hostname, port, protocol} = new URL(url);
 
     const wasm = await downloadFromURL({
       hostname,
+      protocol,
+      ...(notEmptyString(port) && {port}),
       path,
       headers: {
-        'Accept-Encoding': 'gzip, deflate, br'
+        'Accept-Encoding': 'gzip, deflate, br',
+        ...(nonNullish(customHost) && {Host: customHost})
       }
     });
 
