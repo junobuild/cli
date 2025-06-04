@@ -40,7 +40,7 @@ export const CHANGES_APPLY_DESCRIPTION = 'Apply a submitted change.';
 export const CHANGES_REJECT_DESCRIPTION = 'Reject a change.';
 
 export const OPTION_KEEP_STAGED = `${yellow('-k, --keep-staged')}     Keep staged assets in memory after applying the change.`;
-export const OPTION_HASH = `${yellow('-s, --hash')}            The expected hash of all included changes (for verification).`;
+export const OPTION_HASH = `${yellow('-a, --hash')}            The expected hash of all included changes (for verification).`;
 export const OPTION_HELP = `${yellow('-h, --help')}            Output usage information.`;
 
 export const OPTIONS_UPGRADE = `${yellow('-r, --reset')}           Reset to the initial state.

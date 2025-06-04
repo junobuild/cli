@@ -17,7 +17,7 @@ export const readChangesIdAndHash = (args?: string[]): {proposalId: bigint; hash
 
   const proposalId = toBigInt();
 
-  const hash = nextArg({args, option: '-s'}) ?? nextArg({args, option: '--hash'});
+  const hash = nextArg({args, option: '-a'}) ?? nextArg({args, option: '--hash'});
 
   assertNonNullish(hash, 'A hash must be provided');
 
