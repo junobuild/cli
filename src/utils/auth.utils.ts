@@ -1,4 +1,5 @@
-import {AUTH_URL, REDIRECT_URL} from '../constants/constants';
+import {REDIRECT_URL} from '../constants/constants';
+import {ENV} from '../env';
 
 export const authUrl = ({
   port,
@@ -11,7 +12,7 @@ export const authUrl = ({
 }): string => {
   const callbackUrl = authCallbackUrl({port, nonce});
 
-  const authUrl = new URL(AUTH_URL);
+  const authUrl = new URL(ENV.authUrl);
   authUrl.searchParams.set('redirect_uri', encodeURIComponent(callbackUrl));
   authUrl.searchParams.set('principal', principal);
 
