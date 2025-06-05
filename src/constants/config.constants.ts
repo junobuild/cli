@@ -1,5 +1,5 @@
 import type {Schema} from 'conf';
-import {CLI_PROJECT_NAME} from './constants';
+import {ENV} from '../env';
 import {CliConfig} from '../types/cli.config';
 import {CliDefaultOptions, CliOptions} from '../types/cli.options';
 
@@ -22,6 +22,6 @@ const DEFAULT_CONF_OPTIONS: CliDefaultOptions = {
 
 export const CONFIG_OPTIONS: CliOptions = {
   ...DEFAULT_CONF_OPTIONS,
-  projectName: CLI_PROJECT_NAME,
+  projectName: ENV.config.projectName,
   schema
 };

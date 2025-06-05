@@ -1,5 +1,6 @@
+import {notEmptyString} from '@dfinity/utils';
 import {nextArg} from '@junobuild/cli-tools';
-import {JunoCliEnv, JunoConsole} from '../types/cli.env';
+import {JunoCliConfig, JunoCliEnv, JunoConsole} from '../types/cli.env';
 
 export const loadEnv = (): JunoCliEnv => {
   const [_, ...args] = process.argv.slice(2);
@@ -13,7 +14,8 @@ export const loadEnv = (): JunoCliEnv => {
   return {
     mode: mode ?? 'production',
     containerUrl: envContainerUrl,
-    console: loadEnvConsole({args, mode})
+    console: loadEnvConsole({args, mode}),
+    config: loadEnvConfig({mode})
   };
 };
 
@@ -29,5 +31,14 @@ const loadEnvConsole = ({args, mode}: {args?: string[]; mode: string | undefined
       satellite: `${envConsoleUrl}/satellite/?s=`,
       auth: `${envConsoleUrl}/cli`
     }
+  };
+};
+
+const loadEnvConfig = ({mode}: {mode: string | undefined}): JunoCliConfig => {
+  const projectName = notEmptyString(mode) && mode !== 'production' ? `juno-${mode}` : 'juno';
+
+  return {
+    projectName,
+    projectSettingsName: `${projectName}-cli-settings`
   };
 };
