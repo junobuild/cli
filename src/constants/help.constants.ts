@@ -48,6 +48,7 @@ export const OPTIONS_UPGRADE = `${yellow('--clear-chunks')}        Clear any pre
   ${yellow('--no-snapshot')}         Skip creating a snapshot before upgrading.
   ${yellow('-r, --reset')}           Reset to the initial state.`;
 export const OPTIONS_HELP = `${yellow('-m, --mode')}            Set env mode. For example production or a custom string. Default is production.
-  ${yellow('--container-url')}       Override a custom container URL. If not provided, defaults to production or the local container in development mode.`;
+  ${yellow('--container-url')}       Override a custom container URL. If not provided, defaults to production or the local container in development mode.
+  ${yellow('--console-url')}         Specify a custom URL to access the developer Console.`;
 
 export const NOTE_KEEP_STAGED = `The option ${yellow('--keep-staged')} only applies when ${yellow('--no-apply')} is NOT used (i.e. the change is applied immediately).`;
