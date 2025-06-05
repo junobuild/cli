@@ -35,6 +35,8 @@ const loadEnvConsole = ({args, mode}: {args?: string[]; mode: string | undefined
 };
 
 const loadEnvConfig = ({mode}: {mode: string | undefined}): JunoCliConfig => {
+  // Historically we used "juno" - without environment reference - for production.
+  // That is why we keep this approach for backwards compatibility.
   const projectName = notEmptyString(mode) && mode !== 'production' ? `juno-${mode}` : 'juno';
 
   return {
