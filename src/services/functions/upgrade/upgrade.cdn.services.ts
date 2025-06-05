@@ -3,12 +3,12 @@ import {assertAnswerCtrlC, hasArgs, nextArg} from '@junobuild/cli-tools';
 import {yellow} from 'kleur';
 import prompts from 'prompts';
 import {CDN_RELEASES_FULL_PATH} from '../../../constants/functions.constants';
+import {ENV} from '../../../env';
 import {type SatelliteParametersWithId} from '../../../types/satellite';
 import {defaultSatelliteDomain} from '../../../utils/domain.utils';
 import {logUpgradeResult} from '../../../utils/upgrade.utils';
 import {upgradeSatelliteWithCdn} from '../../modules/upgrade/upgrade.satellite.services';
 import {listCdnAssets} from './upgrade.cdn.list.services';
-import {ENV} from '../../../env';
 
 export const upgradeWithCdn = async ({
   args,
