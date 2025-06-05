@@ -8,6 +8,7 @@ import {defaultSatelliteDomain} from '../../../utils/domain.utils';
 import {logUpgradeResult} from '../../../utils/upgrade.utils';
 import {upgradeSatelliteWithCdn} from '../../modules/upgrade/upgrade.satellite.services';
 import {listCdnAssets} from './upgrade.cdn.list.services';
+import {ENV} from '../../../env';
 
 export const upgradeWithCdn = async ({
   args,
@@ -29,7 +30,7 @@ export const upgradeWithCdn = async ({
   const customHost = URL.parse(defaultSatelliteDomain(satellite.satelliteId))?.hostname;
 
   const cdn = {
-    url: process.env.CONTAINER_URL ?? defaultSatelliteDomain(satellite.satelliteId),
+    url: ENV.containerUrl ?? defaultSatelliteDomain(satellite.satelliteId),
     path: fullPath,
     ...(nonNullish(customHost) && {customHost})
   };

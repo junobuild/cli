@@ -3,6 +3,7 @@ import {isNullish, nonNullish} from '@dfinity/utils';
 import {type ActorParameters} from '@junobuild/admin';
 import {red} from 'kleur';
 import {getToken} from '../configs/cli.config';
+import {ENV} from '../env';
 import {getProcessToken} from '../utils/process.utils';
 import {initAgent} from './agent.api';
 
@@ -20,7 +21,7 @@ export const actorParameters = async (): Promise<
 
   const params: Omit<ActorParameters, 'agent'> = {
     identity,
-    ...(nonNullish(process.env.CONTAINER_URL) && {container: process.env.CONTAINER_URL})
+    ...(nonNullish(ENV.containerUrl) && {container: ENV.containerUrl})
   };
 
   const agent = await initAgent(params);
