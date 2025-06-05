@@ -3,6 +3,8 @@ import type {JunoConfigEnv} from '@junobuild/config';
 
 export type JunoCliEnv = JunoConfigEnv & {
   containerUrl: string | undefined;
+  consoleUrl: string;
+  consoleSatelliteUrl: string;
   authUrl: string;
 };
 
@@ -21,6 +23,8 @@ const loadEnv = (): JunoCliEnv => {
   return {
     mode: mode ?? 'production',
     containerUrl: envContainerUrl,
+    consoleUrl: envConsoleUrl,
+    consoleSatelliteUrl: `${envConsoleUrl}/satellite/?s=`,
     authUrl: `${envConsoleUrl}/cli`
   };
 };

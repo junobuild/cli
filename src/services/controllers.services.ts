@@ -3,7 +3,7 @@ import {assertAnswerCtrlC} from '@junobuild/cli-tools';
 import {bold, green, red} from 'kleur';
 import prompts from 'prompts';
 import {addCliMissionControl, addCliOrbiter, addCliSatellite, getUse} from '../configs/cli.config';
-import {CONSOLE_URL} from '../constants/constants';
+import {ENV} from '../env';
 import {type AssetKey} from '../types/asset-key';
 import {displaySegment} from '../utils/display.utils';
 import {terminalLink} from '../utils/links.utils';
@@ -126,7 +126,7 @@ const setControllerManually = async ({
   segment: AssetKey;
   controller: Principal;
 }) => {
-  const url = `${CONSOLE_URL}${
+  const url = `${ENV.consoleUrl}${
     segment === 'orbiter'
       ? '/analytics?tab=setup'
       : segment === 'satellite'

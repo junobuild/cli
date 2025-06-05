@@ -1,5 +1,4 @@
 import {nonNullish} from '@dfinity/utils';
-import {CONSOLE_SATELLITE_URL} from '../constants/constants';
 import {DEV, ENV} from '../env';
 
 export const defaultSatelliteDomain = (satelliteId: string): string => {
@@ -11,4 +10,5 @@ export const defaultSatelliteDomain = (satelliteId: string): string => {
   return `https://${satelliteId}.icp0.io`;
 };
 
-export const consoleUrl = (satelliteId: string): string => `${CONSOLE_SATELLITE_URL}${satelliteId}`;
+export const consoleUrl = (satelliteId: string): string =>
+  `${ENV.consoleSatelliteUrl}${satelliteId}`;
