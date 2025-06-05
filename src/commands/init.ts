@@ -8,7 +8,7 @@ import {login as consoleLogin} from '../services/login.services';
 import {confirm, confirmAndExit} from '../utils/prompt.utils';
 
 export const init = async (args?: string[]) => {
-  if (hasArgs({args, options: ['-m', '--minimal']})) {
+  if (hasArgs({args, options: ['--minimal']})) {
     await initWithPlaceholder();
     return;
   }
