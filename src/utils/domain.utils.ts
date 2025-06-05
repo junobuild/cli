@@ -1,9 +1,11 @@
 import {nonNullish} from '@dfinity/utils';
 import {CONSOLE_SATELLITE_URL} from '../constants/constants';
+import {DEV, ENV} from '../env';
 
 export const defaultSatelliteDomain = (satelliteId: string): string => {
-  if (nonNullish(process.env.CONTAINER_URL)) {
-    return `http://${satelliteId}.${process.env.CONTAINER_URL.replace('http://127.0.0.1', 'localhost')}`;
+  if (DEV && nonNullish(ENV.containerUrl)) {
+    const url = URL.parse(ENV.containerUrl);
+    return `${url?.protocol ?? 'http:'}//${satelliteId}.${(url?.host ?? '127.0.0.1:5987').replace('127.0.0.1', 'localhost')}`;
   }
 
   return `https://${satelliteId}.icp0.io`;

@@ -3,6 +3,7 @@ import {assertAnswerCtrlC, hasArgs, nextArg} from '@junobuild/cli-tools';
 import {yellow} from 'kleur';
 import prompts from 'prompts';
 import {CDN_RELEASES_FULL_PATH} from '../../../constants/functions.constants';
+import {ENV} from '../../../env';
 import {type SatelliteParametersWithId} from '../../../types/satellite';
 import {defaultSatelliteDomain} from '../../../utils/domain.utils';
 import {logUpgradeResult} from '../../../utils/upgrade.utils';
@@ -29,7 +30,7 @@ export const upgradeWithCdn = async ({
   const customHost = URL.parse(defaultSatelliteDomain(satellite.satelliteId))?.hostname;
 
   const cdn = {
-    url: process.env.CONTAINER_URL ?? defaultSatelliteDomain(satellite.satelliteId),
+    url: ENV.containerUrl ?? defaultSatelliteDomain(satellite.satelliteId),
     path: fullPath,
     ...(nonNullish(customHost) && {customHost})
   };

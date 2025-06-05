@@ -2,7 +2,7 @@ import {nextArg} from '@junobuild/cli-tools';
 import type {JunoConfigEnv} from '@junobuild/config';
 
 export type JunoCliEnv = JunoConfigEnv & {
-  containerUrl?: string;
+  containerUrl: string | undefined;
 };
 
 const loadEnv = (): JunoCliEnv => {
@@ -13,8 +13,10 @@ const loadEnv = (): JunoCliEnv => {
 
   return {
     mode: mode ?? 'production',
-    containerUrl: containerUrl ?? (mode === 'development' ? 'http://127.0.0.1:5987' : '')
+    containerUrl: containerUrl ?? (mode === 'development' ? 'http://127.0.0.1:5987' : undefined)
   };
 };
 
 export const ENV = loadEnv();
+
+export const DEV = ENV.mode === 'development';
