@@ -12,7 +12,7 @@ export const authUrl = ({
 }): string => {
   const callbackUrl = authCallbackUrl({port, nonce});
 
-  const authUrl = new URL(ENV.authUrl);
+  const authUrl = new URL(ENV.console.urls.auth);
   authUrl.searchParams.set('redirect_uri', encodeURIComponent(callbackUrl));
   authUrl.searchParams.set('principal', principal);
 

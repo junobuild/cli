@@ -3,10 +3,18 @@ import type {JunoConfigEnv} from '@junobuild/config';
 
 export type JunoCliEnv = JunoConfigEnv & {
   containerUrl: string | undefined;
-  consoleUrl: string;
-  consoleSatelliteUrl: string;
-  authUrl: string;
+  console: JunoConsole;
 };
+
+interface JunoConsole {
+  urls: JunoConsoleUrls;
+}
+
+interface JunoConsoleUrls {
+  root: string;
+  satellite: string;
+  auth: string;
+}
 
 const loadEnv = (): JunoCliEnv => {
   const [_, ...args] = process.argv.slice(2);
@@ -23,9 +31,13 @@ const loadEnv = (): JunoCliEnv => {
   return {
     mode: mode ?? 'production',
     containerUrl: envContainerUrl,
-    consoleUrl: envConsoleUrl,
-    consoleSatelliteUrl: `${envConsoleUrl}/satellite/?s=`,
-    authUrl: `${envConsoleUrl}/cli`
+    console: {
+      urls: {
+        root: envConsoleUrl,
+        satellite: `${envConsoleUrl}/satellite/?s=`,
+        auth: `${envConsoleUrl}/cli`
+      }
+    }
   };
 };
 

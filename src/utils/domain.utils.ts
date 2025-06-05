@@ -11,4 +11,4 @@ export const defaultSatelliteDomain = (satelliteId: string): string => {
 };
 
 export const consoleUrl = (satelliteId: string): string =>
-  `${ENV.consoleSatelliteUrl}${satelliteId}`;
+  `${ENV.console.urls.satellite}${satelliteId}`;

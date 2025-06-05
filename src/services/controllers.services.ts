@@ -126,7 +126,7 @@ const setControllerManually = async ({
   segment: AssetKey;
   controller: Principal;
 }) => {
-  const url = `${ENV.consoleUrl}${
+  const url = `${ENV.console.urls.root}${
     segment === 'orbiter'
       ? '/analytics?tab=setup'
       : segment === 'satellite'
