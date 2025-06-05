@@ -1,6 +1,6 @@
 import {cyan, green, yellow} from 'kleur';
-import {OPEN_DESCRIPTION, OPTION_HELP} from '../constants/help.constants';
-import {helpMode, helpOutput} from './common.help';
+import {OPEN_DESCRIPTION, OPTION_HELP, OPTIONS_HELP} from '../constants/help.constants';
+import {helpOutput} from './common.help';
 import {TITLE} from './help';
 
 const usage = `Usage: ${green('juno')} ${cyan('open')} ${yellow('[options]')}
@@ -8,7 +8,7 @@ const usage = `Usage: ${green('juno')} ${cyan('open')} ${yellow('[options]')}
 Options:
   ${yellow('-b, --browser')}         A particular browser to open. supported: chrome|firefox|edge.
   ${yellow('-c, --console')}         Open satellite in the console.
-  ${helpMode}
+  ${OPTIONS_HELP}
   ${OPTION_HELP}`;
 
 const doc = `${OPEN_DESCRIPTION}

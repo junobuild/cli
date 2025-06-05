@@ -1,13 +1,13 @@
 import {cyan, green, yellow} from 'kleur';
-import {OPTION_HELP, VERSION_DESCRIPTION} from '../constants/help.constants';
-import {helpMode, helpOutput} from './common.help';
+import {OPTIONS_HELP, OPTION_HELP, VERSION_DESCRIPTION} from '../constants/help.constants';
+import {helpOutput} from './common.help';
 import {TITLE} from './help';
 
 const usage = `Usage: ${green('juno')} ${cyan('init')} ${yellow('[options]')}
 
 Options:
   ${yellow('-c, --cli')}             Check only the version of the CLI.
-  ${helpMode}
+  ${OPTIONS_HELP}
   ${OPTION_HELP}`;
 
 const doc = `${VERSION_DESCRIPTION}

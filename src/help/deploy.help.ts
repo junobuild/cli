@@ -3,9 +3,10 @@ import {
   DEPLOY_DESCRIPTION,
   NOTE_KEEP_STAGED,
   OPTION_HELP,
-  OPTION_KEEP_STAGED
+  OPTION_KEEP_STAGED,
+  OPTIONS_HELP
 } from '../constants/help.constants';
-import {helpMode, helpOutput} from './common.help';
+import {helpOutput} from './common.help';
 import {TITLE} from './help';
 
 const usage = `Usage: ${green('juno')} ${cyan('deploy')} ${yellow('[options]')}
@@ -15,7 +16,7 @@ Options:
   ${yellow('--no-apply')}            Submit the deployment as a change but do not apply it yet.
   ${OPTION_KEEP_STAGED}
   ${yellow('-i, --immediate')}       Deploy files instantly (bypasses the change workflow).
-  ${helpMode}
+  ${OPTIONS_HELP}
   ${OPTION_HELP}
     
 Notes:

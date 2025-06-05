@@ -2,10 +2,11 @@ import {cyan, green, yellow} from 'kleur';
 import {
   OPTION_HELP,
   OPTION_SRC,
+  OPTIONS_HELP,
   OPTIONS_UPGRADE,
   UPGRADE_DESCRIPTION
 } from '../constants/help.constants';
-import {helpMode, helpOutput} from './common.help';
+import {helpOutput} from './common.help';
 import {TITLE} from './help';
 import {TARGET_OPTION_NOTE, targetOption} from './target.help';
 
@@ -15,7 +16,7 @@ Options:
   ${targetOption('upgrade')}  
   ${OPTION_SRC}
   ${OPTIONS_UPGRADE}
-  ${helpMode}
+  ${OPTIONS_HELP}
   ${OPTION_HELP}
   
 Notes:

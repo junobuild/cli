@@ -1,13 +1,19 @@
 import {nextArg} from '@junobuild/cli-tools';
 import type {JunoConfigEnv} from '@junobuild/config';
 
-const loadEnv = (): JunoConfigEnv => {
+export type JunoCliEnv = JunoConfigEnv & {
+  containerUrl?: string;
+};
+
+const loadEnv = (): JunoCliEnv => {
   const [_, ...args] = process.argv.slice(2);
 
   const mode = nextArg({args, option: '-m'}) ?? nextArg({args, option: '--mode'});
+  const containerUrl = nextArg({args, option: '--container-url'});
 
   return {
-    mode: mode ?? 'production'
+    mode: mode ?? 'production',
+    containerUrl: containerUrl ?? (mode === 'development' ? 'http://127.0.0.1:5987' : '')
   };
 };
 
