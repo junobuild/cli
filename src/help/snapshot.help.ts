@@ -1,6 +1,6 @@
 import {cyan, green, magenta, yellow} from 'kleur';
-import {OPTION_HELP, SNAPSHOT_DESCRIPTION} from '../constants/help.constants';
-import {helpMode, helpOutput} from './common.help';
+import {OPTIONS_HELP, OPTION_HELP, SNAPSHOT_DESCRIPTION} from '../constants/help.constants';
+import {helpOutput} from './common.help';
 import {TITLE} from './help';
 import {TARGET_OPTION_NOTE, targetOption} from './target.help';
 
@@ -13,7 +13,7 @@ Subcommands:
   
 Options:
   ${targetOption('snapshot')}
-  ${helpMode}
+  ${OPTIONS_HELP}
   ${OPTION_HELP}
   
 Notes:
