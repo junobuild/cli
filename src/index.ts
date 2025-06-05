@@ -133,10 +133,10 @@ export const run = async () => {
       await deploy(args);
       break;
     case 'config':
-      await config(args);
+      await config();
       break;
     case 'clear':
-      await clear(args);
+      await clear();
       break;
     case 'version':
       await versionCommand(args);
@@ -148,7 +148,7 @@ export const run = async () => {
       await upgrade(args);
       break;
     case 'whoami':
-      await whoami(args);
+      await whoami();
       break;
     case 'use':
       await use(args);

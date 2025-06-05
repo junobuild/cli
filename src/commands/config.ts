@@ -13,8 +13,8 @@ import ora from 'ora';
 import {initAgent} from '../api/agent.api';
 import {assertConfigAndLoadSatelliteContext} from '../utils/satellite.utils';
 
-export const config = async (args?: string[]) => {
-  const {satellite, satelliteConfig} = await assertConfigAndLoadSatelliteContext(args);
+export const config = async () => {
+  const {satellite, satelliteConfig} = await assertConfigAndLoadSatelliteContext();
   const {storage, authentication, datastore, settings} = satelliteConfig;
 
   const spinner = ora(`Configuring...`).start();

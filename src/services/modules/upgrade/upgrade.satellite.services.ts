@@ -29,7 +29,7 @@ import {
 } from './upgrade.services';
 
 export const upgradeSatellite = async (args?: string[]) => {
-  const {satellite} = await assertConfigAndLoadSatelliteContext(args);
+  const {satellite} = await assertConfigAndLoadSatelliteContext();
   const {satelliteId} = satellite;
 
   console.log(

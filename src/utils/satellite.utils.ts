@@ -1,36 +1,32 @@
 import {assertNonNullish, isNullish} from '@dfinity/utils';
-import {type JunoConfigEnv, type SatelliteConfig} from '@junobuild/config';
+import {type SatelliteConfig} from '@junobuild/config';
 import {red} from 'kleur';
 import {actorParameters} from '../api/actor.api';
 import {getCliOrbiters, getCliSatellites} from '../configs/cli.config';
 import {junoConfigExist, readJunoConfig} from '../configs/juno.config';
+import {ENV} from '../env';
 import type {SatelliteConfigEnv} from '../types/config';
 import type {SatelliteParametersWithId} from '../types/satellite';
-import {configEnv} from './config.utils';
 import {consoleNoConfigFound} from './msg.utils';
 
-export const assertConfigAndLoadSatelliteContext = async (
-  args?: string[]
-): Promise<{
+export const assertConfigAndLoadSatelliteContext = async (): Promise<{
   satellite: SatelliteParametersWithId;
   satelliteConfig: SatelliteConfig;
-  env: JunoConfigEnv;
 }> => {
   if (!(await junoConfigExist())) {
     consoleNoConfigFound();
     process.exit(1);
   }
 
-  const env = configEnv(args);
-  const {satellite: satelliteConfig} = await readJunoConfig(env);
+  const {satellite: satelliteConfig} = await readJunoConfig(ENV);
 
-  const satellite = await satelliteParameters({satellite: satelliteConfig, env});
+  const satellite = await satelliteParameters({satellite: satelliteConfig, env: ENV});
 
   // TS guard. satelliteParameters exit if satelliteId is undefined.
   // Should not happen.
   assertNonNullish(satellite.satelliteId);
 
-  return {satellite, satelliteConfig, env};
+  return {satellite, satelliteConfig};
 };
 
 const satelliteParameters = async ({

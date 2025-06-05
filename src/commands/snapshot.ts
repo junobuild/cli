@@ -59,7 +59,7 @@ const executeSnapshotFn = async ({
   orbiterFn
 }: {
   args?: string[];
-  satelliteFn: (params: {args?: string[]}) => Promise<void>;
+  satelliteFn: () => Promise<void>;
   missionControlFn: () => Promise<void>;
   orbiterFn: () => Promise<void>;
 }) => {
@@ -68,7 +68,7 @@ const executeSnapshotFn = async ({
   switch (target) {
     case 's':
     case 'satellite':
-      await satelliteFn({args});
+      await satelliteFn();
       break;
     case 'm':
     case 'mission-control':

@@ -20,7 +20,7 @@ import {type UploadFileFnParamsWithProposal} from '../assets/deploy/deploy.execu
 import {clearProposalStagedAssets} from '../changes/changes.clear.services';
 
 export const publish = async (args?: string[]) => {
-  const {satellite} = await assertConfigAndLoadSatelliteContext(args);
+  const {satellite} = await assertConfigAndLoadSatelliteContext();
 
   const srcArgs = nextArg({args, option: '-s'}) ?? nextArg({args, option: '--src'});
   const src = srcArgs ?? `${SATELLITE_OUTPUT}.gz`;
@@ -127,7 +127,7 @@ const publishWasmWithProposal = async ({
   };
 
   const assertMemory = async () => {
-    await assertSatelliteMemorySize(args);
+    await assertSatelliteMemorySize();
   };
 
   const sourceAbsolutePath = dirname(filePath);
