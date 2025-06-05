@@ -5,14 +5,14 @@ import {terminalLink} from '../utils/links.utils';
 import {isHeadless} from '../utils/process.utils';
 import {assertConfigAndLoadSatelliteContext} from '../utils/satellite.utils';
 
-export const links = async (args?: string[]) => {
+export const links = async () => {
   // If a developer is using a JUNO_TOKEN to execute command(s), the links will not be printed.
   // This is particularly useful for CI environment where such output is not needed and also because only ADMIN controllers can list custom domains.
   if (isHeadless()) {
     return;
   }
 
-  const {satellite} = await assertConfigAndLoadSatelliteContext(args);
+  const {satellite} = await assertConfigAndLoadSatelliteContext();
   const {satelliteId} = satellite;
 
   const defaultUrl = defaultSatelliteDomain(satelliteId);

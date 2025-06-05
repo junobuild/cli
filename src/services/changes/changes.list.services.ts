@@ -6,7 +6,7 @@ import {formatDate} from '../../utils/format.utils';
 import {assertConfigAndLoadSatelliteContext} from '../../utils/satellite.utils';
 
 export const listChanges = async (args?: string[]) => {
-  const {satellite} = await assertConfigAndLoadSatelliteContext(args);
+  const {satellite} = await assertConfigAndLoadSatelliteContext();
 
   const all = hasArgs({args, options: ['-a', '--all']});
   const every = hasArgs({args, options: ['-e', '--every']});

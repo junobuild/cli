@@ -30,7 +30,7 @@ export const deploy = async (args?: string[]) => {
   const immediate = hasArgs({args, options: ['-i', '--immediate']});
 
   if (immediate) {
-    await deployImmediate({args, clearOption});
+    await deployImmediate({clearOption});
     return;
   }
 
@@ -89,7 +89,6 @@ const deployWithProposal = async ({args, clearOption}: {args?: string[]; clearOp
   };
 
   const result = await executeDeployWithProposal({
-    args,
     deployFn,
     uploadFileFn
   });
@@ -105,12 +104,12 @@ const deployWithProposal = async ({args, clearOption}: {args?: string[]; clearOp
     proposalId
   });
 
-  await links(args);
+  await links();
 };
 
-const deployImmediate = async ({args, clearOption}: {args?: string[]; clearOption: boolean}) => {
+const deployImmediate = async ({clearOption}: {clearOption: boolean}) => {
   if (clearOption) {
-    await clear(args);
+    await clear();
   }
 
   const deployFn = async ({deploy}: DeployFnParams): Promise<DeployResult> =>
@@ -138,10 +137,9 @@ const deployImmediate = async ({args, clearOption}: {args?: string[]; clearOptio
   };
 
   await executeDeployImmediate({
-    args,
     deployFn,
     uploadFileFn
   });
 
-  await links(args);
+  await links();
 };

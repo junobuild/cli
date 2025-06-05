@@ -6,7 +6,7 @@ import {openUrl} from '../utils/open.utils';
 import {assertConfigAndLoadSatelliteContext} from '../utils/satellite.utils';
 
 export const open = async (args?: string[]) => {
-  const {satellite} = await assertConfigAndLoadSatelliteContext(args);
+  const {satellite} = await assertConfigAndLoadSatelliteContext();
   const {satelliteId} = satellite;
 
   const browser = nextArg({args, option: '-b'}) ?? nextArg({args, option: '--browser'});

@@ -5,32 +5,27 @@ import {consoleNoConfigFound} from '../../../utils/msg.utils';
 import {assertConfigAndLoadSatelliteContext} from '../../../utils/satellite.utils';
 import {createSnapshot, deleteSnapshot, restoreSnapshot} from './snapshot.services';
 
-export const createSnapshotSatellite = async (params: {args?: string[]}) => {
+export const createSnapshotSatellite = async () => {
   await executeSnapshotFn({
-    ...params,
     fn: createSnapshot
   });
 };
 
-export const restoreSnapshotSatellite = async (params: {args?: string[]}) => {
+export const restoreSnapshotSatellite = async () => {
   await executeSnapshotFn({
-    ...params,
     fn: restoreSnapshot
   });
 };
 
-export const deleteSnapshotSatellite = async (params: {args?: string[]}) => {
+export const deleteSnapshotSatellite = async () => {
   await executeSnapshotFn({
-    ...params,
     fn: deleteSnapshot
   });
 };
 
 const executeSnapshotFn = async ({
-  args,
   fn
 }: {
-  args?: string[];
   fn: (params: {canisterId: string; segment: AssetKey}) => Promise<void>;
 }) => {
   if (!(await junoConfigExist())) {
@@ -38,7 +33,7 @@ const executeSnapshotFn = async ({
     return;
   }
 
-  const satelliteId = await loadSatelliteId({args});
+  const satelliteId = await loadSatelliteId();
 
   await fn({
     canisterId: satelliteId,
@@ -46,8 +41,8 @@ const executeSnapshotFn = async ({
   });
 };
 
-const loadSatelliteId = async ({args}: {args?: string[]}): Promise<string> => {
-  const {satellite} = await assertConfigAndLoadSatelliteContext(args);
+const loadSatelliteId = async (): Promise<string> => {
+  const {satellite} = await assertConfigAndLoadSatelliteContext();
   const {satelliteId} = satellite;
 
   // TS guard. satelliteParameters exit if satelliteId is undefined.

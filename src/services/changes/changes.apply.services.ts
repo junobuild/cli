@@ -7,7 +7,7 @@ import {assertConfigAndLoadSatelliteContext} from '../../utils/satellite.utils';
 import {clearProposalStagedAssets} from './changes.clear.services';
 
 export const applyChanges = async (args?: string[]) => {
-  const {satellite} = await assertConfigAndLoadSatelliteContext(args);
+  const {satellite} = await assertConfigAndLoadSatelliteContext();
 
   const {proposalId, hash} = readChangesIdAndHash(args);
 

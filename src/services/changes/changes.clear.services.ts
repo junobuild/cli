@@ -22,7 +22,7 @@ export const clearProposalStagedAssets = async ({
   const spinner = ora('Deleting staged assets...').start();
 
   try {
-    const {satellite} = await assertConfigAndLoadSatelliteContext(args);
+    const {satellite} = await assertConfigAndLoadSatelliteContext();
 
     await deleteProposalAssets({
       cdn: {satellite},

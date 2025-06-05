@@ -49,14 +49,8 @@ export const startStopOrbiter = async ({action}: {args?: string[]; action: Start
   });
 };
 
-export const startStopSatellite = async ({
-  args,
-  action
-}: {
-  args?: string[];
-  action: StartStopAction;
-}) => {
-  const {satellite} = await assertConfigAndLoadSatelliteContext(args);
+export const startStopSatellite = async ({action}: {action: StartStopAction}) => {
+  const {satellite} = await assertConfigAndLoadSatelliteContext();
   const {satelliteId} = satellite;
 
   await startStop({

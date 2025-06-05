@@ -25,7 +25,6 @@ export type UploadFileFnParams = UploadFileStorage & {satellite: SatelliteParame
 export type UploadFileFnParamsWithProposal = UploadFileFnParams & {proposalId: bigint};
 
 export const executeDeployWithProposal = async ({
-  args,
   deployFn,
   uploadFileFn
 }: {
@@ -34,14 +33,12 @@ export const executeDeployWithProposal = async ({
   uploadFileFn: (params: UploadFileFnParamsWithProposal) => Promise<void>;
 }): Promise<DeployResultWithProposal> => {
   return await executeDeploy<UploadFileStorageWithProposal, DeployResultWithProposal>({
-    args,
     deployFn,
     uploadFileFn
   });
 };
 
 export const executeDeployImmediate = async ({
-  args,
   deployFn,
   uploadFileFn
 }: {
@@ -50,7 +47,6 @@ export const executeDeployImmediate = async ({
   uploadFileFn: (params: UploadFileFnParams) => Promise<void>;
 }): Promise<DeployResult> => {
   return await executeDeploy<UploadFileStorage, DeployResult>({
-    args,
     deployFn,
     uploadFileFn
   });
@@ -60,19 +56,17 @@ const executeDeploy = async <
   P extends UploadFileStorage,
   R extends DeployResult | DeployResultWithProposal
 >({
-  args,
   deployFn,
   uploadFileFn
 }: {
-  args?: string[];
   deployFn: (params: DeployFnParams<(params: P) => Promise<void>>) => Promise<R>;
   uploadFileFn: (params: P & {satellite: SatelliteParametersWithId}) => Promise<void>;
 }): Promise<R> => {
   const assertMemory = async () => {
-    await assertSatelliteMemorySize(args);
+    await assertSatelliteMemorySize();
   };
 
-  const {satellite, satelliteConfig} = await assertConfigAndLoadSatelliteContext(args);
+  const {satellite, satelliteConfig} = await assertConfigAndLoadSatelliteContext();
 
   const listExistingAssets = async ({startAfter}: {startAfter?: string}): Promise<Asset[]> =>
     await listAssets({

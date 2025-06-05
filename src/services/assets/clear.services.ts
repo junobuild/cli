@@ -5,8 +5,8 @@ import {green} from 'kleur';
 import ora from 'ora';
 import {assertConfigAndLoadSatelliteContext} from '../../utils/satellite.utils';
 
-export const clear = async (args?: string[]) => {
-  const {satellite} = await assertConfigAndLoadSatelliteContext(args);
+export const clear = async () => {
+  const {satellite} = await assertConfigAndLoadSatelliteContext();
 
   const spinner = ora('Clearing app assets...').start();
 
@@ -35,8 +35,8 @@ const cleanFullPath = (fullPath: string): string => {
   return `${path.startsWith('/') ? '' : '/'}${path}`;
 };
 
-export const clearAsset = async ({fullPath, args}: {fullPath: string; args?: string[]}) => {
-  const {satellite} = await assertConfigAndLoadSatelliteContext(args);
+export const clearAsset = async ({fullPath}: {fullPath: string}) => {
+  const {satellite} = await assertConfigAndLoadSatelliteContext();
 
   const spinner = ora(`Clearing ${fullPath}...`).start();
 

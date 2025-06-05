@@ -8,8 +8,8 @@ import {
 import {NEW_CMD_LINE, confirmAndExit} from '../../../utils/prompt.utils';
 import {assertConfigAndLoadSatelliteContext} from '../../../utils/satellite.utils';
 
-export const assertSatelliteMemorySize = async (args?: string[]) => {
-  const {satellite, satelliteConfig} = await assertConfigAndLoadSatelliteContext(args);
+export const assertSatelliteMemorySize = async () => {
+  const {satellite, satelliteConfig} = await assertConfigAndLoadSatelliteContext();
 
   const {assertions} = satelliteConfig;
 

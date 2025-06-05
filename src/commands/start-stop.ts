@@ -15,7 +15,7 @@ export const startStop = async ({args, action}: {args?: string[]; action: StartS
   switch (target) {
     case 's':
     case 'satellite':
-      await startStopSatellite({args, action});
+      await startStopSatellite({action});
       break;
     case 'm':
     case 'mission-control':

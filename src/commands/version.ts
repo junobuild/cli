@@ -37,7 +37,7 @@ export const version = async (args?: string[]) => {
   }
 
   await missionControlVersion();
-  await satelliteVersion(args);
+  await satelliteVersion();
   await orbitersVersion();
 };
 
@@ -112,8 +112,8 @@ const missionControlVersion = async () => {
   });
 };
 
-const satelliteVersion = async (args?: string[]) => {
-  const {satellite} = await assertConfigAndLoadSatelliteContext(args);
+const satelliteVersion = async () => {
+  const {satellite} = await assertConfigAndLoadSatelliteContext();
   const {satelliteId, ...actorParams} = satellite;
 
   const getVersion = async (): Promise<string | undefined> => {

@@ -6,7 +6,7 @@ import {upgradeSatelliteWithSrc} from '../../modules/upgrade/upgrade.satellite.s
 import {upgradeWithCdn} from './upgrade.cdn.services';
 
 export const upgradeFunctions = async (args?: string[]) => {
-  const {satellite} = await assertConfigAndLoadSatelliteContext(args);
+  const {satellite} = await assertConfigAndLoadSatelliteContext();
 
   const cdnOption = hasArgs({args, options: ['--cdn', '--cdn-path']});
 
