@@ -17,8 +17,8 @@ export interface JunoConsoleUrls {
 }
 
 export interface JunoCliConfig {
-  // @typescript-eslint/no-redundant-type-constituents
+  // eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
   projectName: string | 'juno';
-  // @typescript-eslint/no-redundant-type-constituents
+  // eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
   projectSettingsName: string | 'juno-cli-settings';
 }
