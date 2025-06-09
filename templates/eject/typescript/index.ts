@@ -13,7 +13,7 @@ import {
   type OnDeleteManyDocs,
   type OnSetDoc,
   type OnSetManyDocs,
-  OnUploadAsset
+  type OnUploadAsset
 } from '@junobuild/functions';
 
 // All the available hooks and assertions for your Datastore and Storage are scaffolded by default in this module.
