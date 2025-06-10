@@ -24,7 +24,7 @@ export const listChanges = async (args?: string[]) => {
 
         return {
           ...acc,
-          [`${proposal_id}`]: {
+          [`ID ${proposal_id}`]: {
             hash: nonNullish(hash) ? uint8ArrayToHexString(hash) : '',
             created_at: formatDate(new Date(Number(created_at / 1_000_000n)))
           }
