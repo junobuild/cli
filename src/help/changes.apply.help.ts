@@ -12,6 +12,7 @@ const usage = `Usage: ${green('juno')} ${cyan('changes')} ${magenta('apply')} ${
 
 Options:
   ${yellow('-i, --id')}              The ID of the change to apply.
+  ${yellow('--snapshot')}            Create a snapshot before applying.
   ${OPTION_HASH}
   ${OPTION_KEEP_STAGED}
   ${OPTION_HELP}`;
