@@ -1,4 +1,4 @@
-import {isNullish} from '@dfinity/utils';
+import {isNullish, nonNullish} from '@dfinity/utils';
 import {uploadAssetWithProposal} from '@junobuild/cdn';
 import {
   type DeployResultWithProposal,
@@ -18,6 +18,7 @@ import {readWasmFileMetadata} from '../../utils/wasm.utils';
 import {assertSatelliteMemorySize} from '../assets/deploy/deploy.assert.services';
 import {type UploadFileFnParamsWithProposal} from '../assets/deploy/deploy.execute.services';
 import {clearProposalStagedAssets} from '../changes/changes.clear.services';
+import {ENV} from '../../env';
 
 export const publish = async (args?: string[]) => {
   const {satellite} = await assertConfigAndLoadSatelliteContext();
@@ -108,7 +109,10 @@ const publishWasmWithProposal = async ({
         // @ts-expect-error type incompatibility NodeJS vs bundle
         data,
         fullPath: storagePath ?? fullPath,
-        headers,
+        headers: [
+          ...headers,
+          ["Access-Control-Allow-Origin", ENV.console.urls.root]
+        ],
         token: crypto.randomUUID(),
         description: `change=${proposalId};version=${version}`
       }
