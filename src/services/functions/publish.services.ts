@@ -12,6 +12,7 @@ import {red} from 'kleur';
 import {dirname} from 'node:path';
 import {SATELLITE_OUTPUT} from '../../constants/dev.constants';
 import {CDN_RELEASES_FULL_PATH} from '../../constants/functions.constants';
+import {ENV} from '../../env';
 import type {SatelliteParametersWithId} from '../../types/satellite';
 import {assertConfigAndLoadSatelliteContext} from '../../utils/satellite.utils';
 import {readWasmFileMetadata} from '../../utils/wasm.utils';
@@ -108,7 +109,7 @@ const publishWasmWithProposal = async ({
         // @ts-expect-error type incompatibility NodeJS vs bundle
         data,
         fullPath: storagePath ?? fullPath,
-        headers,
+        headers: [...headers, ['Access-Control-Allow-Origin', ENV.console.urls.root]],
         token: crypto.randomUUID(),
         description: `change=${proposalId};version=${version}`
       }
