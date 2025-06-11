@@ -4,7 +4,7 @@ import {
   NOTE_KEEP_STAGED,
   OPTION_HELP,
   OPTION_KEEP_STAGED,
-  OPTIONS_HELP
+  OPTIONS_URL
 } from '../constants/help.constants';
 import {helpOutput} from './common.help';
 import {TITLE} from './help';
@@ -16,7 +16,7 @@ Options:
   ${yellow('--no-apply')}            Submit the deployment as a change but do not apply it yet.
   ${OPTION_KEEP_STAGED}
   ${yellow('-i, --immediate')}       Deploy files instantly (bypasses the change workflow).
-  ${OPTIONS_HELP}
+  ${OPTIONS_URL}
   ${OPTION_HELP}
     
 Notes:

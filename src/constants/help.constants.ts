@@ -47,7 +47,7 @@ export const OPTION_SRC = `${yellow('-s, --src')}             A path to a specif
 export const OPTIONS_UPGRADE = `${yellow('--clear-chunks')}        Clear any previously uploaded WASM chunks (applies if the WASM size is greater than 2MB).
   ${yellow('--no-snapshot')}         Skip creating a snapshot before upgrading.
   ${yellow('-r, --reset')}           Reset to the initial state.`;
-export const OPTIONS_HELP = `${yellow('-m, --mode')}            Set env mode. For example production or a custom string. Default is production.
+export const OPTIONS_URL = `${yellow('-m, --mode')}            Set env mode. For example production or a custom string. Default is production.
   ${yellow('--container-url')}       Override a custom container URL. If not provided, defaults to production or the local container in development mode.
   ${yellow('--console-url')}         Specify a custom URL to access the developer Console.`;
 

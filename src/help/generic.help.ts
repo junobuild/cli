@@ -1,5 +1,5 @@
 import {cyan, green, yellow} from 'kleur';
-import {OPTIONS_HELP, OPTION_HELP} from '../constants/help.constants';
+import {OPTIONS_URL, OPTION_HELP} from '../constants/help.constants';
 import {helpOutput} from './common.help';
 import {TITLE} from './help';
 
@@ -22,7 +22,7 @@ const helpWithMode = ({command, description}: {command: string; description: str
 ${description}
 
 ${usage(command)}
-  ${OPTIONS_HELP}
+  ${OPTIONS_URL}
 `;
 
 const doc = ({command, description}: {command: string; description: string}) => `${description}
@@ -42,7 +42,7 @@ const docWithMode = ({
 
 \`\`\`
 ${usage(command)}
-  ${OPTIONS_HELP}
+  ${OPTIONS_URL}
 \`\`\`
 `;
 

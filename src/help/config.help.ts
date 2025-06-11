@@ -1,12 +1,12 @@
 import {cyan, green, yellow} from 'kleur';
-import {CONFIG_DESCRIPTION, OPTIONS_HELP, OPTION_HELP} from '../constants/help.constants';
+import {CONFIG_DESCRIPTION, OPTIONS_URL, OPTION_HELP} from '../constants/help.constants';
 import {helpOutput} from './common.help';
 import {TITLE} from './help';
 
 const usage = `Usage: ${green('juno')} ${cyan('config')} ${yellow('[options]')}
 
 Options:
-  ${OPTIONS_HELP}
+  ${OPTIONS_URL}
   ${OPTION_HELP}`;
 
 const doc = `${CONFIG_DESCRIPTION}

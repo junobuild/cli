@@ -5,7 +5,7 @@ import {
   OPTION_HELP,
   OPTION_KEEP_STAGED,
   OPTION_SRC,
-  OPTIONS_HELP
+  OPTIONS_URL
 } from '../constants/help.constants';
 import {helpOutput} from './common.help';
 import {TITLE} from './help';
@@ -16,7 +16,7 @@ Options:
   ${yellow('--no-apply')}            Submit the release as a change but do not apply it yet.
   ${OPTION_KEEP_STAGED}
   ${OPTION_SRC}
-  ${OPTIONS_HELP}
+  ${OPTIONS_URL}
   ${OPTION_HELP}
   
 Notes:
