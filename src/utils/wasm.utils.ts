@@ -1,6 +1,6 @@
 import {type BuildType, extractBuildType, readCustomSectionJunoPackage} from '@junobuild/admin';
 import {gunzipFile, isGzip} from '@junobuild/cli-tools';
-import {type JunoPackage} from '@junobuild/config';
+import type {JunoPackage} from '@junobuild/config';
 import {readFile} from 'node:fs/promises';
 
 interface WasmMetadata {
