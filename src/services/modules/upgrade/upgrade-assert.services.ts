@@ -2,6 +2,7 @@ import {isNullish} from '@dfinity/utils';
 import {satelliteBuildType, type SatelliteParameters} from '@junobuild/admin';
 import {cyan, yellow} from 'kleur';
 import type {AssertWasmModule, UpgradeWasm} from '../../../types/upgrade';
+import {isHeadless} from '../../../utils/process.utils';
 import {NEW_CMD_LINE, confirmAndExit} from '../../../utils/prompt.utils';
 import {readWasmModuleMetadata} from '../../../utils/wasm.utils';
 
@@ -25,7 +26,7 @@ export const assertSatelliteBuildType = async ({
   globalThis.console.warn = hideAgentJsConsoleWarn;
 
   if (wasmMetadataResult.status === 'rejected') {
-    throw new Error(`The custom sections of the WASM module you try to upgrade cannot be read.`);
+    throw new Error('The custom sections of the WASM module you try to upgrade cannot be read.');
   }
 
   // Agent-js throw an exception when a metadata path cannot be found therefore we assumed here that this happens because the Satellite version is < 0.0.15.
@@ -38,13 +39,21 @@ export const assertSatelliteBuildType = async ({
 
   const {buildType: wasmType} = wasmMetadata;
 
-  if (satelliteType === 'extended' && (wasmType === 'stock' || isNullish(wasmType))) {
+  const warning = satelliteType === 'extended' && (wasmType === 'stock' || isNullish(wasmType));
+
+  if (isHeadless() && warning) {
+    throw new Error(
+      'Your satellite uses serverless functions. Reverting to the stock version would remove your custom features! '
+    );
+  }
+
+  if (warning) {
     await confirmAndExit(
-      `Your satellite is currently running on an ${cyan(
-        `extended`
-      )} build.${NEW_CMD_LINE}However, you are about to upgrade it to the ${yellow(
+      `Your satellite uses ${cyan(
+        `serverless functions`
+      )}.${NEW_CMD_LINE}However, you are about to revert it to the ${yellow(
         `stock`
-      )} version.${NEW_CMD_LINE}Are you sure you want to proceed?`
+      )} version which will remove your custom features!${NEW_CMD_LINE}Are you sure you want to proceed?`
     );
   }
 };
