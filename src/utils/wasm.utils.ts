@@ -34,7 +34,7 @@ const readWasmMetadata = async ({buffer}: {buffer: Buffer}): Promise<WasmMetadat
 
   const junoPackage = await readCustomSectionJunoPackage({wasm});
 
-  const buildType = await extractBuildType({wasm: wasm, junoPackage});
+  const buildType = await extractBuildType({wasm, junoPackage});
 
   return {
     gzipped,
