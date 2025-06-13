@@ -266,7 +266,8 @@ const extractBuildType = async ({path}: Pick<BuildArgs, 'path'> = {}): Promise<
   await spawn({
     command: 'cargo',
     args: ['metadata', '--format-version', '1', ...manifestArgs],
-    stdout: (o) => (output += o)
+    stdout: (o) => (output += o),
+    silentErrors: true
   });
 
   const metadata = JSON.parse(output);
