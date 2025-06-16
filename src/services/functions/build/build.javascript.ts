@@ -1,8 +1,7 @@
-import {isEmptyString, notEmptyString} from '@dfinity/utils';
-import {buildEsm, execute, formatBytes, type PackageJson} from '@junobuild/cli-tools';
+import {notEmptyString} from '@dfinity/utils';
+import {buildEsm, execute, formatBytes} from '@junobuild/cli-tools';
 import type {Metafile} from 'esbuild';
 import {green, magenta, red, yellow} from 'kleur';
-import {existsSync} from 'node:fs';
 import {mkdir} from 'node:fs/promises';
 import {join} from 'node:path';
 import {
@@ -10,30 +9,29 @@ import {
   DEPLOY_SPUTNIK_PATH,
   DEVELOPER_PROJECT_SATELLITE_PATH,
   INDEX_MJS,
-  INDEX_TS,
-  PACKAGE_JSON_PATH
+  INDEX_TS
 } from '../../../constants/dev.constants';
-import type {BuildArgs, BuildLang} from '../../../types/build';
+import type {BuildArgs, BuildLang, BuildMetadata} from '../../../types/build';
 import {formatTime} from '../../../utils/format.utils';
-import {readPackageJson} from '../../../utils/pkg.utils';
 import {detectPackageManager} from '../../../utils/pm.utils';
 import {confirmAndExit} from '../../../utils/prompt.utils';
+import {prepareJavaScriptBuildMetadata} from './build.metadata.services';
 
 export const buildTypeScript = async ({
-  path,
+  paths,
   exitOnError
-}: Pick<BuildArgs, 'path' | 'exitOnError'> = {}) => {
-  await build({lang: 'ts', path, exitOnError});
+}: Pick<BuildArgs, 'paths' | 'exitOnError'> = {}) => {
+  await build({lang: 'ts', paths, exitOnError});
 };
 
 export const buildJavaScript = async ({
-  path,
+  paths,
   exitOnError
-}: Pick<BuildArgs, 'path' | 'exitOnError'> = {}) => {
-  await build({lang: 'mjs', path, exitOnError});
+}: Pick<BuildArgs, 'paths' | 'exitOnError'> = {}) => {
+  await build({lang: 'mjs', paths, exitOnError});
 };
 
-type BuildArgsTsJs = {lang: Omit<BuildLang, 'rs'>} & Pick<BuildArgs, 'path' | 'exitOnError'>;
+type BuildArgsTsJs = {lang: Omit<BuildLang, 'rs'>} & Pick<BuildArgs, 'paths' | 'exitOnError'>;
 
 const build = async ({exitOnError, ...params}: BuildArgsTsJs) => {
   await installEsbuild();
@@ -41,7 +39,7 @@ const build = async ({exitOnError, ...params}: BuildArgsTsJs) => {
   await createTargetDir();
 
   try {
-    const metadata = await prepareMetadata();
+    const metadata = await prepareJavaScriptBuildMetadata();
 
     const buildResult = await buildWithEsbuild({params, metadata});
 
@@ -59,14 +57,14 @@ interface BuildResult {
 }
 
 const buildWithEsbuild = async ({
-  params: {lang, path},
+  params: {lang, paths},
   metadata
 }: {
   params: Omit<BuildArgsTsJs, 'exitOnError'>;
   metadata: BuildMetadata;
 }): Promise<BuildResult> => {
   const infile =
-    path ?? join(DEVELOPER_PROJECT_SATELLITE_PATH, lang === 'mjs' ? INDEX_MJS : INDEX_TS);
+    paths?.source ?? join(DEVELOPER_PROJECT_SATELLITE_PATH, lang === 'mjs' ? INDEX_MJS : INDEX_TS);
 
   // We pass the package information as metadata so the Docker container can read it and embed it into the `juno:package` custom section of the WASM’s public metadata.
   const banner = {
@@ -134,35 +132,6 @@ const hasEsbuild = async (): Promise<boolean> => {
     return true;
   } catch (_err: unknown) {
     return false;
-  }
-};
-
-type BuildMetadata = Omit<PackageJson, 'dependencies'> | undefined;
-
-const prepareMetadata = async (): Promise<BuildMetadata> => {
-  if (!existsSync(PACKAGE_JSON_PATH)) {
-    // No package.json therefore no metadata to pass to the build in the container.
-    return undefined;
-  }
-
-  try {
-    const {juno, version, name} = await readPackageJson();
-
-    if (isEmptyString(juno?.functions?.version) && isEmptyString(version)) {
-      // No version detected therefore no metadata to the build in the container.
-      return undefined;
-    }
-
-    const functionsVersion = juno?.functions?.version;
-
-    return {
-      ...(notEmptyString(name) && {name}),
-      ...(notEmptyString(version) && {version}),
-      ...(notEmptyString(functionsVersion) && {juno})
-    };
-  } catch (err: unknown) {
-    console.log(red('⚠️ Could not read build metadata from package.json.'));
-    throw err;
   }
 };
 

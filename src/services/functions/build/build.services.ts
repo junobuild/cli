@@ -7,8 +7,10 @@ import {
   DEVELOPER_PROJECT_SATELLITE_CARGO_TOML,
   DEVELOPER_PROJECT_SATELLITE_INDEX_MJS,
   DEVELOPER_PROJECT_SATELLITE_INDEX_TS,
-  DEVELOPER_PROJECT_SATELLITE_PATH
+  DEVELOPER_PROJECT_SATELLITE_PATH,
+  SPUTNIK_CARGO_TOML
 } from '../../../constants/dev.constants';
+import {ENV} from '../../../env';
 import {SMALL_TITLE} from '../../../help/help';
 import {type BuildArgs} from '../../../types/build';
 import {buildArgs} from '../../../utils/build.utils';
@@ -26,41 +28,44 @@ export const build = async (args?: string[]) => {
   await executeBuild(params);
 };
 
-const executeBuild = async ({lang, path, exitOnError}: Omit<BuildArgs, 'watch'>) => {
+const executeBuild = async ({lang, paths, exitOnError}: Omit<BuildArgs, 'watch'>) => {
   // eslint-disable-next-line @typescript-eslint/switch-exhaustiveness-check
   switch (lang) {
     case 'rs':
-      await buildRust({path});
+      await buildRust({paths});
       return;
     case 'ts':
-      await buildTypeScript({path, exitOnError});
+      await executeSputnikBuild({paths, exitOnError, buildFn: buildTypeScript});
       return;
     case 'mjs':
-      await buildJavaScript({path, exitOnError});
+      await executeSputnikBuild({paths, exitOnError, buildFn: buildJavaScript});
       return;
   }
 
   const isPathToml =
-    nonNullish(path) && basename(path) === basename(DEVELOPER_PROJECT_SATELLITE_CARGO_TOML);
+    nonNullish(paths?.cargo) &&
+    basename(paths.cargo) === basename(DEVELOPER_PROJECT_SATELLITE_CARGO_TOML);
 
   if (isPathToml) {
-    await buildRust({path});
+    await buildRust({paths});
     return;
   }
 
   const isPathTypeScript =
-    nonNullish(path) && extname(path) === extname(DEVELOPER_PROJECT_SATELLITE_INDEX_TS);
+    nonNullish(paths?.source) &&
+    extname(paths.source) === extname(DEVELOPER_PROJECT_SATELLITE_INDEX_TS);
 
   if (isPathTypeScript) {
-    await buildTypeScript({path, exitOnError});
+    await executeSputnikBuild({paths, exitOnError, buildFn: buildTypeScript});
     return;
   }
 
   const isPathJavaScript =
-    nonNullish(path) && extname(path) === extname(DEVELOPER_PROJECT_SATELLITE_INDEX_MJS);
+    nonNullish(paths?.source) &&
+    extname(paths.source) === extname(DEVELOPER_PROJECT_SATELLITE_INDEX_MJS);
 
   if (isPathJavaScript) {
-    await buildJavaScript({path, exitOnError});
+    await executeSputnikBuild({paths, exitOnError, buildFn: buildJavaScript});
     return;
   }
 
@@ -70,12 +75,26 @@ const executeBuild = async ({lang, path, exitOnError}: Omit<BuildArgs, 'watch'>)
   }
 
   if (existsSync(DEVELOPER_PROJECT_SATELLITE_INDEX_TS)) {
-    await buildTypeScript({exitOnError});
+    await executeSputnikBuild({
+      paths: {
+        ...paths,
+        source: DEVELOPER_PROJECT_SATELLITE_INDEX_TS
+      },
+      exitOnError,
+      buildFn: buildTypeScript
+    });
     return;
   }
 
   if (existsSync(DEVELOPER_PROJECT_SATELLITE_INDEX_MJS)) {
-    await buildJavaScript({exitOnError});
+    await executeSputnikBuild({
+      paths: {
+        ...paths,
+        source: DEVELOPER_PROJECT_SATELLITE_INDEX_MJS
+      },
+      exitOnError,
+      buildFn: buildJavaScript
+    });
     return;
   }
 
@@ -86,10 +105,31 @@ const executeBuild = async ({lang, path, exitOnError}: Omit<BuildArgs, 'watch'>)
   );
 };
 
-export const watchBuild = ({watch, path, ...params}: BuildArgs) => {
+const executeSputnikBuild = async ({
+  paths,
+  exitOnError,
+  buildFn
+}: Omit<BuildArgs, 'watch'> & {
+  buildFn: (args: Pick<BuildArgs, 'paths' | 'exitOnError'>) => Promise<void>;
+}) => {
+  await buildFn({paths, exitOnError});
+
+  const withToolchain = nonNullish(paths?.cargo) || ENV.ci;
+
+  if (withToolchain) {
+    const rustPaths = {
+      ...paths,
+      cargo: paths?.cargo ?? SPUTNIK_CARGO_TOML
+    };
+
+    await buildRust({paths: rustPaths, target: 'wasm32-wasip1'});
+  }
+};
+
+export const watchBuild = ({watch, paths, ...params}: BuildArgs) => {
   const doBuild = async () => {
     console.log(`\n⏱ Rebuilding serverless functions...`);
-    await executeBuild({path, exitOnError: false, ...params});
+    await executeBuild({paths, exitOnError: false, ...params});
   };
 
   const DEFAULT_TIMEOUT = 10_000;
@@ -102,7 +142,11 @@ export const watchBuild = ({watch, path, ...params}: BuildArgs) => {
     debounceBuild();
   };
 
-  const watchPath = nonNullish(path) ? dirname(path) : DEVELOPER_PROJECT_SATELLITE_PATH;
+  const watchPath = nonNullish(paths?.source)
+    ? dirname(paths.source)
+    : nonNullish(paths?.cargo)
+      ? dirname(paths.cargo)
+      : DEVELOPER_PROJECT_SATELLITE_PATH;
 
   console.log(SMALL_TITLE);
   console.log('👀 Watching for file changes');
