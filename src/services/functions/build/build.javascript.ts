@@ -1,8 +1,7 @@
-import {isEmptyString, notEmptyString} from '@dfinity/utils';
-import {buildEsm, execute, formatBytes, type PackageJson} from '@junobuild/cli-tools';
+import {notEmptyString} from '@dfinity/utils';
+import {buildEsm, execute, formatBytes} from '@junobuild/cli-tools';
 import type {Metafile} from 'esbuild';
 import {green, magenta, red, yellow} from 'kleur';
-import {existsSync} from 'node:fs';
 import {mkdir} from 'node:fs/promises';
 import {join} from 'node:path';
 import {
@@ -10,12 +9,10 @@ import {
   DEPLOY_SPUTNIK_PATH,
   DEVELOPER_PROJECT_SATELLITE_PATH,
   INDEX_MJS,
-  INDEX_TS,
-  PACKAGE_JSON_PATH
+  INDEX_TS
 } from '../../../constants/dev.constants';
 import type {BuildArgs, BuildLang, BuildMetadata} from '../../../types/build';
 import {formatTime} from '../../../utils/format.utils';
-import {readPackageJson} from '../../../utils/pkg.utils';
 import {detectPackageManager} from '../../../utils/pm.utils';
 import {confirmAndExit} from '../../../utils/prompt.utils';
 import {prepareJavaScriptBuildMetadata} from './build.metadata.services';
