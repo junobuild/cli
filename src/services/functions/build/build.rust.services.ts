@@ -137,8 +137,14 @@ export const buildRust = async ({
     spinner.text = 'Generating DID...';
 
     await did({cargoOutputWasm});
-    await didc();
-    await api();
+
+    if (target !== 'wasm32-wasip1') {
+      // TODO: support binding files for serverless functions in JS/TS
+      await didc();
+      await api();
+    }
+
+    spinner.text = 'Binding metadata...';
 
     await icWasm({buildType, cargoOutputWasm});
 
