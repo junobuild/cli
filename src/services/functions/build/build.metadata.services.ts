@@ -8,7 +8,7 @@ import {
   PACKAGE_JSON_PATH,
   SATELLITE_PROJECT_NAME
 } from '../../../constants/dev.constants';
-import {BuildMetadata, BuildType} from '../../../types/build';
+import {type BuildMetadata, type BuildType} from '../../../types/build';
 import {readPackageJson} from '../../../utils/pkg.utils';
 
 export const prepareJunoPkgForSatellite = async ({buildType}: {buildType: BuildType}) => {
