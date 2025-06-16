@@ -1,7 +1,7 @@
 import {isEmptyString, isNullish, nonNullish} from '@dfinity/utils';
 import {execute, formatBytes, gzipFile, spawn} from '@junobuild/cli-tools';
 import {generateApi} from '@junobuild/did-tools';
-import {magenta, red, yellow} from 'kleur';
+import {red, yellow} from 'kleur';
 import {existsSync, renameSync} from 'node:fs';
 import {lstat, mkdir, readFile, rename, writeFile} from 'node:fs/promises';
 import {join, relative} from 'node:path';
@@ -13,7 +13,6 @@ import {
   DEPLOY_SPUTNIK_PATH,
   DEVELOPER_PROJECT_SATELLITE_DECLARATIONS_PATH,
   DEVELOPER_PROJECT_SATELLITE_PATH,
-  IC_WASM_MIN_VERSION,
   JUNO_PACKAGE_JSON_PATH,
   SATELLITE_OUTPUT,
   SATELLITE_PROJECT_NAME,
@@ -21,15 +20,16 @@ import {
   TARGET_PATH
 } from '../../../constants/dev.constants';
 import type {BuildArgs, BuildType} from '../../../types/build';
-import {readSatelliteDid} from '../../../utils/did.utils';
 import {
-  checkCargoBinInstalled,
-  checkIcWasmVersion,
-  checkRustVersion
-} from '../../../utils/env.utils';
+  checkCandidExtractor,
+  checkIcWasm,
+  checkJunoDidc,
+  checkWasi2ic
+} from '../../../utils/build.rust.utils';
+import {readSatelliteDid} from '../../../utils/did.utils';
+import {checkRustVersion} from '../../../utils/env.utils';
 import {formatTime} from '../../../utils/format.utils';
 import {readPackageJson} from '../../../utils/pkg.utils';
-import {confirmAndExit} from '../../../utils/prompt.utils';
 import {prepareJunoPkgForSatellite, prepareJunoPkgForSputnik} from './build.metadata.services';
 
 export const buildRust = async ({
@@ -474,110 +474,9 @@ const successMsg = async (spinner: Ora) => {
   );
 };
 
-const checkIcWasm = async (): Promise<{valid: boolean}> => {
-  const {valid} = await checkIcWasmVersion();
-
-  if (valid === false) {
-    return {valid};
-  }
-
-  if (valid === 'error') {
-    await confirmAndExit(
-      `The ${magenta('ic-wasm')} ${yellow(
-        `v${IC_WASM_MIN_VERSION}`
-      )} tool is required to build a satellite but appears to be not available. Would you like to install it?`
-    );
-
-    await execute({
-      command: 'cargo',
-      args: ['install', `ic-wasm@${IC_WASM_MIN_VERSION}`]
-    });
-  }
-
-  return {valid: true};
-};
-
-const checkCandidExtractor = async (): Promise<{valid: boolean}> => {
-  const {valid} = await checkCargoBinInstalled({
-    command: 'candid-extractor',
-    args: ['--version']
-  });
-
-  if (valid === false) {
-    return {valid};
-  }
-
-  if (valid === 'error') {
-    await confirmAndExit(
-      `The ${magenta(
-        'candid-extractor'
-      )} tool is required to generate the API ("did file"). Would you like to install it?`
-    );
-
-    await execute({
-      command: 'cargo',
-      args: ['install', 'candid-extractor']
-    });
-  }
-
-  return {valid: true};
-};
-
-const checkJunoDidc = async (): Promise<{valid: boolean}> => {
-  const {valid} = await checkCargoBinInstalled({
-    command: 'junobuild-didc',
-    args: ['--version']
-  });
-
-  if (valid === false) {
-    return {valid};
-  }
-
-  if (valid === 'error') {
-    await confirmAndExit(
-      `It seems that ${magenta(
-        'junobuild-didc'
-      )} is not installed. This is a useful tool for generating automatically JavaScript or TypeScript bindings. Would you like to install it?`
-    );
-
-    await execute({
-      command: 'cargo',
-      args: ['install', `junobuild-didc`]
-    });
-  }
-
-  return {valid: true};
-};
-
 const wasi2ic = async ({cargoOutputWasm}: {cargoOutputWasm: string}) => {
   await execute({
     command: 'wasi2ic',
     args: [cargoOutputWasm, cargoOutputWasm, '--quiet']
   });
-};
-
-const checkWasi2ic = async (): Promise<{valid: boolean}> => {
-  const {valid} = await checkCargoBinInstalled({
-    command: 'wasi2ic',
-    args: ['--version']
-  });
-
-  if (valid === false) {
-    return {valid};
-  }
-
-  if (valid === 'error') {
-    await confirmAndExit(
-      `The ${magenta(
-        'wasi2ic'
-      )} polyfill tool is required to replaces the specific function calls with their corresponding polyfill implementations for the Internet Computer. Would you like to install it?`
-    );
-
-    await execute({
-      command: 'cargo',
-      args: ['install', 'wasi2ic']
-    });
-  }
-
-  return {valid: true};
 };
