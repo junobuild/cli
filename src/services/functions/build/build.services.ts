@@ -14,7 +14,7 @@ import {ENV} from '../../../env';
 import {SMALL_TITLE} from '../../../help/help';
 import {type BuildArgs} from '../../../types/build';
 import {buildArgs} from '../../../utils/build.utils';
-import {buildJavaScript, buildTypeScript} from './build.javascript';
+import {buildJavaScript, buildTypeScript} from './build.javascript.services';
 import {buildRust} from './build.rust.services';
 
 export const build = async (args?: string[]) => {
