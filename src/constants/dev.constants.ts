@@ -1,5 +1,8 @@
 import {join} from 'node:path';
 
+export const SATELLITE_PROJECT_NAME = 'satellite';
+export const SPUTNIK_PROJECT_NAME = 'sputnik';
+
 export const DEVELOPER_PROJECT_SRC_PATH = join(process.cwd(), 'src');
 export const DEVELOPER_PROJECT_SATELLITE_PATH = join(DEVELOPER_PROJECT_SRC_PATH, 'satellite');
 export const DEVELOPER_PROJECT_SATELLITE_DECLARATIONS_PATH = join(

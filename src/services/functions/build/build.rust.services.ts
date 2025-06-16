@@ -1,6 +1,5 @@
 import {isEmptyString, isNullish, nonNullish} from '@dfinity/utils';
 import {execute, formatBytes, gzipFile, spawn} from '@junobuild/cli-tools';
-import {type JunoPackage} from '@junobuild/config';
 import {generateApi} from '@junobuild/did-tools';
 import {magenta, red, yellow} from 'kleur';
 import {existsSync, renameSync} from 'node:fs';
@@ -17,9 +16,11 @@ import {
   IC_WASM_MIN_VERSION,
   JUNO_PACKAGE_JSON_PATH,
   SATELLITE_OUTPUT,
+  SATELLITE_PROJECT_NAME,
+  SPUTNIK_PROJECT_NAME,
   TARGET_PATH
 } from '../../../constants/dev.constants';
-import type {BuildArgs} from '../../../types/build';
+import type {BuildArgs, BuildType} from '../../../types/build';
 import {readSatelliteDid} from '../../../utils/did.utils';
 import {
   checkCargoBinInstalled,
@@ -29,8 +30,7 @@ import {
 import {formatTime} from '../../../utils/format.utils';
 import {readPackageJson} from '../../../utils/pkg.utils';
 import {confirmAndExit} from '../../../utils/prompt.utils';
-
-const SATELLITE_PROJECT_NAME = 'satellite';
+import {prepareJunoPkgForSatellite, prepareJunoPkgForSputnik} from './build.metadata.services';
 
 export const buildRust = async ({
   paths,
@@ -95,13 +95,6 @@ export const buildRust = async ({
     env
   });
 
-  if (target === 'wasm32-wasip1') {
-    // The output of the Sputnik build is sputnik.wasm but, the developer and tools is expecting using satellite.wasm
-    renameSync(join(cargoReleaseDir, 'wasm32-wasip1', 'release', 'sputnik.wasm'), cargoOutputWasm);
-
-    await wasi2ic({cargoOutputWasm});
-  }
-
   const spinner = ora({
     text: 'Finalizing...',
     discardStdin: true
@@ -115,7 +108,33 @@ export const buildRust = async ({
       return;
     }
 
-    await prepareJunoPkg({buildType});
+    switch (target) {
+      case 'wasm32-wasip1': {
+        spinner.text = 'Converting WASI to IC...';
+
+        // The output of the Sputnik build is sputnik.wasm but, the developer and tools is expecting using satellite.wasm
+        renameSync(
+          join(cargoReleaseDir, 'wasm32-wasip1', 'release', `${SPUTNIK_PROJECT_NAME}.wasm`),
+          cargoOutputWasm
+        );
+
+        await wasi2ic({cargoOutputWasm});
+
+        const result = await prepareJunoPkgForSputnik({buildType});
+
+        if ('error' in result) {
+          console.log(red(result.error));
+          return {result: 'error'};
+        }
+
+        break;
+      }
+      default: {
+        await prepareJunoPkgForSatellite({buildType});
+      }
+    }
+
+    spinner.text = 'Generating DID...';
 
     await did({cargoOutputWasm});
     await didc();
@@ -260,27 +279,6 @@ const api = async () => {
   });
 };
 
-type BuildType = {build: 'legacy'} | {build: 'modern'; version: string; satelliteVersion: string};
-
-const prepareJunoPkg = async ({buildType}: {buildType: BuildType}) => {
-  // We do not write a juno.package.json for legacy build
-  if (buildType.build === 'legacy') {
-    return;
-  }
-
-  const {version, satelliteVersion} = buildType;
-
-  const pkg: JunoPackage = {
-    version,
-    name: SATELLITE_PROJECT_NAME,
-    dependencies: {
-      '@junobuild/satellite': satelliteVersion
-    }
-  };
-
-  await writeFile(JUNO_PACKAGE_JSON_PATH, JSON.stringify(pkg, null, 2), 'utf-8');
-};
-
 const extractBuildType = async ({paths}: Pick<BuildArgs, 'paths'> = {}): Promise<
   BuildType | {error: string}
 > => {
@@ -364,7 +362,14 @@ const extractBuildType = async ({paths}: Pick<BuildArgs, 'paths'> = {}): Promise
     return {build: 'legacy'};
   }
 
-  return {build: 'modern', version, satelliteVersion};
+  const sputnikPkg = (metadata?.packages ?? []).find((pkg) => pkg?.name === SPUTNIK_PROJECT_NAME);
+
+  return {
+    build: 'modern',
+    version,
+    satelliteVersion,
+    ...(nonNullish(sputnikPkg) && {sputnikVersion: sputnikPkg.version})
+  };
 };
 
 const icWasm = async ({
@@ -545,19 +550,10 @@ const checkJunoDidc = async (): Promise<{valid: boolean}> => {
 };
 
 const wasi2ic = async ({cargoOutputWasm}: {cargoOutputWasm: string}) => {
-  const spinner = ora({
-    text: 'Converting WASI to IC...',
-    discardStdin: true
-  }).start();
-
-  try {
-    await execute({
-      command: 'wasi2ic',
-      args: [cargoOutputWasm, cargoOutputWasm, '--quiet']
-    });
-  } finally {
-    spinner.stop();
-  }
+  await execute({
+    command: 'wasi2ic',
+    args: [cargoOutputWasm, cargoOutputWasm, '--quiet']
+  });
 };
 
 const checkWasi2ic = async (): Promise<{valid: boolean}> => {

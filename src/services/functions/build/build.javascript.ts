@@ -13,11 +13,12 @@ import {
   INDEX_TS,
   PACKAGE_JSON_PATH
 } from '../../../constants/dev.constants';
-import type {BuildArgs, BuildLang} from '../../../types/build';
+import type {BuildArgs, BuildLang, BuildMetadata} from '../../../types/build';
 import {formatTime} from '../../../utils/format.utils';
 import {readPackageJson} from '../../../utils/pkg.utils';
 import {detectPackageManager} from '../../../utils/pm.utils';
 import {confirmAndExit} from '../../../utils/prompt.utils';
+import {prepareJavaScriptBuildMetadata} from './build.metadata.services';
 
 export const buildTypeScript = async ({
   paths,
@@ -41,7 +42,7 @@ const build = async ({exitOnError, ...params}: BuildArgsTsJs) => {
   await createTargetDir();
 
   try {
-    const metadata = await prepareMetadata();
+    const metadata = await prepareJavaScriptBuildMetadata();
 
     const buildResult = await buildWithEsbuild({params, metadata});
 
@@ -134,35 +135,6 @@ const hasEsbuild = async (): Promise<boolean> => {
     return true;
   } catch (_err: unknown) {
     return false;
-  }
-};
-
-type BuildMetadata = Omit<PackageJson, 'dependencies'> | undefined;
-
-const prepareMetadata = async (): Promise<BuildMetadata> => {
-  if (!existsSync(PACKAGE_JSON_PATH)) {
-    // No package.json therefore no metadata to pass to the build in the container.
-    return undefined;
-  }
-
-  try {
-    const {juno, version, name} = await readPackageJson();
-
-    if (isEmptyString(juno?.functions?.version) && isEmptyString(version)) {
-      // No version detected therefore no metadata to the build in the container.
-      return undefined;
-    }
-
-    const functionsVersion = juno?.functions?.version;
-
-    return {
-      ...(notEmptyString(name) && {name}),
-      ...(notEmptyString(version) && {version}),
-      ...(notEmptyString(functionsVersion) && {juno})
-    };
-  } catch (err: unknown) {
-    console.log(red('⚠️ Could not read build metadata from package.json.'));
-    throw err;
   }
 };
 
