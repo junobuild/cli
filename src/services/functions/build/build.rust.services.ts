@@ -1,8 +1,9 @@
 import {isEmptyString, isNullish, nonNullish} from '@dfinity/utils';
 import {execute, formatBytes, gzipFile, spawn} from '@junobuild/cli-tools';
 import {generateApi} from '@junobuild/did-tools';
+import {copyFile} from 'fs/promises';
 import {red, yellow} from 'kleur';
-import {existsSync, renameSync} from 'node:fs';
+import {existsSync} from 'node:fs';
 import {lstat, mkdir, readFile, rename, writeFile} from 'node:fs/promises';
 import {join, relative} from 'node:path';
 import ora, {type Ora} from 'ora';
@@ -69,7 +70,7 @@ export const buildRust = async ({
   const defaultProjectArgs = ['-p', SATELLITE_PROJECT_NAME];
 
   const cargoTarget = target ?? 'wasm32-unknown-unknown';
-  const cargoReleaseDir = join(process.cwd(), 'target');
+  const cargoReleaseDir = join(process.cwd(), 'target', cargoTarget, 'release');
   const cargoOutputWasm = join(cargoReleaseDir, 'satellite.wasm');
 
   const args = [
@@ -113,7 +114,7 @@ export const buildRust = async ({
         spinner.text = 'Converting WASI to IC...';
 
         // The output of the Sputnik build is sputnik.wasm but, the developer and tools is expecting using satellite.wasm
-        renameSync(
+        await copyFile(
           join(cargoReleaseDir, 'wasm32-wasip1', 'release', `${SPUTNIK_PROJECT_NAME}.wasm`),
           cargoOutputWasm
         );
