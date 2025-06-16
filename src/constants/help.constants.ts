@@ -33,7 +33,8 @@ export const FUNCTIONS_EJECT_DESCRIPTION =
 
 export const FUNCTIONS_BUILD_NOTES = `- If no language is provided, the CLI attempts to determine the appropriate build.
 - Language can be shortened to ${magenta('rs')} for Rust, ${magenta('ts')} for TypeScript and ${magenta('mjs')} for JavaScript.
-- The path option maps to ${magenta('--manifest-path')} for Rust (Cargo) or to the source file for TypeScript and JavaScript (e.g. ${magenta('index.ts')} or ${magenta('index.mjs')}).
+- Use ${magenta('--cargo-path')} to specify a specific crate path. For Rust builds, this maps to ${magenta('--manifest-path')} for ${magenta('cargo build')}. For TypeScript and JavaScript, it points to the Rust crate (commonly "Sputnik") that imports the functions.
+- An optional ${magenta('--source-path')} to specify the source file for TypeScript and JavaScript (e.g. ${magenta('index.ts')} or ${magenta('index.mjs')}).
 - The watch option rebuilds when source files change, with a default debounce delay of 10 seconds; optionally, pass a delay in milliseconds.`;
 
 export const CHANGES_LIST_DESCRIPTION = 'List all submitted or applied changes.';
@@ -50,5 +51,8 @@ export const OPTIONS_UPGRADE = `${yellow('--clear-chunks')}        Clear any pre
 export const OPTIONS_URL = `${yellow('-m, --mode')}            Set env mode. For example production or a custom string. Default is production.
   ${yellow('--container-url')}       Override a custom container URL. If not provided, defaults to production or the local container in development mode.
   ${yellow('--console-url')}         Specify a custom URL to access the developer Console.`;
+export const OPTIONS_BUILD = `${yellow('-l, --lang')}            Specify the language for building the serverless functions: ${magenta('rust')}, ${magenta('typescript')} or ${magenta('javascript')}.
+  ${yellow('--cargo-path')}          Path to the Rust manifest.
+  ${yellow('--source-path')}         Optional path to the TypeScript or JavaScript entry file.`;
 
 export const NOTE_KEEP_STAGED = `The option ${yellow('--keep-staged')} only applies when ${yellow('--no-apply')} is NOT used (i.e. the change is applied immediately).`;

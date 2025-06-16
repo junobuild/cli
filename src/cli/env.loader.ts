@@ -11,11 +11,14 @@ export const loadEnv = (): JunoCliEnv => {
   const envContainerUrl =
     containerUrl ?? (mode === 'development' ? 'http://127.0.0.1:5987' : undefined);
 
+  const ci = process.env.CI === 'true';
+
   return {
     mode: mode ?? 'production',
     containerUrl: envContainerUrl,
     console: loadEnvConsole({args, mode}),
-    config: loadEnvConfig({mode})
+    config: loadEnvConfig({mode}),
+    ci
   };
 };
 

@@ -2,7 +2,8 @@ import {cyan, green, magenta, yellow} from 'kleur';
 import {
   FUNCTIONS_BUILD_DESCRIPTION,
   FUNCTIONS_BUILD_NOTES,
-  OPTION_HELP
+  OPTION_HELP,
+  OPTIONS_BUILD
 } from '../constants/help.constants';
 import {helpOutput} from './common.help';
 import {TITLE} from './help';
@@ -10,8 +11,7 @@ import {TITLE} from './help';
 const usage = `Usage: ${green('juno')} ${cyan('functions')} ${magenta('build')} ${yellow('[options]')}
 
 Options:
-  ${yellow('-l, --lang')}            Specify the language for building the serverless functions: ${magenta('rust')}, ${magenta('typescript')} or ${magenta('javascript')}.
-  ${yellow('-p, --path')}            Path to the source to bundle.
+  ${OPTIONS_BUILD}
   ${yellow('-w, --watch')}           Rebuild your functions automatically when source files change.
   ${OPTION_HELP}
   

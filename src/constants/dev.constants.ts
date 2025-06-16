@@ -46,4 +46,7 @@ export const PACKAGE_JSON_PATH = join(process.cwd(), 'package.json');
 export const SPUTNIK_INDEX_MJS = 'sputnik.index.mjs';
 export const DEPLOY_SPUTNIK_PATH = join(DEPLOY_LOCAL_REPLICA_PATH, SPUTNIK_INDEX_MJS);
 
+export const JUNO_ACTION_SPUTNIK_PATH = '/juno/src/sputnik';
+export const SPUTNIK_CARGO_TOML = join(JUNO_ACTION_SPUTNIK_PATH, CARGO_TOML);
+
 export const SATELLITE_OUTPUT = join(DEPLOY_LOCAL_REPLICA_PATH, 'satellite.wasm');

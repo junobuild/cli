@@ -4,6 +4,7 @@ export type JunoCliEnv = JunoConfigEnv & {
   containerUrl: string | undefined;
   console: JunoConsole;
   config: JunoCliConfig;
+  ci: boolean;
 };
 
 export interface JunoConsole {

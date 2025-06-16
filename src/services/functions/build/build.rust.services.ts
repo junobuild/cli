@@ -30,9 +30,13 @@ import {readPackageJson} from '../../../utils/pkg.utils';
 import {confirmAndExit} from '../../../utils/prompt.utils';
 
 const CARGO_RELEASE_DIR = join(process.cwd(), 'target', 'wasm32-unknown-unknown', 'release');
+const CARGO_OUTPUT_WASM = join(CARGO_RELEASE_DIR, 'satellite.wasm');
 const SATELLITE_PROJECT_NAME = 'satellite';
 
-export const buildRust = async ({path}: Pick<BuildArgs, 'path'> = {}) => {
+export const buildRust = async ({
+  paths,
+  target
+}: Pick<BuildArgs, 'paths'> & {target?: 'wasm32-unknown-unknown' | 'wasm32-wasip1'} = {}) => {
   const {valid: validRust} = await checkRustVersion();
 
   if (validRust === 'error' || !validRust) {
@@ -57,13 +61,19 @@ export const buildRust = async ({path}: Pick<BuildArgs, 'path'> = {}) => {
     return;
   }
 
+  const {valid: validWasi2ic} = target === 'wasm32-wasip1' ? await checkWasi2ic() : {valid: true};
+
+  if (!validWasi2ic) {
+    return;
+  }
+
   const defaultProjectArgs = ['-p', SATELLITE_PROJECT_NAME];
 
   const args = [
     'build',
     '--target',
-    'wasm32-unknown-unknown',
-    ...(nonNullish(path) ? ['--manifest-path', path] : defaultProjectArgs),
+    target ?? 'wasm32-unknown-unknown',
+    ...(nonNullish(paths?.cargo) ? ['--manifest-path', paths.cargo] : defaultProjectArgs),
     '--release',
     ...(existsSync('Cargo.lock') ? ['--locked'] : [])
   ];
@@ -76,13 +86,17 @@ export const buildRust = async ({path}: Pick<BuildArgs, 'path'> = {}) => {
     env
   });
 
+  if (target === 'wasm32-wasip1') {
+    await wasi2ic();
+  }
+
   const spinner = ora({
     text: 'Finalizing...',
     discardStdin: true
   }).start();
 
   try {
-    const buildType = await extractBuildType({path});
+    const buildType = await extractBuildType({paths});
 
     if ('error' in buildType) {
       console.log(red(buildType.error));
@@ -121,7 +135,7 @@ const did = async () => {
   let candid = '';
   await spawn({
     command: 'candid-extractor',
-    args: [join(CARGO_RELEASE_DIR, 'satellite.wasm')],
+    args: [CARGO_OUTPUT_WASM],
     stdout: (o) => (candid += o)
   });
 
@@ -255,12 +269,12 @@ const prepareJunoPkg = async ({buildType}: {buildType: BuildType}) => {
   await writeFile(JUNO_PACKAGE_JSON_PATH, JSON.stringify(pkg, null, 2), 'utf-8');
 };
 
-const extractBuildType = async ({path}: Pick<BuildArgs, 'path'> = {}): Promise<
+const extractBuildType = async ({paths}: Pick<BuildArgs, 'paths'> = {}): Promise<
   BuildType | {error: string}
 > => {
   await mkdir(TARGET_PATH, {recursive: true});
 
-  const manifestArgs = nonNullish(path) ? ['--manifest-path', path] : [];
+  const manifestArgs = nonNullish(paths?.cargo) ? ['--manifest-path', paths.cargo] : [];
 
   let output = '';
   await spawn({
@@ -347,13 +361,7 @@ const icWasm = async ({buildType}: {buildType: BuildType}) => {
   // Remove unused functions and debug info.
   await spawn({
     command: 'ic-wasm',
-    args: [
-      join(CARGO_RELEASE_DIR, 'satellite.wasm'),
-      '-o',
-      SATELLITE_OUTPUT,
-      'shrink',
-      '--keep-name-section'
-    ]
+    args: [CARGO_OUTPUT_WASM, '-o', SATELLITE_OUTPUT, 'shrink', '--keep-name-section']
   });
 
   // Adds the content of satellite.did to the `icp:public candid:service` custom section of the public metadata in the wasm
@@ -512,6 +520,48 @@ const checkJunoDidc = async (): Promise<{valid: boolean}> => {
     await execute({
       command: 'cargo',
       args: ['install', `junobuild-didc`]
+    });
+  }
+
+  return {valid: true};
+};
+
+const wasi2ic = async () => {
+  const spinner = ora({
+    text: 'Converting WASI to IC...',
+    discardStdin: true
+  }).start();
+
+  try {
+    await execute({
+      command: 'wasi2ic',
+      args: [CARGO_OUTPUT_WASM, CARGO_OUTPUT_WASM, '--quiet']
+    });
+  } finally {
+    spinner.stop();
+  }
+};
+
+const checkWasi2ic = async (): Promise<{valid: boolean}> => {
+  const {valid} = await checkCargoBinInstalled({
+    command: 'wasi2ic',
+    args: ['--version']
+  });
+
+  if (valid === false) {
+    return {valid};
+  }
+
+  if (valid === 'error') {
+    await confirmAndExit(
+      `The ${magenta(
+        'wasi2ic'
+      )} polyfill tool is required to replaces the specific function calls with their corresponding polyfill implementations for the Internet Computer. Would you like to install it?`
+    );
+
+    await execute({
+      command: 'cargo',
+      args: ['install', 'wasi2ic']
     });
   }
 

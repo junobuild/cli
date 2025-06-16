@@ -20,20 +20,20 @@ import {detectPackageManager} from '../../../utils/pm.utils';
 import {confirmAndExit} from '../../../utils/prompt.utils';
 
 export const buildTypeScript = async ({
-  path,
+  paths,
   exitOnError
-}: Pick<BuildArgs, 'path' | 'exitOnError'> = {}) => {
-  await build({lang: 'ts', path, exitOnError});
+}: Pick<BuildArgs, 'paths' | 'exitOnError'> = {}) => {
+  await build({lang: 'ts', paths, exitOnError});
 };
 
 export const buildJavaScript = async ({
-  path,
+  paths,
   exitOnError
-}: Pick<BuildArgs, 'path' | 'exitOnError'> = {}) => {
-  await build({lang: 'mjs', path, exitOnError});
+}: Pick<BuildArgs, 'paths' | 'exitOnError'> = {}) => {
+  await build({lang: 'mjs', paths, exitOnError});
 };
 
-type BuildArgsTsJs = {lang: Omit<BuildLang, 'rs'>} & Pick<BuildArgs, 'path' | 'exitOnError'>;
+type BuildArgsTsJs = {lang: Omit<BuildLang, 'rs'>} & Pick<BuildArgs, 'paths' | 'exitOnError'>;
 
 const build = async ({exitOnError, ...params}: BuildArgsTsJs) => {
   await installEsbuild();
@@ -59,14 +59,14 @@ interface BuildResult {
 }
 
 const buildWithEsbuild = async ({
-  params: {lang, path},
+  params: {lang, paths},
   metadata
 }: {
   params: Omit<BuildArgsTsJs, 'exitOnError'>;
   metadata: BuildMetadata;
 }): Promise<BuildResult> => {
   const infile =
-    path ?? join(DEVELOPER_PROJECT_SATELLITE_PATH, lang === 'mjs' ? INDEX_MJS : INDEX_TS);
+    paths?.source ?? join(DEVELOPER_PROJECT_SATELLITE_PATH, lang === 'mjs' ? INDEX_MJS : INDEX_TS);
 
   // We pass the package information as metadata so the Docker container can read it and embed it into the `juno:package` custom section of the WASM’s public metadata.
   const banner = {

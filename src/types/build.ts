@@ -1,8 +1,13 @@
 export type BuildLang = 'ts' | 'mjs' | 'rs';
 
+export interface BuildPaths {
+  cargo?: string | undefined;
+  source?: string | undefined;
+}
+
 export interface BuildArgs {
   lang?: BuildLang;
-  path?: string | undefined;
+  paths?: BuildPaths;
   watch?: boolean | string;
   exitOnError?: boolean;
 }

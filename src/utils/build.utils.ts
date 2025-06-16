@@ -1,8 +1,10 @@
+import {notEmptyString} from '@dfinity/utils';
 import {hasArgs, nextArg} from '@junobuild/cli-tools';
 import type {BuildArgs} from '../types/build';
 
 export const buildArgs = (args?: string[]): BuildArgs => {
-  const path = nextArg({args, option: '-p'}) ?? nextArg({args, option: '--path'});
+  const cargoPath = nextArg({args, option: '--cargo-path'});
+  const sourcePath = nextArg({args, option: '--source-path'});
 
   const {lang} = buildLang(args);
 
@@ -10,7 +12,9 @@ export const buildArgs = (args?: string[]): BuildArgs => {
   const watchValue = nextArg({args, option: '-w'}) ?? nextArg({args, option: '--watch'});
 
   return {
-    path,
+    ...((notEmptyString(cargoPath) || notEmptyString(sourcePath)) && {
+      paths: {cargo: cargoPath, source: sourcePath}
+    }),
     lang,
     watch: watchValue ?? watch
   };
