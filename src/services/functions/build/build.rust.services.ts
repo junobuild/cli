@@ -80,8 +80,7 @@ export const buildRust = async ({
     '--release',
     ...(existsSync('Cargo.lock') ? ['--locked'] : []),
     '--target-dir',
-    cargoReleaseDir,
-    '--verbose'
+    cargoReleaseDir
   ];
 
   const env = {
