@@ -22,9 +22,7 @@ export const upgradeMissionControl = async (args?: string[]) => {
 
   if (isNullish(missionControl)) {
     console.log(
-      `${red(
-        'No mission control found.'
-      )} Ignore this error if your controller does not control your mission control.`
+      `${red('No mission control found.')} This is expected if your access key doesn't manage it.`
     );
     return;
   }

@@ -24,12 +24,12 @@ const info = async (): Promise<{success: boolean}> => {
   const token = await getToken();
 
   if (isNullish(token)) {
-    console.log(`No controller found.`);
+    console.log(`No access key found.`);
     return {success: false};
   }
 
   const identity = Ed25519KeyIdentity.fromParsedJson(token);
-  console.log(`🔐 Controller: ${green(identity.getPrincipal().toText())}`);
+  console.log(`🔐 Access key: ${green(identity.getPrincipal().toText())}`);
 
   return {success: true};
 };

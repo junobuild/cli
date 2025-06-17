@@ -13,7 +13,7 @@ export const reuseController = async (controller: Principal) => {
   const segment = await selectSegment();
 
   console.log(
-    `Before you finish setting things up, you'll need to add the controller to ${displaySegment(segment)} in Juno's console.\n\nFollow these steps:`
+    `Before you finish setting things up, you'll need to add the access key to ${displaySegment(segment)} in Juno's console.\n\nFollow these steps:`
   );
 
   await setControllerManually({controller, segment});
@@ -23,7 +23,7 @@ export const reuseController = async (controller: Principal) => {
     name: 'segmentId',
     message: `Good. So, what's the ${green(
       `${displaySegment(segment)} ID`
-    )} to which you just added the controller?`
+    )} to which you just added the access key?`
   });
 
   if (segmentId === undefined) {
@@ -105,10 +105,10 @@ const selectSegment = async (): Promise<AssetKey> => {
   const {segment}: {segment: AssetKey} = await prompts({
     type: 'select',
     name: 'segment',
-    message: 'Which new segment would you like to authorize with your controller?',
+    message: 'Which module would you like to authorize with your access key?',
     choices: [
       {title: 'A satellite', value: 'satellite'},
-      {title: 'The orbiter for the analytics', value: 'orbiter'},
+      {title: 'The orbiter (analytics)', value: 'orbiter'},
       {title: 'Your mission control', value: 'mission_control'}
     ],
     initial: 0
@@ -144,13 +144,13 @@ const setControllerManually = async ({
     );
   }
 
-  console.log('2. Find the "Controllers" section and click "Add a controller"');
-  console.log('3. Choose "Manually enter a controller"');
-  console.log(`4. Enter your terminal controller ${green(controller.toText())} in the input field`);
-  console.log(`5. Select the ${bold('ADMIN')} scope`);
+  console.log('2. Find the "Access Keys" section and click "Add an access key"');
+  console.log('3. Choose "Enter one manually"');
+  console.log(`4. Paste the access key ID from your terminal: ${green(controller.toText())}`);
+  console.log(`5. Select the ${bold('Admin')} permission`);
   console.log(`6. Click ${bold('Submit')}`);
   console.log(
-    `7. Once it’s successful, copy the ${green(`${displaySegment(segment)} ID`)} where the controller was added\n`
+    `7. After the key is added, copy the ${green(`${displaySegment(segment)} ID`)} displayed\n`
   );
 
   await confirmAndExit('Have you completed this step?');

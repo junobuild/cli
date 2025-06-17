@@ -13,7 +13,7 @@ export const actorParameters = async (): Promise<
   const token = getProcessToken() ?? (await getToken());
 
   if (isNullish(token)) {
-    console.log(`${red('No controller found.')} Are you logged in?`);
+    console.log(`${red('No access key found.')} Are you logged in?`);
     process.exit(1);
   }
 

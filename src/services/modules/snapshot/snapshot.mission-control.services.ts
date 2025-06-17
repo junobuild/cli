@@ -32,9 +32,7 @@ const executeSnapshotFn = async ({
   // TODO: this can be a common assertion
   if (isNullish(missionControl)) {
     console.log(
-      `${red(
-        'No mission control found.'
-      )} Ignore this error if your controller does not control your mission control.`
+      `${red('No mission control found.')} This is expected if your access key doesn't manage it.`
     );
     return;
   }

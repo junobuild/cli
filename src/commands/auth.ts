@@ -22,17 +22,15 @@ export const login = async (args?: string[]) => {
   }
 
   const identity = Ed25519KeyIdentity.fromParsedJson(token);
-  console.log(
-    `🔐 Your terminal is already a controller: ${green(identity.getPrincipal().toText())}\n`
-  );
+  console.log(`🔐 Your terminal already has access: ${green(identity.getPrincipal().toText())}\n`);
 
   const {action}: {action: string} = await prompts({
     type: 'select',
     name: 'action',
     message: 'What would you like to do?',
     choices: [
-      {title: `Create a new controller via a login with your browser`, value: `login`},
-      {title: `Reuse the existing controller`, value: `reuse`}
+      {title: `Create a new access key by logging in with your browser`, value: `login`},
+      {title: `Reuse the access key used by your CLI`, value: `reuse`}
     ]
   });
 

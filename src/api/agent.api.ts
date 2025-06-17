@@ -48,7 +48,7 @@ export const initAgent = async (params?: Omit<ActorParameters, 'agent'>): Promis
   const {identity, ...rest} = params ?? (await actorParameters());
 
   if (REVOKED_CONTROLLERS.includes(identity.getPrincipal().toText())) {
-    throw new Error('The controller has been revoked for security reason!');
+    throw new Error('The access key has been revoked for security reason!');
   }
 
   return await agent.getAgent({identity, ...rest});
