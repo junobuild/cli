@@ -19,6 +19,9 @@ import {
   upgradeWasmLocal
 } from './upgrade.services';
 
+type Orbiter = Required<Pick<OrbiterParameters, 'orbiterId'>> &
+  Omit<OrbiterParameters, 'orbiterId'>;
+
 export const upgradeOrbiters = async (args?: string[]) => {
   const authOrbiters = await getCliOrbiters();
 
@@ -59,7 +62,7 @@ const upgradeOrbiterCustom = async ({
   orbiterParameters,
   args
 }: {
-  orbiterParameters: OrbiterParameters;
+  orbiterParameters: Orbiter;
   args?: string[];
 }): Promise<{success: boolean; err?: unknown}> => {
   const src = nextArg({args, option: '-s'}) ?? nextArg({args, option: '--src'});
@@ -86,6 +89,7 @@ const upgradeOrbiterCustom = async ({
   return await upgradeWasmLocal({
     src,
     assetKey: 'orbiter',
+    moduleId: orbiterParameters.orbiterId,
     upgrade: upgradeOrbiterWasm,
     reset
   });
@@ -94,8 +98,7 @@ const upgradeOrbiterCustom = async ({
 const updateOrbiterRelease = async ({
   args,
   ...orbiterParameters
-}: Required<Pick<OrbiterParameters, 'orbiterId'>> &
-  Omit<OrbiterParameters, 'orbiterId'> & {args?: string[]}): Promise<{
+}: Orbiter & {args?: string[]}): Promise<{
   success: boolean;
   err?: unknown;
 }> => {
@@ -131,6 +134,7 @@ const updateOrbiterRelease = async ({
   return await upgradeWasmJunoCdn({
     version,
     assetKey: 'orbiter',
+    moduleId: orbiterParameters.orbiterId,
     upgrade: upgradeOrbiterWasm,
     reset
   });

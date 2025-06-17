@@ -29,12 +29,13 @@ const executeUpgradeWasm = async ({
   hash,
   assert,
   reset = false,
-  assetKey
-}: {assetKey: AssetKey} & UpgradeWasm) => {
+  assetKey,
+  moduleId
+}: {assetKey: AssetKey; moduleId: string} & UpgradeWasm) => {
   await assert?.({wasmModule: wasm});
 
   if (isNotHeadless()) {
-    await assertUpgradeHash({hash, reset});
+    await assertUpgradeHash({hash, reset, moduleId});
   }
 
   console.log('');
@@ -87,10 +88,12 @@ export const upgradeWasmLocal = async ({
   upgrade,
   reset,
   assert,
-  assetKey
+  assetKey,
+  moduleId
 }: {
   src: string;
   assetKey: AssetKey;
+  moduleId: string;
 } & UpgradeWasmParams): Promise<{
   success: boolean;
   err?: unknown;
@@ -111,7 +114,7 @@ export const upgradeWasmLocal = async ({
 
     spinner.stop();
 
-    await executeUpgradeWasm({upgrade, wasm, hash, reset, assert, assetKey});
+    await executeUpgradeWasm({upgrade, wasm, hash, reset, assert, assetKey, moduleId});
 
     return {success: true};
   } catch (err: unknown) {
@@ -128,6 +131,7 @@ export const upgradeWasmJunoCdn = async ({
 }: {
   version: string;
   assetKey: AssetKey;
+  moduleId: string;
   cdn?: UpgradeCdn;
 } & UpgradeWasmParams): Promise<{
   success: boolean;
@@ -147,12 +151,14 @@ export const upgradeWasmJunoCdn = async ({
 
 export const upgradeWasmCdn = async ({
   assetKey,
+  moduleId,
   upgrade,
   assert,
   reset,
   cdn
 }: {
   assetKey: AssetKey;
+  moduleId: string;
   cdn: UpgradeCdn;
 } & UpgradeWasmParams): Promise<{
   success: boolean;
@@ -187,7 +193,7 @@ export const upgradeWasmCdn = async ({
 
     spinner.stop();
 
-    await executeUpgradeWasm({upgrade, wasm, hash, reset, assert, assetKey});
+    await executeUpgradeWasm({upgrade, wasm, hash, reset, assert, assetKey, moduleId});
 
     return {success: true};
   } catch (err: unknown) {
