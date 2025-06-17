@@ -28,6 +28,9 @@ import {
   upgradeWasmLocal
 } from './upgrade.services';
 
+type Satellite = Omit<SatelliteParameters, 'satelliteId'> &
+  Required<Pick<SatelliteParameters, 'satelliteId'>>;
+
 export const upgradeSatellite = async (args?: string[]) => {
   const {satellite} = await assertConfigAndLoadSatelliteContext();
   const {satelliteId} = satellite;
@@ -56,7 +59,7 @@ const upgradeSatelliteCustom = async ({
   satellite,
   args
 }: {
-  satellite: SatelliteParameters;
+  satellite: Satellite;
   args?: string[];
 }): Promise<{success: boolean; err?: unknown}> => {
   const src = nextArg({args, option: '-s'}) ?? nextArg({args, option: '--src'});
@@ -74,36 +77,50 @@ const upgradeSatelliteCustom = async ({
 
 export const upgradeSatelliteWithSrc = async ({
   src,
+  satellite,
   ...rest
 }: {
-  satellite: SatelliteParameters;
+  satellite: Satellite;
   src: string;
   args?: string[];
 }): Promise<{success: boolean; err?: unknown}> => {
   const upgrade = async (params: UpgradeWasmParams): Promise<{success: boolean; err?: unknown}> => {
-    return await upgradeWasmLocal({src, assetKey: 'satellite', ...params});
+    return await upgradeWasmLocal({
+      src,
+      assetKey: 'satellite',
+      moduleId: satellite.satelliteId,
+      ...params
+    });
   };
 
   return await upgradeSatelliteWithUpgradeFn({
     ...rest,
+    satellite,
     upgradeFn: upgrade
   });
 };
 
 export const upgradeSatelliteWithCdn = async ({
   cdn,
+  satellite,
   ...rest
 }: {
-  satellite: SatelliteParameters;
+  satellite: Satellite;
   cdn: UpgradeCdn;
   args?: string[];
 }): Promise<{success: boolean; err?: unknown}> => {
   const upgrade = async (params: UpgradeWasmParams): Promise<{success: boolean; err?: unknown}> => {
-    return await upgradeWasmCdn({cdn, assetKey: 'satellite', ...params});
+    return await upgradeWasmCdn({
+      cdn,
+      assetKey: 'satellite',
+      moduleId: satellite.satelliteId,
+      ...params
+    });
   };
 
   return await upgradeSatelliteWithUpgradeFn({
     ...rest,
+    satellite,
     upgradeFn: upgrade
   });
 };
@@ -113,7 +130,7 @@ const upgradeSatelliteWithUpgradeFn = async ({
   args,
   upgradeFn
 }: {
-  satellite: SatelliteParameters;
+  satellite: Satellite;
   args?: string[];
   upgradeFn: (params: UpgradeWasmParams) => Promise<{success: boolean; err?: unknown}>;
 }): Promise<{success: boolean; err?: unknown}> => {
@@ -138,14 +155,14 @@ const upgradeSatelliteRelease = async ({
   satellite,
   args
 }: {
-  satellite: SatelliteParameters;
+  satellite: Satellite;
   args?: string[];
 }): Promise<{success: boolean; err?: unknown}> => {
   const currentVersion = await satelliteVersion({
     satellite
   });
 
-  const displayHint = `satellite "${await satelliteKey(satellite.satelliteId ?? '')}"`;
+  const displayHint = `satellite "${await satelliteKey(satellite.satelliteId)}"`;
   const version = await selectVersion({currentVersion, assetKey: SATELLITE_WASM_NAME, displayHint});
 
   if (isNullish(version)) {
@@ -155,7 +172,12 @@ const upgradeSatelliteRelease = async ({
   const {noSnapshot, preClearChunks} = readUpgradeOptions(args);
 
   const upgrade = async (params: UpgradeWasmParams): Promise<{success: boolean; err?: unknown}> => {
-    return await upgradeWasmJunoCdn({version, assetKey: 'satellite', ...params});
+    return await upgradeWasmJunoCdn({
+      version,
+      assetKey: 'satellite',
+      moduleId: satellite.satelliteId,
+      ...params
+    });
   };
 
   return await executeUpgradeSatellite({
@@ -176,7 +198,7 @@ const executeUpgradeSatellite = async ({
   preClearChunks,
   noSnapshot
 }: {
-  satellite: SatelliteParameters;
+  satellite: Satellite;
   args?: string[];
   currentVersion: string;
   preClearChunks: boolean;

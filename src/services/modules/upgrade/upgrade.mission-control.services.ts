@@ -14,6 +14,9 @@ import {NEW_CMD_LINE} from '../../../utils/prompt.utils';
 import {logUpgradeResult, readUpgradeOptions} from '../../../utils/upgrade.utils';
 import {selectVersion, upgradeWasmJunoCdn, upgradeWasmLocal} from './upgrade.services';
 
+type MissionControl = Omit<MissionControlParameters, 'missionControlId'> &
+  Required<Pick<MissionControlParameters, 'missionControlId'>>;
+
 export const upgradeMissionControl = async (args?: string[]) => {
   const missionControl = await getCliMissionControl();
 
@@ -56,7 +59,7 @@ const updateMissionControlRelease = async ({
   missionControlParameters
 }: {
   args?: string[];
-  missionControlParameters: MissionControlParameters;
+  missionControlParameters: MissionControl;
 }): Promise<{success: boolean; err?: unknown}> => {
   const currentVersion = await missionControlVersion({
     missionControl: missionControlParameters
@@ -87,6 +90,7 @@ const updateMissionControlRelease = async ({
   return await upgradeWasmJunoCdn({
     version,
     assetKey: 'mission_control',
+    moduleId: missionControlParameters.missionControlId,
     upgrade: upgradeMissionControlWasm
   });
 };
@@ -95,7 +99,7 @@ const upgradeMissionControlCustom = async ({
   missionControlParameters,
   args
 }: {
-  missionControlParameters: MissionControlParameters;
+  missionControlParameters: MissionControl;
   args?: string[];
 }): Promise<{success: boolean; err?: unknown}> => {
   const src = nextArg({args, option: '-s'}) ?? nextArg({args, option: '--src'});
@@ -119,6 +123,7 @@ const upgradeMissionControlCustom = async ({
   return await upgradeWasmLocal({
     src,
     assetKey: 'mission_control',
+    moduleId: missionControlParameters.missionControlId,
     upgrade: upgradeMissionControlWasm
   });
 };
