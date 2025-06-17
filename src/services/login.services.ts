@@ -24,7 +24,7 @@ export const login = async (args?: string[]) => {
   const principal = key.getPrincipal().toText();
   const token = key.toJSON();
 
-  console.log(`\n🔓 Your terminal will take control as: ${green(principal)}`);
+  console.log(`\n🔓 Your terminal will assume admin control as: ${green(principal)}`);
 
   const browser = nextArg({args, option: '-b'}) ?? nextArg({args, option: '--browser'});
 

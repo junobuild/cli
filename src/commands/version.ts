@@ -73,7 +73,7 @@ const missionControlVersion = async () => {
     console.log(
       `${yellow(
         'No mission control found.'
-      )} Ignore this error if your controller does not control your mission control.`
+      )} This is expected if your access key doesn't manage it.`
     );
     return;
   }
