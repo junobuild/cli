@@ -35,7 +35,7 @@ const executeUpgradeWasm = async ({
   await assert?.({wasmModule: wasm});
 
   if (isNotHeadless()) {
-    await assertUpgradeHash({hash, reset, moduleId});
+    await assertUpgradeHash({hash, reset, assetKey, moduleId});
   }
 
   console.log('');

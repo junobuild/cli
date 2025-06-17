@@ -1,6 +1,7 @@
 import {isNullish} from '@dfinity/utils';
 import {satelliteBuildType, type SatelliteParameters} from '@junobuild/admin';
 import {cyan, magenta, yellow} from 'kleur';
+import type {AssetKey} from '../../../types/asset-key';
 import type {AssertWasmModule, UpgradeWasm} from '../../../types/upgrade';
 import {isHeadless} from '../../../utils/process.utils';
 import {NEW_CMD_LINE, confirmAndExit} from '../../../utils/prompt.utils';
@@ -59,11 +60,12 @@ export const assertSatelliteBuildType = async ({
 };
 
 export const assertUpgradeHash = async ({
+  assetKey,
   moduleId,
   hash,
   reset
-}: Required<Pick<UpgradeWasm, 'hash' | 'reset'>> & {moduleId: string}) => {
+}: Required<Pick<UpgradeWasm, 'hash' | 'reset'>> & {assetKey: AssetKey; moduleId: string}) => {
   await confirmAndExit(
-    `Upgrade module ${cyan(moduleId)} with Wasm hash ${magenta(hash)}${NEW_CMD_LINE}Start upgrade${reset ? ' and reset' : ''} now?`
+    `Upgrade ${assetKey} ${cyan(moduleId)} with Wasm hash ${magenta(hash)}${NEW_CMD_LINE}Start upgrade${reset ? ' and reset' : ''} now?`
   );
 };
