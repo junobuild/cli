@@ -17,7 +17,7 @@ import prompts from 'prompts';
 import {JUNO_CDN_URL} from '../../../constants/constants';
 import type {AssetKey} from '../../../types/asset-key';
 import {type UpgradeCdn, type UpgradeWasm, type UpgradeWasmParams} from '../../../types/upgrade';
-import {toAssetKeys} from '../../../utils/asset-key.utils';
+import {printAssetKey, toAssetKeys} from '../../../utils/asset-key.utils';
 import {isNotHeadless} from '../../../utils/process.utils';
 import {confirmAndExit} from '../../../utils/prompt.utils';
 import {newerReleases as newerReleasesUtils} from '../../../utils/upgrade.utils';
@@ -48,16 +48,16 @@ const executeUpgradeWasm = async ({
         spinner.text = 'Validating if an upgrade is needed...';
         break;
       case UpgradeCodeProgressStep.StoppingCanister:
-        spinner.text = `Stopping ${assetKey} before upgrade...`;
+        spinner.text = `Stopping ${printAssetKey(assetKey)} before upgrade...`;
         break;
       case UpgradeCodeProgressStep.TakingSnapshot:
-        spinner.text = `Creating a snapshot for your ${assetKey}...`;
+        spinner.text = `Creating a snapshot for your ${printAssetKey(assetKey)}...`;
         break;
       case UpgradeCodeProgressStep.UpgradingCode:
         spinner.text = `Upgrading${reset ? ' and resetting state' : ''}...`;
         break;
       case UpgradeCodeProgressStep.RestartingCanister:
-        spinner.text = `Restarting ${assetKey}...`;
+        spinner.text = `Restarting ${printAssetKey(assetKey)}...`;
         break;
     }
   };
@@ -231,7 +231,7 @@ const promptReleases = async ({
   const {version}: {version: string} = await prompts({
     type: 'select',
     name: 'version',
-    message: `To which version should your ${assetKey.replace('_', ' ')} be upgraded?`,
+    message: `To which version should your ${printAssetKey(assetKey)} be upgraded?`,
     choices,
     initial: 0
   });
@@ -311,10 +311,7 @@ export const confirmReset = async ({
   }
 
   await confirmAndExit(
-    `⚠️  Are you absolutely sure you want to upgrade and reset (❗️) your ${assetKey.replace(
-      '_',
-      ' '
-    )} to its initial state?`
+    `⚠️  Are you absolutely sure you want to upgrade and reset (❗️) your ${printAssetKey(assetKey)} to its initial state?`
   );
 
   return true;

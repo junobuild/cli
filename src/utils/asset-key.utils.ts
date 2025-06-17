@@ -10,3 +10,5 @@ export const toAssetKeys = (assetKey: AssetKey): AssetKeys => {
       return 'satellites';
   }
 };
+
+export const printAssetKey = (assetKey: AssetKey): string => assetKey.replace('_', ' ');

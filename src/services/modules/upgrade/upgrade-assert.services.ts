@@ -3,6 +3,7 @@ import {satelliteBuildType, type SatelliteParameters} from '@junobuild/admin';
 import {cyan, magenta, yellow} from 'kleur';
 import type {AssetKey} from '../../../types/asset-key';
 import type {AssertWasmModule, UpgradeWasm} from '../../../types/upgrade';
+import {printAssetKey} from '../../../utils/asset-key.utils';
 import {isHeadless} from '../../../utils/process.utils';
 import {NEW_CMD_LINE, confirmAndExit} from '../../../utils/prompt.utils';
 import {readWasmModuleMetadata} from '../../../utils/wasm.utils';
@@ -66,6 +67,6 @@ export const assertUpgradeHash = async ({
   reset
 }: Required<Pick<UpgradeWasm, 'hash' | 'reset'>> & {assetKey: AssetKey; moduleId: string}) => {
   await confirmAndExit(
-    `Upgrade ${assetKey} ${cyan(moduleId)} with Wasm hash ${magenta(hash)}${NEW_CMD_LINE}Start upgrade${reset ? ' and reset' : ''} now?`
+    `Upgrade ${printAssetKey(assetKey)} ${cyan(moduleId)} with Wasm hash ${magenta(hash)}${NEW_CMD_LINE}Start upgrade${reset ? ' and reset' : ''} now?`
   );
 };
