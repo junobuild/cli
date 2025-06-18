@@ -147,7 +147,7 @@ const setControllerManually = async ({
   console.log('2. Find the "Access Keys" section and click "Add an access key"');
   console.log('3. Choose "Enter one manually"');
   console.log(`4. Paste the access key ID from your terminal: ${green(controller.toText())}`);
-  console.log(`5. Select the ${bold('Admin')} permission`);
+  console.log(`5. Select the ${bold('Administrator')} permission`);
   console.log(`6. Click ${bold('Submit')}`);
   console.log(
     `7. After the key is added, copy the ${green(`${displaySegment(segment)} ID`)} displayed\n`
