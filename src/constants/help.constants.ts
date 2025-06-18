@@ -5,8 +5,7 @@ export const CLEAR_DESCRIPTION =
   'Clear existing app code by removing JavaScript, HTML, CSS, and other files from your satellite.';
 export const CONFIG_DESCRIPTION = 'Apply configuration to satellite.';
 export const DEPLOY_DESCRIPTION = 'Deploy your app to your satellite.';
-export const DEV_DESCRIPTION =
-  'Handle developer tasks like starting/stopping a local network or building functions.';
+export const DEV_DESCRIPTION = 'Handle developer tasks like starting/stopping a local network.';
 export const FUNCTIONS_DESCRIPTION = "Build and upgrade your satellite's serverless functions.";
 export const INIT_DESCRIPTION = 'Set up your project.';
 export const LOGIN_DESCRIPTION =
