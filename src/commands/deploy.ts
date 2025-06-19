@@ -8,6 +8,8 @@ import {
   type UploadFileWithProposal
 } from '@junobuild/cli-tools';
 import {uploadBlob} from '@junobuild/core';
+import {yellow} from 'kleur';
+import {compare} from 'semver';
 import {junoConfigExist} from '../configs/juno.config';
 import {clear} from '../services/assets/clear.services';
 import {
@@ -19,6 +21,7 @@ import {
 } from '../services/assets/deploy/deploy.execute.services';
 import {clearProposalStagedAssets} from '../services/changes/changes.clear.services';
 import {links} from '../services/links.services';
+import {getSatelliteVersion} from '../services/version.services';
 import {init} from './init';
 
 export const deploy = async (args?: string[]) => {
@@ -30,6 +33,24 @@ export const deploy = async (args?: string[]) => {
   const immediate = hasArgs({args, options: ['-i', '--immediate']});
 
   if (immediate) {
+    await deployImmediate({clearOption});
+    return;
+  }
+
+  // TODO: Remove this check once backward compatibility is no longer needed.
+  // Without falling back to `deploy --immediate`, we can't roll out GitHub Actions support
+  // without requiring developers to either upgrade their Satellites or add the `--immediate` flag in CI.
+  // To ease the release, we temporarily check the version.
+  const result = await getSatelliteVersion();
+
+  if (result.result === 'error') {
+    return;
+  }
+
+  if (compare(result.version, '0.1.0') < 0) {
+    console.log(
+      `${yellow('[Warn]')} Your Satellite is outdated. Please upgrade to take full advantage of the new deployment flow.`
+    );
     await deployImmediate({clearOption});
     return;
   }
