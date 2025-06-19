@@ -1,14 +1,10 @@
 import {isNullish, nonNullish, notEmptyString} from '@dfinity/utils';
 import {
-  findJunoPackageDependency,
-  getJunoPackage,
   getJunoPackageVersion,
   missionControlVersion as missionControlVersionLib,
-  orbiterVersion as orbiterVersionLib,
-  satelliteVersion as satelliteVersionLib
+  orbiterVersion as orbiterVersionLib
 } from '@junobuild/admin';
 import {hasArgs} from '@junobuild/cli-tools';
-import {JUNO_PACKAGE_SATELLITE_ID} from '@junobuild/config';
 import {cyan, green, red, yellow} from 'kleur';
 import {clean, compare} from 'semver';
 import {version as cliCurrentVersion} from '../../package.json';
@@ -20,6 +16,7 @@ import {
   SATELLITE_WASM_NAME
 } from '../constants/constants';
 import {githubCliLastRelease} from '../rest/github.rest';
+import {getSatelliteVersion} from '../services/version.services';
 import type {AssetKey} from '../types/asset-key';
 import {toAssetKeys} from '../utils/asset-key.utils';
 import {
@@ -114,50 +111,17 @@ const missionControlVersion = async () => {
 
 const satelliteVersion = async () => {
   const {satellite} = await assertConfigAndLoadSatelliteContext();
-  const {satelliteId, ...actorParams} = satellite;
-
-  const getVersion = async (): Promise<string | undefined> => {
-    const pkg = await getJunoPackage({
-      moduleId: satelliteId,
-      ...actorParams
-    });
-
-    if (nonNullish(pkg)) {
-      const {dependencies, version} = pkg;
-
-      // It's a stock Satellite
-      if (isNullish(dependencies)) {
-        return version;
-      }
-
-      // It's extended, we search for the dependency.
-      const satelliteDependency = findJunoPackageDependency({
-        dependencies,
-        dependencyId: JUNO_PACKAGE_SATELLITE_ID
-      });
-
-      if (isNullish(satelliteDependency)) {
-        return undefined;
-      }
-
-      const [_, versionSatellite] = satelliteDependency;
-      return versionSatellite;
-    }
-
-    // Legacy
-    return await satelliteVersionLib({
-      satellite
-    });
-  };
+  const {satelliteId} = satellite;
 
   const displayHint = `satellite "${await satelliteKey(satelliteId)}"`;
 
-  const currentVersion = await getVersion();
+  const result = await getSatelliteVersion();
 
-  if (isNullish(currentVersion)) {
-    console.log(red(`Cannot retrieve the current version of ${displayHint} 😢.`));
+  if (result.result === 'error') {
     return;
   }
+
+  const {version: currentVersion} = result;
 
   await checkSegmentVersion({
     currentVersion,
