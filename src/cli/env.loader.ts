@@ -13,6 +13,8 @@ export const loadEnv = (): JunoCliEnv => {
 
   const ci = process.env.CI === 'true';
 
+  console.log(ci, process.env);
+
   return {
     mode: mode ?? 'production',
     containerUrl: envContainerUrl,
