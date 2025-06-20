@@ -116,8 +116,6 @@ const executeSputnikBuild = async ({
 
   const withToolchain = nonNullish(paths?.cargo) || ENV.ci;
 
-  console.log(withToolchain, paths?.cargo, ENV.ci)
-
   if (withToolchain) {
     const rustPaths = {
       ...paths,
