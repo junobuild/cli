@@ -21,14 +21,6 @@ export const externalDependencies = [
   ...Object.keys(devDependencies)
 ];
 
-const define = Object.entries(process.env).reduce(
-  (acc, [key, value]) => ({
-    ...acc,
-    [`process.env.${key}`]: JSON.stringify(value)
-  }),
-  {}
-);
-
 const dist = join(process.cwd(), 'dist');
 
 if (!existsSync(dist)) {
@@ -46,8 +38,7 @@ const script = await esbuild.build({
   banner: {
     js: "import { createRequire as topLevelCreateRequire } from 'module';\n const require = topLevelCreateRequire(import.meta.url);"
   },
-  external: externalDependencies,
-  define
+  external: externalDependencies
 });
 
 writeFileSync('dist/index.js', `#!/usr/bin/env node\n${script.outputFiles[0].text}`);
