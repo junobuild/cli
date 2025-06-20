@@ -13,8 +13,11 @@ export const loadEnv = (): JunoCliEnv => {
 
   const ci = process.env.CI === 'true';
 
-  console.log('CI =', process.env.CI);
-  console.log(ci, process.env);
+  console.log('CI =', process.env.CI, "CI" in process.env);
+  console.log('CI in process.env:', 'CI' in process.env);
+  console.log('process.env.CI:', process.env.CI);
+  console.log('Own keys:', Object.keys(process.env));
+  console.log('CI descriptor:', Object.getOwnPropertyDescriptor(process.env, 'CI'));
 
   return {
     mode: mode ?? 'production',
