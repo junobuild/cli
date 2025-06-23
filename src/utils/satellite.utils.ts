@@ -30,9 +30,20 @@ export const assertConfigAndLoadSatelliteContext = async (): Promise<{
 };
 
 const satelliteParameters = async ({
-  satellite: {satelliteId: deprecatedSatelliteId, id, ids},
+  satellite,
   env: {mode}
 }: SatelliteConfigEnv): Promise<SatelliteParametersWithId> => {
+  const {id, ids} = satellite;
+
+  // Originally, the config used `satelliteId`, but we later migrated to `id` and `ids`.
+  // We kept `satelliteId` in the configuration types for a while, but it is now deprecated there as well.
+  // For backwards compatibility, we still read it here.
+  const deprecatedSatelliteId =
+    'satelliteId' in satellite
+      ? // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
+        (satellite as unknown as {satelliteId: string}).satelliteId
+      : undefined;
+
   const satelliteId = ids?.[mode] ?? id ?? deprecatedSatelliteId;
 
   if (isNullish(satelliteId)) {
