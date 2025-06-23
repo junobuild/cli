@@ -70,8 +70,8 @@ export const buildRust = async ({
   const defaultProjectArgs = ['-p', SATELLITE_PROJECT_NAME];
 
   const cargoTarget = target ?? 'wasm32-unknown-unknown';
-  const cargoReleaseDir = join(process.cwd(), 'target', cargoTarget, 'release');
-  const cargoOutputWasm = join(cargoReleaseDir, 'satellite.wasm');
+  const cargoReleaseDir = join(process.cwd(), 'target');
+  const cargoOutputWasm = join(cargoReleaseDir, cargoTarget, 'release', 'satellite.wasm');
 
   const args = [
     'build',
