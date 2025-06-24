@@ -2,21 +2,10 @@ import {nonNullish} from '@dfinity/utils';
 import {assertAnswerCtrlC, execute} from '@junobuild/cli-tools';
 import {type EmulatorConfig, type EmulatorPorts} from '@junobuild/config';
 import type {PartialConfigFile} from '@junobuild/config-loader';
-import {existsSync} from 'node:fs';
-import {readFile, writeFile} from 'node:fs/promises';
 import {basename, join} from 'node:path';
 import prompts from 'prompts';
-import {
-  detectJunoConfigType,
-  junoConfigExist,
-  junoConfigFile,
-  readJunoConfig
-} from '../../../configs/juno.config';
-import {
-  detectJunoDevConfigType,
-  junoDevConfigExist,
-  junoDevConfigFile
-} from '../../../configs/juno.dev.config';
+import {detectJunoConfigType, junoConfigExist, readJunoConfig} from '../../../configs/juno.config';
+import {detectJunoDevConfigType, junoDevConfigExist} from '../../../configs/juno.dev.config';
 import {JUNO_DEV_CONFIG_FILENAME} from '../../../constants/constants';
 import {
   EMULATOR_PORT_ADMIN,
@@ -31,14 +20,13 @@ import {
   hasExistingDockerContainer,
   isDockerContainerRunning
 } from '../../../utils/env.utils';
-import {copyTemplateFile, readTemplateFile} from '../../../utils/fs.utils';
+import {copyTemplateFile} from '../../../utils/fs.utils';
 import {readPackageJson} from '../../../utils/pkg.utils';
 import {confirmAndExit} from '../../../utils/prompt.utils';
 import {initConfigNoneInteractive, promptConfigType} from '../../init.services';
 
 const TEMPLATE_PATH = '../templates/docker';
 const DESTINATION_PATH = process.cwd();
-const DOCKER_COMPOSE_FILENAME = 'docker-compose.yml';
 
 export const startContainer = async () => {
   const {valid} = await checkDockerVersion();
@@ -71,11 +59,7 @@ export const stop = async () => {
   });
 };
 
-const assertJunoDevConfig = async () => {
-  if (await junoDevConfigExist()) {
-    return;
-  }
-
+const initJunoDevConfigFile = async () => {
   await confirmAndExit(
     `A config file is required for development. Would you like the CLI to create one for you?`
   );
@@ -90,11 +74,7 @@ const assertJunoDevConfig = async () => {
   });
 };
 
-const assertJunoConfig = async () => {
-  if (await junoConfigExist()) {
-    return;
-  }
-
+const initJunoConfigFile = async () => {
   await confirmAndExit(`Your project needs a config file for Juno. Should we create one now?`);
 
   await initConfigNoneInteractive();
@@ -116,10 +96,10 @@ const buildConfigType = async (context: ConfigContext): Promise<PartialConfigFil
   return {configType};
 };
 
-const assertDockerCompose = async () => {
-  const {image}: {image: 'skylab' | 'satellite' | undefined} = await prompts({
+const promptEmulatorType = async (): Promise<{emulatorType: 'skylab' | 'satellite'}> => {
+  const {emulatorType}: {emulatorType: 'skylab' | 'satellite' | undefined} = await prompts({
     type: 'select',
-    name: 'image',
+    name: 'emulatorType',
     message: 'What kind of emulator would you like to run locally?',
     choices: [
       {
@@ -130,48 +110,36 @@ const assertDockerCompose = async () => {
     ]
   });
 
-  assertAnswerCtrlC(image);
+  assertAnswerCtrlC(emulatorType);
 
-  const template = await readTemplateFile({
-    template: `docker-compose.${image}.yml`,
-    sourceFolder: TEMPLATE_PATH
-  });
-
-  // We should assert the config before creating the docker file otherwise we cannot know if the docker file should reference a TS, JS or JSON config file.
-  await assertAndInitJunoConfig(image === 'skylab');
-
-  const readConfig = image === 'satellite' ? junoDevConfigFile : junoConfigFile;
-  const {configPath} = readConfig();
-  const configFile = basename(configPath);
-
-  const content = template
-    .replaceAll('<JUNO_DEV_CONFIG>', configFile)
-    .replaceAll('<JUNO_CONFIG>', configFile);
-
-  await writeFile(join(DESTINATION_PATH, DOCKER_COMPOSE_FILENAME), content, 'utf-8');
-
-  return {dockerImage: image};
+  return {emulatorType};
 };
 
 const assertAndInitConfig = async () => {
-  if (existsSync(DOCKER_COMPOSE_FILENAME)) {
-    const dockerCompose = await readFile(DOCKER_COMPOSE_FILENAME, 'utf-8');
-    const isSkylab = /image:\s*junobuild\/skylab(:[^\s]*)?/.test(dockerCompose);
+  const configExist = await junoConfigExist();
 
-    await assertAndInitJunoConfig(isSkylab);
+  if (configExist) {
     return;
   }
 
-  await assertDockerCompose();
+  const configDevExist = await junoDevConfigExist();
+
+  if (configDevExist) {
+    return;
+  }
+
+  const {emulatorType} = await promptEmulatorType();
+
+  await initConfigFile(emulatorType === 'skylab');
 };
 
-const assertAndInitJunoConfig = async (skylab: boolean) => {
+const initConfigFile = async (skylab: boolean) => {
   if (skylab) {
-    await assertJunoConfig();
+    await initJunoConfigFile();
     return;
   }
 
-  await assertJunoDevConfig();
+  await initJunoDevConfigFile();
 };
 
 const runDocker = async () => {
