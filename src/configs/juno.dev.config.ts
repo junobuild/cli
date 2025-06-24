@@ -1,7 +1,8 @@
 import type {ConfigFile, ConfigFilename} from '@junobuild/config-loader';
 import {
   detectJunoConfigType as detectJunoConfigTypeTools,
-  junoConfigExist as junoConfigExistTools
+  junoConfigExist as junoConfigExistTools,
+  junoConfigFile as junoConfigFileTools
 } from '@junobuild/config-loader';
 import {JUNO_DEV_CONFIG_FILENAME} from '../constants/constants';
 
@@ -13,3 +14,5 @@ export const junoDevConfigExist = async (): Promise<boolean> => {
 
 export const detectJunoDevConfigType = (): ConfigFile | undefined =>
   detectJunoConfigTypeTools(JUNO_DEV_CONFIG_FILE);
+
+export const junoDevConfigFile = (): ConfigFile => junoConfigFileTools(JUNO_DEV_CONFIG_FILE);

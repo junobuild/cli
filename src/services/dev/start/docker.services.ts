@@ -1,11 +1,11 @@
 import {nonNullish} from '@dfinity/utils';
 import {assertAnswerCtrlC, execute} from '@junobuild/cli-tools';
-import {type EmulatorConfig, type EmulatorPorts} from '@junobuild/config';
+import {type EmulatorConfig, EmulatorConfigSchema, type EmulatorPorts} from '@junobuild/config';
 import type {PartialConfigFile} from '@junobuild/config-loader';
 import {basename, join} from 'node:path';
 import prompts from 'prompts';
-import {detectJunoConfigType, junoConfigExist, readJunoConfig} from '../../../configs/juno.config';
-import {detectJunoDevConfigType, junoDevConfigExist} from '../../../configs/juno.dev.config';
+import {detectJunoConfigType, junoConfigExist, junoConfigFile, readJunoConfig} from '../../../configs/juno.config';
+import {detectJunoDevConfigType, junoDevConfigExist, junoDevConfigFile} from '../../../configs/juno.dev.config';
 import {JUNO_DEV_CONFIG_FILENAME} from '../../../constants/constants';
 import {
   EMULATOR_PORT_ADMIN,
@@ -180,10 +180,17 @@ const runDocker = async () => {
 
   const config = await getEmulatorConfig();
 
+  const {success} = EmulatorConfigSchema.safeParse(config);
+  if (!success) {
+    // TODO
+    console.log('Not valid');
+    return;
+  }
+
   const emulatorType =
     'satellite' in config ? 'satellite' : 'console' in config ? 'console' : 'skylab';
 
-  const containerName = normalizeDockerName((await readProjectName()) ?? `juno-${emulatorType}`);
+  const containerName = normalizeDockerName((config?.runner?.name ?? await readProjectName()) ?? `juno-${emulatorType}`);
 
   const result = await isDockerContainerRunning({containerName});
 
@@ -240,7 +247,7 @@ const runDocker = async () => {
 
   const volume = config.runner?.volume ?? containerName.replaceAll('-', '_');
 
-  const fn = emulatorType === 'satellite' ? detectJunoDevConfigType : detectJunoConfigType;
+  const fn = emulatorType === 'satellite' ? junoDevConfigFile : junoConfigFile;
   const detectedConfig = fn();
   const configFile = nonNullish(detectedConfig?.configPath)
     ? basename(detectedConfig.configPath)
