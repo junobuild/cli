@@ -1,5 +1,5 @@
 import {execute, spawn} from '@junobuild/cli-tools';
-import {green, yellow} from 'kleur';
+import {green, red, yellow} from 'kleur';
 import {lt, major} from 'semver';
 import {NODE_VERSION} from '../constants/constants';
 import {
@@ -101,7 +101,7 @@ export const checkDockerVersion = async (): Promise<{valid: boolean | 'error'}> 
       return {valid: false};
     }
   } catch (_e: unknown) {
-    console.error(`Cannot detect Docker version. Is Docker installed on your machine?`);
+    console.log(`${red("Cannot detect Docker version.")} Is Docker installed on your machine?`);
     return {valid: 'error'};
   }
 
@@ -110,11 +110,13 @@ export const checkDockerVersion = async (): Promise<{valid: boolean | 'error'}> 
 
 export const assertDockerRunning = async () => {
   try {
-    await execute({
+    await spawn({
       command: 'docker',
-      args: ['ps', '--quiet']
+      args: ['ps', '--quiet'],
+      silentOut: true
     });
   } catch (_e: unknown) {
+    console.log(red("Docker does not appear to be running."));
     process.exit(1);
   }
 };
@@ -129,7 +131,8 @@ export const isDockerContainerRunning = async ({
     await spawn({
       command: 'docker',
       args: ['ps', '--quiet', '-f', `name=^/${containerName}$`],
-      stdout: (o) => (output += o)
+      stdout: (o) => (output += o),
+      silentOut: true
     });
 
     return {running: output.trim().length > 0};
@@ -148,7 +151,8 @@ export const hasExistingDockerContainer = async ({
     await spawn({
       command: 'docker',
       args: ['ps', '-aq', '-f', `name=^/${containerName}$`],
-      stdout: (o) => (output += o)
+      stdout: (o) => (output += o),
+      silentOut: true
     });
 
     return {exist: output.trim().length > 0};
