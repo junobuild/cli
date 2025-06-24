@@ -221,6 +221,8 @@ const startEmulator = async () => {
 
   const image = config.runner?.image ?? `junobuild/${emulatorType}:latest`;
 
+  const platform = config.runner?.platform;
+
   await execute({
     command: 'docker',
     args: [
@@ -245,6 +247,7 @@ const startEmulator = async () => {
         : []),
       '-v',
       `${targetDeploy}:/juno/target/deploy`,
+      ...(nonNullish(platform) ? [`--platform=${platform}`] : []),
       image
     ]
   });
