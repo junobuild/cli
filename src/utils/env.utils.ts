@@ -119,6 +119,44 @@ export const assertDockerRunning = async () => {
   }
 };
 
+export const isDockerContainerRunning = async ({
+  containerName
+}: {
+  containerName: string;
+}): Promise<{running: boolean} | {err: unknown}> => {
+  try {
+    let output = '';
+    await spawn({
+      command: 'docker',
+      args: ['ps', '--quiet', '-f', `name=^/${containerName}$`],
+      stdout: (o) => (output += o)
+    });
+
+    return {running: output.trim().length > 0};
+  } catch (err: unknown) {
+    return {err};
+  }
+};
+
+export const hasExistingDockerContainer = async ({
+  containerName
+}: {
+  containerName: string;
+}): Promise<{exist: boolean} | {err: unknown}> => {
+  try {
+    let output = '';
+    await spawn({
+      command: 'docker',
+      args: ['ps', '-aq', '-f', `name=^/${containerName}$`],
+      stdout: (o) => (output += o)
+    });
+
+    return {exist: output.trim().length > 0};
+  } catch (err: unknown) {
+    return {err};
+  }
+};
+
 export const checkCargoBinInstalled = async ({
   command,
   args

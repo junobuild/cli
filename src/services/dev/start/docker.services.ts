@@ -1,19 +1,33 @@
 import {nonNullish} from '@dfinity/utils';
 import {assertAnswerCtrlC, execute} from '@junobuild/cli-tools';
+import {type EmulatorConfig, type EmulatorPorts} from '@junobuild/config';
 import type {PartialConfigFile} from '@junobuild/config-loader';
 import {existsSync} from 'node:fs';
 import {readFile, writeFile} from 'node:fs/promises';
 import {basename, join} from 'node:path';
 import prompts from 'prompts';
-import {detectJunoConfigType, junoConfigExist, junoConfigFile} from '../../../configs/juno.config';
+import {
+  detectJunoConfigType,
+  junoConfigExist,
+  junoConfigFile,
+  readJunoConfig
+} from '../../../configs/juno.config';
 import {
   detectJunoDevConfigType,
   junoDevConfigExist,
   junoDevConfigFile
 } from '../../../configs/juno.dev.config';
 import {JUNO_DEV_CONFIG_FILENAME} from '../../../constants/constants';
-import {assertDockerRunning, checkDockerVersion} from '../../../utils/env.utils';
+import {EMULATOR_SKYLAB} from '../../../constants/emulator.constants';
+import {ENV} from '../../../env';
+import {
+  assertDockerRunning,
+  checkDockerVersion,
+  hasExistingDockerContainer,
+  isDockerContainerRunning
+} from '../../../utils/env.utils';
 import {copyTemplateFile, readTemplateFile} from '../../../utils/fs.utils';
+import {readPackageJson} from '../../../utils/pkg.utils';
 import {confirmAndExit} from '../../../utils/prompt.utils';
 import {initConfigNoneInteractive, promptConfigType} from '../../init.services';
 
@@ -34,10 +48,7 @@ export const startContainer = async () => {
 
   console.log('🧪 Launching local emulator...');
 
-  await execute({
-    command: 'docker',
-    args: ['compose', 'up']
-  });
+  await runDocker();
 };
 
 export const stop = async () => {
@@ -156,4 +167,130 @@ const assertAndInitJunoConfig = async (skylab: boolean) => {
   }
 
   await assertJunoDevConfig();
+};
+
+const runDocker = async () => {
+  const normalizeDockerName = (pkgName: string): string =>
+    pkgName
+      .replace(/^@[^/]+\//, '')
+      .replace(/[^a-zA-Z0-9_.-]/g, '-')
+      .replace(/^[^a-zA-Z0-9]+/, '')
+      .toLowerCase();
+
+  const readProjectName = async (): Promise<string | undefined> => {
+    try {
+      const {name} = await readPackageJson();
+      return name;
+    } catch (_err: unknown) {
+      // This should not block the developer therefore we fallback to core which is the common way of using the library
+      return undefined;
+    }
+  };
+
+  const getEmulatorConfig = async (): Promise<EmulatorConfig> => {
+    if (!(await junoConfigExist())) {
+      return {skylab: EMULATOR_SKYLAB};
+    }
+
+    const config = await readJunoConfig(ENV);
+    return config?.emulator ?? {skylab: EMULATOR_SKYLAB};
+  };
+
+  const config = await getEmulatorConfig();
+
+  const emulatorType =
+    'satellite' in config ? 'satellite' : 'console' in config ? 'console' : 'skylab';
+
+  const containerName = normalizeDockerName((await readProjectName()) ?? `juno-${emulatorType}`);
+
+  const result = await isDockerContainerRunning({containerName});
+
+  if ('err' in result) {
+    // TODO: show error
+    return;
+  }
+
+  if (result.running) {
+    // TODO: show error already started
+    return;
+  }
+
+  const status = await hasExistingDockerContainer({containerName});
+
+  if ('err' in status) {
+    // TODO: show error
+    return;
+  }
+
+  if (status.exist) {
+    // Support for Ctrl+C:
+    // -a: Attach STDOUT/STDERR. Equivalent to `--attach`.
+    // -i: Keep STDIN open even if not attached. Equivalent to `--interactive`.
+    await execute({
+      command: 'docker',
+      args: ['start', '-a', '-i', containerName]
+    });
+    return;
+  }
+
+  const ports: Required<EmulatorPorts> = {
+    server: config[emulatorType]?.ports?.server ?? EMULATOR_SKYLAB.ports.server,
+    admin: config[emulatorType]?.ports?.admin ?? EMULATOR_SKYLAB.ports.admin
+  };
+
+  // Support Ctrl+C:
+  // -i: Keeps STDIN open for the container. Equivalent to `--interactive`.
+  // -t: Allocates a pseudo-TTY, enabling terminal-like behavior. Equivalent to `--tty`.
+
+  /**
+   * Example:
+   *
+   * docker run -it \
+   *   --name juno-skylab-aaabbb \
+   *   -p 5987:5987 \
+   *   -p 5999:5999 \
+   *   -p 5866:5866 \
+   *   -v juno_skylab_test_61:/juno/.juno \
+   *   -v "$(pwd)/juno.config.mjs:/juno/juno.config.mjs" \
+   *   -v "$(pwd)/target/deploy:/juno/target/deploy" \
+   *   juno-skylab-pocket-ic
+   */
+
+  const volume = config.runner?.volume ?? containerName.replaceAll('-', '_');
+
+  const fn = emulatorType === 'satellite' ? detectJunoDevConfigType : detectJunoConfigType;
+  const detectedConfig = fn();
+  const configFile = nonNullish(detectedConfig?.configPath)
+    ? basename(detectedConfig.configPath)
+    : undefined;
+  const configFilePath = nonNullish(configFile) ? join(process.cwd(), configFile) : undefined;
+
+  const targetDeploy = config.runner?.target ?? join(process.cwd(), 'target', 'deploy');
+
+  const image = config.runner?.image ?? `junobuild/${emulatorType}:latest`;
+
+  await execute({
+    command: 'docker',
+    args: [
+      'run',
+      '-it',
+      '--name',
+      containerName,
+      '-p',
+      `${ports.server}:5987`,
+      '-p',
+      `${ports.admin}:5999`,
+      ...('skylab' in config
+        ? ['-p', `${config.skylab?.ports?.console ?? EMULATOR_SKYLAB.ports.console}:5866`]
+        : []),
+      '-v',
+      `${volume}:/juno/.juno`,
+      ...(nonNullish(configFile) && nonNullish(configFilePath)
+        ? ['-v', `${configFilePath}:/juno/${configFile}`]
+        : []),
+      '-v',
+      `${targetDeploy}:/juno/target/deploy`,
+      image
+    ]
+  });
 };
