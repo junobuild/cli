@@ -11,6 +11,7 @@ import {
   EMULATOR_PORT_ADMIN,
   EMULATOR_PORT_CONSOLE,
   EMULATOR_PORT_SERVER,
+  EMULATOR_SATELLITE,
   EMULATOR_SKYLAB
 } from '../../../constants/emulator.constants';
 import {ENV} from '../../../env';
@@ -60,6 +61,10 @@ export const stop = async () => {
 };
 
 const initJunoDevConfigFile = async () => {
+  if (await junoDevConfigExist()) {
+    return;
+  }
+
   await confirmAndExit(
     `A config file is required for development. Would you like the CLI to create one for you?`
   );
@@ -122,20 +127,17 @@ const assertAndInitConfig = async () => {
     return;
   }
 
-  const configDevExist = await junoDevConfigExist();
-
-  if (configDevExist) {
-    return;
-  }
-
-  const {emulatorType} = await promptEmulatorType();
+  const {emulatorType} = (await junoDevConfigExist())
+    ? {emulatorType: 'satellite'}
+    : await promptEmulatorType();
 
   await initConfigFile(emulatorType === 'skylab');
 };
 
 const initConfigFile = async (skylab: boolean) => {
+  await initJunoConfigFile();
+
   if (skylab) {
-    await initJunoConfigFile();
     return;
   }
 
@@ -161,8 +163,15 @@ const runDocker = async () => {
   };
 
   const getEmulatorConfig = async (): Promise<EmulatorConfig> => {
-    if (!(await junoConfigExist())) {
+    const configExist = await junoConfigExist();
+    const devConfigExist = await junoDevConfigExist();
+
+    if (!configExist && !devConfigExist) {
       return {skylab: EMULATOR_SKYLAB};
+    }
+
+    if (!configExist && devConfigExist) {
+      return {satellite: EMULATOR_SATELLITE};
     }
 
     const config = await readJunoConfig(ENV);
