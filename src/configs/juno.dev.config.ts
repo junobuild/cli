@@ -1,7 +1,7 @@
 import type {ConfigFile, ConfigFilename} from '@junobuild/config-loader';
 import {
   detectJunoConfigType as detectJunoConfigTypeTools,
-  junoConfigExist as junoConfigExistTools,
+  junoConfigExist as junoConfigExistTools
 } from '@junobuild/config-loader';
 import {JUNO_DEV_CONFIG_FILENAME} from '../constants/constants';
 

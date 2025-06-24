@@ -175,7 +175,7 @@ const runDocker = async () => {
     }
 
     const config = await readJunoConfig(ENV);
-    return config?.emulator ?? {skylab: EMULATOR_SKYLAB};
+    return config.emulator ?? {skylab: EMULATOR_SKYLAB};
   };
 
   const config = await getEmulatorConfig();
@@ -265,7 +265,7 @@ const runDocker = async () => {
       ...('skylab' in config
         ? [
             '-p',
-            `${config.skylab?.ports?.console ?? EMULATOR_SKYLAB.ports.console}:${EMULATOR_PORT_CONSOLE}`
+            `${config.skylab.ports?.console ?? EMULATOR_SKYLAB.ports.console}:${EMULATOR_PORT_CONSOLE}`
           ]
         : []),
       '-v',
