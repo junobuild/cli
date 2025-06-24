@@ -18,7 +18,12 @@ import {
   junoDevConfigFile
 } from '../../../configs/juno.dev.config';
 import {JUNO_DEV_CONFIG_FILENAME} from '../../../constants/constants';
-import {EMULATOR_SKYLAB} from '../../../constants/emulator.constants';
+import {
+  EMULATOR_PORT_ADMIN,
+  EMULATOR_PORT_CONSOLE,
+  EMULATOR_PORT_SERVER,
+  EMULATOR_SKYLAB
+} from '../../../constants/emulator.constants';
 import {ENV} from '../../../env';
 import {
   assertDockerRunning,
@@ -277,11 +282,14 @@ const runDocker = async () => {
       '--name',
       containerName,
       '-p',
-      `${ports.server}:5987`,
+      `${ports.server}:${EMULATOR_PORT_SERVER}`,
       '-p',
-      `${ports.admin}:5999`,
+      `${ports.admin}:${EMULATOR_PORT_ADMIN}`,
       ...('skylab' in config
-        ? ['-p', `${config.skylab?.ports?.console ?? EMULATOR_SKYLAB.ports.console}:5866`]
+        ? [
+            '-p',
+            `${config.skylab?.ports?.console ?? EMULATOR_SKYLAB.ports.console}:${EMULATOR_PORT_CONSOLE}`
+          ]
         : []),
       '-v',
       `${volume}:/juno/.juno`,
