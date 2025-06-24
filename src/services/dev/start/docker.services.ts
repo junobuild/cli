@@ -2,6 +2,7 @@ import {nonNullish} from '@dfinity/utils';
 import {assertAnswerCtrlC, execute, spawn} from '@junobuild/cli-tools';
 import {type EmulatorConfig, EmulatorConfigSchema, type EmulatorPorts} from '@junobuild/config';
 import type {PartialConfigFile} from '@junobuild/config-loader';
+import {red, yellow} from 'kleur';
 import {basename, join} from 'node:path';
 import prompts from 'prompts';
 import {
@@ -34,8 +35,6 @@ import {copyTemplateFile} from '../../../utils/fs.utils';
 import {readPackageJson} from '../../../utils/pkg.utils';
 import {confirmAndExit} from '../../../utils/prompt.utils';
 import {initConfigNoneInteractive, promptConfigType} from '../../init.services';
-import {red, yellow} from 'kleur';
-import {displaySegment} from '../../../utils/display.utils';
 
 const TEMPLATE_PATH = '../templates/docker';
 const DESTINATION_PATH = process.cwd();
@@ -213,7 +212,7 @@ const startEmulator = async () => {
 
   const fn = emulatorType === 'satellite' ? junoDevConfigFile : junoConfigFile;
   const detectedConfig = fn();
-  const configFile = nonNullish(detectedConfig?.configPath)
+  const configFile = nonNullish(detectedConfig.configPath)
     ? basename(detectedConfig.configPath)
     : undefined;
   const configFilePath = nonNullish(configFile) ? join(process.cwd(), configFile) : undefined;
@@ -272,7 +271,7 @@ const stopEmulator = async () => {
     args: ['stop', containerName],
     silentOut: true
   });
-}
+};
 
 const parseEmulatorConfig = async (): Promise<
   | {
@@ -329,7 +328,7 @@ const parseEmulatorConfig = async (): Promise<
     'satellite' in config ? 'satellite' : 'console' in config ? 'console' : 'skylab';
 
   const containerName = normalizeDockerName(
-    config?.runner?.name ?? (await readProjectName()) ?? `juno-${emulatorType}`
+    config.runner?.name ?? (await readProjectName()) ?? `juno-${emulatorType}`
   );
 
   return {
@@ -340,14 +339,19 @@ const parseEmulatorConfig = async (): Promise<
   };
 };
 
-const assertDockerContainerRunning = async ({containerName}: {containerName: string}): Promise<{running: boolean}> => {
+const assertDockerContainerRunning = async ({
+  containerName
+}: {
+  containerName: string;
+}): Promise<{running: boolean}> => {
   const result = await isDockerContainerRunning({containerName});
 
   if ('err' in result) {
-    console.log(red(`Unable to verify if container ${containerName} is running. Is Docker installed?`));
+    console.log(
+      red(`Unable to verify if container ${containerName} is running. Is Docker installed?`)
+    );
     process.exit(1);
   }
 
   return result;
 };
-

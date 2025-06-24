@@ -1,4 +1,4 @@
-import {execute, spawn} from '@junobuild/cli-tools';
+import {spawn} from '@junobuild/cli-tools';
 import {green, red, yellow} from 'kleur';
 import {lt, major} from 'semver';
 import {NODE_VERSION} from '../constants/constants';
@@ -101,7 +101,7 @@ export const checkDockerVersion = async (): Promise<{valid: boolean | 'error'}> 
       return {valid: false};
     }
   } catch (_e: unknown) {
-    console.log(`${red("Cannot detect Docker version.")} Is Docker installed on your machine?`);
+    console.log(`${red('Cannot detect Docker version.')} Is Docker installed on your machine?`);
     return {valid: 'error'};
   }
 
@@ -116,7 +116,7 @@ export const assertDockerRunning = async () => {
       silentOut: true
     });
   } catch (_e: unknown) {
-    console.log(red("Docker does not appear to be running."));
+    console.log(red('Docker does not appear to be running.'));
     process.exit(1);
   }
 };
