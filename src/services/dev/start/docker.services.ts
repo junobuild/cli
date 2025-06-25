@@ -50,8 +50,6 @@ export const startContainer = async () => {
 
   await assertAndInitConfig();
 
-  console.log('🧪 Launching local emulator...');
-
   await startEmulator();
 };
 
@@ -173,6 +171,8 @@ const startEmulator = async () => {
     console.log(red(`Unable to check if Docker container ${containerName} already exists.`));
     return;
   }
+
+  console.log('🧪 Launching local emulator...');
 
   if (status.exist) {
     // Support for Ctrl+C:
@@ -322,8 +322,9 @@ const parseEmulatorConfig = async (): Promise<
 
   const {success} = EmulatorConfigSchema.safeParse(config);
   if (!success) {
-    // TODO
-    console.log('Not valid');
+    console.log(
+      red('Invalid configuration: please check the emulator options of your config file.')
+    );
     return {success: false};
   }
 
