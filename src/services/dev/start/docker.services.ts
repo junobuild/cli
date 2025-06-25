@@ -33,6 +33,7 @@ import {
 } from '../../../utils/env.utils';
 import {copyTemplateFile} from '../../../utils/fs.utils';
 import {readPackageJson} from '../../../utils/pkg.utils';
+import {isHeadless} from '../../../utils/process.utils';
 import {confirmAndExit} from '../../../utils/prompt.utils';
 import {initConfigNoneInteractive, promptConfigType} from '../../init.services';
 
@@ -180,7 +181,7 @@ const startEmulator = async () => {
     // -i: Keep STDIN open even if not attached. Equivalent to `--interactive`.
     await execute({
       command: 'docker',
-      args: ['start', '-a', '-i', containerName]
+      args: ['start', '-a', ...(isHeadless() ? [] : ['-i']), containerName]
     });
     return;
   }
@@ -227,7 +228,7 @@ const startEmulator = async () => {
     command: 'docker',
     args: [
       'run',
-      '-it',
+      ...(isHeadless() ? [] : ['-it']),
       '--name',
       containerName,
       '-p',
