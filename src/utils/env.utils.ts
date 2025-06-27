@@ -1,12 +1,8 @@
 import {spawn} from '@junobuild/cli-tools';
-import {green, red, yellow} from 'kleur';
+import {green, yellow} from 'kleur';
 import {lt, major} from 'semver';
 import {NODE_VERSION} from '../constants/constants';
-import {
-  DOCKER_MIN_VERSION,
-  IC_WASM_MIN_VERSION,
-  RUST_MIN_VERSION
-} from '../constants/dev.constants';
+import {IC_WASM_MIN_VERSION, RUST_MIN_VERSION} from '../constants/dev.constants';
 
 export const checkNodeVersion = (): {valid: boolean | 'error'} => {
   try {
@@ -79,86 +75,6 @@ export const checkIcWasmVersion = async (): Promise<{valid: boolean | 'error'}> 
   }
 
   return {valid: true};
-};
-
-export const checkDockerVersion = async (): Promise<{valid: boolean | 'error'}> => {
-  try {
-    let output = '';
-    await spawn({
-      command: 'docker',
-      args: ['--version'],
-      stdout: (o) => (output += o)
-    });
-
-    const version = output.replaceAll(',', '').trim().split(' ')[2];
-
-    if (lt(version, DOCKER_MIN_VERSION)) {
-      console.log(
-        `Your version of Docker is ${yellow(version.trim())}. Juno CLI requires ${green(
-          DOCKER_MIN_VERSION
-        )} or a more recent version.`
-      );
-      return {valid: false};
-    }
-  } catch (_e: unknown) {
-    console.log(`${red('Cannot detect Docker version.')} Is Docker installed on your machine?`);
-    return {valid: 'error'};
-  }
-
-  return {valid: true};
-};
-
-export const assertDockerRunning = async () => {
-  try {
-    await spawn({
-      command: 'docker',
-      args: ['ps', '--quiet'],
-      silentOut: true
-    });
-  } catch (_e: unknown) {
-    console.log(red('Docker does not appear to be running.'));
-    process.exit(1);
-  }
-};
-
-export const isDockerContainerRunning = async ({
-  containerName
-}: {
-  containerName: string;
-}): Promise<{running: boolean} | {err: unknown}> => {
-  try {
-    let output = '';
-    await spawn({
-      command: 'docker',
-      args: ['ps', '--quiet', '-f', `name=^/${containerName}$`],
-      stdout: (o) => (output += o),
-      silentOut: true
-    });
-
-    return {running: output.trim().length > 0};
-  } catch (err: unknown) {
-    return {err};
-  }
-};
-
-export const hasExistingDockerContainer = async ({
-  containerName
-}: {
-  containerName: string;
-}): Promise<{exist: boolean} | {err: unknown}> => {
-  try {
-    let output = '';
-    await spawn({
-      command: 'docker',
-      args: ['ps', '-aq', '-f', `name=^/${containerName}$`],
-      stdout: (o) => (output += o),
-      silentOut: true
-    });
-
-    return {exist: output.trim().length > 0};
-  } catch (err: unknown) {
-    return {err};
-  }
 };
 
 export const checkCargoBinInstalled = async ({
