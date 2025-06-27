@@ -3,8 +3,8 @@ import {logHelpDev} from '../help/dev.help';
 import {logHelpDevStart} from '../help/dev.start.help';
 import {logHelpFunctionsBuild} from '../help/functions.build.help';
 import {logHelpFunctionsEject} from '../help/functions.eject.help';
-import {stop} from '../services/dev/start/docker.services';
-import {start} from '../services/dev/start/start.services';
+import {start} from '../services/dev/start.services';
+import {stop} from '../services/dev/stop.services';
 import {build} from '../services/functions/build/build.services';
 import {eject} from '../services/functions/eject/eject.services';
 

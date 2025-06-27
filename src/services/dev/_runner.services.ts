@@ -11,33 +11,33 @@ import {
   junoConfigExist,
   junoConfigFile,
   readJunoConfig
-} from '../../../configs/juno.config';
+} from '../../configs/juno.config';
 import {
   detectJunoDevConfigType,
   junoDevConfigExist,
   junoDevConfigFile
-} from '../../../configs/juno.dev.config';
-import {JUNO_DEV_CONFIG_FILENAME} from '../../../constants/constants';
+} from '../../configs/juno.dev.config';
+import {JUNO_DEV_CONFIG_FILENAME} from '../../constants/constants';
 import {
   EMULATOR_PORT_ADMIN,
   EMULATOR_PORT_CONSOLE,
   EMULATOR_PORT_SERVER,
   EMULATOR_SATELLITE,
   EMULATOR_SKYLAB
-} from '../../../constants/emulator.constants';
-import {ENV} from '../../../env';
-import {type ContainerRunner} from '../../../types/runner';
-import {copyTemplateFile} from '../../../utils/fs.utils';
-import {readPackageJson} from '../../../utils/pkg.utils';
-import {isHeadless} from '../../../utils/process.utils';
-import {confirmAndExit} from '../../../utils/prompt.utils';
+} from '../../constants/emulator.constants';
+import {ENV} from '../../env';
+import {type ContainerRunner} from '../../types/runner';
+import {copyTemplateFile} from '../../utils/fs.utils';
+import {readPackageJson} from '../../utils/pkg.utils';
+import {isHeadless} from '../../utils/process.utils';
+import {confirmAndExit} from '../../utils/prompt.utils';
 import {
   assertContainerRunnerRunning,
   checkDockerVersion,
   hasExistingContainer,
   isContainerRunning
-} from '../../../utils/runner.utils';
-import {initConfigNoneInteractive, promptConfigType} from '../../init.services';
+} from '../../utils/runner.utils';
+import {initConfigNoneInteractive, promptConfigType} from '../init.services';
 
 const TEMPLATE_PATH = '../templates/docker';
 const DESTINATION_PATH = process.cwd();
@@ -64,7 +64,7 @@ export const startContainer = async () => {
   await startEmulator({config});
 };
 
-export const stop = async () => {
+export const stopContainer = async () => {
   const parsedResult = await readEmulatorConfig();
 
   if (!parsedResult.success) {
