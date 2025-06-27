@@ -2,7 +2,7 @@ import {spawn} from '@junobuild/cli-tools';
 import {green, red, yellow} from 'kleur';
 import {lt} from 'semver';
 import {DOCKER_MIN_VERSION} from '../constants/dev.constants';
-import {type ContainerRunner} from '../types/emulator';
+import {CliEmulatorDerivedConfig} from '../types/emulator';
 
 export const checkDockerVersion = async (): Promise<{valid: boolean | 'error'}> => {
   try {
@@ -31,7 +31,9 @@ export const checkDockerVersion = async (): Promise<{valid: boolean | 'error'}> 
   return {valid: true};
 };
 
-export const assertContainerRunnerRunning = async ({runner}: Pick<ContainerRunner, 'runner'>) => {
+export const assertContainerRunnerRunning = async ({
+  runner
+}: Pick<CliEmulatorDerivedConfig, 'runner'>) => {
   try {
     await spawn({
       command: runner,
@@ -47,7 +49,7 @@ export const assertContainerRunnerRunning = async ({runner}: Pick<ContainerRunne
 export const hasExistingContainer = async ({
   containerName,
   runner
-}: ContainerRunner): Promise<{exist: boolean} | {err: unknown}> => {
+}: CliEmulatorDerivedConfig): Promise<{exist: boolean} | {err: unknown}> => {
   try {
     let output = '';
     await spawn({
@@ -66,7 +68,7 @@ export const hasExistingContainer = async ({
 export const isContainerRunning = async ({
   containerName,
   runner
-}: ContainerRunner): Promise<{running: boolean} | {err: unknown}> => {
+}: CliEmulatorDerivedConfig): Promise<{running: boolean} | {err: unknown}> => {
   try {
     let output = '';
     await spawn({
