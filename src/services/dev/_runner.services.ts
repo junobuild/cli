@@ -166,7 +166,7 @@ const initConfigFile = async (skylab: boolean) => {
 const startEmulator = async ({config: extendedConfig}: {config: CliEmulatorConfig}) => {
   const {
     config,
-    derivedConfig: {emulatorType, containerName, runner}
+    derivedConfig: {emulatorType, containerName, runner, targetDeploy}
   } = extendedConfig;
 
   const {running} = await assertContainerRunning({containerName, runner});
@@ -227,8 +227,6 @@ const startEmulator = async ({config: extendedConfig}: {config: CliEmulatorConfi
     ? basename(detectedConfig.configPath)
     : undefined;
   const configFilePath = nonNullish(configFile) ? join(process.cwd(), configFile) : undefined;
-
-  const targetDeploy = config.runner?.target ?? join(process.cwd(), 'target', 'deploy');
 
   // TODO: add support for runner config in build functions
   // Podman does not auto create the path folders.

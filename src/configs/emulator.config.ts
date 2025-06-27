@@ -6,6 +6,7 @@ import type {CliEmulatorConfig} from '../types/emulator';
 import {readPackageJson} from '../utils/pkg.utils';
 import {junoConfigExist, readJunoConfig} from './juno.config';
 import {junoDevConfigExist} from './juno.dev.config';
+import {join} from 'node:path';
 
 export const readEmulatorConfig = async (): Promise<
   | {
@@ -33,6 +34,8 @@ export const readEmulatorConfig = async (): Promise<
 
   const runner = config.runner?.type ?? 'docker';
 
+  const targetDeploy = config.runner?.target ?? join(process.cwd(), 'target', 'deploy');
+
   return {
     success: true,
     config: {
@@ -40,7 +43,8 @@ export const readEmulatorConfig = async (): Promise<
       derivedConfig: {
         containerName,
         emulatorType,
-        runner
+        runner,
+        targetDeploy
       }
     }
   };

@@ -4,6 +4,7 @@ export interface CliEmulatorDerivedConfig {
   containerName: string;
   runner: EmulatorRunner['type'];
   emulatorType: 'skylab' | 'satellite' | 'console';
+  targetDeploy: string;
 }
 
 export interface CliEmulatorConfig {
