@@ -2,7 +2,7 @@ import {EmulatorConfig, EmulatorConfigSchema} from '@junobuild/config';
 import {red} from 'kleur';
 import {EMULATOR_SATELLITE, EMULATOR_SKYLAB} from '../constants/emulator.constants';
 import {ENV} from '../env';
-import type {CliEmulatorConfig} from '../types/runner';
+import type {CliEmulatorConfig} from '../types/emulator';
 import {readPackageJson} from '../utils/pkg.utils';
 import {junoConfigExist, readJunoConfig} from './juno.config';
 import {junoDevConfigExist} from './juno.dev.config';

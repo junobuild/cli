@@ -2,7 +2,7 @@ import {spawn} from '@junobuild/cli-tools';
 import {green, red, yellow} from 'kleur';
 import {lt} from 'semver';
 import {DOCKER_MIN_VERSION} from '../constants/dev.constants';
-import {type ContainerRunner} from '../types/runner';
+import {type ContainerRunner} from '../types/emulator';
 
 export const checkDockerVersion = async (): Promise<{valid: boolean | 'error'}> => {
   try {

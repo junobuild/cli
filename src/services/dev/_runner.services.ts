@@ -20,7 +20,7 @@ import {
   EMULATOR_PORT_SERVER,
   EMULATOR_SKYLAB
 } from '../../constants/emulator.constants';
-import {type CliEmulatorConfig, type CliEmulatorDerivedConfig} from '../../types/runner';
+import {type CliEmulatorConfig, type CliEmulatorDerivedConfig} from '../../types/emulator';
 import {copyTemplateFile} from '../../utils/fs.utils';
 import {isHeadless} from '../../utils/process.utils';
 import {confirmAndExit} from '../../utils/prompt.utils';
