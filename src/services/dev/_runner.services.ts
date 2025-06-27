@@ -3,7 +3,6 @@ import {assertAnswerCtrlC, execute, spawn} from '@junobuild/cli-tools';
 import {type EmulatorPorts} from '@junobuild/config';
 import type {PartialConfigFile} from '@junobuild/config-loader';
 import {red, yellow} from 'kleur';
-import {mkdir} from 'node:fs/promises';
 import {basename, join} from 'node:path';
 import prompts from 'prompts';
 import {readEmulatorConfig} from '../../configs/emulator.config';
@@ -30,6 +29,7 @@ import {
   hasExistingContainer,
   isContainerRunning
 } from '../../utils/runner.utils';
+import {createDeployTargetDir} from '../emulator.services';
 import {initConfigNoneInteractive, promptConfigType} from '../init.services';
 
 const TEMPLATE_PATH = '../templates/docker';
@@ -228,9 +228,8 @@ const startEmulator = async ({config: extendedConfig}: {config: CliEmulatorConfi
     : undefined;
   const configFilePath = nonNullish(configFile) ? join(process.cwd(), configFile) : undefined;
 
-  // TODO: add support for runner config in build functions
   // Podman does not auto create the path folders.
-  await mkdir(targetDeploy, {recursive: true});
+  await createDeployTargetDir({targetDeploy});
 
   const image = config.runner?.image ?? `junobuild/${emulatorType}:latest`;
 

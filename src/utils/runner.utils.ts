@@ -2,7 +2,7 @@ import {spawn} from '@junobuild/cli-tools';
 import {green, red, yellow} from 'kleur';
 import {lt} from 'semver';
 import {DOCKER_MIN_VERSION} from '../constants/dev.constants';
-import {CliEmulatorDerivedConfig} from '../types/emulator';
+import type {CliEmulatorDerivedConfig} from '../types/emulator';
 
 export const checkDockerVersion = async (): Promise<{valid: boolean | 'error'}> => {
   try {
@@ -49,7 +49,9 @@ export const assertContainerRunnerRunning = async ({
 export const hasExistingContainer = async ({
   containerName,
   runner
-}: CliEmulatorDerivedConfig): Promise<{exist: boolean} | {err: unknown}> => {
+}: Pick<CliEmulatorDerivedConfig, 'runner' | 'containerName'>): Promise<
+  {exist: boolean} | {err: unknown}
+> => {
   try {
     let output = '';
     await spawn({
@@ -68,7 +70,9 @@ export const hasExistingContainer = async ({
 export const isContainerRunning = async ({
   containerName,
   runner
-}: CliEmulatorDerivedConfig): Promise<{running: boolean} | {err: unknown}> => {
+}: Pick<CliEmulatorDerivedConfig, 'runner' | 'containerName'>): Promise<
+  {running: boolean} | {err: unknown}
+> => {
   try {
     let output = '';
     await spawn({

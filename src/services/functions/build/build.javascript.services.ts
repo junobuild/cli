@@ -2,10 +2,8 @@ import {notEmptyString} from '@dfinity/utils';
 import {buildEsm, execute, formatBytes} from '@junobuild/cli-tools';
 import type {Metafile} from 'esbuild';
 import {green, magenta, red, yellow} from 'kleur';
-import {mkdir} from 'node:fs/promises';
 import {join} from 'node:path';
 import {
-  DEPLOY_LOCAL_REPLICA_PATH,
   DEPLOY_SPUTNIK_PATH,
   DEVELOPER_PROJECT_SATELLITE_PATH,
   INDEX_MJS,
@@ -15,6 +13,7 @@ import type {BuildArgs, BuildLang, BuildMetadata} from '../../../types/build';
 import {formatTime} from '../../../utils/format.utils';
 import {detectPackageManager} from '../../../utils/pm.utils';
 import {confirmAndExit} from '../../../utils/prompt.utils';
+import {readEmulatorConfigAndCreateDeployTargetDir} from '../../emulator.services';
 import {prepareJavaScriptBuildMetadata} from './build.metadata.services';
 
 export const buildTypeScript = async ({
@@ -36,7 +35,7 @@ type BuildArgsTsJs = {lang: Omit<BuildLang, 'rs'>} & Pick<BuildArgs, 'paths' | '
 const build = async ({exitOnError, ...params}: BuildArgsTsJs) => {
   await installEsbuild();
 
-  await createTargetDir();
+  await readEmulatorConfigAndCreateDeployTargetDir();
 
   try {
     const metadata = await prepareJavaScriptBuildMetadata();
@@ -100,11 +99,6 @@ const buildWithEsbuild = async ({
     output: entry[0],
     version
   };
-};
-
-const createTargetDir = async () => {
-  // Create output target/deploy if it does not yet exist.
-  await mkdir(DEPLOY_LOCAL_REPLICA_PATH, {recursive: true});
 };
 
 const installEsbuild = async () => {

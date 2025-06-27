@@ -10,7 +10,6 @@ import ora, {type Ora} from 'ora';
 import {compare, minVersion, satisfies} from 'semver';
 import {detectJunoDevConfigType} from '../../../configs/juno.dev.config';
 import {
-  DEPLOY_LOCAL_REPLICA_PATH,
   DEPLOY_SPUTNIK_PATH,
   DEVELOPER_PROJECT_SATELLITE_DECLARATIONS_PATH,
   DEVELOPER_PROJECT_SATELLITE_PATH,
@@ -31,6 +30,7 @@ import {readSatelliteDid} from '../../../utils/did.utils';
 import {checkRustVersion} from '../../../utils/env.utils';
 import {formatTime} from '../../../utils/format.utils';
 import {readPackageJson} from '../../../utils/pkg.utils';
+import {readEmulatorConfigAndCreateDeployTargetDir} from '../../emulator.services';
 import {prepareJunoPkgForSatellite, prepareJunoPkgForSputnik} from './build.metadata.services';
 
 export const buildRust = async ({
@@ -386,7 +386,7 @@ const icWasm = async ({
   buildType: BuildType;
   cargoOutputWasm: string;
 }) => {
-  await mkdir(DEPLOY_LOCAL_REPLICA_PATH, {recursive: true});
+  await readEmulatorConfigAndCreateDeployTargetDir();
 
   // Remove unused functions and debug info.
   await spawn({
