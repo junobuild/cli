@@ -2,7 +2,7 @@ import {yellow} from 'kleur';
 import {existsSync} from 'node:fs';
 import {copyFile as fsCopyFile, readFile} from 'node:fs/promises';
 import {dirname, join, relative} from 'node:path';
-import {fileURLToPath} from 'url';
+import {fileURLToPath} from 'node:url';
 import {confirm} from './prompt.utils';
 
 const __filename = fileURLToPath(import.meta.url);
