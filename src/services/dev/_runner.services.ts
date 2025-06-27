@@ -26,7 +26,7 @@ import {
   EMULATOR_SKYLAB
 } from '../../constants/emulator.constants';
 import {ENV} from '../../env';
-import {type ContainerRunner} from '../../types/runner';
+import {type CliEmulatorConfig, type CliEmulatorDerivedConfig} from '../../types/runner';
 import {copyTemplateFile} from '../../utils/fs.utils';
 import {readPackageJson} from '../../utils/pkg.utils';
 import {isHeadless} from '../../utils/process.utils';
@@ -51,13 +51,14 @@ export const startContainer = async () => {
 
   const {config} = parsedResult;
 
-  const {valid} = config.runner === 'docker' ? await checkDockerVersion() : {valid: true};
+  const {valid} =
+    config.derivedConfig.runner === 'docker' ? await checkDockerVersion() : {valid: true};
 
   if (valid === 'error' || !valid) {
     return;
   }
 
-  await assertContainerRunnerRunning({runner: config.runner});
+  await assertContainerRunnerRunning({runner: config.derivedConfig.runner});
 
   await assertAndInitConfig();
 
@@ -73,13 +74,14 @@ export const stopContainer = async () => {
 
   const {config} = parsedResult;
 
-  const {valid} = config.runner === 'docker' ? await checkDockerVersion() : {valid: true};
+  const {valid} =
+    config.derivedConfig.runner === 'docker' ? await checkDockerVersion() : {valid: true};
 
   if (valid === 'error' || !valid) {
     return;
   }
 
-  await assertContainerRunnerRunning({runner: config.runner});
+  await assertContainerRunnerRunning({runner: config.derivedConfig.runner});
 
   await stopEmulator({config});
 };
@@ -168,8 +170,11 @@ const initConfigFile = async (skylab: boolean) => {
   await initJunoDevConfigFile();
 };
 
-const startEmulator = async ({config: extendedConfig}: {config: ExtendedEmulatorConfig}) => {
-  const {containerName, runner, config, emulatorType} = extendedConfig;
+const startEmulator = async ({config: extendedConfig}: {config: CliEmulatorConfig}) => {
+  const {
+    config,
+    derivedConfig: {emulatorType, containerName, runner}
+  } = extendedConfig;
 
   const {running} = await assertContainerRunning({containerName, runner});
 
@@ -270,8 +275,8 @@ const startEmulator = async ({config: extendedConfig}: {config: ExtendedEmulator
   });
 };
 
-const stopEmulator = async ({config: extendedConfig}: {config: ExtendedEmulatorConfig}) => {
-  const {containerName, runner} = extendedConfig;
+const stopEmulator = async ({config: {derivedConfig}}: {config: CliEmulatorConfig}) => {
+  const {containerName, runner} = derivedConfig;
 
   const {running} = await assertContainerRunning({containerName, runner});
 
@@ -287,15 +292,10 @@ const stopEmulator = async ({config: extendedConfig}: {config: ExtendedEmulatorC
   });
 };
 
-interface ExtendedEmulatorConfig extends ContainerRunner {
-  config: EmulatorConfig;
-  emulatorType: 'skylab' | 'satellite' | 'console';
-}
-
 const readEmulatorConfig = async (): Promise<
   | {
       success: true;
-      config: ExtendedEmulatorConfig;
+      config: CliEmulatorConfig;
     }
   | {success: false}
 > => {
@@ -355,9 +355,11 @@ const readEmulatorConfig = async (): Promise<
     success: true,
     config: {
       config,
-      containerName,
-      emulatorType,
-      runner
+      derivedConfig: {
+        containerName,
+        emulatorType,
+        runner
+      }
     }
   };
 };
@@ -365,7 +367,7 @@ const readEmulatorConfig = async (): Promise<
 const assertContainerRunning = async ({
   containerName,
   runner
-}: ContainerRunner): Promise<{running: boolean}> => {
+}: Pick<CliEmulatorDerivedConfig, 'containerName' | 'runner'>): Promise<{running: boolean}> => {
   const result = await isContainerRunning({containerName, runner});
 
   if ('err' in result) {
