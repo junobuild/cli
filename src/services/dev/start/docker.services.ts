@@ -25,45 +25,62 @@ import {
   EMULATOR_SKYLAB
 } from '../../../constants/emulator.constants';
 import {ENV} from '../../../env';
-import {
-  assertDockerRunning,
-  checkDockerVersion,
-  hasExistingDockerContainer,
-  isDockerContainerRunning
-} from '../../../utils/env.utils';
+import {type ContainerRunner} from '../../../types/runner';
 import {copyTemplateFile} from '../../../utils/fs.utils';
 import {readPackageJson} from '../../../utils/pkg.utils';
 import {isHeadless} from '../../../utils/process.utils';
 import {confirmAndExit} from '../../../utils/prompt.utils';
+import {
+  assertContainerRunnerRunning,
+  checkDockerVersion,
+  hasExistingContainer,
+  isContainerRunning
+} from '../../../utils/runner.utils';
 import {initConfigNoneInteractive, promptConfigType} from '../../init.services';
 
 const TEMPLATE_PATH = '../templates/docker';
 const DESTINATION_PATH = process.cwd();
 
 export const startContainer = async () => {
-  const {valid} = await checkDockerVersion();
+  const parsedResult = await readEmulatorConfig();
+
+  if (!parsedResult.success) {
+    return;
+  }
+
+  const {config} = parsedResult;
+
+  const {valid} = config.runner === 'docker' ? await checkDockerVersion() : {valid: true};
 
   if (valid === 'error' || !valid) {
     return;
   }
 
-  await assertDockerRunning();
+  await assertContainerRunnerRunning({runner: config.runner});
 
   await assertAndInitConfig();
 
-  await startEmulator();
+  await startEmulator({config});
 };
 
 export const stop = async () => {
-  const {valid} = await checkDockerVersion();
+  const parsedResult = await readEmulatorConfig();
+
+  if (!parsedResult.success) {
+    return;
+  }
+
+  const {config} = parsedResult;
+
+  const {valid} = config.runner === 'docker' ? await checkDockerVersion() : {valid: true};
 
   if (valid === 'error' || !valid) {
     return;
   }
 
-  await assertDockerRunning();
+  await assertContainerRunnerRunning({runner: config.runner});
 
-  await stopEmulator();
+  await stopEmulator({config});
 };
 
 const initJunoDevConfigFile = async () => {
@@ -150,26 +167,20 @@ const initConfigFile = async (skylab: boolean) => {
   await initJunoDevConfigFile();
 };
 
-const startEmulator = async () => {
-  const parsedResult = await parseEmulatorConfig();
+const startEmulator = async ({config: extendedConfig}: {config: ExtendedEmulatorConfig}) => {
+  const {containerName, runner, config, emulatorType} = extendedConfig;
 
-  if (!parsedResult.success) {
-    return;
-  }
-
-  const {containerName, config, emulatorType} = parsedResult;
-
-  const {running} = await assertDockerContainerRunning({containerName});
+  const {running} = await assertContainerRunning({containerName, runner});
 
   if (running) {
-    console.log(yellow(`The Docker container ${containerName} is already running.`));
+    console.log(yellow(`The ${runner} container ${containerName} is already running.`));
     return;
   }
 
-  const status = await hasExistingDockerContainer({containerName});
+  const status = await hasExistingContainer({containerName, runner});
 
   if ('err' in status) {
-    console.log(red(`Unable to check if Docker container ${containerName} already exists.`));
+    console.log(red(`Unable to check if ${runner} container ${containerName} already exists.`));
     return;
   }
 
@@ -180,7 +191,7 @@ const startEmulator = async () => {
     // -a: Attach STDOUT/STDERR. Equivalent to `--attach`.
     // -i: Keep STDIN open even if not attached. Equivalent to `--interactive`.
     await execute({
-      command: 'docker',
+      command: runner,
       args: ['start', '-a', ...(isHeadless() ? [] : ['-i']), containerName]
     });
     return;
@@ -225,7 +236,7 @@ const startEmulator = async () => {
   const platform = config.runner?.platform;
 
   await execute({
-    command: 'docker',
+    command: runner,
     args: [
       'run',
       ...(isHeadless() ? [] : ['-it']),
@@ -254,39 +265,36 @@ const startEmulator = async () => {
   });
 };
 
-const stopEmulator = async () => {
-  const parsedResult = await parseEmulatorConfig();
+const stopEmulator = async ({config: extendedConfig}: {config: ExtendedEmulatorConfig}) => {
+  const {containerName, runner} = extendedConfig;
 
-  if (!parsedResult.success) {
-    return;
-  }
-
-  const {containerName} = parsedResult;
-
-  const {running} = await assertDockerContainerRunning({containerName});
+  const {running} = await assertContainerRunning({containerName, runner});
 
   if (!running) {
-    console.log(yellow(`The Docker container ${containerName} is already stopped.`));
+    console.log(yellow(`The ${runner} container ${containerName} is already stopped.`));
     return;
   }
 
   await spawn({
-    command: 'docker',
+    command: runner,
     args: ['stop', containerName],
     silentOut: true
   });
 };
 
-const parseEmulatorConfig = async (): Promise<
+interface ExtendedEmulatorConfig extends ContainerRunner {
+  config: EmulatorConfig;
+  emulatorType: 'skylab' | 'satellite' | 'console';
+}
+
+const readEmulatorConfig = async (): Promise<
   | {
       success: true;
-      config: EmulatorConfig;
-      containerName: string;
-      emulatorType: 'skylab' | 'satellite' | 'console';
+      config: ExtendedEmulatorConfig;
     }
   | {success: false}
 > => {
-  const normalizeDockerName = (pkgName: string): string =>
+  const normalizeContainerName = (pkgName: string): string =>
     pkgName
       .replace(/^@[^/]+\//, '')
       .replace(/[^a-zA-Z0-9_.-]/g, '-')
@@ -332,28 +340,32 @@ const parseEmulatorConfig = async (): Promise<
   const emulatorType =
     'satellite' in config ? 'satellite' : 'console' in config ? 'console' : 'skylab';
 
-  const containerName = normalizeDockerName(
+  const containerName = normalizeContainerName(
     config.runner?.name ?? (await readProjectName()) ?? `juno-${emulatorType}`
   );
 
+  const runner = config.runner?.type ?? 'docker';
+
   return {
     success: true,
-    config,
-    containerName,
-    emulatorType
+    config: {
+      config,
+      containerName,
+      emulatorType,
+      runner
+    }
   };
 };
 
-const assertDockerContainerRunning = async ({
-  containerName
-}: {
-  containerName: string;
-}): Promise<{running: boolean}> => {
-  const result = await isDockerContainerRunning({containerName});
+const assertContainerRunning = async ({
+  containerName,
+  runner
+}: ContainerRunner): Promise<{running: boolean}> => {
+  const result = await isContainerRunning({containerName, runner});
 
   if ('err' in result) {
     console.log(
-      red(`Unable to verify if container ${containerName} is running. Is Docker installed?`)
+      red(`Unable to verify if container ${containerName} is running. Is ${runner} installed?`)
     );
     process.exit(1);
   }
