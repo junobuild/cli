@@ -3,6 +3,7 @@ import {assertAnswerCtrlC, execute, spawn} from '@junobuild/cli-tools';
 import {type EmulatorConfig, EmulatorConfigSchema, type EmulatorPorts} from '@junobuild/config';
 import type {PartialConfigFile} from '@junobuild/config-loader';
 import {red, yellow} from 'kleur';
+import {mkdir} from 'node:fs/promises';
 import {basename, join} from 'node:path';
 import prompts from 'prompts';
 import {
@@ -230,6 +231,10 @@ const startEmulator = async ({config: extendedConfig}: {config: ExtendedEmulator
   const configFilePath = nonNullish(configFile) ? join(process.cwd(), configFile) : undefined;
 
   const targetDeploy = config.runner?.target ?? join(process.cwd(), 'target', 'deploy');
+
+  // TODO: add support for runner config in build functions
+  // Podman does not auto create the path folders.
+  await mkdir(targetDeploy, {recursive: true});
 
   const image = config.runner?.image ?? `junobuild/${emulatorType}:latest`;
 
