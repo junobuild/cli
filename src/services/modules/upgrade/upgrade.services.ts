@@ -9,8 +9,8 @@ import {
   type UpgradeCodeProgress
 } from '@junobuild/admin';
 import {assertAnswerCtrlC, downloadFromURL, hasArgs} from '@junobuild/cli-tools';
-import {createHash} from 'node:crypto';
 import {green, red, yellow} from 'kleur';
+import {createHash} from 'node:crypto';
 import {readFile} from 'node:fs/promises';
 import ora from 'ora';
 import prompts from 'prompts';
