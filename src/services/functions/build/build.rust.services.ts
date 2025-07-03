@@ -1,9 +1,9 @@
 import {isEmptyString, isNullish, nonNullish} from '@dfinity/utils';
 import {execute, formatBytes, gzipFile, spawn} from '@junobuild/cli-tools';
 import {generateApi} from '@junobuild/did-tools';
-import {copyFile,lstat, mkdir, readFile, rename, writeFile} from 'node:fs/promises';
 import {red, yellow} from 'kleur';
 import {existsSync} from 'node:fs';
+import {copyFile, lstat, mkdir, readFile, rename, writeFile} from 'node:fs/promises';
 import {join, relative} from 'node:path';
 import ora, {type Ora} from 'ora';
 import {compare, minVersion, satisfies} from 'semver';

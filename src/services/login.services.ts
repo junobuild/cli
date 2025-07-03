@@ -1,10 +1,10 @@
 import {Ed25519KeyIdentity} from '@dfinity/identity';
 import type {JsonnableEd25519KeyIdentity} from '@dfinity/identity/lib/cjs/identity/ed25519';
 import {nextArg} from '@junobuild/cli-tools';
-import type http from 'node:http';
-import {createServer} from 'node:http';
 import {bold, green, underline} from 'kleur';
 import fs from 'node:fs';
+import type http from 'node:http';
+import {createServer} from 'node:http';
 import path, {dirname} from 'node:path';
 import {fileURLToPath} from 'node:url';
 import util from 'node:util';
