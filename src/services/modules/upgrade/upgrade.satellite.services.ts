@@ -71,7 +71,8 @@ const upgradeSatelliteCustom = async ({
 
   return await upgradeSatelliteWithSrc({
     satellite,
-    src
+    src,
+    args
   });
 };
 
