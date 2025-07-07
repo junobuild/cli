@@ -13,6 +13,7 @@ export const functions = async (args?: string[]) => {
   const [subCommand] = args ?? [];
 
   switch (subCommand) {
+    case 'init':
     case 'eject':
       await eject(args);
       break;
@@ -38,6 +39,7 @@ export const helpFunctions = (args?: string[]) => {
     case 'build':
       logHelpFunctionsBuild(args);
       break;
+    case 'init':
     case 'eject':
       logHelpFunctionsEject(args);
       break;
