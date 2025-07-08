@@ -156,12 +156,12 @@ export const buildRust = async ({
 
     await rename(`${SATELLITE_OUTPUT}.tmp.gz`, `${SATELLITE_OUTPUT}.gz`);
 
-    await dispatchEmulatorTouchSatellite();
-
     await successMsg(spinner);
   } finally {
     spinner.stop();
   }
+
+  await dispatchEmulatorTouchSatellite();
 };
 
 const SATELLITE_DID_FILE = join(DEVELOPER_PROJECT_SATELLITE_PATH, 'satellite.did');
