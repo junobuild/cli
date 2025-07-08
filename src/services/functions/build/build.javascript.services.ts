@@ -19,20 +19,23 @@ import {prepareJavaScriptBuildMetadata} from './build.metadata.services';
 export const buildTypeScript = async ({
   paths,
   exitOnError
-}: Pick<BuildArgs, 'paths' | 'exitOnError'> = {}) => {
-  await build({lang: 'ts', paths, exitOnError});
+}: Pick<BuildArgs, 'paths' | 'exitOnError'> = {}): Promise<{result: 'success' | 'error'}> => {
+  return await build({lang: 'ts', paths, exitOnError});
 };
 
 export const buildJavaScript = async ({
   paths,
   exitOnError
-}: Pick<BuildArgs, 'paths' | 'exitOnError'> = {}) => {
-  await build({lang: 'mjs', paths, exitOnError});
+}: Pick<BuildArgs, 'paths' | 'exitOnError'> = {}): Promise<{result: 'success' | 'error'}> => {
+  return await build({lang: 'mjs', paths, exitOnError});
 };
 
 type BuildArgsTsJs = {lang: Omit<BuildLang, 'rs'>} & Pick<BuildArgs, 'paths' | 'exitOnError'>;
 
-const build = async ({exitOnError, ...params}: BuildArgsTsJs) => {
+const build = async ({
+  exitOnError,
+  ...params
+}: BuildArgsTsJs): Promise<{result: 'success' | 'error'}> => {
   await installEsbuild();
 
   await readEmulatorConfigAndCreateDeployTargetDir();
@@ -43,10 +46,14 @@ const build = async ({exitOnError, ...params}: BuildArgsTsJs) => {
     const buildResult = await buildWithEsbuild({params, metadata});
 
     printResults({metadata, buildResult});
+
+    return {result: 'success'};
   } catch (_error: unknown) {
     if (exitOnError !== false) {
       process.exit(1);
     }
+
+    return {result: 'error'};
   }
 };
 

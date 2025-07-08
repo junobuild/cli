@@ -35,35 +35,37 @@ import {prepareJunoPkgForSatellite, prepareJunoPkgForSputnik} from './build.meta
 export const buildRust = async ({
   paths,
   target
-}: Pick<BuildArgs, 'paths'> & {target?: 'wasm32-unknown-unknown' | 'wasm32-wasip1'} = {}) => {
+}: Pick<BuildArgs, 'paths'> & {target?: 'wasm32-unknown-unknown' | 'wasm32-wasip1'} = {}): Promise<{
+  result: 'success' | 'error';
+}> => {
   const {valid: validRust} = await checkRustVersion();
 
   if (validRust === 'error' || !validRust) {
-    return;
+    return {result: 'error'};
   }
 
   const {valid} = await checkIcWasm();
 
   if (!valid) {
-    return;
+    return {result: 'error'};
   }
 
   const {valid: validExtractor} = await checkCandidExtractor();
 
   if (!validExtractor) {
-    return;
+    return {result: 'error'};
   }
 
   const {valid: validDidc} = await checkJunoDidc();
 
   if (!validDidc) {
-    return;
+    return {result: 'error'};
   }
 
   const {valid: validWasi2ic} = target === 'wasm32-wasip1' ? await checkWasi2ic() : {valid: true};
 
   if (!validWasi2ic) {
-    return;
+    return {result: 'error'};
   }
 
   const defaultProjectArgs = ['-p', SATELLITE_PROJECT_NAME];
@@ -105,7 +107,7 @@ export const buildRust = async ({
 
     if ('error' in buildType) {
       console.log(red(buildType.error));
-      return;
+      return {result: 'error'};
     }
 
     switch (target) {
@@ -156,6 +158,8 @@ export const buildRust = async ({
     await rename(`${SATELLITE_OUTPUT}.tmp.gz`, `${SATELLITE_OUTPUT}.gz`);
 
     await successMsg(spinner);
+
+    return {result: 'success'};
   } finally {
     spinner.stop();
   }

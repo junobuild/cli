@@ -16,6 +16,7 @@ import {type BuildArgs} from '../../../types/build';
 import {buildArgs} from '../../../utils/build.utils';
 import {buildJavaScript, buildTypeScript} from './build.javascript.services';
 import {buildRust} from './build.rust.services';
+import {dispatchEmulatorUpgrade} from '../../emulator/dispatch.services';
 
 export const build = async (args?: string[]) => {
   const {watch, ...params} = buildArgs(args);
@@ -25,21 +26,32 @@ export const build = async (args?: string[]) => {
     return;
   }
 
-  await executeBuild(params);
+  await executeBuildAndUpgrade(params);
 };
 
-const executeBuild = async ({lang, paths, exitOnError}: Omit<BuildArgs, 'watch'>) => {
+const executeBuildAndUpgrade = async (params: Omit<BuildArgs, 'watch'>) => {
+  const {result} = await executeBuild(params);
+
+  if (result !== 'success') {
+    return;
+  }
+
+  await dispatchEmulatorUpgrade();
+};
+
+const executeBuild = async ({
+  lang,
+  paths,
+  exitOnError
+}: Omit<BuildArgs, 'watch'>): Promise<{result: 'success' | 'error' | 'unknown'}> => {
   // eslint-disable-next-line @typescript-eslint/switch-exhaustiveness-check
   switch (lang) {
     case 'rs':
-      await buildRust({paths});
-      return;
+      return await buildRust({paths});
     case 'ts':
-      await executeSputnikBuild({paths, exitOnError, buildFn: buildTypeScript});
-      return;
+      return await executeSputnikBuild({paths, exitOnError, buildFn: buildTypeScript});
     case 'mjs':
-      await executeSputnikBuild({paths, exitOnError, buildFn: buildJavaScript});
-      return;
+      return await executeSputnikBuild({paths, exitOnError, buildFn: buildJavaScript});
   }
 
   const isPathToml =
@@ -47,8 +59,7 @@ const executeBuild = async ({lang, paths, exitOnError}: Omit<BuildArgs, 'watch'>
     basename(paths.cargo) === basename(DEVELOPER_PROJECT_SATELLITE_CARGO_TOML);
 
   if (isPathToml) {
-    await buildRust({paths});
-    return;
+    return await buildRust({paths});
   }
 
   const isPathTypeScript =
@@ -56,8 +67,7 @@ const executeBuild = async ({lang, paths, exitOnError}: Omit<BuildArgs, 'watch'>
     extname(paths.source) === extname(DEVELOPER_PROJECT_SATELLITE_INDEX_TS);
 
   if (isPathTypeScript) {
-    await executeSputnikBuild({paths, exitOnError, buildFn: buildTypeScript});
-    return;
+    return await executeSputnikBuild({paths, exitOnError, buildFn: buildTypeScript});
   }
 
   const isPathJavaScript =
@@ -65,17 +75,15 @@ const executeBuild = async ({lang, paths, exitOnError}: Omit<BuildArgs, 'watch'>
     extname(paths.source) === extname(DEVELOPER_PROJECT_SATELLITE_INDEX_MJS);
 
   if (isPathJavaScript) {
-    await executeSputnikBuild({paths, exitOnError, buildFn: buildJavaScript});
-    return;
+    return await executeSputnikBuild({paths, exitOnError, buildFn: buildJavaScript});
   }
 
   if (existsSync(DEVELOPER_PROJECT_SATELLITE_CARGO_TOML)) {
-    await buildRust();
-    return;
+    return await buildRust();
   }
 
   if (existsSync(DEVELOPER_PROJECT_SATELLITE_INDEX_TS)) {
-    await executeSputnikBuild({
+    return await executeSputnikBuild({
       paths: {
         ...paths,
         source: DEVELOPER_PROJECT_SATELLITE_INDEX_TS
@@ -83,11 +91,10 @@ const executeBuild = async ({lang, paths, exitOnError}: Omit<BuildArgs, 'watch'>
       exitOnError,
       buildFn: buildTypeScript
     });
-    return;
   }
 
   if (existsSync(DEVELOPER_PROJECT_SATELLITE_INDEX_MJS)) {
-    await executeSputnikBuild({
+    return await executeSputnikBuild({
       paths: {
         ...paths,
         source: DEVELOPER_PROJECT_SATELLITE_INDEX_MJS
@@ -95,7 +102,6 @@ const executeBuild = async ({lang, paths, exitOnError}: Omit<BuildArgs, 'watch'>
       exitOnError,
       buildFn: buildJavaScript
     });
-    return;
   }
 
   console.log(
@@ -103,6 +109,8 @@ const executeBuild = async ({lang, paths, exitOnError}: Omit<BuildArgs, 'watch'>
       'No source found for Satellite serverless functions. Expected a Rust, TypeScript, or JavaScript project.'
     )
   );
+
+  return {result: 'unknown'};
 };
 
 const executeSputnikBuild = async ({
@@ -110,9 +118,15 @@ const executeSputnikBuild = async ({
   exitOnError,
   buildFn
 }: Omit<BuildArgs, 'watch'> & {
-  buildFn: (args: Pick<BuildArgs, 'paths' | 'exitOnError'>) => Promise<void>;
-}) => {
-  await buildFn({paths, exitOnError});
+  buildFn: (
+    args: Pick<BuildArgs, 'paths' | 'exitOnError'>
+  ) => Promise<{result: 'success' | 'error'}>;
+}): Promise<{result: 'success' | 'error'}> => {
+  const {result: resultBuild} = await buildFn({paths, exitOnError});
+
+  if (resultBuild === 'error') {
+    return {result: 'error'};
+  }
 
   const withToolchain = nonNullish(paths?.cargo) || ENV.ci;
 
@@ -122,14 +136,16 @@ const executeSputnikBuild = async ({
       cargo: paths?.cargo ?? SPUTNIK_CARGO_TOML
     };
 
-    await buildRust({paths: rustPaths, target: 'wasm32-wasip1'});
+    return await buildRust({paths: rustPaths, target: 'wasm32-wasip1'});
   }
+
+  return {result: 'success'};
 };
 
 export const watchBuild = ({watch, paths, ...params}: BuildArgs) => {
   const doBuild = async () => {
     console.log(`\n⏱ Rebuilding serverless functions...`);
-    await executeBuild({paths, exitOnError: false, ...params});
+    await executeBuildAndUpgrade({paths, exitOnError: false, ...params});
   };
 
   const DEFAULT_TIMEOUT = 10_000;
