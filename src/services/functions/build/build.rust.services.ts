@@ -31,6 +31,7 @@ import {formatTime} from '../../../utils/format.utils';
 import {readPackageJson} from '../../../utils/pkg.utils';
 import {readEmulatorConfigAndCreateDeployTargetDir} from '../../emulator.services';
 import {prepareJunoPkgForSatellite, prepareJunoPkgForSputnik} from './build.metadata.services';
+import {dispatchEmulatorTouchSatellite} from './touch.services';
 
 export const buildRust = async ({
   paths,
@@ -154,6 +155,8 @@ export const buildRust = async ({
     await gzipFile({source: SATELLITE_OUTPUT, destination: `${SATELLITE_OUTPUT}.tmp.gz`});
 
     await rename(`${SATELLITE_OUTPUT}.tmp.gz`, `${SATELLITE_OUTPUT}.gz`);
+
+    await dispatchEmulatorTouchSatellite();
 
     await successMsg(spinner);
   } finally {
