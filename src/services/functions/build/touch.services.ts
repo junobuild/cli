@@ -45,7 +45,8 @@ const dispatchTouch = async ({filename}: {filename: string}) => {
 
   try {
     const response = await fetch(
-      `http://localhost:${adminPort}/admin/touch?file=${encodeURIComponent(filename)}`
+      `http://localhost:${adminPort}/admin/touch?file=${encodeURIComponent(filename)}`,
+      {signal: AbortSignal.timeout(5000)}
     );
 
     if (!response.ok) {
