@@ -16,6 +16,7 @@ import {type BuildArgs} from '../../../types/build';
 import {buildArgs} from '../../../utils/build.utils';
 import {buildJavaScript, buildTypeScript} from './build.javascript.services';
 import {buildRust} from './build.rust.services';
+import {dispatchEmulatorTouchSputnik} from './touch.services';
 
 export const build = async (args?: string[]) => {
   const {watch, ...params} = buildArgs(args);
@@ -116,14 +117,17 @@ const executeSputnikBuild = async ({
 
   const withToolchain = nonNullish(paths?.cargo) || ENV.ci;
 
-  if (withToolchain) {
-    const rustPaths = {
-      ...paths,
-      cargo: paths?.cargo ?? SPUTNIK_CARGO_TOML
-    };
-
-    await buildRust({paths: rustPaths, target: 'wasm32-wasip1'});
+  if (!withToolchain) {
+    await dispatchEmulatorTouchSputnik();
+    return;
   }
+
+  const rustPaths = {
+    ...paths,
+    cargo: paths?.cargo ?? SPUTNIK_CARGO_TOML
+  };
+
+  await buildRust({paths: rustPaths, target: 'wasm32-wasip1'});
 };
 
 export const watchBuild = ({watch, paths, ...params}: BuildArgs) => {

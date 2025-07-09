@@ -31,6 +31,7 @@ import {formatTime} from '../../../utils/format.utils';
 import {readPackageJson} from '../../../utils/pkg.utils';
 import {readEmulatorConfigAndCreateDeployTargetDir} from '../../emulator.services';
 import {prepareJunoPkgForSatellite, prepareJunoPkgForSputnik} from './build.metadata.services';
+import {dispatchEmulatorTouchSatellite} from './touch.services';
 
 export const buildRust = async ({
   paths,
@@ -159,6 +160,8 @@ export const buildRust = async ({
   } finally {
     spinner.stop();
   }
+
+  await dispatchEmulatorTouchSatellite();
 };
 
 const SATELLITE_DID_FILE = join(DEVELOPER_PROJECT_SATELLITE_PATH, 'satellite.did');
