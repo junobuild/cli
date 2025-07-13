@@ -43,11 +43,12 @@ export const CHANGES_REJECT_DESCRIPTION = 'Reject a change.';
 export const OPTION_KEEP_STAGED = `${yellow('-k, --keep-staged')}     Keep staged assets in memory after applying the change.`;
 export const OPTION_HASH = `${yellow('--hash')}                The expected hash of all included changes (for verification).`;
 export const OPTION_HELP = `${yellow('-h, --help')}            Output usage information.`;
+export const OPTION_MODE = `${yellow('-m, --mode')}            Choose which environment to use (production, staging, development). Defaults to production if omitted.`;
 export const OPTION_SRC = `${yellow('-s, --src')}             A path to a specific local gzipped WASM file to publish.`;
 export const OPTIONS_UPGRADE = `${yellow('--clear-chunks')}        Clear any previously uploaded WASM chunks (applies if the WASM size is greater than 2MB).
   ${yellow('--no-snapshot')}         Skip creating a snapshot before upgrading.
   ${yellow('-r, --reset')}           Reset to the initial state.`;
-export const OPTIONS_URL = `${yellow('-m, --mode')}            Set env mode. For example production or a custom string. Default is production.
+export const OPTIONS_URL = `${OPTION_MODE}
   ${yellow('--container-url')}       Override a custom container URL. If not provided, defaults to production or the local container in development mode.
   ${yellow('--console-url')}         Specify a custom URL to access the developer Console.`;
 export const OPTIONS_BUILD = `${yellow('-l, --lang')}            Specify the language for building the serverless functions: ${magenta('rust')}, ${magenta('typescript')} or ${magenta('javascript')}.
