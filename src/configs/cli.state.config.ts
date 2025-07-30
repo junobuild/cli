@@ -14,8 +14,10 @@ export const getLatestAppliedConfig = ({
   satelliteId
 }: {
   satelliteId: PrincipalText;
-}): CliStateSatelliteAppliedConfigHashes | undefined =>
-  getStateConfig().get('satellites')?.[satelliteId]?.lastAppliedConfig;
+}): CliStateSatelliteAppliedConfigHashes | undefined => {
+  console.log('____>', getStateConfig().get('satellites'));
+  return getStateConfig().get('satellites')?.[satelliteId]?.lastAppliedConfig;
+};
 
 export const saveLastAppliedConfig = ({
   satelliteId,
@@ -23,7 +25,11 @@ export const saveLastAppliedConfig = ({
 }: {satelliteId: PrincipalText} & Pick<CliStateSatellite, 'lastAppliedConfig'>) => {
   const config = getStateConfig();
 
+  console.log('1.', config);
+
   const satellites = config.get('satellites');
+
+  console.log('2.', satellites);
 
   const lastAppliedConfig = satellites?.[satelliteId]?.lastAppliedConfig;
 
@@ -38,6 +44,8 @@ export const saveLastAppliedConfig = ({
       }
     }
   };
+
+  console.log('///>', satelliteId, updateSatellites);
 
   config.set('satellites', updateSatellites);
 };

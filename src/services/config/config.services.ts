@@ -37,7 +37,8 @@ import {assertConfigAndLoadSatelliteContext} from '../../utils/satellite.utils';
 import {getSettings, setSettings} from './settings.services';
 
 type SetConfigResults = [
-  PromiseSettledResult<StorageConfig>,
+  // eslint-disable-next-line @typescript-eslint/no-invalid-void-type
+  PromiseSettledResult<StorageConfig | void>,
   // eslint-disable-next-line @typescript-eslint/no-invalid-void-type
   PromiseSettledResult<DatastoreConfig | void>,
   // eslint-disable-next-line @typescript-eslint/no-invalid-void-type
@@ -90,6 +91,8 @@ const saveLastAppliedConfigHashes = ({
     auth: nonNullish(auth) ? objHash(auth) : undefined,
     settings: nonNullish(settings) ? objHash(settings) : undefined
   };
+
+  console.log(lastAppliedConfig, results);
 
   saveLastAppliedConfig({lastAppliedConfig, satelliteId});
 };
@@ -176,17 +179,15 @@ const setConfigs = async ({
   const {storage, authentication, datastore, settings} = editConfig;
 
   return await Promise.allSettled([
-    setStorageConfig({
-      config: {
-        headers: storage?.headers ?? [],
-        rewrites: storage?.rewrites,
-        redirects: storage?.redirects,
-        iframe: storage?.iframe,
-        rawAccess: storage?.rawAccess,
-        maxMemorySize: storage?.maxMemorySize
-      },
-      satellite
-    }),
+    isNullish(storage)
+      ? Promise.resolve()
+      : setStorageConfig({
+          config: {
+            ...storage,
+            headers: storage.headers ?? []
+          },
+          satellite
+        }),
     isNullish(datastore)
       ? Promise.resolve()
       : setDatastoreConfig({
@@ -218,6 +219,8 @@ const prepareConfig = async ({
     auth: currentAuth,
     settings: currentSettings
   } = currentConfig;
+
+  console.log('---->', lastAppliedConfig);
 
   const isDefaultConfig = (): boolean => {
     const [storage] = currentStorage;
@@ -263,6 +266,8 @@ const prepareConfig = async ({
     const [{version: versionStorage}] = currentStorage;
     const versionDatastore = currentDatastore?.[0]?.version;
     const versionAuth = currentAuth?.[0]?.version;
+
+    console.log('===', storage);
 
     return {
       storage:
