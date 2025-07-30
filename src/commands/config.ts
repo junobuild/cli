@@ -85,10 +85,7 @@ const printResults = (results: SetConfigResults) => {
   );
 
   errors.forEach((error, index) => {
-    console.log(
-      `${index}:`,
-      error.reason instanceof Error ? (error.reason.message ?? error.reason) : error.reason
-    );
+    console.log(`${index}:`, error.reason instanceof Error ? error.reason.message : error.reason);
   });
 };
 
