@@ -1,12 +1,9 @@
 import {isNullish, nonNullish} from '@dfinity/utils';
 import type Conf from 'conf';
 import {yellow} from 'kleur';
-import {
-  type CliSettingsConfig,
-  getSettingsConfig,
-  saveEncryption
-} from '../configs/cli.settings.config';
+import {getSettingsConfig, saveEncryption} from '../configs/cli.settings.config';
 import {askForPassword} from '../services/cli.settings.services';
+import type {CliSettingsConfig} from '../types/cli.settings.config';
 import {configFileExists, loadConfig} from '../utils/config.utils';
 import {isHeadless} from '../utils/process.utils';
 import {confirm} from '../utils/prompt.utils';

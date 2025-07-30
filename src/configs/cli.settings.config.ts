@@ -1,9 +1,6 @@
 import Conf, {type Schema} from 'conf';
 import {ENV} from '../env';
-
-export interface CliSettingsConfig {
-  encryption: boolean;
-}
+import {type CliSettingsConfig} from '../types/cli.settings.config';
 
 const schema: Schema<CliSettingsConfig> = {
   encryption: {
