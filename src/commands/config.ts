@@ -1,17 +1,28 @@
 import {ICManagementCanister, LogVisibility} from '@dfinity/ic-management';
 import {Principal} from '@dfinity/principal';
-import {isNullish} from '@dfinity/utils';
+import {isNullish, nonNullish} from '@dfinity/utils';
 import {
   type SatelliteParameters,
   setAuthConfig,
   setDatastoreConfig,
   setStorageConfig
 } from '@junobuild/admin';
-import type {ModuleSettings} from '@junobuild/config';
+import type {
+  AuthenticationConfig,
+  DatastoreConfig,
+  ModuleSettings,
+  StorageConfig
+} from '@junobuild/config';
 import {red} from 'kleur';
 import ora from 'ora';
 import {initAgent} from '../api/agent.api';
 import {assertConfigAndLoadSatelliteContext} from '../utils/satellite.utils';
+
+type SetConfigResults = [
+  PromiseSettledResult<StorageConfig>,
+  // eslint-disable-next-line @typescript-eslint/no-invalid-void-type
+  ...Array<PromiseSettledResult<void | AuthenticationConfig | DatastoreConfig>>
+];
 
 export const config = async () => {
   const {satellite, satelliteConfig} = await assertConfigAndLoadSatelliteContext();
@@ -19,7 +30,7 @@ export const config = async () => {
 
   const spinner = ora(`Configuring...`).start();
 
-  let results: Array<PromiseSettledResult<void>> = [];
+  let results: SetConfigResults | undefined = undefined;
 
   try {
     results = await Promise.allSettled([
@@ -56,10 +67,12 @@ export const config = async () => {
     spinner.stop();
   }
 
-  printResults(results);
+  if (nonNullish(results)) {
+    printResults(results);
+  }
 };
 
-const printResults = (results: Array<PromiseSettledResult<void>>) => {
+const printResults = (results: SetConfigResults) => {
   const errors = results.filter((result) => result.status === 'rejected');
 
   if (errors.length === 0) {
