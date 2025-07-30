@@ -16,7 +16,7 @@ import type {
 } from '@junobuild/config';
 import {red} from 'kleur';
 import ora from 'ora';
-import {getStateConfig, saveLastAppliedConfig} from '../../configs/cli.state.config';
+import {getLatestAppliedConfig, saveLastAppliedConfig} from '../../configs/cli.state.config';
 import {
   type CliStateSatelliteAppliedConfigHashes,
   type ConfigHash,
@@ -30,16 +30,19 @@ import {getSettings, setSettings} from './settings.services';
 
 type SetConfigResults = [
   PromiseSettledResult<StorageConfig>,
+  // eslint-disable-next-line @typescript-eslint/no-invalid-void-type
   PromiseSettledResult<DatastoreConfig | void>,
+  // eslint-disable-next-line @typescript-eslint/no-invalid-void-type
   PromiseSettledResult<AuthenticationConfig | void>,
   PromiseSettledResult<void>
 ];
 
 export const config = async () => {
   const {satellite, satelliteConfig} = await assertConfigAndLoadSatelliteContext();
+  const {satelliteId} = satellite;
 
   const currentConfig = await loadCurrentConfig({satellite});
-  const lastAppliedConfig = getLatestAppliedConfig({satellite});
+  const lastAppliedConfig = getLatestAppliedConfig({satelliteId});
 
   const editConfig = await prepareConfig({
     currentConfig,
@@ -49,16 +52,16 @@ export const config = async () => {
 
   const results = await applyConfig({satellite, editConfig});
 
-  await saveLastAppliedConfigHashes({
+  saveLastAppliedConfigHashes({
     results,
-    settings: editConfig?.settings,
-    satelliteId: satellite.satelliteId
+    settings: editConfig.settings,
+    satelliteId
   });
 
   printResults(results);
 };
 
-const saveLastAppliedConfigHashes = async ({
+const saveLastAppliedConfigHashes = ({
   results,
   settings,
   satelliteId
@@ -118,15 +121,6 @@ const getCurrentConfig = async ({
     ...(nonNullish(auth) && {auth: [auth, objHash(auth)]}),
     settings: [settings, objHash(settings)]
   };
-};
-
-const getLatestAppliedConfig = ({
-  satellite: {satelliteId}
-}: {
-  satellite: SatelliteParametersWithId;
-}): CliStateSatelliteAppliedConfigHashes | undefined => {
-  const satellites = getStateConfig().get('satellites');
-  return satellites?.[satelliteId]?.lastAppliedConfig;
 };
 
 const loadCurrentConfig = async (params: {
