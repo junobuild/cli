@@ -4,10 +4,10 @@ export type ConfigHash = string;
 export type SettingsHash = ConfigHash;
 
 export interface CliStateSatelliteAppliedConfigHashes {
-  storage?: ConfigHash;
-  datastore?: ConfigHash;
-  auth?: ConfigHash;
-  settings?: SettingsHash;
+  storage: ConfigHash | undefined;
+  datastore: ConfigHash | undefined;
+  auth: ConfigHash | undefined;
+  settings: SettingsHash | undefined;
 }
 
 export interface CliStateSatellite {

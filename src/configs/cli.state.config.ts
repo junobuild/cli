@@ -19,15 +19,24 @@ export const getLatestAppliedConfig = ({
 
 export const saveLastAppliedConfig = ({
   satelliteId,
-  lastAppliedConfig
+  lastAppliedConfig: {storage, datastore, auth, settings}
 }: {satelliteId: PrincipalText} & Pick<CliStateSatellite, 'lastAppliedConfig'>) => {
   const config = getStateConfig();
 
   const satellites = config.get('satellites');
 
+  const lastAppliedConfig = satellites?.[satelliteId]?.lastAppliedConfig;
+
   const updateSatellites = {
     ...(satellites ?? {}),
-    [satelliteId]: {lastAppliedConfig}
+    [satelliteId]: {
+      lastAppliedConfig: {
+        storage: storage ?? lastAppliedConfig?.storage,
+        datastore: datastore ?? lastAppliedConfig?.datastore,
+        auth: auth ?? lastAppliedConfig?.auth,
+        settings: settings ?? lastAppliedConfig?.settings
+      }
+    }
   };
 
   config.set('satellites', updateSatellites);
