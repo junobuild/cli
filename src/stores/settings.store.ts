@@ -3,15 +3,15 @@ import type Conf from 'conf';
 import {yellow} from 'kleur';
 import {getSettingsConfig, saveEncryption} from '../configs/cli.settings.config';
 import {askForPassword} from '../services/cli.settings.services';
-import type {CliSettingsConfig} from '../types/cli.settings.config';
+import type {CliSettings} from '../types/cli.settings';
 import {configFileExists, loadConfig} from '../utils/config.utils';
 import {isHeadless} from '../utils/process.utils';
 import {confirm} from '../utils/prompt.utils';
 
 class SettingsConfigStore {
-  readonly #config: Conf<CliSettingsConfig>;
+  readonly #config: Conf<CliSettings>;
 
-  private constructor(readonly config: Conf<CliSettingsConfig>) {
+  private constructor(readonly config: Conf<CliSettings>) {
     this.#config = config;
   }
 
