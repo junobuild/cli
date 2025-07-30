@@ -75,7 +75,14 @@ const saveLastAppliedConfigHashes = ({
   satelliteId
 }: {results: SetConfigResults} & Pick<SatelliteConfig, 'settings'> &
   Pick<SatelliteParametersWithId, 'satelliteId'>) => {
-  const [storage, datastore, auth, _] = results.filter((result) => result.status === 'fulfilled');
+  const fulfilledValue = (
+    index: number
+  ): void | StorageConfig | DatastoreConfig | AuthenticationConfig | undefined =>
+    results[index].status === 'fulfilled' ? results[index].value : undefined;
+
+  const storage = fulfilledValue(0);
+  const datastore = fulfilledValue(1);
+  const auth = fulfilledValue(2);
 
   const lastAppliedConfig: CliStateSatelliteAppliedConfigHashes = {
     ...(nonNullish(storage) && {storage: objHash(storage)}),
