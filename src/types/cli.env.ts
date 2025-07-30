@@ -22,4 +22,6 @@ export interface JunoCliConfig {
   projectName: string | 'juno';
   // eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
   projectSettingsName: string | 'juno-cli-settings';
+  // eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
+  projectStateName: string | 'juno-cli-state';
 }
