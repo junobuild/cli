@@ -85,10 +85,10 @@ const saveLastAppliedConfigHashes = ({
   const auth = fulfilledValue(2);
 
   const lastAppliedConfig: CliStateSatelliteAppliedConfigHashes = {
-    ...(nonNullish(storage) && {storage: objHash(storage)}),
-    ...(nonNullish(datastore) && {datastore: objHash(datastore)}),
-    ...(nonNullish(auth) && {auth: objHash(auth)}),
-    ...(nonNullish(settings) && {settings: objHash(settings)})
+    storage: nonNullish(storage) ? objHash(storage) : undefined,
+    datastore: nonNullish(datastore) ? objHash(datastore) : undefined,
+    auth: nonNullish(auth) ? objHash(auth) : undefined,
+    settings: nonNullish(settings) ? objHash(settings) : undefined
   };
 
   saveLastAppliedConfig({lastAppliedConfig, satelliteId});
