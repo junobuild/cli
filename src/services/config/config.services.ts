@@ -18,6 +18,14 @@ import {red} from 'kleur';
 import ora from 'ora';
 import {getLatestAppliedConfig, saveLastAppliedConfig} from '../../configs/cli.state.config';
 import {
+  DEFAULT_COMPUTE_ALLOCATION,
+  DEFAULT_LOG_VISIBILITY,
+  DEFAULT_MEMORY_ALLOCATION,
+  DEFAULT_RESERVED_CYCLES_LIMIT,
+  DEFAULT_SATELLITE_FREEZING_THRESHOLD,
+  DEFAULT_SATELLITE_HEAP_WASM_MEMORY_LIMIT
+} from '../../constants/settings.constants';
+import {
   type CliStateSatelliteAppliedConfigHashes,
   type ConfigHash,
   type SettingsHash
@@ -225,12 +233,12 @@ const prepareConfig = async ({
 
     const [settings] = currentSettings;
     return (
-      isNullish(settings.computeAllocation) &&
-      isNullish(settings.memoryAllocation) &&
-      isNullish(settings.heapMemoryLimit) &&
-      isNullish(settings.freezingThreshold) &&
-      isNullish(settings.reservedCyclesLimit) &&
-      isNullish(settings.logVisibility)
+      settings.computeAllocation === DEFAULT_COMPUTE_ALLOCATION &&
+      settings.memoryAllocation === DEFAULT_MEMORY_ALLOCATION &&
+      settings.heapMemoryLimit === DEFAULT_SATELLITE_HEAP_WASM_MEMORY_LIMIT &&
+      settings.freezingThreshold === DEFAULT_SATELLITE_FREEZING_THRESHOLD &&
+      settings.reservedCyclesLimit === DEFAULT_RESERVED_CYCLES_LIMIT &&
+      settings.logVisibility === DEFAULT_LOG_VISIBILITY
     );
   };
 
@@ -273,6 +281,8 @@ const prepareConfig = async ({
 
     return extendWithVersions();
   };
+
+  console.log(firstTime, currentConfig, lastAppliedConfig);
 
   if (firstTime) {
     return await confirmAndExtendWithVersions();
