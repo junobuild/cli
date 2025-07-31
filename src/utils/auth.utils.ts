@@ -19,7 +19,7 @@ export const authUrl = ({
   authUrl.searchParams.set('principal', principal);
 
   if (nonNullish(ENV.profile)) {
-    authUrl.searchParams.set('profile', ENV.profile);
+    authUrl.searchParams.set('profile', encodeURIComponent(ENV.profile));
   }
 
   return authUrl.toString();
