@@ -12,7 +12,6 @@ import {open} from './commands/open';
 import {snapshot} from './commands/snapshot';
 import {startStop} from './commands/start-stop';
 import {upgrade} from './commands/upgrade';
-import {use} from './commands/use';
 import {version as versionCommand} from './commands/version';
 import {whoami} from './commands/whoami';
 import {logHelpClear} from './help/clear.help';
@@ -27,7 +26,6 @@ import {logHelpSnapshot} from './help/snapshot.help';
 import {logHelpStart} from './help/start.help';
 import {logHelpStop} from './help/stop.help';
 import {logHelpUpgrade} from './help/upgrade.help';
-import {logHelpUse} from './help/use.help';
 import {logHelpVersion} from './help/version.help';
 import {logHelpWhoAmI} from './help/whoami.help';
 import {checkNodeVersion} from './utils/env.utils';
@@ -68,9 +66,6 @@ export const run = async () => {
         break;
       case 'open':
         logHelpOpen(args);
-        break;
-      case 'use':
-        logHelpUse(args);
         break;
       case 'clear':
         logHelpClear(args);
@@ -149,9 +144,6 @@ export const run = async () => {
       break;
     case 'whoami':
       await whoami();
-      break;
-    case 'use':
-      await use(args);
       break;
     case 'stop':
       await startStop({args, action: 'stop'});

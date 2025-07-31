@@ -18,7 +18,7 @@ const info = async (): Promise<{success: boolean}> => {
   const profile = await getUse();
 
   if (!isDefaultProfile(profile)) {
-    console.log(`👤 Profile: ${green(profile!)}`);
+    console.log(`👤 Profile: ${green(profile)}`);
   }
 
   const token = await getToken();
