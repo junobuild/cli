@@ -1,7 +1,8 @@
 import {Ed25519KeyIdentity} from '@dfinity/identity';
-import {isNullish} from '@dfinity/utils';
+import {isNullish, nonNullish} from '@dfinity/utils';
 import {green} from 'kleur';
-import {getToken, getUse, isDefaultProfile} from '../configs/cli.config';
+import {getToken} from '../configs/cli.config';
+import {ENV} from '../env';
 import {links} from '../services/links.services';
 
 export const whoami = async () => {
@@ -15,10 +16,8 @@ export const whoami = async () => {
 };
 
 const info = async (): Promise<{success: boolean}> => {
-  const profile = await getUse();
-
-  if (!isDefaultProfile(profile)) {
-    console.log(`👤 Profile: ${green(profile)}`);
+  if (nonNullish(ENV.profile)) {
+    console.log(`👤 Profile: ${ENV.profile}`);
   }
 
   const token = await getToken();
