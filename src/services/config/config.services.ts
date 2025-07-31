@@ -251,6 +251,9 @@ const prepareConfig = async ({
 
   const firstTime = isNullish(lastAppliedConfig);
 
+  // If the developer runs `juno config` for the first time using the default configuration,
+  // there's no need to show a warning about overwriting an existing config - it's the first time
+  // they want to configure something.
   if (firstTime && isDefaultConfig()) {
     return satelliteConfig;
   }
