@@ -36,7 +36,6 @@ export const login = async (args?: string[]) => {
       const satellites = url.searchParams.get('satellites');
       const orbiters = url.searchParams.get('orbiters');
       const missionControl = url.searchParams.get('mission_control');
-      const profile = url.searchParams.get('profile');
 
       if (returnedNonce !== `${nonce}`) {
         await respondWithFile(req, res, 400, '../templates/login/failure.html');
@@ -46,7 +45,7 @@ export const login = async (args?: string[]) => {
       }
 
       try {
-        await saveConfig({token, satellites, orbiters, missionControl, profile});
+        await saveConfig({token, satellites, orbiters, missionControl});
         await respondWithFile(req, res, 200, '../templates/login/success.html');
         console.log(`${green('Success!')} Logged in. ✅`);
         resolve();
@@ -98,20 +97,18 @@ const saveConfig = async ({
   token,
   satellites,
   orbiters,
-  missionControl,
-  profile
+  missionControl
 }: {
   token: JsonnableEd25519KeyIdentity;
   satellites: string | null;
   orbiters: string | null;
   missionControl: string | null;
-  profile: string | null;
 }) => {
   await saveCliConfig({
     token,
     satellites: JSON.parse(decodeURIComponent(satellites ?? '[]')),
     orbiters: orbiters !== null ? JSON.parse(decodeURIComponent(orbiters)) : null,
     missionControl,
-    profile
+    profile: null
   });
 };
