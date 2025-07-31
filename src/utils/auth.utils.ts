@@ -7,7 +7,7 @@ export const authUrl = ({
   principal
 }: {
   port: number;
-  nonce: number;
+  nonce: string;
   principal: string;
 }): string => {
   const callbackUrl = authCallbackUrl({port, nonce});
@@ -24,9 +24,9 @@ export const requestUrl = ({port, reqUrl}: {port: number; reqUrl: string | undef
   return `${requestUrl}${reqUrl}`;
 };
 
-const authCallbackUrl = ({port, nonce}: {port: number; nonce: number}): string => {
+const authCallbackUrl = ({port, nonce}: {port: number; nonce: string}): string => {
   const redirectUrl = new URL(REDIRECT_URL.replace('{port}', `${port}`));
-  redirectUrl.searchParams.set('state', `${nonce}`);
+  redirectUrl.searchParams.set('state', nonce);
 
   return redirectUrl.toString();
 };
