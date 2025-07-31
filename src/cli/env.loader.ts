@@ -6,6 +6,7 @@ export const loadEnv = (): JunoCliEnv => {
   const [_, ...args] = process.argv.slice(2);
 
   const mode = nextArg({args, option: '-m'}) ?? nextArg({args, option: '--mode'});
+  const profile = nextArg({args, option: '-p'}) ?? nextArg({args, option: '--profile'});
   const containerUrl = nextArg({args, option: '--container-url'});
 
   const envContainerUrl =
@@ -17,7 +18,7 @@ export const loadEnv = (): JunoCliEnv => {
     mode: mode ?? 'production',
     containerUrl: envContainerUrl,
     console: loadEnvConsole({args, mode}),
-    config: loadEnvConfig({mode}),
+    config: loadEnvConfig({mode, profile}),
     ci
   };
 };
@@ -37,10 +38,21 @@ const loadEnvConsole = ({args, mode}: {args?: string[]; mode: string | undefined
   };
 };
 
-const loadEnvConfig = ({mode}: {mode: string | undefined}): JunoCliConfig => {
+const loadEnvConfig = ({
+  mode,
+  profile
+}: {
+  mode: string | undefined;
+  profile: string | undefined;
+}): JunoCliConfig => {
   // Historically we used "juno" - without environment reference - for production.
-  // That is why we keep this approach for backwards compatibility.
-  const projectName = notEmptyString(mode) && mode !== 'production' ? `juno-${mode}` : 'juno';
+  // That is why we keep this default approach for backwards compatibility.
+  const modeSuffix =
+    notEmptyString(mode) && (mode !== 'production' || notEmptyString(profile)) ? `-${mode}` : '';
+
+  const profileSuffix = notEmptyString(profile) ? `-${profile}` : '';
+
+  const projectName = `juno${profileSuffix}${modeSuffix}`;
 
   return {
     projectName,
