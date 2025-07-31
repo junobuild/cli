@@ -2,6 +2,7 @@ import {Ed25519KeyIdentity} from '@dfinity/identity';
 import type {JsonnableEd25519KeyIdentity} from '@dfinity/identity/lib/cjs/identity/ed25519';
 import {nextArg} from '@junobuild/cli-tools';
 import {bold, green, underline} from 'kleur';
+import {randomBytes} from 'node:crypto';
 import fs from 'node:fs';
 import type http from 'node:http';
 import {createServer} from 'node:http';
@@ -18,7 +19,7 @@ const __dirname = dirname(__filename);
 
 export const login = async (args?: string[]) => {
   const port = await getPort();
-  const nonce = Math.floor(Math.random() * (2 << 29) + 1);
+  const nonce = randomBytes(16).toString('hex');
 
   const key = Ed25519KeyIdentity.generate();
   const principal = key.getPrincipal().toText();
@@ -37,7 +38,7 @@ export const login = async (args?: string[]) => {
       const orbiters = url.searchParams.get('orbiters');
       const missionControl = url.searchParams.get('mission_control');
 
-      if (returnedNonce !== `${nonce}`) {
+      if (returnedNonce !== nonce) {
         await respondWithFile(req, res, 400, '../templates/login/failure.html');
         reject(new Error('Unexpected error while logging in.'));
         server.close();
