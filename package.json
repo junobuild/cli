@@ -29,6 +29,7 @@
     "@dfinity/ic-management": "^6.2.0",
     "@dfinity/identity": "^2.3.0",
     "@dfinity/principal": "^2.3.0",
+    "@dfinity/zod-schemas": "^1.0.0",
     "@junobuild/admin": "^0.6.8-next-2025-07-30.2",
     "@junobuild/cdn": "^0.2.1-next-2025-07-30.2",
     "@junobuild/cli-tools": "^0.3.1-next-2025-07-30.2",

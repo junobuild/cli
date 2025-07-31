@@ -44,6 +44,7 @@ const loadEnvConfig = ({mode}: {mode: string | undefined}): JunoCliConfig => {
 
   return {
     projectName,
-    projectSettingsName: `${projectName}-cli-settings`
+    projectSettingsName: `${projectName}-cli-settings`,
+    projectStateName: `${projectName}-cli-state`
   };
 };
