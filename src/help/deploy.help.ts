@@ -12,7 +12,8 @@ import {TITLE} from './help';
 const usage = `Usage: ${green('juno')} ${cyan('deploy')} ${yellow('[options]')}
 
 Options:
-  ${yellow('-c, --clear')}           Clear existing app files before proceeding with deployment.
+  ${yellow('--clear')}               Clear existing app files before proceeding with deployment.
+  ${yellow('--config')}              Apply configuration after deployment succeeds.
   ${yellow('--no-apply')}            Submit the deployment as a change but do not apply it yet.
   ${OPTION_KEEP_STAGED}
   ${yellow('-i, --immediate')}       Deploy files instantly (bypasses the change workflow).

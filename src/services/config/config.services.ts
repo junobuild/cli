@@ -139,7 +139,7 @@ const getCurrentConfig = async ({
 const loadCurrentConfig = async (params: {
   satellite: SatelliteParametersWithId;
 }): Promise<CurrentConfig> => {
-  const spinner = ora('Loading...').start();
+  const spinner = ora('Loading configuration...').start();
 
   try {
     return await getCurrentConfig(params);
