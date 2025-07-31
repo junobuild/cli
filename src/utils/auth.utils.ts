@@ -24,7 +24,7 @@ export const requestUrl = ({port, reqUrl}: {port: number; reqUrl: string | undef
   return `${requestUrl}${reqUrl}`;
 };
 
-export const authCallbackUrl = ({port, nonce}: {port: number; nonce: number}): string => {
+const authCallbackUrl = ({port, nonce}: {port: number; nonce: number}): string => {
   const redirectUrl = new URL(REDIRECT_URL.replace('{port}', `${port}`));
   redirectUrl.searchParams.set('state', `${nonce}`);
 
