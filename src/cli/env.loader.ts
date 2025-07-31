@@ -15,6 +15,7 @@ export const loadEnv = (): JunoCliEnv => {
   const ci = process.env.CI === 'true';
 
   return {
+    profile,
     mode: mode ?? 'production',
     containerUrl: envContainerUrl,
     console: loadEnvConsole({args, mode}),

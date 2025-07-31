@@ -1,6 +1,7 @@
 import type {JunoConfigEnv} from '@junobuild/config';
 
 export type JunoCliEnv = JunoConfigEnv & {
+  profile: string | undefined;
   containerUrl: string | undefined;
   console: JunoConsole;
   config: JunoCliConfig;
