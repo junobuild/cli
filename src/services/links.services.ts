@@ -1,17 +1,11 @@
 import {listCustomDomains} from '@junobuild/admin';
-import {red} from 'kleur';
+import {yellow} from 'kleur';
 import {consoleUrl, defaultSatelliteDomain} from '../utils/domain.utils';
 import {terminalLink} from '../utils/links.utils';
 import {isHeadless} from '../utils/process.utils';
 import {assertConfigAndLoadSatelliteContext} from '../utils/satellite.utils';
 
 export const links = async () => {
-  // If a developer is using a JUNO_TOKEN to execute command(s), the links will not be printed.
-  // This is particularly useful for CI environment where such output is not needed and also because only ADMIN controllers can list custom domains.
-  if (isHeadless()) {
-    return;
-  }
-
   const {satellite} = await assertConfigAndLoadSatelliteContext();
   const {satelliteId} = satellite;
 
@@ -19,7 +13,10 @@ export const links = async () => {
   const adminUrl = consoleUrl(satelliteId);
 
   try {
-    const domains = await listCustomDomains({satellite});
+    // If a developer is using a JUNO_TOKEN to execute command(s), the custom domain will not be queried or printed.
+    // This is particularly useful in CI environments where access keys might be limited,
+    // and only ADMIN controllers can list custom domains.
+    const domains = isHeadless() ? [] : await listCustomDomains({satellite});
 
     console.log(`\n🛠️  ${terminalLink(adminUrl)}`);
 
@@ -32,6 +29,6 @@ export const links = async () => {
       console.log(`🌍 ${terminalLink(`https://${domain}`)}`);
     });
   } catch (_err: unknown) {
-    console.log(red('Cannot list the custom domains.'));
+    console.log(yellow('Custom domains could not be listed'));
   }
 };
