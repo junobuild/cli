@@ -2,7 +2,7 @@ import {type Principal} from '@dfinity/principal';
 import {assertAnswerCtrlC} from '@junobuild/cli-tools';
 import {bold, green, red} from 'kleur';
 import prompts from 'prompts';
-import {addCliMissionControl, addCliOrbiter, addCliSatellite, getUse} from '../configs/cli.config';
+import {addCliMissionControl, addCliOrbiter, addCliSatellite} from '../configs/cli.config';
 import {ENV} from '../env';
 import {type AssetKey} from '../types/asset-key';
 import {displaySegment} from '../utils/display.utils';
@@ -31,17 +31,15 @@ export const reuseController = async (controller: Principal) => {
     return;
   }
 
-  const profile = await getUse();
-
   switch (segment) {
     case 'orbiter':
-      await saveOrbiter({profile, segmentId});
+      await saveOrbiter({segmentId});
       break;
     case 'mission_control':
-      await saveMissionControl({profile, segmentId});
+      await saveMissionControl({segmentId});
       break;
     default:
-      await saveSatellite({profile, segmentId});
+      await saveSatellite({segmentId});
   }
 
   console.log(
@@ -49,13 +47,7 @@ export const reuseController = async (controller: Principal) => {
   );
 };
 
-const saveSatellite = async ({
-  profile,
-  segmentId
-}: {
-  profile: string | undefined;
-  segmentId: string;
-}) => {
+const saveSatellite = async ({segmentId}: {segmentId: string}) => {
   const {name}: {name: string | undefined} = await prompts({
     type: 'text',
     name: 'name',
@@ -68,7 +60,6 @@ const saveSatellite = async ({
   }
 
   await addCliSatellite({
-    profile,
     satellite: {
       p: segmentId,
       n: name
@@ -76,25 +67,12 @@ const saveSatellite = async ({
   });
 };
 
-const saveMissionControl = async ({
-  profile,
-  segmentId
-}: {
-  profile: string | undefined;
-  segmentId: string;
-}) => {
-  await addCliMissionControl({profile, missionControl: segmentId});
+const saveMissionControl = async ({segmentId}: {segmentId: string}) => {
+  await addCliMissionControl({missionControl: segmentId});
 };
 
-const saveOrbiter = async ({
-  profile,
-  segmentId
-}: {
-  profile: string | undefined;
-  segmentId: string;
-}) => {
+const saveOrbiter = async ({segmentId}: {segmentId: string}) => {
   await addCliOrbiter({
-    profile,
     orbiter: {
       p: segmentId
     }

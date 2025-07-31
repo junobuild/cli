@@ -108,7 +108,6 @@ const saveConfig = async ({
     token,
     satellites: JSON.parse(decodeURIComponent(satellites ?? '[]')),
     orbiters: orbiters !== null ? JSON.parse(decodeURIComponent(orbiters)) : null,
-    missionControl,
-    profile: null
+    missionControl
   });
 };

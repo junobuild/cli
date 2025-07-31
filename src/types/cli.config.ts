@@ -1,6 +1,6 @@
 import type {JsonnableEd25519KeyIdentity} from '@dfinity/identity/lib/cjs/identity/ed25519';
 
-export interface CliConfigData {
+export interface CliConfig {
   token: JsonnableEd25519KeyIdentity;
   satellites: CliSatelliteConfig[];
   missionControl?: string;
@@ -15,13 +15,4 @@ export interface CliSatelliteConfig {
 export interface CliOrbiterConfig {
   p: string; // principal
   n?: string; // name
-}
-
-// eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
-export type CliProfile = 'default' | string;
-
-// Backwards compatibility. Default is save in root of the object, profile in an optional record.
-export interface CliConfig extends CliConfigData {
-  use?: CliProfile;
-  profiles?: Record<string, CliConfigData>;
 }
