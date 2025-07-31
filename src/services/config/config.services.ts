@@ -92,8 +92,6 @@ const saveLastAppliedConfigHashes = ({
     settings: nonNullish(settings) ? objHash(settings) : undefined
   };
 
-  console.log(lastAppliedConfig, results);
-
   saveLastAppliedConfig({lastAppliedConfig, satelliteId});
 };
 
@@ -220,7 +218,17 @@ const prepareConfig = async ({
     settings: currentSettings
   } = currentConfig;
 
-  console.log('---->', lastAppliedConfig);
+  const isDefaultSettings = (): boolean => {
+    const [settings] = currentSettings;
+    return (
+      settings.computeAllocation === DEFAULT_COMPUTE_ALLOCATION &&
+      settings.memoryAllocation === DEFAULT_MEMORY_ALLOCATION &&
+      settings.heapMemoryLimit === DEFAULT_SATELLITE_HEAP_WASM_MEMORY_LIMIT &&
+      settings.freezingThreshold === DEFAULT_SATELLITE_FREEZING_THRESHOLD &&
+      settings.reservedCyclesLimit === DEFAULT_RESERVED_CYCLES_LIMIT &&
+      settings.logVisibility === DEFAULT_LOG_VISIBILITY
+    );
+  };
 
   const isDefaultConfig = (): boolean => {
     const [storage] = currentStorage;
@@ -241,15 +249,7 @@ const prepareConfig = async ({
       return false;
     }
 
-    const [settings] = currentSettings;
-    return (
-      settings.computeAllocation === DEFAULT_COMPUTE_ALLOCATION &&
-      settings.memoryAllocation === DEFAULT_MEMORY_ALLOCATION &&
-      settings.heapMemoryLimit === DEFAULT_SATELLITE_HEAP_WASM_MEMORY_LIMIT &&
-      settings.freezingThreshold === DEFAULT_SATELLITE_FREEZING_THRESHOLD &&
-      settings.reservedCyclesLimit === DEFAULT_RESERVED_CYCLES_LIMIT &&
-      settings.logVisibility === DEFAULT_LOG_VISIBILITY
-    );
+    return isDefaultSettings();
   };
 
   const firstTime = isNullish(lastAppliedConfig);
@@ -266,8 +266,6 @@ const prepareConfig = async ({
     const [{version: versionStorage}] = currentStorage;
     const versionDatastore = currentDatastore?.[0]?.version;
     const versionAuth = currentAuth?.[0]?.version;
-
-    console.log('===', storage);
 
     return {
       storage:
@@ -293,8 +291,6 @@ const prepareConfig = async ({
 
     return extendWithVersions();
   };
-
-  console.log(firstTime, currentConfig, lastAppliedConfig);
 
   if (firstTime) {
     return await confirmAndExtendWithVersions();
@@ -327,7 +323,8 @@ const prepareConfig = async ({
     }
 
     const [__, settingsHash] = currentSettings;
-    return settingsHash === lastSettingsHash;
+
+    return settingsHash === lastSettingsHash || (isDefaultSettings() && isNullish(settings));
   };
 
   if (isLastAppliedConfigCurrent()) {
