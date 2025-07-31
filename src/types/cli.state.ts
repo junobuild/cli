@@ -17,5 +17,5 @@ export interface CliStateSatellite {
 export type CliStateSatellites = Record<PrincipalText, CliStateSatellite>;
 
 export interface CliState {
-  satellites: CliStateSatellites;
+  satellites?: CliStateSatellites;
 }

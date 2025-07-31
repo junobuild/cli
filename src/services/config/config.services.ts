@@ -37,11 +37,8 @@ import {assertConfigAndLoadSatelliteContext} from '../../utils/satellite.utils';
 import {getSettings, setSettings} from './settings.services';
 
 type SetConfigResults = [
-  // eslint-disable-next-line @typescript-eslint/no-invalid-void-type
   PromiseSettledResult<StorageConfig | void>,
-  // eslint-disable-next-line @typescript-eslint/no-invalid-void-type
   PromiseSettledResult<DatastoreConfig | void>,
-  // eslint-disable-next-line @typescript-eslint/no-invalid-void-type
   PromiseSettledResult<AuthenticationConfig | void>,
   PromiseSettledResult<void>
 ];

@@ -55,7 +55,8 @@ export default [
           caughtErrorsIgnorePattern: '^_'
         }
       ],
-      'eslint-comments/require-description': 'off'
+      'eslint-comments/require-description': 'off',
+      '@typescript-eslint/no-invalid-void-type': 'off'
     }
   }
 ];
