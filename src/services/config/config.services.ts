@@ -296,6 +296,10 @@ const prepareConfig = async ({
     return await confirmAndExtendWithVersions();
   }
 
+  // Checks whether the last applied config (hashes stored in the CLI state file)
+  // matches the current Satellite configuration.
+  // If they match, there's no need to warn the developer about overwriting —
+  // they're just updating the same options they previously applied.
   const isLastAppliedConfigCurrent = (): boolean => {
     const [_, storageHash] = currentStorage;
 
