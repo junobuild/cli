@@ -15,7 +15,7 @@ export const links = async () => {
   try {
     // If a developer is using a JUNO_TOKEN to execute command(s), the custom domain will not be queried or printed.
     // This is particularly useful in CI environments where access keys might be limited,
-    // and only ADMIN controllers can list custom domains.
+    // and only ADMIN keys can list custom domains.
     const domains = isHeadless() ? [] : await listCustomDomains({satellite});
 
     console.log(`\n🛠️  ${terminalLink(adminUrl)}`);
