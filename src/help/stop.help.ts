@@ -1,5 +1,5 @@
 import {cyan, green, magenta, yellow} from 'kleur';
-import {OPTIONS_URL, OPTION_HELP, STOP_DESCRIPTION} from '../constants/help.constants';
+import {OPTIONS_ENV, OPTION_HELP, STOP_DESCRIPTION} from '../constants/help.constants';
 import {helpOutput} from './common.help';
 import {TITLE} from './help';
 
@@ -7,7 +7,7 @@ const usage = `Usage: ${green('juno')} ${cyan('stop')} ${yellow('[options]')}
 
 Options:
   ${yellow('-t, --target')}          Which module type should be stopped? Valid targets are ${magenta('satellite')}, ${magenta('mission-control')} or ${magenta('orbiter')}.  
-  ${OPTIONS_URL}
+  ${OPTIONS_ENV}
   ${OPTION_HELP}
   
 Notes:

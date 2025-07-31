@@ -1,5 +1,5 @@
 import {cyan, green, yellow} from 'kleur';
-import {CLEAR_DESCRIPTION, OPTIONS_URL, OPTION_HELP} from '../constants/help.constants';
+import {CLEAR_DESCRIPTION, OPTIONS_ENV, OPTION_HELP} from '../constants/help.constants';
 import {helpOutput} from './common.help';
 import {TITLE} from './help';
 
@@ -7,7 +7,7 @@ const usage = `Usage: ${green('juno')} ${cyan('clear')} ${yellow('[options]')}
 
 Options:
   ${yellow('-f, --fullPath')}        Clear a particular file of your app.
-  ${OPTIONS_URL}
+  ${OPTIONS_ENV}
   ${OPTION_HELP}`;
 
 const doc = `${CLEAR_DESCRIPTION}
