@@ -1,14 +1,14 @@
-import {readEmulatorConfig} from '../../configs/emulator.config';
-import {generateToken} from '../../utils/auth.utils';
-import {dispatchRequest} from '../emulator/emulator.admin.services';
 import {notEmptyString} from '@dfinity/utils';
 import {type PrincipalText} from '@dfinity/zod-schemas';
 import {green, red} from 'kleur';
 import ora from 'ora';
 import {saveCliConfig} from '../../configs/cli.config';
+import {readEmulatorConfig} from '../../configs/emulator.config';
 import {readJunoConfig} from '../../configs/juno.config';
 import {ENV} from '../../env';
+import {generateToken} from '../../utils/auth.utils';
 import {assertConfigAndReadSatelliteId} from '../../utils/satellite.utils';
+import {dispatchRequest} from '../emulator/emulator.admin.services';
 
 export const loginEmulatorOnly = async () => {
   const spinner = ora('Granting terminal access...').start();
