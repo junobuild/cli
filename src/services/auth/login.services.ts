@@ -9,10 +9,10 @@ import {createServer} from 'node:http';
 import path, {dirname} from 'node:path';
 import {fileURLToPath} from 'node:url';
 import util from 'node:util';
-import {saveCliConfig} from '../configs/cli.config';
-import {authUrl, requestUrl} from '../utils/auth.utils';
-import {openUrl} from '../utils/open.utils';
-import {getPort} from '../utils/port.utils';
+import {saveCliConfig} from '../../configs/cli.config';
+import {authUrl, requestUrl} from '../../utils/auth.utils';
+import {openUrl} from '../../utils/open.utils';
+import {getPort} from '../../utils/port.utils';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);

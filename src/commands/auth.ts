@@ -4,8 +4,8 @@ import {assertAnswerCtrlC} from '@junobuild/cli-tools';
 import {green} from 'kleur';
 import prompts from 'prompts';
 import {clearCliConfig, getToken} from '../configs/cli.config';
+import {login as consoleLogin} from '../services/auth/login.services';
 import {reuseController} from '../services/controllers.services';
-import {login as consoleLogin} from '../services/login.services';
 
 export const logout = async () => {
   await clearCliConfig();

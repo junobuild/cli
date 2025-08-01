@@ -3,8 +3,8 @@ import {hasArgs} from '@junobuild/cli-tools';
 import {cyan} from 'kleur';
 import {getToken} from '../configs/cli.config';
 import {junoConfigExist} from '../configs/juno.config';
+import {login as consoleLogin} from '../services/auth/login.services';
 import {initConfigInteractive, initConfigNoneInteractive} from '../services/init.services';
-import {login as consoleLogin} from '../services/login.services';
 import {confirm, confirmAndExit} from '../utils/prompt.utils';
 
 export const init = async (args?: string[]) => {
