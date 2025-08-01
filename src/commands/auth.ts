@@ -4,8 +4,11 @@ import {assertAnswerCtrlC} from '@junobuild/cli-tools';
 import {green} from 'kleur';
 import prompts from 'prompts';
 import {clearCliConfig, getToken} from '../configs/cli.config';
+import {DEV} from '../env';
+import {loginEmulatorOnly} from '../services/auth/login.emulator.services';
 import {login as consoleLogin} from '../services/auth/login.services';
 import {reuseController} from '../services/controllers.services';
+import {isHeadless} from '../utils/process.utils';
 
 export const logout = async () => {
   await clearCliConfig();
@@ -15,6 +18,11 @@ export const logout = async () => {
 
 export const login = async (args?: string[]) => {
   const token = await getToken();
+
+  if (isNullish(token) && isHeadless() && DEV) {
+    await loginEmulatorOnly();
+    return;
+  }
 
   if (isNullish(token)) {
     await consoleLogin(args);
