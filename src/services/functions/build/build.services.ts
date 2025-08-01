@@ -14,7 +14,7 @@ import {ENV} from '../../../env';
 import {SMALL_TITLE} from '../../../help/help';
 import {type BuildArgs} from '../../../types/build';
 import {buildArgs} from '../../../utils/build.utils';
-import {dispatchEmulatorTouchSputnik} from '../../emulator/touch.services';
+import {dispatchEmulatorTouchSputnik} from '../../emulator/emulator.touch.services';
 import {buildJavaScript, buildTypeScript} from './build.javascript.services';
 import {buildRust} from './build.rust.services';
 
