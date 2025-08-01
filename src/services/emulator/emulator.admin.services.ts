@@ -3,10 +3,12 @@ import type {CliEmulatorConfig} from '../../types/emulator';
 
 export const dispatchRequest = async ({
   config: emulatorConfig,
-  request
+  request,
+  timeout = 5000
 }: {
   config: CliEmulatorConfig;
   request: string;
+  timeout?: number;
 }): Promise<
   | {result: 'ok'; response: Response}
   | {result: 'not_ok'; response: Response}
@@ -21,7 +23,7 @@ export const dispatchRequest = async ({
 
   try {
     const response = await fetch(`http://localhost:${adminPort}/${request}`, {
-      signal: AbortSignal.timeout(5000)
+      signal: AbortSignal.timeout(timeout)
     });
 
     if (!response.ok) {

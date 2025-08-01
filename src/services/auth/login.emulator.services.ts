@@ -1,14 +1,48 @@
 import {readEmulatorConfig} from '../../configs/emulator.config';
 import {generateToken} from '../../utils/auth.utils';
 import {dispatchRequest} from '../emulator/emulator.admin.services';
-
+import {notEmptyString} from '@dfinity/utils';
+import {type PrincipalText} from '@dfinity/zod-schemas';
 import {green, red} from 'kleur';
+import ora from 'ora';
 import {saveCliConfig} from '../../configs/cli.config';
 import {readJunoConfig} from '../../configs/juno.config';
 import {ENV} from '../../env';
 import {assertConfigAndReadSatelliteId} from '../../utils/satellite.utils';
 
 export const loginEmulatorOnly = async () => {
+  const spinner = ora('Granting terminal access...').start();
+
+  try {
+    const result = await loginEmulator();
+
+    spinner.stop();
+
+    if (result.status === 'validation-error') {
+      return;
+    }
+
+    if (result.status === 'error') {
+      console.log(
+        red(
+          `\nUnable to register your terminal as an access key for the Satellite running in the emulator.`
+        )
+      );
+      return;
+    }
+
+    console.log(
+      `\n🔓 Your terminal is authenticated with admin access as: ${green(result.principal)}`
+    );
+  } catch (err: unknown) {
+    spinner.stop();
+    throw err;
+  }
+};
+
+const loginEmulator = async (): Promise<
+  {status: 'success'; principal: PrincipalText} | {status: 'error'} | {status: 'validation-error'}
+> => {
   // We read directly the Juno config because we cannot load an actor at this point as we are login in.
   // i.e. we cannot use assertConfigAndLoadSatelliteContext
   const {satellite: satelliteConfig} = await readJunoConfig(ENV);
@@ -17,23 +51,19 @@ export const loginEmulatorOnly = async () => {
   const parsedResult = await readEmulatorConfig();
 
   if (!parsedResult.success) {
-    return;
+    return {status: 'validation-error'};
   }
 
   const {principal, token} = generateToken();
 
   const {result} = await dispatchRequest({
     config: parsedResult.config,
-    request: `satellite/controller/?id=${principal}&satelliteId=${satelliteId}`
+    request: `satellite/controller/?id=${principal}&satelliteId=${satelliteId}${notEmptyString(ENV.profile) ? `&profile=${encodeURIComponent(ENV.profile)}` : ''}`,
+    timeout: 10000
   });
 
   if (result !== 'ok') {
-    console.log(
-      red(
-        'Unable to register your terminal as an access key for the Satellite running in the emulator.'
-      )
-    );
-    return;
+    return {status: 'error'};
   }
 
   await saveCliConfig({
@@ -43,5 +73,5 @@ export const loginEmulatorOnly = async () => {
     missionControl: null
   });
 
-  console.log(`\n🔓 Your terminal is authenticated with admin access as: ${green(principal)}`);
+  return {status: 'success', principal};
 };
