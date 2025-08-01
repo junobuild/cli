@@ -1,11 +1,14 @@
 import {Ed25519KeyIdentity} from '@dfinity/identity';
 import {isNullish} from '@dfinity/utils';
-import {assertAnswerCtrlC} from '@junobuild/cli-tools';
-import {green} from 'kleur';
+import {assertAnswerCtrlC, hasArgs} from '@junobuild/cli-tools';
+import {green, red} from 'kleur';
 import prompts from 'prompts';
 import {clearCliConfig, getToken} from '../configs/cli.config';
-import {login as consoleLogin} from '../services/auth/login.services';
+import {DEV} from '../env';
+import {loginEmulatorOnly} from '../services/auth/login.emulator.services';
+import {login as loginServices} from '../services/auth/login.services';
 import {reuseController} from '../services/controllers.services';
+import {confirmAndExit} from '../utils/prompt.utils';
 
 export const logout = async () => {
   await clearCliConfig();
@@ -14,10 +17,19 @@ export const logout = async () => {
 };
 
 export const login = async (args?: string[]) => {
+  if (hasArgs({args, options: ['-e', '--emulator']})) {
+    await emulatorLogin();
+    return;
+  }
+
+  await consoleLogin(args);
+};
+
+const consoleLogin = async (args?: string[]) => {
   const token = await getToken();
 
   if (isNullish(token)) {
-    await consoleLogin(args);
+    await loginServices(args);
     return;
   }
 
@@ -37,9 +49,32 @@ export const login = async (args?: string[]) => {
   assertAnswerCtrlC(action);
 
   if (action === 'login') {
-    await consoleLogin(args);
+    await loginServices(args);
     return;
   }
 
   await reuseController(identity.getPrincipal());
+};
+
+const emulatorLogin = async () => {
+  if (!DEV) {
+    console.log(red('The login option --emulator is only supported in development mode.'));
+    return;
+  }
+
+  const token = await getToken();
+
+  if (isNullish(token)) {
+    await loginEmulatorOnly();
+    return;
+  }
+
+  const identity = Ed25519KeyIdentity.fromParsedJson(token);
+  console.log(`🔐 Your terminal already has access: ${green(identity.getPrincipal().toText())}\n`);
+
+  await confirmAndExit(
+    'Would you like to overwrite the saved development authentication on this device'
+  );
+
+  await loginEmulatorOnly();
 };

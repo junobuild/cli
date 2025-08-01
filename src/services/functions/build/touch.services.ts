@@ -42,7 +42,7 @@ const dispatchTouch = async ({filename}: {filename: string}) => {
 
   const {result} = await dispatchRequest({
     config: parsedResult.config,
-    adminRequest: `touch?file=${encodeURIComponent(filename)}`
+    request: `admin/touch?file=${encodeURIComponent(filename)}`
   });
 
   // We silence the error (result === error). Maybe the emulator is not running on purpose.

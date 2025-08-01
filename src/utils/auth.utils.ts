@@ -1,6 +1,17 @@
+import {Ed25519KeyIdentity} from '@dfinity/identity';
+import type {JsonnableEd25519KeyIdentity} from '@dfinity/identity/lib/cjs/identity/ed25519';
 import {nonNullish} from '@dfinity/utils';
+import type {PrincipalText} from '@dfinity/zod-schemas';
 import {REDIRECT_URL} from '../constants/constants';
 import {ENV} from '../env';
+
+export const generateToken = (): {principal: PrincipalText; token: JsonnableEd25519KeyIdentity} => {
+  const key = Ed25519KeyIdentity.generate();
+  const principal = key.getPrincipal().toText();
+  const token = key.toJSON();
+
+  return {principal, token};
+};
 
 export const authUrl = ({
   port,
