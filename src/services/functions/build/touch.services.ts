@@ -1,7 +1,7 @@
 import {red} from 'kleur';
-import {readEmulatorConfig} from '../../configs/emulator.config';
-import {SATELLITE_WASM, SPUTNIK_INDEX_MJS} from '../../constants/dev.constants';
-import {EMULATOR_SKYLAB} from '../../constants/emulator.constants';
+import {readEmulatorConfig} from '../../../configs/emulator.config';
+import {SATELLITE_WASM, SPUTNIK_INDEX_MJS} from '../../../constants/dev.constants';
+import {dispatchRequest} from '../../emulator/emulator.admin.services';
 
 export const dispatchEmulatorTouchSatellite = async () => {
   await dispatchTouch({filename: `${SATELLITE_WASM}.gz`});
@@ -31,8 +31,7 @@ const dispatchTouch = async ({filename}: {filename: string}) => {
 
   const {
     config: {
-      config,
-      derivedConfig: {emulatorType, runner}
+      derivedConfig: {runner}
     }
   } = parsedResult;
 
@@ -41,20 +40,14 @@ const dispatchTouch = async ({filename}: {filename: string}) => {
     return;
   }
 
-  const adminPort = config[emulatorType]?.ports?.admin ?? EMULATOR_SKYLAB.ports.admin;
+  const {result} = await dispatchRequest({
+    config: parsedResult.config,
+    adminRequest: `touch?file=${encodeURIComponent(filename)}`
+  });
 
-  try {
-    const response = await fetch(
-      `http://localhost:${adminPort}/admin/touch?file=${encodeURIComponent(filename)}`,
-      {signal: AbortSignal.timeout(5000)}
-    );
+  // We silence the error (result === error). Maybe the emulator is not running on purpose.
 
-    if (!response.ok) {
-      console.log(
-        red(`Invalid response from the emulator. Touching '${filename}' did not succeed.`)
-      );
-    }
-  } catch (_error: unknown) {
-    // We silence the error. Maybe the emulator is not running on purpose.
+  if (result === 'not_ok') {
+    console.log(red(`Invalid response from the emulator. Touching '${filename}' did not succeed.`));
   }
 };
