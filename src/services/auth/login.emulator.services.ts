@@ -4,11 +4,15 @@ import {dispatchRequest} from '../emulator/emulator.admin.services';
 
 import {green, red} from 'kleur';
 import {saveCliConfig} from '../../configs/cli.config';
-import {assertConfigAndLoadSatelliteContext} from '../../utils/satellite.utils';
+import {readJunoConfig} from '../../configs/juno.config';
+import {ENV} from '../../env';
+import {assertConfigAndReadSatelliteId} from '../../utils/satellite.utils';
 
-export const loginEmulatorOnly = async (args?: string[]) => {
-  const {satellite} = await assertConfigAndLoadSatelliteContext();
-  const {satelliteId} = satellite;
+export const loginEmulatorOnly = async () => {
+  // We read directly the Juno config because we cannot load an actor at this point as we are login in.
+  // i.e. we cannot use assertConfigAndLoadSatelliteContext
+  const {satellite: satelliteConfig} = await readJunoConfig(ENV);
+  const {satelliteId} = assertConfigAndReadSatelliteId({satellite: satelliteConfig, env: ENV});
 
   const parsedResult = await readEmulatorConfig();
 
@@ -34,7 +38,7 @@ export const loginEmulatorOnly = async (args?: string[]) => {
 
   await saveCliConfig({
     token,
-    satellites: [{p: satelliteId, n: ""}],
+    satellites: [{p: satelliteId, n: ''}],
     orbiters: null,
     missionControl: null
   });

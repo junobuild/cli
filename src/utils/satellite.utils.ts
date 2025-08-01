@@ -29,10 +29,10 @@ export const assertConfigAndLoadSatelliteContext = async (): Promise<{
   return {satellite, satelliteConfig};
 };
 
-const satelliteParameters = async ({
+export const assertConfigAndReadSatelliteId = ({
   satellite,
   env: {mode}
-}: SatelliteConfigEnv): Promise<SatelliteParametersWithId> => {
+}: SatelliteConfigEnv): {satelliteId: string} => {
   const {id, ids} = satellite;
 
   // Originally, the config used `satelliteId`, but we later migrated to `id` and `ids`.
@@ -50,6 +50,14 @@ const satelliteParameters = async ({
     console.log(red(`A satellite ID for ${mode} must be set in your configuration.`));
     process.exit(1);
   }
+
+  return {satelliteId};
+};
+
+const satelliteParameters = async (
+  params: SatelliteConfigEnv
+): Promise<SatelliteParametersWithId> => {
+  const {satelliteId} = assertConfigAndReadSatelliteId(params);
 
   return {
     satelliteId,
