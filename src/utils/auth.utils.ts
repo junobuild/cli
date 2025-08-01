@@ -1,3 +1,4 @@
+import {nonNullish} from '@dfinity/utils';
 import {REDIRECT_URL} from '../constants/constants';
 import {ENV} from '../env';
 
@@ -13,8 +14,13 @@ export const authUrl = ({
   const callbackUrl = authCallbackUrl({port, nonce});
 
   const authUrl = new URL(ENV.console.urls.auth);
+
   authUrl.searchParams.set('redirect_uri', encodeURIComponent(callbackUrl));
   authUrl.searchParams.set('principal', principal);
+
+  if (nonNullish(ENV.profile)) {
+    authUrl.searchParams.set('profile', encodeURIComponent(ENV.profile));
+  }
 
   return authUrl.toString();
 };
