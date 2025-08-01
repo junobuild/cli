@@ -1,6 +1,6 @@
 import {mkdir} from 'node:fs/promises';
-import {readEmulatorConfig} from '../configs/emulator.config';
-import {type CliEmulatorDerivedConfig} from '../types/emulator';
+import {readEmulatorConfig} from '../../configs/emulator.config';
+import {type CliEmulatorDerivedConfig} from '../../types/emulator';
 
 export const createDeployTargetDir = async ({
   targetDeploy

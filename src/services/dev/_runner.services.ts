@@ -29,7 +29,7 @@ import {
   hasExistingContainer,
   isContainerRunning
 } from '../../utils/runner.utils';
-import {createDeployTargetDir} from '../emulator.services';
+import {createDeployTargetDir} from '../emulator/fs.services';
 import {initConfigNoneInteractive, promptConfigType} from '../init.services';
 
 const TEMPLATE_PATH = '../templates/docker';

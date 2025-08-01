@@ -1,7 +1,7 @@
 import {red} from 'kleur';
-import {readEmulatorConfig} from '../../../configs/emulator.config';
-import {SATELLITE_WASM, SPUTNIK_INDEX_MJS} from '../../../constants/dev.constants';
-import {EMULATOR_SKYLAB} from '../../../constants/emulator.constants';
+import {readEmulatorConfig} from '../../configs/emulator.config';
+import {SATELLITE_WASM, SPUTNIK_INDEX_MJS} from '../../constants/dev.constants';
+import {EMULATOR_SKYLAB} from '../../constants/emulator.constants';
 
 export const dispatchEmulatorTouchSatellite = async () => {
   await dispatchTouch({filename: `${SATELLITE_WASM}.gz`});

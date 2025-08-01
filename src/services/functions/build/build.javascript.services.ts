@@ -13,7 +13,7 @@ import type {BuildArgs, BuildLang, BuildMetadata} from '../../../types/build';
 import {formatTime} from '../../../utils/format.utils';
 import {detectPackageManager} from '../../../utils/pm.utils';
 import {confirmAndExit} from '../../../utils/prompt.utils';
-import {readEmulatorConfigAndCreateDeployTargetDir} from '../../emulator.services';
+import {readEmulatorConfigAndCreateDeployTargetDir} from '../../emulator/fs.services';
 import {prepareJavaScriptBuildMetadata} from './build.metadata.services';
 
 export const buildTypeScript = async ({

@@ -29,9 +29,9 @@ import {readSatelliteDid} from '../../../utils/did.utils';
 import {checkRustVersion} from '../../../utils/env.utils';
 import {formatTime} from '../../../utils/format.utils';
 import {readPackageJson} from '../../../utils/pkg.utils';
-import {readEmulatorConfigAndCreateDeployTargetDir} from '../../emulator.services';
+import {readEmulatorConfigAndCreateDeployTargetDir} from '../../emulator/fs.services';
+import {dispatchEmulatorTouchSatellite} from '../../emulator/touch.services';
 import {prepareJunoPkgForSatellite, prepareJunoPkgForSputnik} from './build.metadata.services';
-import {dispatchEmulatorTouchSatellite} from './touch.services';
 
 export const buildRust = async ({
   paths,
