@@ -7,6 +7,7 @@ const usage = `Usage: ${green('juno')} ${cyan('login')} ${yellow('[options]')}
 
 Options:
   ${yellow('-b, --browser')}         A particular browser to open. supported: chrome|firefox|edge.
+  ${yellow('-e, --emulator')}        Skips the Console UI and logs in your terminal with the emulator (⚠️  local development only).
   ${OPTIONS_CONFIG}
   ${OPTION_HELP}`;
 

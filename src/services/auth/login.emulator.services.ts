@@ -24,7 +24,7 @@ export const loginEmulatorOnly = async () => {
 
   const {result} = await dispatchRequest({
     config: parsedResult.config,
-    adminRequest: `satellite/controller/?id=${principal}`
+    request: `satellite/controller/?id=${principal}&satelliteId=${satelliteId}`
   });
 
   if (result !== 'ok') {

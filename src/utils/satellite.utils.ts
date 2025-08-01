@@ -1,5 +1,6 @@
 import {assertNonNullish, isNullish} from '@dfinity/utils';
-import {type SatelliteConfig} from '@junobuild/config';
+import type {PrincipalText} from '@dfinity/zod-schemas';
+import type {SatelliteConfig} from '@junobuild/config';
 import {red} from 'kleur';
 import {actorParameters} from '../api/actor.api';
 import {getCliOrbiters, getCliSatellites} from '../configs/cli.config';
@@ -32,7 +33,7 @@ export const assertConfigAndLoadSatelliteContext = async (): Promise<{
 export const assertConfigAndReadSatelliteId = ({
   satellite,
   env: {mode}
-}: SatelliteConfigEnv): {satelliteId: string} => {
+}: SatelliteConfigEnv): {satelliteId: PrincipalText} => {
   const {id, ids} = satellite;
 
   // Originally, the config used `satelliteId`, but we later migrated to `id` and `ids`.
@@ -41,7 +42,7 @@ export const assertConfigAndReadSatelliteId = ({
   const deprecatedSatelliteId =
     'satelliteId' in satellite
       ? // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
-        (satellite as unknown as {satelliteId: string}).satelliteId
+        (satellite as unknown as {satelliteId: PrincipalText}).satelliteId
       : undefined;
 
   const satelliteId = ids?.[mode] ?? id ?? deprecatedSatelliteId;

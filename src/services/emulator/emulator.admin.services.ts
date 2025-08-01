@@ -3,10 +3,10 @@ import type {CliEmulatorConfig} from '../../types/emulator';
 
 export const dispatchRequest = async ({
   config: emulatorConfig,
-  adminRequest
+  request
 }: {
   config: CliEmulatorConfig;
-  adminRequest: string;
+  request: string;
 }): Promise<
   | {result: 'ok'; response: Response}
   | {result: 'not_ok'; response: Response}
@@ -20,7 +20,7 @@ export const dispatchRequest = async ({
   const adminPort = config[emulatorType]?.ports?.admin ?? EMULATOR_SKYLAB.ports.admin;
 
   try {
-    const response = await fetch(`http://localhost:${adminPort}/admin/${adminRequest}`, {
+    const response = await fetch(`http://localhost:${adminPort}/${request}`, {
       signal: AbortSignal.timeout(5000)
     });
 
