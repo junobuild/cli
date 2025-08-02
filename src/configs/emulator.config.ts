@@ -1,12 +1,11 @@
 import {type EmulatorConfig, EmulatorConfigSchema} from '@junobuild/config';
 import {red} from 'kleur';
 import {DEPLOY_LOCAL_REPLICA_PATH} from '../constants/dev.constants';
-import {EMULATOR_SATELLITE, EMULATOR_SKYLAB} from '../constants/emulator.constants';
+import {EMULATOR_SKYLAB} from '../constants/emulator.constants';
 import {ENV} from '../env';
 import type {CliEmulatorConfig} from '../types/emulator';
 import {readPackageJson} from '../utils/pkg.utils';
 import {junoConfigExist, readJunoConfig} from './juno.config';
-import {junoDevConfigExist} from './juno.dev.config';
 
 export const readEmulatorConfig = async (): Promise<
   | {
@@ -69,14 +68,9 @@ const readProjectName = async (): Promise<string | undefined> => {
 
 const getEmulatorConfig = async (): Promise<EmulatorConfig> => {
   const configExist = await junoConfigExist();
-  const devConfigExist = await junoDevConfigExist();
 
-  if (!configExist && !devConfigExist) {
+  if (!configExist) {
     return {skylab: EMULATOR_SKYLAB};
-  }
-
-  if (!configExist && devConfigExist) {
-    return {satellite: EMULATOR_SATELLITE};
   }
 
   const config = await readJunoConfig(ENV);
