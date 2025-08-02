@@ -4,7 +4,7 @@ import {
   getDatastoreConfig,
   getStorageConfig,
   listRules,
-  ListRulesResults,
+  type ListRulesResults,
   setAuthConfig,
   setDatastoreConfig,
   setRule,
@@ -33,10 +33,10 @@ import {
   DEFAULT_SATELLITE_HEAP_WASM_MEMORY_LIMIT
 } from '../../constants/settings.constants';
 import {
-  CliStateSatelliteAppliedCollection,
+  type CliStateSatelliteAppliedCollection,
   type CliStateSatelliteAppliedConfigHashes,
   type ConfigHash,
-  RuleHash,
+  type RuleHash,
   type SettingsHash
 } from '../../types/cli.state';
 import type {SatelliteParametersWithId} from '../../types/satellite';
@@ -50,8 +50,8 @@ type SetConfigResults = [
   PromiseSettledResult<DatastoreConfig | void>,
   PromiseSettledResult<AuthenticationConfig | void>,
   PromiseSettledResult<void>,
-  PromiseSettledResult<undefined | PromiseSettledResult<Rule>[]>,
-  PromiseSettledResult<undefined | PromiseSettledResult<Rule>[]>
+  PromiseSettledResult<undefined | Array<PromiseSettledResult<Rule>>>,
+  PromiseSettledResult<undefined | Array<PromiseSettledResult<Rule>>>
 ];
 
 export const config = async () => {
@@ -270,12 +270,12 @@ const setConfigs = async ({
     collections,
     type
   }: {
-    collections: (StorageCollection | DatastoreCollection)[];
+    collections: Array<StorageCollection | DatastoreCollection>;
     type: RulesType;
-  }): Promise<PromiseSettledResult<Rule>[]> => {
+  }): Promise<Array<PromiseSettledResult<Rule>>> => {
     return await Promise.allSettled(
-      collections.map((collection) =>
-        setRule({
+      collections.map(async (collection) =>
+        await setRule({
           rule: collection,
           type,
           satellite
@@ -419,9 +419,9 @@ const prepareConfig = async ({
       collections,
       currentCollections
     }: {
-      collections: (StorageCollection | DatastoreCollection)[] | undefined;
+      collections: Array<StorageCollection | DatastoreCollection> | undefined;
       currentCollections: CurrentCollectionsConfig | undefined;
-    }): (StorageCollection | DatastoreCollection)[] =>
+    }): Array<StorageCollection | DatastoreCollection> =>
       (collections ?? []).map(({collection, version, ...rest}) => ({
         ...rest,
         collection,
