@@ -12,9 +12,13 @@ import {
   EMULATOR_PORT_SERVER,
   EMULATOR_SKYLAB
 } from '../../constants/emulator.constants';
-import {type CliEmulatorConfig, type CliEmulatorDerivedConfig} from '../../types/emulator';
+import {
+  type CliEmulatorConfig,
+  type CliEmulatorDerivedConfig,
+  type EmulatorRunnerType,
+  type EmulatorType
+} from '../../types/emulator';
 import {isHeadless} from '../../utils/process.utils';
-import {confirmAndExit} from '../../utils/prompt.utils';
 import {
   assertContainerRunnerRunning,
   checkDockerVersion,
@@ -25,6 +29,8 @@ import {createDeployTargetDir} from '../emulator/emulator.fs.services';
 import {initConfigNoneInteractive} from '../init.services';
 
 export const startContainer = async () => {
+  await assertAndInitConfig();
+
   const parsedResult = await readEmulatorConfig();
 
   if (!parsedResult.success) {
@@ -41,8 +47,6 @@ export const startContainer = async () => {
   }
 
   await assertContainerRunnerRunning({runner: config.derivedConfig.runner});
-
-  await assertAndInitConfig();
 
   await startEmulator({config});
 };
@@ -68,29 +72,43 @@ export const stopContainer = async () => {
   await stopEmulator({config});
 };
 
-const initJunoConfigFile = async () => {
-  await confirmAndExit(`Your project needs a config file for Juno. Should we create one now?`);
-
-  await initConfigNoneInteractive();
-};
-
-const promptEmulatorType = async (): Promise<{emulatorType: 'skylab' | 'satellite'}> => {
-  const {emulatorType}: {emulatorType: 'skylab' | 'satellite' | undefined} = await prompts({
-    type: 'select',
-    name: 'emulatorType',
-    message: 'What kind of emulator would you like to run locally?',
-    choices: [
-      {
-        title: `Production-like setup with Console UI and known services`,
-        value: `skylab`
-      },
-      {title: `Minimal setup without any UI`, value: `satellite`}
-    ]
-  });
+const promptEmulatorType = async (): Promise<{emulatorType: Exclude<EmulatorType, 'console'>}> => {
+  const {emulatorType}: {emulatorType: Exclude<EmulatorType, 'console'> | undefined} =
+    await prompts({
+      type: 'select',
+      name: 'emulatorType',
+      message: 'What kind of emulator would you like to run locally?',
+      choices: [
+        {
+          title: `Complete environment with Console and known services`,
+          value: `skylab`
+        },
+        {title: `Minimal headless setup`, value: `satellite`}
+      ]
+    });
 
   assertAnswerCtrlC(emulatorType);
 
   return {emulatorType};
+};
+
+const promptRunnerType = async (): Promise<{runnerType: EmulatorRunnerType}> => {
+  const {runnerType}: {runnerType: EmulatorRunnerType | undefined} = await prompts({
+    type: 'select',
+    name: 'runnerType',
+    message: 'Which container runtime would you like to use?',
+    choices: [
+      {
+        title: 'Docker',
+        value: `docker`
+      },
+      {title: `Podman`, value: `podman`}
+    ]
+  });
+
+  assertAnswerCtrlC(runnerType);
+
+  return {runnerType};
 };
 
 const assertAndInitConfig = async () => {
@@ -100,15 +118,28 @@ const assertAndInitConfig = async () => {
     return;
   }
 
-  const {emulatorType} = await promptEmulatorType();
-
-  await initConfigFile(emulatorType === 'skylab');
+  await initConfigFile();
 };
 
-const initConfigFile = async (_skylab: boolean) => {
-  // TODO: if not skyLab, emulator satellite {}
-  // or remove question?
-  await initJunoConfigFile();
+const initConfigFile = async () => {
+  const {emulatorType} = await promptEmulatorType();
+
+  const {runnerType} = await promptRunnerType();
+
+  // Default skylab and docker, no need to specify those options in the config if they were picked.
+  const emulatorConfig =
+    emulatorType === 'skylab' && runnerType === 'docker'
+      ? undefined
+      : {
+          runner: {
+            type: runnerType
+          },
+          ...(emulatorType === 'satellite' ? {satellite: {}} : {skylab: {}})
+        };
+
+  await initConfigNoneInteractive({
+    emulatorConfig
+  });
 };
 
 const startEmulator = async ({config: extendedConfig}: {config: CliEmulatorConfig}) => {

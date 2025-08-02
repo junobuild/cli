@@ -11,5 +11,6 @@
     "moduleResolution": "bundler",
     "outDir": "dist",
     "resolveJsonModule": true
-  }
+  },
+  "exclude": ["templates"]
 }
