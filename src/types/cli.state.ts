@@ -1,6 +1,7 @@
 import {type PrincipalText} from '@dfinity/zod-schemas';
 
 export type ConfigHash = string;
+export type RuleHash = ConfigHash;
 export type SettingsHash = ConfigHash;
 
 export interface CliStateSatelliteAppliedConfigHashes {

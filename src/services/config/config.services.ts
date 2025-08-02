@@ -3,6 +3,8 @@ import {
   getAuthConfig,
   getDatastoreConfig,
   getStorageConfig,
+  listRules,
+  ListRulesResults,
   setAuthConfig,
   setDatastoreConfig,
   setStorageConfig
@@ -11,6 +13,7 @@ import type {
   AuthenticationConfig,
   DatastoreConfig,
   ModuleSettings,
+  Rule,
   SatelliteConfig,
   StorageConfig
 } from '@junobuild/config';
@@ -28,6 +31,7 @@ import {
 import {
   type CliStateSatelliteAppliedConfigHashes,
   type ConfigHash,
+  RuleHash,
   type SettingsHash
 } from '../../types/cli.state';
 import type {SatelliteParametersWithId} from '../../types/satellite';
@@ -48,6 +52,9 @@ export const config = async () => {
   const {satelliteId} = satellite;
 
   const currentConfig = await loadCurrentConfig({satellite, satelliteConfig});
+
+  console.log(currentConfig);
+
   const lastAppliedConfig = getLatestAppliedConfig({satelliteId});
 
   const editConfig = await prepareConfig({
@@ -109,11 +116,15 @@ const printResults = (results: SetConfigResults) => {
   });
 };
 
+type CurrentCollectionsConfig = Record<string, [Rule, RuleHash]>;
+
 interface CurrentConfig {
   storage?: [StorageConfig, ConfigHash];
   datastore?: [DatastoreConfig, ConfigHash];
   auth?: [AuthenticationConfig, ConfigHash];
   settings?: [ModuleSettings, SettingsHash];
+  storageCollections?: CurrentCollectionsConfig;
+  datastoreCollections?: CurrentCollectionsConfig;
 }
 
 const getCurrentConfig = async ({
@@ -127,21 +138,43 @@ const getCurrentConfig = async ({
     storage: userStorageConfig,
     datastore: userDatastoreConfig,
     authentication: userAuthConfig,
-    settings: userSettingConfig
+    settings: userSettingConfig,
+    collections: userCollectionsConfig
   } = satelliteConfig;
 
-  const [storage, datastore, auth, settings] = await Promise.all([
-    nonNullish(userStorageConfig) ? getStorageConfig({satellite}) : Promise.resolve(),
-    nonNullish(userDatastoreConfig) ? getDatastoreConfig({satellite}) : Promise.resolve(),
-    nonNullish(userAuthConfig) ? getAuthConfig({satellite}) : Promise.resolve(),
-    nonNullish(userSettingConfig) ? getSettings({satellite}) : Promise.resolve()
-  ]);
+  const userStorageCollectionsConfig = userCollectionsConfig?.storage;
+  const userDatastoreCollectionsConfig = userCollectionsConfig?.datastore;
+
+  const [storage, datastore, auth, settings, storageCollections, datastoreCollections] =
+    await Promise.all([
+      nonNullish(userStorageConfig) ? getStorageConfig({satellite}) : Promise.resolve(),
+      nonNullish(userDatastoreConfig) ? getDatastoreConfig({satellite}) : Promise.resolve(),
+      nonNullish(userAuthConfig) ? getAuthConfig({satellite}) : Promise.resolve(),
+      nonNullish(userSettingConfig) ? getSettings({satellite}) : Promise.resolve(),
+      nonNullish(userStorageCollectionsConfig) && userStorageCollectionsConfig.length > 0
+        ? listRules({type: 'storage', satellite})
+        : Promise.resolve(undefined),
+      nonNullish(userDatastoreCollectionsConfig) && userDatastoreCollectionsConfig.length > 0
+        ? listRules({type: 'db', satellite})
+        : Promise.resolve(undefined)
+    ]);
+
+  const mapRules = ({items}: ListRulesResults): CurrentCollectionsConfig =>
+    items.reduce<CurrentCollectionsConfig>(
+      (acc, rule) => ({
+        ...acc,
+        [rule.collection]: [rule, objHash(rule)]
+      }),
+      {}
+    );
 
   return {
     ...(nonNullish(storage) && {storage: [storage, objHash(storage)]}),
     ...(nonNullish(datastore) && {datastore: [datastore, objHash(datastore)]}),
     ...(nonNullish(auth) && {auth: [auth, objHash(auth)]}),
-    ...(nonNullish(settings) && {settings: [settings, objHash(settings)]})
+    ...(nonNullish(settings) && {settings: [settings, objHash(settings)]}),
+    ...(nonNullish(storageCollections) && {storageCollections: mapRules(storageCollections)}),
+    ...(nonNullish(datastoreCollections) && {datastoreCollections: mapRules(datastoreCollections)})
   };
 };
 
