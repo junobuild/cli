@@ -54,6 +54,8 @@ type SetConfigResults = [
   PromiseSettledResult<undefined | Array<PromiseSettledResult<Rule>>>
 ];
 
+type EditConfig = Omit<SatelliteConfig, 'assertions'>;
+
 export const config = async () => {
   const {satellite, satelliteConfig} = await assertConfigAndLoadSatelliteContext();
   const {satelliteId} = satellite;
@@ -179,7 +181,7 @@ const getCurrentConfig = async ({
   satelliteConfig
 }: {
   satellite: SatelliteParametersWithId;
-  satelliteConfig: Omit<SatelliteConfig, 'assertions'>;
+  satelliteConfig: EditConfig;
 }): Promise<CurrentConfig> => {
   const {
     storage: userStorageConfig,
@@ -227,7 +229,7 @@ const getCurrentConfig = async ({
 
 const loadCurrentConfig = async (params: {
   satellite: SatelliteParametersWithId;
-  satelliteConfig: Omit<SatelliteConfig, 'assertions'>;
+  satelliteConfig: EditConfig;
 }): Promise<CurrentConfig> => {
   const spinner = ora('Loading configuration...').start();
 
@@ -243,7 +245,7 @@ const applyConfig = async ({
   editConfig
 }: {
   satellite: SatelliteParametersWithId;
-  editConfig: Omit<SatelliteConfig, 'assertions'>;
+  editConfig: EditConfig;
 }): Promise<SetConfigResults> => {
   const spinner = ora('Configuring...').start();
 
@@ -259,7 +261,7 @@ const setConfigs = async ({
   editConfig
 }: {
   satellite: SatelliteParametersWithId;
-  editConfig: Omit<SatelliteConfig, 'assertions'>;
+  editConfig: EditConfig;
 }): Promise<SetConfigResults> => {
   const {storage, authentication, datastore, settings, collections} = editConfig;
 
@@ -330,8 +332,8 @@ const prepareConfig = async ({
 }: {
   currentConfig: CurrentConfig;
   lastAppliedConfig: CliStateSatelliteAppliedConfigHashes | undefined;
-  satelliteConfig: Omit<SatelliteConfig, 'assertions'>;
-}): Promise<Omit<SatelliteConfig, 'assertions'>> => {
+  satelliteConfig: EditConfig;
+}): Promise<EditConfig> => {
   const {
     storage: currentStorage,
     datastore: currentDatastore,
@@ -411,7 +413,7 @@ const prepareConfig = async ({
 
   // Extend the satellite config from the juno.config with the current versions available in the backend
   // Unless the config contains manually defined versions.
-  const extendWithVersions = (): Omit<SatelliteConfig, 'assertions'> => {
+  const extendWithVersions = (): EditConfig => {
     const versionStorage = currentStorage?.[0]?.version;
     const versionDatastore = currentDatastore?.[0]?.version;
     const versionAuth = currentAuth?.[0]?.version;
@@ -462,7 +464,7 @@ const prepareConfig = async ({
     };
   };
 
-  const confirmAndExtendWithVersions = async (): Promise<Omit<SatelliteConfig, 'assertions'>> => {
+  const confirmAndExtendWithVersions = async (): Promise<EditConfig> => {
     await confirmAndExit(
       'This action will overwrite the current configuration of the Satellite. Are you sure you want to continue?'
     );
