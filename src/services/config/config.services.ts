@@ -75,6 +75,11 @@ export const config = async () => {
     satelliteConfig
   });
 
+  if (Object.values(editConfig).filter(nonNullish).length === 0) {
+    console.log('🤷‍♂️ No configuration changes detected.');
+    return;
+  }
+
   // Effectively update the configurations and collections of the Satellite
   const results = await applyConfig({satellite, editConfig});
 
@@ -113,7 +118,7 @@ const saveLastAppliedConfigHashes = ({
           .reduce<Record<CliStateSatelliteAppliedCollection, RuleHash>>(
             (acc, rule) => ({
               ...acc,
-              [rule.collection]: objHash(rule)
+              [rule.collection]: ruleHash(rule)
             }),
             {}
           )
@@ -212,7 +217,7 @@ const getCurrentConfig = async ({
     items.reduce<CurrentCollectionsConfig>(
       (acc, rule) => ({
         ...acc,
-        [rule.collection]: [rule, objHash(rule)]
+        [rule.collection]: [rule, ruleHash(rule)]
       }),
       {}
     );
@@ -464,12 +469,78 @@ const prepareConfig = async ({
     };
   };
 
+  // We want to spare updates if there is no changes to apply
+  const filterIdenticalConfig = (editConfig: EditConfig): EditConfig => {
+    const {storage, datastore, authentication, settings, collections} = editConfig;
+
+    const storageHash = currentStorage?.[1];
+    const datastoreHash = currentDatastore?.[1];
+    const authHash = currentAuth?.[1];
+    const settingsHash = currentSettings?.[1];
+
+    const filterCollections = ({
+      collections,
+      currentCollections
+    }: {
+      collections?: Array<StorageCollection | DatastoreCollection>;
+      currentCollections?: CurrentCollectionsConfig;
+    }): Array<StorageCollection | DatastoreCollection> | undefined =>
+      collections?.filter((rule) => {
+        const currentHash = currentCollections?.[rule.collection]?.[1];
+
+        const extendRuleWithDefault = {
+          ...rule,
+          ...(!('mutablePermissions' in rule) && {mutablePermissions: true})
+        };
+
+        return nonNullish(currentHash) && currentHash !== objHash(extendRuleWithDefault);
+      });
+
+    const storageCollections = filterCollections({
+      collections: collections?.storage,
+      currentCollections: currentStorageCollections
+    });
+
+    const datastoreCollections = filterCollections({
+      collections: collections?.datastore,
+      currentCollections: currentDatastoreCollections
+    });
+
+    return {
+      storage:
+        nonNullish(storageHash) && nonNullish(storage) && storageHash === objHash(storage)
+          ? undefined
+          : storage,
+      datastore:
+        nonNullish(datastoreHash) && nonNullish(datastore) && datastoreHash === objHash(datastore)
+          ? undefined
+          : datastore,
+      authentication:
+        nonNullish(authHash) && nonNullish(authentication) && authHash === objHash(authentication)
+          ? undefined
+          : authentication,
+      settings:
+        nonNullish(settingsHash) && nonNullish(settings) && settingsHash === objHash(settings)
+          ? undefined
+          : settings,
+      ...(((nonNullish(storageCollections) && storageCollections.length > 0) ||
+        (nonNullish(datastoreCollections) && datastoreCollections.length > 0)) && {
+        collections: {
+          ...(nonNullish(storageCollections) &&
+            storageCollections.length > 0 && {storage: storageCollections}),
+          ...(nonNullish(datastoreCollections) &&
+            datastoreCollections.length > 0 && {datastore: datastoreCollections})
+        }
+      })
+    };
+  };
+
   const confirmAndExtendWithVersions = async (): Promise<EditConfig> => {
     await confirmAndExit(
       'This action will overwrite the current configuration of the Satellite. Are you sure you want to continue?'
     );
 
-    return extendWithVersions();
+    return filterIdenticalConfig(extendWithVersions());
   };
 
   if (firstTime) {
@@ -544,8 +615,14 @@ const prepareConfig = async ({
   };
 
   if (isLastAppliedConfigCurrent()) {
-    return extendWithVersions();
+    return filterIdenticalConfig(extendWithVersions());
   }
 
   return await confirmAndExtendWithVersions();
 };
+
+// We trim `createdAt` and `updatedAt` because they are not used when applying or handling the configuration.
+// They are also excluded when generating hashes to ensure comparisons are based only on meaningful changes.
+// This allows us to determine whether a collection truly needs to be created or updated, or if it already matches
+// the configuration definition.
+const ruleHash = ({createdAt: _, updatedAt: __, ...rule}: Rule): string => objHash(rule);
