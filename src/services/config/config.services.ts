@@ -73,9 +73,6 @@ export const config = async () => {
     satelliteConfig
   });
 
-  // TODO: remove
-  console.log(editConfig?.collections);
-
   // Effectively update the configurations and collections of the Satellite
   const results = await applyConfig({satellite, editConfig});
 
@@ -136,9 +133,6 @@ const saveLastAppliedConfigHashes = ({
           }
         : undefined
   };
-
-  // TODO: remove
-  console.log('/___', lastAppliedConfig);
 
   saveLastAppliedConfig({lastAppliedConfig, satelliteId});
 };
@@ -520,15 +514,6 @@ const prepareConfig = async ({
       Object.entries(lastCollectionsHashes ?? {}).every(
         ([collection, lastHash]) => currentCollections?.[collection]?.[1] === lastHash
       );
-
-    // TODO: remove
-    console.log(
-      '----',
-      isLastAppliedCollectionsCurrent({
-        lastCollectionsHashes: lastCollectionsHashes?.datastore,
-        currentCollections: currentDatastoreCollections
-      })
-    );
 
     if (
       !isLastAppliedCollectionsCurrent({
