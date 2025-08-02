@@ -137,6 +137,9 @@ const saveLastAppliedConfigHashes = ({
         : undefined
   };
 
+  // TODO: remove
+  console.log('/___', lastAppliedConfig);
+
   saveLastAppliedConfig({lastAppliedConfig, satelliteId});
 };
 
