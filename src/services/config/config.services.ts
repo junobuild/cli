@@ -3,15 +3,22 @@ import {
   getAuthConfig,
   getDatastoreConfig,
   getStorageConfig,
+  listRules,
+  type ListRulesResults,
   setAuthConfig,
   setDatastoreConfig,
+  setRule,
   setStorageConfig
 } from '@junobuild/admin';
 import type {
   AuthenticationConfig,
+  DatastoreCollection,
   DatastoreConfig,
   ModuleSettings,
+  Rule,
+  RulesType,
   SatelliteConfig,
+  StorageCollection,
   StorageConfig
 } from '@junobuild/config';
 import {red} from 'kleur';
@@ -26,8 +33,10 @@ import {
   DEFAULT_SATELLITE_HEAP_WASM_MEMORY_LIMIT
 } from '../../constants/settings.constants';
 import {
+  type CliStateSatelliteAppliedCollection,
   type CliStateSatelliteAppliedConfigHashes,
   type ConfigHash,
+  type RuleHash,
   type SettingsHash
 } from '../../types/cli.state';
 import type {SatelliteParametersWithId} from '../../types/satellite';
@@ -40,24 +49,34 @@ type SetConfigResults = [
   PromiseSettledResult<StorageConfig | void>,
   PromiseSettledResult<DatastoreConfig | void>,
   PromiseSettledResult<AuthenticationConfig | void>,
-  PromiseSettledResult<void>
+  PromiseSettledResult<void>,
+  PromiseSettledResult<undefined | Array<PromiseSettledResult<Rule>>>,
+  PromiseSettledResult<undefined | Array<PromiseSettledResult<Rule>>>
 ];
 
 export const config = async () => {
   const {satellite, satelliteConfig} = await assertConfigAndLoadSatelliteContext();
   const {satelliteId} = satellite;
 
+  // Load configurations and rules from the Satellite
   const currentConfig = await loadCurrentConfig({satellite, satelliteConfig});
+
+  // Get the hashes from the CLI state
   const lastAppliedConfig = getLatestAppliedConfig({satelliteId});
 
+  // Compare last hashes with current configuration of the Satellite
+  // Prompt the user if there will be an overwrite
+  // Extends the configuration provided by the dev with the version fields (unless they specified the field themselves)
   const editConfig = await prepareConfig({
     currentConfig,
     lastAppliedConfig,
     satelliteConfig
   });
 
+  // Effectively update the configurations and collections of the Satellite
   const results = await applyConfig({satellite, editConfig});
 
+  // Save the new hashes in the CLI state
   saveLastAppliedConfigHashes({
     results,
     settings: editConfig.settings,
@@ -74,7 +93,7 @@ const saveLastAppliedConfigHashes = ({
 }: {results: SetConfigResults} & Pick<SatelliteConfig, 'settings'> &
   Pick<SatelliteParametersWithId, 'satelliteId'>) => {
   const fulfilledValue = (
-    index: number
+    index: 0 | 1 | 2
   ): void | StorageConfig | DatastoreConfig | AuthenticationConfig | undefined =>
     results[index].status === 'fulfilled' ? results[index].value : undefined;
 
@@ -82,18 +101,53 @@ const saveLastAppliedConfigHashes = ({
   const datastore = fulfilledValue(1);
   const auth = fulfilledValue(2);
 
+  const fulfilledCollectionsValues = (
+    index: 4 | 5
+  ): Record<CliStateSatelliteAppliedCollection, RuleHash> | undefined =>
+    results[index].status === 'fulfilled'
+      ? results[index].value
+          ?.map((ruleResult) => (ruleResult.status === 'fulfilled' ? ruleResult.value : undefined))
+          .filter(nonNullish)
+          .reduce<Record<CliStateSatelliteAppliedCollection, RuleHash>>(
+            (acc, rule) => ({
+              ...acc,
+              [rule.collection]: objHash(rule)
+            }),
+            {}
+          )
+      : undefined;
+
+  const storageCollections = fulfilledCollectionsValues(4);
+  const datastoreCollections = fulfilledCollectionsValues(5);
+
   const lastAppliedConfig: CliStateSatelliteAppliedConfigHashes = {
     storage: nonNullish(storage) ? objHash(storage) : undefined,
     datastore: nonNullish(datastore) ? objHash(datastore) : undefined,
     auth: nonNullish(auth) ? objHash(auth) : undefined,
-    settings: nonNullish(settings) ? objHash(settings) : undefined
+    settings: nonNullish(settings) ? objHash(settings) : undefined,
+    collections:
+      nonNullish(storageCollections) || nonNullish(datastoreCollections)
+        ? {
+            storage: storageCollections,
+            datastore: datastoreCollections
+          }
+        : undefined
   };
 
   saveLastAppliedConfig({lastAppliedConfig, satelliteId});
 };
 
 const printResults = (results: SetConfigResults) => {
-  const errors = results.filter((result) => result.status === 'rejected');
+  const configErrors = results.filter((result) => result.status === 'rejected');
+
+  const filterCollectionsErrors = (index: 4 | 5): PromiseRejectedResult[] =>
+    results[index].status === 'fulfilled'
+      ? (results[index].value ?? []).filter((result) => result.status === 'rejected')
+      : [];
+
+  const collectionsErrors = [...filterCollectionsErrors(4), ...filterCollectionsErrors(5)];
+
+  const errors = [...configErrors, ...collectionsErrors];
 
   if (errors.length === 0) {
     console.log('✅ Configuration applied.');
@@ -109,11 +163,15 @@ const printResults = (results: SetConfigResults) => {
   });
 };
 
+type CurrentCollectionsConfig = Record<string, [Rule, RuleHash]>;
+
 interface CurrentConfig {
   storage?: [StorageConfig, ConfigHash];
   datastore?: [DatastoreConfig, ConfigHash];
   auth?: [AuthenticationConfig, ConfigHash];
   settings?: [ModuleSettings, SettingsHash];
+  storageCollections?: CurrentCollectionsConfig;
+  datastoreCollections?: CurrentCollectionsConfig;
 }
 
 const getCurrentConfig = async ({
@@ -127,21 +185,43 @@ const getCurrentConfig = async ({
     storage: userStorageConfig,
     datastore: userDatastoreConfig,
     authentication: userAuthConfig,
-    settings: userSettingConfig
+    settings: userSettingConfig,
+    collections: userCollectionsConfig
   } = satelliteConfig;
 
-  const [storage, datastore, auth, settings] = await Promise.all([
-    nonNullish(userStorageConfig) ? getStorageConfig({satellite}) : Promise.resolve(),
-    nonNullish(userDatastoreConfig) ? getDatastoreConfig({satellite}) : Promise.resolve(),
-    nonNullish(userAuthConfig) ? getAuthConfig({satellite}) : Promise.resolve(),
-    nonNullish(userSettingConfig) ? getSettings({satellite}) : Promise.resolve()
-  ]);
+  const userStorageCollectionsConfig = userCollectionsConfig?.storage;
+  const userDatastoreCollectionsConfig = userCollectionsConfig?.datastore;
+
+  const [storage, datastore, auth, settings, storageCollections, datastoreCollections] =
+    await Promise.all([
+      nonNullish(userStorageConfig) ? getStorageConfig({satellite}) : Promise.resolve(),
+      nonNullish(userDatastoreConfig) ? getDatastoreConfig({satellite}) : Promise.resolve(),
+      nonNullish(userAuthConfig) ? getAuthConfig({satellite}) : Promise.resolve(),
+      nonNullish(userSettingConfig) ? getSettings({satellite}) : Promise.resolve(),
+      nonNullish(userStorageCollectionsConfig) && userStorageCollectionsConfig.length > 0
+        ? listRules({type: 'storage', satellite})
+        : Promise.resolve(undefined),
+      nonNullish(userDatastoreCollectionsConfig) && userDatastoreCollectionsConfig.length > 0
+        ? listRules({type: 'db', satellite})
+        : Promise.resolve(undefined)
+    ]);
+
+  const mapRules = ({items}: ListRulesResults): CurrentCollectionsConfig =>
+    items.reduce<CurrentCollectionsConfig>(
+      (acc, rule) => ({
+        ...acc,
+        [rule.collection]: [rule, objHash(rule)]
+      }),
+      {}
+    );
 
   return {
     ...(nonNullish(storage) && {storage: [storage, objHash(storage)]}),
     ...(nonNullish(datastore) && {datastore: [datastore, objHash(datastore)]}),
     ...(nonNullish(auth) && {auth: [auth, objHash(auth)]}),
-    ...(nonNullish(settings) && {settings: [settings, objHash(settings)]})
+    ...(nonNullish(settings) && {settings: [settings, objHash(settings)]}),
+    ...(nonNullish(storageCollections) && {storageCollections: mapRules(storageCollections)}),
+    ...(nonNullish(datastoreCollections) && {datastoreCollections: mapRules(datastoreCollections)})
   };
 };
 
@@ -181,7 +261,29 @@ const setConfigs = async ({
   satellite: SatelliteParametersWithId;
   editConfig: Omit<SatelliteConfig, 'assertions'>;
 }): Promise<SetConfigResults> => {
-  const {storage, authentication, datastore, settings} = editConfig;
+  const {storage, authentication, datastore, settings, collections} = editConfig;
+
+  const storageCollections = collections?.storage;
+  const datastoreCollections = collections?.datastore;
+
+  const setRules = async ({
+    collections,
+    type
+  }: {
+    collections: Array<StorageCollection | DatastoreCollection>;
+    type: RulesType;
+  }): Promise<Array<PromiseSettledResult<Rule>>> => {
+    return await Promise.allSettled(
+      collections.map(
+        async (collection) =>
+          await setRule({
+            rule: collection,
+            type,
+            satellite
+          })
+      )
+    );
+  };
 
   return await Promise.allSettled([
     isNullish(storage)
@@ -205,7 +307,19 @@ const setConfigs = async ({
           config: authentication,
           satellite
         }),
-    isNullish(settings) ? Promise.resolve() : setSettings({settings, satellite})
+    isNullish(settings) ? Promise.resolve() : setSettings({settings, satellite}),
+    isNullish(storageCollections) || storageCollections.length === 0
+      ? Promise.resolve(undefined)
+      : setRules({
+          type: 'storage',
+          collections: storageCollections
+        }),
+    isNullish(datastoreCollections) || datastoreCollections.length === 0
+      ? Promise.resolve(undefined)
+      : setRules({
+          type: 'db',
+          collections: datastoreCollections
+        })
   ]);
 };
 
@@ -222,7 +336,9 @@ const prepareConfig = async ({
     storage: currentStorage,
     datastore: currentDatastore,
     auth: currentAuth,
-    settings: currentSettings
+    settings: currentSettings,
+    storageCollections: currentStorageCollections,
+    datastoreCollections: currentDatastoreCollections
   } = currentConfig;
 
   const isNullishOrDefaultSettings = (): boolean => {
@@ -241,6 +357,7 @@ const prepareConfig = async ({
     );
   };
 
+  // The dev has never applied a configuration, changed the settings or even created a single collection
   const isDefaultConfig = (): boolean => {
     const storageVersion = currentStorage?.[0].version;
 
@@ -260,6 +377,21 @@ const prepareConfig = async ({
       return false;
     }
 
+    const hasStorageCollections =
+      nonNullish(currentStorageCollections) && Object.keys(currentStorageCollections).length > 0;
+
+    if (hasStorageCollections) {
+      return false;
+    }
+
+    const hasDatastoreCollections =
+      nonNullish(currentDatastoreCollections) &&
+      Object.keys(currentDatastoreCollections).length > 0;
+
+    if (hasDatastoreCollections) {
+      return false;
+    }
+
     return isNullishOrDefaultSettings();
   };
 
@@ -272,7 +404,10 @@ const prepareConfig = async ({
     return satelliteConfig;
   }
 
-  const {storage, datastore, authentication, settings} = satelliteConfig;
+  const {storage, datastore, authentication, settings, collections} = satelliteConfig;
+
+  const storageCollections = collections?.storage;
+  const datastoreCollections = collections?.datastore;
 
   // Extend the satellite config from the juno.config with the current versions available in the backend
   // Unless the config contains manually defined versions.
@@ -280,6 +415,29 @@ const prepareConfig = async ({
     const versionStorage = currentStorage?.[0]?.version;
     const versionDatastore = currentDatastore?.[0]?.version;
     const versionAuth = currentAuth?.[0]?.version;
+
+    const extendCollections = ({
+      collections,
+      currentCollections
+    }: {
+      collections: Array<StorageCollection | DatastoreCollection> | undefined;
+      currentCollections: CurrentCollectionsConfig | undefined;
+    }): Array<StorageCollection | DatastoreCollection> =>
+      (collections ?? []).map(({collection, version, ...rest}) => ({
+        ...rest,
+        collection,
+        version: version ?? currentCollections?.[collection]?.[0].version
+      }));
+
+    const extendedStorageCollections = extendCollections({
+      collections: storageCollections,
+      currentCollections: currentStorageCollections
+    });
+
+    const extendedDatastoreCollections = extendCollections({
+      collections: datastoreCollections,
+      currentCollections: currentDatastoreCollections
+    });
 
     return {
       storage:
@@ -294,7 +452,13 @@ const prepareConfig = async ({
         nonNullish(authentication) && isNullish(authentication.version)
           ? {...authentication, version: versionAuth}
           : authentication,
-      settings
+      settings,
+      ...(nonNullish(collections) && {
+        collections: {
+          ...(nonNullish(storageCollections) && {storage: extendedStorageCollections}),
+          ...(nonNullish(datastoreCollections) && {datastore: extendedDatastoreCollections})
+        }
+      })
     };
   };
 
@@ -319,7 +483,8 @@ const prepareConfig = async ({
       storage: lastStorageHash,
       datastore: lastDatastoreHash,
       auth: lastAuthHash,
-      settings: lastSettingsHash
+      settings: lastSettingsHash,
+      collections: lastCollectionsHashes
     } = lastAppliedConfig;
 
     const storageHash = currentStorage?.[1];
@@ -337,6 +502,34 @@ const prepareConfig = async ({
     const authHash = currentAuth?.[1];
 
     if (authHash !== lastAuthHash) {
+      return false;
+    }
+
+    const isLastAppliedCollectionsCurrent = ({
+      lastCollectionsHashes,
+      currentCollections
+    }: {
+      lastCollectionsHashes?: Record<CliStateSatelliteAppliedCollection, RuleHash> | undefined;
+      currentCollections?: CurrentCollectionsConfig;
+    }): boolean =>
+      Object.entries(lastCollectionsHashes ?? {}).every(
+        ([collection, lastHash]) => currentCollections?.[collection]?.[1] === lastHash
+      );
+
+    if (
+      !isLastAppliedCollectionsCurrent({
+        lastCollectionsHashes: lastCollectionsHashes?.storage,
+        currentCollections: currentStorageCollections
+      })
+    ) {
+      return false;
+    }
+    if (
+      !isLastAppliedCollectionsCurrent({
+        lastCollectionsHashes: lastCollectionsHashes?.datastore,
+        currentCollections: currentDatastoreCollections
+      })
+    ) {
       return false;
     }
 
