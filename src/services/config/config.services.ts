@@ -274,12 +274,13 @@ const setConfigs = async ({
     type: RulesType;
   }): Promise<Array<PromiseSettledResult<Rule>>> => {
     return await Promise.allSettled(
-      collections.map(async (collection) =>
-        await setRule({
-          rule: collection,
-          type,
-          satellite
-        })
+      collections.map(
+        async (collection) =>
+          await setRule({
+            rule: collection,
+            type,
+            satellite
+          })
       )
     );
   };
