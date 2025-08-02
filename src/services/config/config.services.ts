@@ -6,7 +6,8 @@ import {
   listRules,
   ListRulesResults,
   setAuthConfig,
-  setDatastoreConfig, setRule,
+  setDatastoreConfig,
+  setRule,
   setStorageConfig
 } from '@junobuild/admin';
 import type {
@@ -14,7 +15,8 @@ import type {
   DatastoreCollection,
   DatastoreConfig,
   ModuleSettings,
-  Rule, RulesType,
+  Rule,
+  RulesType,
   SatelliteConfig,
   StorageCollection,
   StorageConfig
@@ -47,7 +49,9 @@ type SetConfigResults = [
   PromiseSettledResult<StorageConfig | void>,
   PromiseSettledResult<DatastoreConfig | void>,
   PromiseSettledResult<AuthenticationConfig | void>,
-  PromiseSettledResult<void>
+  PromiseSettledResult<void>,
+  PromiseSettledResult<undefined | PromiseSettledResult<Rule>[]>,
+  PromiseSettledResult<undefined | PromiseSettledResult<Rule>[]>
 ];
 
 export const config = async () => {
@@ -92,7 +96,7 @@ const saveLastAppliedConfigHashes = ({
 }: {results: SetConfigResults} & Pick<SatelliteConfig, 'settings'> &
   Pick<SatelliteParametersWithId, 'satelliteId'>) => {
   const fulfilledValue = (
-    index: number
+    index: 0 | 1 | 2
   ): void | StorageConfig | DatastoreConfig | AuthenticationConfig | undefined =>
     results[index].status === 'fulfilled' ? results[index].value : undefined;
 
@@ -100,20 +104,53 @@ const saveLastAppliedConfigHashes = ({
   const datastore = fulfilledValue(1);
   const auth = fulfilledValue(2);
 
-  // TODO
-  // @ts-ignore
+  const fulfilledCollectionsValues = (
+    index: 4 | 5
+  ): Record<CliStateSatelliteAppliedCollection, RuleHash> | undefined =>
+    results[index].status === 'fulfilled'
+      ? results[index].value
+          ?.map((ruleResult) => (ruleResult.status === 'fulfilled' ? ruleResult.value : undefined))
+          .filter(nonNullish)
+          .reduce<Record<CliStateSatelliteAppliedCollection, RuleHash>>(
+            (acc, rule) => ({
+              ...acc,
+              [rule.collection]: objHash(rule)
+            }),
+            {}
+          )
+      : undefined;
+
+  const storageCollections = fulfilledCollectionsValues(4);
+  const datastoreCollections = fulfilledCollectionsValues(4);
+
   const lastAppliedConfig: CliStateSatelliteAppliedConfigHashes = {
     storage: nonNullish(storage) ? objHash(storage) : undefined,
     datastore: nonNullish(datastore) ? objHash(datastore) : undefined,
     auth: nonNullish(auth) ? objHash(auth) : undefined,
-    settings: nonNullish(settings) ? objHash(settings) : undefined
+    settings: nonNullish(settings) ? objHash(settings) : undefined,
+    collections:
+      nonNullish(storageCollections) || nonNullish(datastoreCollections)
+        ? {
+            storage: storageCollections,
+            datastore: datastoreCollections
+          }
+        : undefined
   };
 
   saveLastAppliedConfig({lastAppliedConfig, satelliteId});
 };
 
 const printResults = (results: SetConfigResults) => {
-  const errors = results.filter((result) => result.status === 'rejected');
+  const configErrors = results.filter((result) => result.status === 'rejected');
+
+  const filterCollectionsErrors = (index: 4 | 5): PromiseRejectedResult[] =>
+    results[index].status === 'fulfilled'
+      ? (results[index].value ?? []).filter((result) => result.status === 'rejected')
+      : [];
+
+  const collectionsErrors = [...filterCollectionsErrors(4), ...filterCollectionsErrors(5)];
+
+  const errors = [...configErrors, ...collectionsErrors];
 
   if (errors.length === 0) {
     console.log('✅ Configuration applied.');
@@ -232,13 +269,23 @@ const setConfigs = async ({
   const storageCollections = collections?.storage;
   const datastoreCollections = collections?.datastore;
 
-  const setRules = async ({collections, type}: {collections: (StorageCollection | DatastoreCollection)[], type: RulesType}) => {
-    return await Promise.allSettled(collections.map((collection) => setRule({
-      rule: collection,
-      type,
-      satellite
-    })))
-  }
+  const setRules = async ({
+    collections,
+    type
+  }: {
+    collections: (StorageCollection | DatastoreCollection)[];
+    type: RulesType;
+  }): Promise<PromiseSettledResult<Rule>[]> => {
+    return await Promise.allSettled(
+      collections.map((collection) =>
+        setRule({
+          rule: collection,
+          type,
+          satellite
+        })
+      )
+    );
+  };
 
   return await Promise.allSettled([
     isNullish(storage)
@@ -262,7 +309,19 @@ const setConfigs = async ({
           config: authentication,
           satellite
         }),
-    isNullish(settings) ? Promise.resolve() : setSettings({settings, satellite})
+    isNullish(settings) ? Promise.resolve() : setSettings({settings, satellite}),
+    isNullish(storageCollections) || storageCollections.length === 0
+      ? Promise.resolve(undefined)
+      : setRules({
+          type: 'storage',
+          collections: storageCollections
+        }),
+    isNullish(datastoreCollections) || datastoreCollections.length === 0
+      ? Promise.resolve(undefined)
+      : setRules({
+          type: 'db',
+          collections: datastoreCollections
+        })
   ]);
 };
 
