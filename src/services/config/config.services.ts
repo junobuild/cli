@@ -47,7 +47,7 @@ export const config = async () => {
   const {satellite, satelliteConfig} = await assertConfigAndLoadSatelliteContext();
   const {satelliteId} = satellite;
 
-  const currentConfig = await loadCurrentConfig({satellite});
+  const currentConfig = await loadCurrentConfig({satellite, satelliteConfig});
   const lastAppliedConfig = getLatestAppliedConfig({satelliteId});
 
   const editConfig = await prepareConfig({
@@ -110,34 +110,44 @@ const printResults = (results: SetConfigResults) => {
 };
 
 interface CurrentConfig {
-  storage: [StorageConfig, ConfigHash];
+  storage?: [StorageConfig, ConfigHash];
   datastore?: [DatastoreConfig, ConfigHash];
   auth?: [AuthenticationConfig, ConfigHash];
-  settings: [ModuleSettings, SettingsHash];
+  settings?: [ModuleSettings, SettingsHash];
 }
 
 const getCurrentConfig = async ({
-  satellite
+  satellite,
+  satelliteConfig
 }: {
   satellite: SatelliteParametersWithId;
+  satelliteConfig: Omit<SatelliteConfig, 'assertions'>;
 }): Promise<CurrentConfig> => {
+  const {
+    storage: userStorageConfig,
+    datastore: userDatastoreConfig,
+    authentication: userAuthConfig,
+    settings: userSettingConfig
+  } = satelliteConfig;
+
   const [storage, datastore, auth, settings] = await Promise.all([
-    getStorageConfig({satellite}),
-    getDatastoreConfig({satellite}),
-    getAuthConfig({satellite}),
-    getSettings({satellite})
+    nonNullish(userStorageConfig) ? getStorageConfig({satellite}) : Promise.resolve(),
+    nonNullish(userDatastoreConfig) ? getDatastoreConfig({satellite}) : Promise.resolve(),
+    nonNullish(userAuthConfig) ? getAuthConfig({satellite}) : Promise.resolve(),
+    nonNullish(userSettingConfig) ? getSettings({satellite}) : Promise.resolve()
   ]);
 
   return {
-    storage: [storage, objHash(storage)],
+    ...(nonNullish(storage) && {storage: [storage, objHash(storage)]}),
     ...(nonNullish(datastore) && {datastore: [datastore, objHash(datastore)]}),
     ...(nonNullish(auth) && {auth: [auth, objHash(auth)]}),
-    settings: [settings, objHash(settings)]
+    ...(nonNullish(settings) && {settings: [settings, objHash(settings)]})
   };
 };
 
 const loadCurrentConfig = async (params: {
   satellite: SatelliteParametersWithId;
+  satelliteConfig: Omit<SatelliteConfig, 'assertions'>;
 }): Promise<CurrentConfig> => {
   const spinner = ora('Loading configuration...').start();
 
@@ -215,7 +225,11 @@ const prepareConfig = async ({
     settings: currentSettings
   } = currentConfig;
 
-  const isDefaultSettings = (): boolean => {
+  const isNullishOrDefaultSettings = (): boolean => {
+    if (isNullish(currentSettings)) {
+      return true;
+    }
+
     const [settings] = currentSettings;
     return (
       settings.computeAllocation === DEFAULT_COMPUTE_ALLOCATION &&
@@ -228,9 +242,9 @@ const prepareConfig = async ({
   };
 
   const isDefaultConfig = (): boolean => {
-    const [storage] = currentStorage;
+    const storageVersion = currentStorage?.[0].version;
 
-    if (nonNullish(storage.version)) {
+    if (nonNullish(storageVersion)) {
       return false;
     }
 
@@ -246,7 +260,7 @@ const prepareConfig = async ({
       return false;
     }
 
-    return isDefaultSettings();
+    return isNullishOrDefaultSettings();
   };
 
   const firstTime = isNullish(lastAppliedConfig);
@@ -263,7 +277,7 @@ const prepareConfig = async ({
   // Extend the satellite config from the juno.config with the current versions available in the backend
   // Unless the config contains manually defined versions.
   const extendWithVersions = (): Omit<SatelliteConfig, 'assertions'> => {
-    const [{version: versionStorage}] = currentStorage;
+    const versionStorage = currentStorage?.[0]?.version;
     const versionDatastore = currentDatastore?.[0]?.version;
     const versionAuth = currentAuth?.[0]?.version;
 
@@ -301,14 +315,14 @@ const prepareConfig = async ({
   // If they match, there's no need to warn the developer about overwriting —
   // they're just updating the same options they previously applied.
   const isLastAppliedConfigCurrent = (): boolean => {
-    const [_, storageHash] = currentStorage;
-
     const {
       storage: lastStorageHash,
       datastore: lastDatastoreHash,
       auth: lastAuthHash,
       settings: lastSettingsHash
     } = lastAppliedConfig;
+
+    const storageHash = currentStorage?.[1];
 
     if (storageHash !== lastStorageHash) {
       return false;
@@ -326,9 +340,12 @@ const prepareConfig = async ({
       return false;
     }
 
-    const [__, settingsHash] = currentSettings;
+    const settingsHash = currentSettings?.[1];
 
-    return settingsHash === lastSettingsHash || (isDefaultSettings() && isNullish(settings));
+    return (
+      (nonNullish(settingsHash) && settingsHash === lastSettingsHash) ||
+      (isNullishOrDefaultSettings() && isNullish(settings))
+    );
   };
 
   if (isLastAppliedConfigCurrent()) {
