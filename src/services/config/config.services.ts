@@ -6,15 +6,17 @@ import {
   listRules,
   ListRulesResults,
   setAuthConfig,
-  setDatastoreConfig,
+  setDatastoreConfig, setRule,
   setStorageConfig
 } from '@junobuild/admin';
 import type {
   AuthenticationConfig,
+  DatastoreCollection,
   DatastoreConfig,
   ModuleSettings,
-  Rule,
+  Rule, RulesType,
   SatelliteConfig,
+  StorageCollection,
   StorageConfig
 } from '@junobuild/config';
 import {red} from 'kleur';
@@ -29,6 +31,7 @@ import {
   DEFAULT_SATELLITE_HEAP_WASM_MEMORY_LIMIT
 } from '../../constants/settings.constants';
 import {
+  CliStateSatelliteAppliedCollection,
   type CliStateSatelliteAppliedConfigHashes,
   type ConfigHash,
   RuleHash,
@@ -66,6 +69,9 @@ export const config = async () => {
     satelliteConfig
   });
 
+  // TODO: remove
+  console.log(editConfig?.collections);
+
   // Effectively update the configurations and collections of the Satellite
   const results = await applyConfig({satellite, editConfig});
 
@@ -94,6 +100,8 @@ const saveLastAppliedConfigHashes = ({
   const datastore = fulfilledValue(1);
   const auth = fulfilledValue(2);
 
+  // TODO
+  // @ts-ignore
   const lastAppliedConfig: CliStateSatelliteAppliedConfigHashes = {
     storage: nonNullish(storage) ? objHash(storage) : undefined,
     datastore: nonNullish(datastore) ? objHash(datastore) : undefined,
@@ -219,7 +227,18 @@ const setConfigs = async ({
   satellite: SatelliteParametersWithId;
   editConfig: Omit<SatelliteConfig, 'assertions'>;
 }): Promise<SetConfigResults> => {
-  const {storage, authentication, datastore, settings} = editConfig;
+  const {storage, authentication, datastore, settings, collections} = editConfig;
+
+  const storageCollections = collections?.storage;
+  const datastoreCollections = collections?.datastore;
+
+  const setRules = async ({collections, type}: {collections: (StorageCollection | DatastoreCollection)[], type: RulesType}) => {
+    return await Promise.allSettled(collections.map((collection) => setRule({
+      rule: collection,
+      type,
+      satellite
+    })))
+  }
 
   return await Promise.allSettled([
     isNullish(storage)
@@ -260,7 +279,9 @@ const prepareConfig = async ({
     storage: currentStorage,
     datastore: currentDatastore,
     auth: currentAuth,
-    settings: currentSettings
+    settings: currentSettings,
+    storageCollections: currentStorageCollections,
+    datastoreCollections: currentDatastoreCollections
   } = currentConfig;
 
   const isNullishOrDefaultSettings = (): boolean => {
@@ -279,6 +300,7 @@ const prepareConfig = async ({
     );
   };
 
+  // The dev has never applied a configuration, changed the settings or even created a single collection
   const isDefaultConfig = (): boolean => {
     const storageVersion = currentStorage?.[0].version;
 
@@ -298,6 +320,21 @@ const prepareConfig = async ({
       return false;
     }
 
+    const hasStorageCollections =
+      nonNullish(currentStorageCollections) && Object.keys(currentStorageCollections).length > 0;
+
+    if (hasStorageCollections) {
+      return false;
+    }
+
+    const hasDatastoreCollections =
+      nonNullish(currentDatastoreCollections) &&
+      Object.keys(currentDatastoreCollections).length > 0;
+
+    if (hasDatastoreCollections) {
+      return false;
+    }
+
     return isNullishOrDefaultSettings();
   };
 
@@ -310,7 +347,10 @@ const prepareConfig = async ({
     return satelliteConfig;
   }
 
-  const {storage, datastore, authentication, settings} = satelliteConfig;
+  const {storage, datastore, authentication, settings, collections} = satelliteConfig;
+
+  const storageCollections = collections?.storage;
+  const datastoreCollections = collections?.datastore;
 
   // Extend the satellite config from the juno.config with the current versions available in the backend
   // Unless the config contains manually defined versions.
@@ -318,6 +358,29 @@ const prepareConfig = async ({
     const versionStorage = currentStorage?.[0]?.version;
     const versionDatastore = currentDatastore?.[0]?.version;
     const versionAuth = currentAuth?.[0]?.version;
+
+    const extendCollections = ({
+      collections,
+      currentCollections
+    }: {
+      collections: (StorageCollection | DatastoreCollection)[] | undefined;
+      currentCollections: CurrentCollectionsConfig | undefined;
+    }): (StorageCollection | DatastoreCollection)[] =>
+      (collections ?? []).map(({collection, version, ...rest}) => ({
+        ...rest,
+        collection,
+        version: version ?? currentCollections?.[collection]?.[0].version
+      }));
+
+    const extendedStorageCollections = extendCollections({
+      collections: storageCollections,
+      currentCollections: currentStorageCollections
+    });
+
+    const extendedDatastoreCollections = extendCollections({
+      collections: datastoreCollections,
+      currentCollections: currentDatastoreCollections
+    });
 
     return {
       storage:
@@ -332,7 +395,13 @@ const prepareConfig = async ({
         nonNullish(authentication) && isNullish(authentication.version)
           ? {...authentication, version: versionAuth}
           : authentication,
-      settings
+      settings,
+      ...(nonNullish(collections) && {
+        collections: {
+          ...(nonNullish(storageCollections) && {storage: extendedStorageCollections}),
+          ...(nonNullish(datastoreCollections) && {datastore: extendedDatastoreCollections})
+        }
+      })
     };
   };
 
@@ -357,7 +426,8 @@ const prepareConfig = async ({
       storage: lastStorageHash,
       datastore: lastDatastoreHash,
       auth: lastAuthHash,
-      settings: lastSettingsHash
+      settings: lastSettingsHash,
+      collections: lastCollectionsHashes
     } = lastAppliedConfig;
 
     const storageHash = currentStorage?.[1];
@@ -375,6 +445,43 @@ const prepareConfig = async ({
     const authHash = currentAuth?.[1];
 
     if (authHash !== lastAuthHash) {
+      return false;
+    }
+
+    const isLastAppliedCollectionsCurrent = ({
+      lastCollectionsHashes,
+      currentCollections
+    }: {
+      lastCollectionsHashes?: Record<CliStateSatelliteAppliedCollection, RuleHash> | undefined;
+      currentCollections?: CurrentCollectionsConfig;
+    }): boolean =>
+      Object.entries(lastCollectionsHashes ?? {}).every(
+        ([collection, lastHash]) => currentCollections?.[collection]?.[1] === lastHash
+      );
+
+    // TODO: remove
+    console.log(
+      '----',
+      isLastAppliedCollectionsCurrent({
+        lastCollectionsHashes: lastCollectionsHashes?.datastore,
+        currentCollections: currentDatastoreCollections
+      })
+    );
+
+    if (
+      !isLastAppliedCollectionsCurrent({
+        lastCollectionsHashes: lastCollectionsHashes?.storage,
+        currentCollections: currentStorageCollections
+      })
+    ) {
+      return false;
+    }
+    if (
+      !isLastAppliedCollectionsCurrent({
+        lastCollectionsHashes: lastCollectionsHashes?.datastore,
+        currentCollections: currentDatastoreCollections
+      })
+    ) {
       return false;
     }
 
