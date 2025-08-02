@@ -19,7 +19,6 @@ import {
   type EmulatorType
 } from '../../types/emulator';
 import {isHeadless} from '../../utils/process.utils';
-import {confirmAndExit} from '../../utils/prompt.utils';
 import {
   assertContainerRunnerRunning,
   checkDockerVersion,
@@ -127,13 +126,19 @@ const initConfigFile = async () => {
 
   const {runnerType} = await promptRunnerType();
 
+  // Default skylab and docker, no need to specify those options in the config if they were picked.
+  const emulatorConfig =
+    emulatorType === 'skylab' && runnerType === 'docker'
+      ? undefined
+      : {
+          runner: {
+            type: runnerType
+          },
+          ...(emulatorType === 'satellite' ? {satellite: {}} : {skylab: {}})
+        };
+
   await initConfigNoneInteractive({
-    emulatorConfig: {
-      runner: {
-        type: runnerType
-      },
-      ...(emulatorType === 'satellite' ? {satellite: {}} : {skylab: {}})
-    }
+    emulatorConfig
   });
 };
 
