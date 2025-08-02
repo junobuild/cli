@@ -12,7 +12,12 @@ import {
   EMULATOR_PORT_SERVER,
   EMULATOR_SKYLAB
 } from '../../constants/emulator.constants';
-import {type CliEmulatorConfig, type CliEmulatorDerivedConfig} from '../../types/emulator';
+import {
+  type CliEmulatorConfig,
+  type CliEmulatorDerivedConfig,
+  EmulatorRunnerType,
+  EmulatorType
+} from '../../types/emulator';
 import {isHeadless} from '../../utils/process.utils';
 import {confirmAndExit} from '../../utils/prompt.utils';
 import {
@@ -68,14 +73,8 @@ export const stopContainer = async () => {
   await stopEmulator({config});
 };
 
-const initJunoConfigFile = async () => {
-  await confirmAndExit(`Your project needs a config file for Juno. Should we create one now?`);
-
-  await initConfigNoneInteractive();
-};
-
-const promptEmulatorType = async (): Promise<{emulatorType: 'skylab' | 'satellite'}> => {
-  const {emulatorType}: {emulatorType: 'skylab' | 'satellite' | undefined} = await prompts({
+const promptEmulatorType = async (): Promise<{emulatorType: Exclude<EmulatorType, "console">}> => {
+  const {emulatorType}: {emulatorType: Exclude<EmulatorType, "console"> | undefined} = await prompts({
     type: 'select',
     name: 'emulatorType',
     message: 'What kind of emulator would you like to run locally?',
@@ -84,13 +83,32 @@ const promptEmulatorType = async (): Promise<{emulatorType: 'skylab' | 'satellit
         title: `Production-like setup with Console UI and known services`,
         value: `skylab`
       },
-      {title: `Minimal setup without any UI`, value: `satellite`}
+      {title: `Minimal headless setup`, value: `satellite`}
     ]
   });
 
   assertAnswerCtrlC(emulatorType);
 
   return {emulatorType};
+};
+
+const promptRunnerType = async (): Promise<{runnerType: EmulatorRunnerType}> => {
+  const {runnerType}: {runnerType: EmulatorRunnerType | undefined} = await prompts({
+    type: 'select',
+    name: 'runnerType',
+    message: 'Which container runtime would you like to use?',
+    choices: [
+      {
+        title: 'Docker',
+        value: `docker`
+      },
+      {title: `Podman`, value: `podman`}
+    ]
+  });
+
+  assertAnswerCtrlC(runnerType);
+
+  return {runnerType};
 };
 
 const assertAndInitConfig = async () => {
@@ -100,15 +118,17 @@ const assertAndInitConfig = async () => {
     return;
   }
 
-  const {emulatorType} = await promptEmulatorType();
-
-  await initConfigFile(emulatorType === 'skylab');
+  await initConfigFile();
 };
 
-const initConfigFile = async (_skylab: boolean) => {
-  // TODO: if not skyLab, emulator satellite {}
-  // or remove question?
-  await initJunoConfigFile();
+const initConfigFile = async () => {
+  const {emulatorType} = await promptEmulatorType();
+
+  const {runner} = await promptRunnerType();
+
+  await confirmAndExit(`Proceed with creating the Juno config file using these settings?`);
+
+  await initConfigNoneInteractive();
 };
 
 const startEmulator = async ({config: extendedConfig}: {config: CliEmulatorConfig}) => {
