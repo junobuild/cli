@@ -118,7 +118,7 @@ const saveLastAppliedConfigHashes = ({
           .reduce<Record<CliStateSatelliteAppliedCollection, RuleHash>>(
             (acc, rule) => ({
               ...acc,
-              [rule.collection]: objHash(rule)
+              [rule.collection]: ruleHash(rule)
             }),
             {}
           )
@@ -215,12 +215,9 @@ const getCurrentConfig = async ({
 
   const mapRules = ({items}: ListRulesResults): CurrentCollectionsConfig =>
     items.reduce<CurrentCollectionsConfig>(
-      // We trim createdAt and updatedAt because those information are not used for applying and handling the configuration
-      // but also to generate hashes without those values. This way we can compare if a collection must really but created
-      // or updated or if already similar to the value defined in the configuration file.
-      (acc, {createdAt: _, updatedAt: __, ...rule}) => ({
+      (acc, rule) => ({
         ...acc,
-        [rule.collection]: [rule, objHash(rule)]
+        [rule.collection]: [rule, ruleHash(rule)]
       }),
       {}
     );
@@ -623,3 +620,9 @@ const prepareConfig = async ({
 
   return await confirmAndExtendWithVersions();
 };
+
+// We trim `createdAt` and `updatedAt` because they are not used when applying or handling the configuration.
+// They are also excluded when generating hashes to ensure comparisons are based only on meaningful changes.
+// This allows us to determine whether a collection truly needs to be created or updated, or if it already matches
+// the configuration definition.
+const ruleHash = ({createdAt: _, updatedAt: __, ...rule}: Rule): string => objHash(rule);
