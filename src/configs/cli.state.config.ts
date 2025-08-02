@@ -34,7 +34,8 @@ export const saveLastAppliedConfig = ({
         storage: storage ?? lastAppliedConfig?.storage,
         datastore: datastore ?? lastAppliedConfig?.datastore,
         auth: auth ?? lastAppliedConfig?.auth,
-        settings: settings ?? lastAppliedConfig?.settings
+        settings: settings ?? lastAppliedConfig?.settings,
+        collections: settings ?? lastAppliedConfig?.collections,
       }
     }
   };
