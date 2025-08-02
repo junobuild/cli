@@ -121,7 +121,7 @@ const saveLastAppliedConfigHashes = ({
       : undefined;
 
   const storageCollections = fulfilledCollectionsValues(4);
-  const datastoreCollections = fulfilledCollectionsValues(4);
+  const datastoreCollections = fulfilledCollectionsValues(5);
 
   const lastAppliedConfig: CliStateSatelliteAppliedConfigHashes = {
     storage: nonNullish(storage) ? objHash(storage) : undefined,
