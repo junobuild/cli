@@ -51,18 +51,25 @@ export const config = async () => {
   const {satellite, satelliteConfig} = await assertConfigAndLoadSatelliteContext();
   const {satelliteId} = satellite;
 
+  // Load configurations and rules from the Satellite
   const currentConfig = await loadCurrentConfig({satellite, satelliteConfig});
 
+  // Get the hashes from the CLI state
   const lastAppliedConfig = getLatestAppliedConfig({satelliteId});
 
+  // Compare last hashes with current configuration of the Satellite
+  // Prompt the user if there will be an overwrite
+  // Extends the configuration provided by the dev with the version fields (unless they specified the field themselves)
   const editConfig = await prepareConfig({
     currentConfig,
     lastAppliedConfig,
     satelliteConfig
   });
 
+  // Effectively update the configurations and collections of the Satellite
   const results = await applyConfig({satellite, editConfig});
 
+  // Save the new hashes in the CLI state
   saveLastAppliedConfigHashes({
     results,
     settings: editConfig.settings,
