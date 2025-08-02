@@ -30,6 +30,8 @@ import {createDeployTargetDir} from '../emulator/emulator.fs.services';
 import {initConfigNoneInteractive} from '../init.services';
 
 export const startContainer = async () => {
+  await assertAndInitConfig();
+
   const parsedResult = await readEmulatorConfig();
 
   if (!parsedResult.success) {
@@ -46,8 +48,6 @@ export const startContainer = async () => {
   }
 
   await assertContainerRunnerRunning({runner: config.derivedConfig.runner});
-
-  await assertAndInitConfig();
 
   await startEmulator({config});
 };
