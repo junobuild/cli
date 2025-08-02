@@ -30,7 +30,7 @@
     "@dfinity/identity": "^2.3.0",
     "@dfinity/principal": "^2.3.0",
     "@dfinity/zod-schemas": "^1.0.0",
-    "@junobuild/admin": "^0.6.8-next-2025-08-02",
+    "@junobuild/admin": "^0.6.8-next-2025-08-02.1",
     "@junobuild/cdn": "^0.2.1-next-2025-08-02",
     "@junobuild/cli-tools": "^0.3.1-next-2025-08-02",
     "@junobuild/config": "^0.4.3-next-2025-08-02",
