@@ -1,18 +1,11 @@
 import {nonNullish} from '@dfinity/utils';
 import {assertAnswerCtrlC, execute, spawn} from '@junobuild/cli-tools';
 import {type EmulatorPorts} from '@junobuild/config';
-import type {PartialConfigFile} from '@junobuild/config-loader';
 import {red, yellow} from 'kleur';
 import {basename, join} from 'node:path';
 import prompts from 'prompts';
 import {readEmulatorConfig} from '../../configs/emulator.config';
-import {detectJunoConfigType, junoConfigExist, junoConfigFile} from '../../configs/juno.config';
-import {
-  detectJunoDevConfigType,
-  junoDevConfigExist,
-  junoDevConfigFile
-} from '../../configs/juno.dev.config';
-import {JUNO_DEV_CONFIG_FILENAME} from '../../constants/constants';
+import {junoConfigExist, junoConfigFile} from '../../configs/juno.config';
 import {
   EMULATOR_PORT_ADMIN,
   EMULATOR_PORT_CONSOLE,
@@ -20,7 +13,6 @@ import {
   EMULATOR_SKYLAB
 } from '../../constants/emulator.constants';
 import {type CliEmulatorConfig, type CliEmulatorDerivedConfig} from '../../types/emulator';
-import {copyTemplateFile} from '../../utils/fs.utils';
 import {isHeadless} from '../../utils/process.utils';
 import {confirmAndExit} from '../../utils/prompt.utils';
 import {
@@ -30,10 +22,7 @@ import {
   isContainerRunning
 } from '../../utils/runner.utils';
 import {createDeployTargetDir} from '../emulator/emulator.fs.services';
-import {initConfigNoneInteractive, promptConfigType} from '../init.services';
-
-const TEMPLATE_PATH = '../templates/docker';
-const DESTINATION_PATH = process.cwd();
+import {initConfigNoneInteractive} from '../init.services';
 
 export const startContainer = async () => {
   const parsedResult = await readEmulatorConfig();
@@ -79,45 +68,10 @@ export const stopContainer = async () => {
   await stopEmulator({config});
 };
 
-const initJunoDevConfigFile = async () => {
-  if (await junoDevConfigExist()) {
-    return;
-  }
-
-  await confirmAndExit(
-    `A config file is required for development. Would you like the CLI to create one for you?`
-  );
-
-  const {configType, configPath} = await buildConfigType('satellite');
-
-  await copyTemplateFile({
-    template: `${JUNO_DEV_CONFIG_FILENAME}.${configType}`,
-    sourceFolder: TEMPLATE_PATH,
-    destinationFolder: DESTINATION_PATH,
-    ...(nonNullish(configPath) && {destinationFilename: configPath})
-  });
-};
-
 const initJunoConfigFile = async () => {
   await confirmAndExit(`Your project needs a config file for Juno. Should we create one now?`);
 
   await initConfigNoneInteractive();
-};
-
-type ConfigContext = 'skylab' | 'satellite';
-
-const buildConfigType = async (context: ConfigContext): Promise<PartialConfigFile> => {
-  // We try to automatically detect if we should create a TypeScript or JavaScript (mjs) configuration.
-  const fn = context === 'satellite' ? detectJunoDevConfigType : detectJunoConfigType;
-  const detectedConfig = fn();
-
-  if (nonNullish(detectedConfig)) {
-    return detectedConfig;
-  }
-
-  const configType = await promptConfigType();
-
-  return {configType};
 };
 
 const promptEmulatorType = async (): Promise<{emulatorType: 'skylab' | 'satellite'}> => {
@@ -146,21 +100,15 @@ const assertAndInitConfig = async () => {
     return;
   }
 
-  const {emulatorType} = (await junoDevConfigExist())
-    ? {emulatorType: 'satellite'}
-    : await promptEmulatorType();
+  const {emulatorType} = await promptEmulatorType();
 
   await initConfigFile(emulatorType === 'skylab');
 };
 
-const initConfigFile = async (skylab: boolean) => {
+const initConfigFile = async (_skylab: boolean) => {
+  // TODO: if not skyLab, emulator satellite {}
+  // or remove question?
   await initJunoConfigFile();
-
-  if (skylab) {
-    return;
-  }
-
-  await initJunoDevConfigFile();
 };
 
 const startEmulator = async ({config: extendedConfig}: {config: CliEmulatorConfig}) => {
@@ -221,8 +169,7 @@ const startEmulator = async ({config: extendedConfig}: {config: CliEmulatorConfi
 
   const volume = config.runner?.volume ?? containerName.replaceAll('-', '_');
 
-  const fn = emulatorType === 'satellite' ? junoDevConfigFile : junoConfigFile;
-  const detectedConfig = fn();
+  const detectedConfig = junoConfigFile();
   const configFile = nonNullish(detectedConfig.configPath)
     ? basename(detectedConfig.configPath)
     : undefined;
