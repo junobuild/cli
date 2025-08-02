@@ -12,6 +12,7 @@ import {
 } from '@junobuild/config-loader';
 import {writeFile} from 'node:fs/promises';
 import {JUNO_CONFIG_FILENAME} from '../constants/constants';
+import {EMULATOR_SATELLITE_IMAGE_DEFAULT_ID} from '../constants/emulator.constants';
 import {
   TEMPLATE_INIT_PATH,
   TEMPLATE_JUNO_PREDEPLOY_CONFIG_FILENAME,
@@ -68,14 +69,19 @@ export const writeJunoConfigPlaceholder = async ({
         sourceFolder: TEMPLATE_INIT_PATH
       });
 
-      const content = template
+      let content = template
         .replace('<SOURCE>', source ?? DEPLOY_DEFAULT_SOURCE)
-        .replace('<COMMAND>', pm === 'npm' ? 'npm run' : (pm ?? ''))
-        .replace('<RUNNER>', emulatorConfig?.runner?.type ?? '')
-        .replace(
-          '<IMAGE>',
-          nonNullish(emulatorConfig) ? ('satellite' in emulatorConfig ? 'satellite' : 'skylab') : ''
-        );
+        .replace('<COMMAND>', pm === 'npm' ? 'npm run' : (pm ?? ''));
+
+      if (nonNullish(emulatorConfig)) {
+        content = content
+          .replace('<RUNNER>', emulatorConfig.runner?.type ?? '')
+          .replace('<IMAGE>', 'satellite' in emulatorConfig ? 'satellite' : 'skylab');
+
+        if ('satellite' in emulatorConfig) {
+          content = content.replace('<DEV_SATELLITE_ID>', EMULATOR_SATELLITE_IMAGE_DEFAULT_ID);
+        }
+      }
 
       await writeFile(configPath ?? `${JUNO_CONFIG_FILENAME}.${configType}`, content, 'utf-8');
       break;

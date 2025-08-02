@@ -4,6 +4,8 @@ export const EMULATOR_PORT_SERVER = 5987;
 export const EMULATOR_PORT_ADMIN = 5999;
 export const EMULATOR_PORT_CONSOLE = 5866;
 
+export const EMULATOR_SATELLITE_IMAGE_DEFAULT_ID = 'jx5yt-yyaaa-aaaal-abzbq-cai';
+
 export const EMULATOR_SKYLAB: Required<EmulatorSkylab> = {
   ports: {
     server: EMULATOR_PORT_SERVER,
