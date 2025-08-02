@@ -15,8 +15,8 @@ import {
 import {
   type CliEmulatorConfig,
   type CliEmulatorDerivedConfig,
-  EmulatorRunnerType,
-  EmulatorType
+  type EmulatorRunnerType,
+  type EmulatorType
 } from '../../types/emulator';
 import {isHeadless} from '../../utils/process.utils';
 import {confirmAndExit} from '../../utils/prompt.utils';
@@ -73,19 +73,20 @@ export const stopContainer = async () => {
   await stopEmulator({config});
 };
 
-const promptEmulatorType = async (): Promise<{emulatorType: Exclude<EmulatorType, "console">}> => {
-  const {emulatorType}: {emulatorType: Exclude<EmulatorType, "console"> | undefined} = await prompts({
-    type: 'select',
-    name: 'emulatorType',
-    message: 'What kind of emulator would you like to run locally?',
-    choices: [
-      {
-        title: `Production-like setup with Console UI and known services`,
-        value: `skylab`
-      },
-      {title: `Minimal headless setup`, value: `satellite`}
-    ]
-  });
+const promptEmulatorType = async (): Promise<{emulatorType: Exclude<EmulatorType, 'console'>}> => {
+  const {emulatorType}: {emulatorType: Exclude<EmulatorType, 'console'> | undefined} =
+    await prompts({
+      type: 'select',
+      name: 'emulatorType',
+      message: 'What kind of emulator would you like to run locally?',
+      choices: [
+        {
+          title: `Complete environment with Console and known services`,
+          value: `skylab`
+        },
+        {title: `Minimal headless setup`, value: `satellite`}
+      ]
+    });
 
   assertAnswerCtrlC(emulatorType);
 
@@ -124,11 +125,16 @@ const assertAndInitConfig = async () => {
 const initConfigFile = async () => {
   const {emulatorType} = await promptEmulatorType();
 
-  const {runner} = await promptRunnerType();
+  const {runnerType} = await promptRunnerType();
 
-  await confirmAndExit(`Proceed with creating the Juno config file using these settings?`);
-
-  await initConfigNoneInteractive();
+  await initConfigNoneInteractive({
+    emulatorConfig: {
+      runner: {
+        type: runnerType
+      },
+      ...(emulatorType === 'satellite' ? {satellite: {}} : {skylab: {}})
+    }
+  });
 };
 
 const startEmulator = async ({config: extendedConfig}: {config: CliEmulatorConfig}) => {

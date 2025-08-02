@@ -15,10 +15,13 @@ import {JUNO_CONFIG_FILENAME} from '../constants/constants';
 import {
   TEMPLATE_INIT_PATH,
   TEMPLATE_JUNO_PREDEPLOY_CONFIG_FILENAME,
+  TEMPLATE_RUNNER_CONFIG_FILENAME,
+  TEMPLATE_RUNNER_PREDEPLOY_CONFIG_FILENAME,
   TEMPLATE_SKYLAB_CONFIG_FILENAME,
   TEMPLATE_SKYLAB_PREDEPLOY_CONFIG_FILENAME
 } from '../constants/templates.constants';
 import {type JunoConfigWithPlaceholder, type JunoConfigWithSatelliteId} from '../types/config';
+import {type EmulatorConfigWithoutConsole} from '../types/emulator';
 import type {PackageManager} from '../types/pm';
 import {readTemplateFile} from '../utils/fs.utils';
 
@@ -37,9 +40,11 @@ export const writeJunoConfigPlaceholder = async ({
   config,
   configType,
   configPath,
-  pm
+  pm,
+  emulatorConfig
 }: {config: JunoConfigWithPlaceholder} & PartialConfigFile & {
     pm: PackageManager | undefined;
+    emulatorConfig?: EmulatorConfigWithoutConsole;
   }): Promise<void> => {
   switch (configType) {
     case 'ts':
@@ -50,14 +55,27 @@ export const writeJunoConfigPlaceholder = async ({
 
       const withPredeploy = nonNullish(pm);
 
+      const templateFilename = nonNullish(emulatorConfig)
+        ? withPredeploy
+          ? TEMPLATE_RUNNER_PREDEPLOY_CONFIG_FILENAME
+          : TEMPLATE_RUNNER_CONFIG_FILENAME
+        : withPredeploy
+          ? TEMPLATE_SKYLAB_PREDEPLOY_CONFIG_FILENAME
+          : TEMPLATE_SKYLAB_CONFIG_FILENAME;
+
       const template = await readTemplateFile({
-        template: `${withPredeploy ? TEMPLATE_SKYLAB_PREDEPLOY_CONFIG_FILENAME : TEMPLATE_SKYLAB_CONFIG_FILENAME}.${configType}`,
+        template: `${templateFilename}.${configType}`,
         sourceFolder: TEMPLATE_INIT_PATH
       });
 
       const content = template
         .replace('<SOURCE>', source ?? DEPLOY_DEFAULT_SOURCE)
-        .replace('<COMMAND>', pm === 'npm' ? 'npm run' : (pm ?? ''));
+        .replace('<COMMAND>', pm === 'npm' ? 'npm run' : (pm ?? ''))
+        .replace('<RUNNER>', emulatorConfig?.runner?.type ?? '')
+        .replace(
+          '<IMAGE>',
+          nonNullish(emulatorConfig) ? ('satellite' in emulatorConfig ? 'satellite' : 'skylab') : ''
+        );
 
       await writeFile(configPath ?? `${JUNO_CONFIG_FILENAME}.${configType}`, content, 'utf-8');
       break;

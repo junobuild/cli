@@ -14,6 +14,7 @@ import {
   writeJunoConfigPlaceholder
 } from '../configs/juno.config';
 import type {CliOrbiterConfig, CliSatelliteConfig} from '../types/cli.config';
+import {type EmulatorConfigWithoutConsole} from '../types/emulator';
 import type {PackageManager} from '../types/pm';
 import {detectPackageManager} from '../utils/pm.utils';
 import {NEW_CMD_LINE} from '../utils/prompt.utils';
@@ -41,13 +42,16 @@ export type InitConfigParams = PartialConfigFile & {pm: PackageManager | undefin
   source: string;
 };
 
-export const initConfigNoneInteractive = async () => {
+export const initConfigNoneInteractive = async ({
+  emulatorConfig
+}: {emulatorConfig?: EmulatorConfigWithoutConsole} = {}) => {
   const writeFn = async ({source, ...rest}: InitConfigParams) => {
     await writeJunoConfigPlaceholder({
       ...rest,
       config: {
         satellite: {source}
-      }
+      },
+      emulatorConfig
     });
   };
 
