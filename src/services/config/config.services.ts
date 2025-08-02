@@ -53,8 +53,6 @@ export const config = async () => {
 
   const currentConfig = await loadCurrentConfig({satellite, satelliteConfig});
 
-  console.log(currentConfig);
-
   const lastAppliedConfig = getLatestAppliedConfig({satelliteId});
 
   const editConfig = await prepareConfig({
