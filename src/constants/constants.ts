@@ -1,6 +1,5 @@
 export const REDIRECT_URL = 'http://localhost:{port}';
 export const JUNO_CONFIG_FILENAME = 'juno.config'; // .json | .js | .mjs | .cjs | .ts
-export const JUNO_DEV_CONFIG_FILENAME = 'juno.dev.config'; // .json | .js | .mjs | .cjs | .ts
 export const SATELLITE_WASM_NAME = 'satellite';
 export const MISSION_CONTROL_WASM_NAME = 'mission_control';
 export const ORBITER_WASM_NAME = 'orbiter';

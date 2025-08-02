@@ -7,7 +7,7 @@ import {copyFile, lstat, mkdir, readFile, rename, writeFile} from 'node:fs/promi
 import {join, relative} from 'node:path';
 import ora, {type Ora} from 'ora';
 import {compare, minVersion, satisfies} from 'semver';
-import {detectJunoDevConfigType} from '../../../configs/juno.dev.config';
+import {detectJunoConfigType} from '../../../configs/juno.config';
 import {
   DEPLOY_SPUTNIK_PATH,
   DEVELOPER_PROJECT_SATELLITE_DECLARATIONS_PATH,
@@ -259,7 +259,7 @@ const api = async () => {
     return;
   }
 
-  const detectedConfig = detectJunoDevConfigType();
+  const detectedConfig = detectJunoConfigType();
   const outputLanguage = detectedConfig?.configType === 'ts' ? 'ts' : 'js';
 
   const outputFile = `${DEVELOPER_PROJECT_SATELLITE_DECLARATIONS_PATH}/satellite.api.${outputLanguage}`;
