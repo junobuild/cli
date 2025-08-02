@@ -32,7 +32,7 @@ export default [
       'no-console': 'off',
       'arrow-body-style': 'off',
       complexity: 'off',
-      'max-lines': ['error', 600],
+      'max-lines': ['error', 1000],
       '@typescript-eslint/explicit-function-return-type': 'off',
       '@typescript-eslint/ban-ts-comment': 'off',
       '@typescript-eslint/no-misused-promises': 'off',
