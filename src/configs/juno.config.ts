@@ -15,8 +15,8 @@ import {JUNO_CONFIG_FILENAME} from '../constants/constants';
 import {
   TEMPLATE_INIT_PATH,
   TEMPLATE_JUNO_PREDEPLOY_CONFIG_FILENAME,
-  TEMPLATE_SATELLITE_CONFIG_FILENAME,
-  TEMPLATE_SATELLITE_PREDEPLOY_CONFIG_FILENAME
+  TEMPLATE_SKYLAB_CONFIG_FILENAME,
+  TEMPLATE_SKYLAB_PREDEPLOY_CONFIG_FILENAME
 } from '../constants/templates.constants';
 import {type JunoConfigWithPlaceholder, type JunoConfigWithSatelliteId} from '../types/config';
 import type {PackageManager} from '../types/pm';
@@ -51,7 +51,7 @@ export const writeJunoConfigPlaceholder = async ({
       const withPredeploy = nonNullish(pm);
 
       const template = await readTemplateFile({
-        template: `${withPredeploy ? TEMPLATE_SATELLITE_PREDEPLOY_CONFIG_FILENAME : TEMPLATE_SATELLITE_CONFIG_FILENAME}.${configType}`,
+        template: `${withPredeploy ? TEMPLATE_SKYLAB_PREDEPLOY_CONFIG_FILENAME : TEMPLATE_SKYLAB_CONFIG_FILENAME}.${configType}`,
         sourceFolder: TEMPLATE_INIT_PATH
       });
 
@@ -89,7 +89,7 @@ export const writeJunoConfig = async ({
       const template = await readTemplateFile({
         template: nonNullish(orbiter)
           ? `${withPredeploy ? TEMPLATE_JUNO_PREDEPLOY_CONFIG_FILENAME : JUNO_CONFIG_FILENAME}.${configType}`
-          : `${withPredeploy ? TEMPLATE_SATELLITE_PREDEPLOY_CONFIG_FILENAME : TEMPLATE_SATELLITE_CONFIG_FILENAME}.${configType}`,
+          : `${withPredeploy ? TEMPLATE_SKYLAB_PREDEPLOY_CONFIG_FILENAME : TEMPLATE_SKYLAB_CONFIG_FILENAME}.${configType}`,
         sourceFolder: TEMPLATE_INIT_PATH
       });
 
