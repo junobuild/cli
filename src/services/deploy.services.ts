@@ -22,11 +22,24 @@ import {clearProposalStagedAssets} from './changes/changes.clear.services';
 import {getSatelliteVersion} from './version.services';
 
 export const deploy = async (args?: string[]) => {
+  // TODO: Remove fetching the version. We use it for backwards compatibility reasons.
+  const result = await getSatelliteVersion();
+
+  if (result.result === 'error') {
+    return;
+  }
+
+  // TODO: There was an issue in Satellite that prevented gzipping HTML files.
+  // This was fixed in version v0.1.1. However, for backward compatibility, we
+  // fall back to not gzipping HTML files in earlier versions. While gzipping HTML
+  // wouldn't harm usage, it might prevent crawlers from properly fetching content.
+  const deprecatedGzip = compare(result.version, '0.1.0') < 0 ? '**/*.+(css|js|mjs)' : undefined;
+
   const clearOption = hasArgs({args, options: ['--clear']});
   const immediate = hasArgs({args, options: ['-i', '--immediate']});
 
   if (immediate) {
-    await deployImmediate({clearOption});
+    await deployImmediate({clearOption, deprecatedGzip});
     return;
   }
 
@@ -34,24 +47,26 @@ export const deploy = async (args?: string[]) => {
   // Without falling back to `deploy --immediate`, we can't roll out GitHub Actions support
   // without requiring developers to either upgrade their Satellites or add the `--immediate` flag in CI.
   // To ease the release, we temporarily check the version.
-  const result = await getSatelliteVersion();
-
-  if (result.result === 'error') {
-    return;
-  }
-
   if (compare(result.version, '0.1.0') < 0) {
     console.log(
       `${yellow('[Warn]')} Your Satellite is outdated. Please upgrade to take full advantage of the new deployment flow.`
     );
-    await deployImmediate({clearOption});
+    await deployImmediate({clearOption, deprecatedGzip});
     return;
   }
 
-  await deployWithProposal({args, clearOption});
+  await deployWithProposal({args, clearOption, deprecatedGzip});
 };
 
-const deployWithProposal = async ({args, clearOption}: {args?: string[]; clearOption: boolean}) => {
+const deployWithProposal = async ({
+  args,
+  clearOption,
+  deprecatedGzip
+}: {
+  args?: string[];
+  clearOption: boolean;
+  deprecatedGzip: string | undefined;
+}) => {
   const noCommit = hasArgs({args, options: ['--no-apply']});
 
   const deployFn = async ({
@@ -104,7 +119,8 @@ const deployWithProposal = async ({args, clearOption}: {args?: string[]; clearOp
 
   const result = await executeDeployWithProposal({
     deployFn,
-    uploadFileFn
+    uploadFileFn,
+    options: {deprecatedGzip}
   });
 
   if (result.result !== 'deployed') {
@@ -119,7 +135,13 @@ const deployWithProposal = async ({args, clearOption}: {args?: string[]; clearOp
   });
 };
 
-const deployImmediate = async ({clearOption}: {clearOption: boolean}) => {
+const deployImmediate = async ({
+  clearOption,
+  deprecatedGzip
+}: {
+  clearOption: boolean;
+  deprecatedGzip: string | undefined;
+}) => {
   if (clearOption) {
     await clear();
   }
@@ -150,6 +172,7 @@ const deployImmediate = async ({clearOption}: {clearOption: boolean}) => {
 
   await executeDeployImmediate({
     deployFn,
-    uploadFileFn
+    uploadFileFn,
+    options: {deprecatedGzip}
   });
 };

@@ -15,6 +15,7 @@ import type {SatelliteParametersWithId} from '../../../types/satellite';
 import {assertConfigAndLoadSatelliteContext} from '../../../utils/satellite.utils';
 import {assertSatelliteMemorySize} from './deploy.assert.services';
 import {listAssets} from './deploy.list.services';
+import type {SatelliteConfig} from '@junobuild/config';
 
 export interface DeployFnParams<T = UploadFile> {
   deploy: DeployParams<T>;
@@ -26,29 +27,33 @@ export type UploadFileFnParamsWithProposal = UploadFileFnParams & {proposalId: b
 
 export const executeDeployWithProposal = async ({
   deployFn,
-  uploadFileFn
+  uploadFileFn,
+  options
 }: {
-  args?: string[];
   deployFn: (params: DeployFnParams<UploadFileWithProposal>) => Promise<DeployResultWithProposal>;
   uploadFileFn: (params: UploadFileFnParamsWithProposal) => Promise<void>;
+  options: {deprecatedGzip?: string}
 }): Promise<DeployResultWithProposal> => {
   return await executeDeploy<UploadFileStorageWithProposal, DeployResultWithProposal>({
     deployFn,
-    uploadFileFn
+    uploadFileFn,
+    options
   });
 };
 
 export const executeDeployImmediate = async ({
   deployFn,
-  uploadFileFn
+  uploadFileFn,
+  options
 }: {
-  args?: string[];
   deployFn: (params: DeployFnParams) => Promise<DeployResult>;
   uploadFileFn: (params: UploadFileFnParams) => Promise<void>;
+  options: {deprecatedGzip?: string}
 }): Promise<DeployResult> => {
   return await executeDeploy<UploadFileStorage, DeployResult>({
     deployFn,
-    uploadFileFn
+    uploadFileFn,
+    options
   });
 };
 
@@ -57,16 +62,23 @@ const executeDeploy = async <
   R extends DeployResult | DeployResultWithProposal
 >({
   deployFn,
-  uploadFileFn
+  uploadFileFn,
+  options
 }: {
   deployFn: (params: DeployFnParams<(params: P) => Promise<void>>) => Promise<R>;
   uploadFileFn: (params: P & {satellite: SatelliteParametersWithId}) => Promise<void>;
+  options: {deprecatedGzip?: string}
 }): Promise<R> => {
   const assertMemory = async () => {
     await assertSatelliteMemorySize();
   };
 
-  const {satellite, satelliteConfig} = await assertConfigAndLoadSatelliteContext();
+  const {satellite, satelliteConfig: satelliteConfigRead} = await assertConfigAndLoadSatelliteContext();
+
+  const satelliteConfig: SatelliteConfig = {
+    ...satelliteConfigRead,
+    gzip: satelliteConfigRead?.gzip ?? options.deprecatedGzip
+  }
 
   const listExistingAssets = async ({startAfter}: {startAfter?: string}): Promise<Asset[]> =>
     await listAssets({
