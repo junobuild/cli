@@ -1,3 +1,4 @@
+import {nonNullish} from '@dfinity/utils';
 import type {
   DeployParams,
   DeployResult,
@@ -76,9 +77,11 @@ const executeDeploy = async <
   const {satellite, satelliteConfig: satelliteConfigRead} =
     await assertConfigAndLoadSatelliteContext();
 
+  const gzip = satelliteConfigRead.gzip ?? options.deprecatedGzip;
+
   const satelliteConfig: SatelliteConfig = {
     ...satelliteConfigRead,
-    gzip: satelliteConfigRead.gzip ?? options.deprecatedGzip
+    ...(nonNullish(gzip) && {gzip})
   };
 
   const listExistingAssets = async ({startAfter}: {startAfter?: string}): Promise<Asset[]> =>

@@ -33,7 +33,7 @@ export const deploy = async (args?: string[]) => {
   // This was fixed in version v0.1.1. However, for backward compatibility, we
   // fall back to not gzipping HTML files in earlier versions. While gzipping HTML
   // wouldn't harm usage, it might prevent crawlers from properly fetching content.
-  const deprecatedGzip = compare(result.version, '0.1.0') < 0 ? '**/*.+(css|js|mjs)' : undefined;
+  const deprecatedGzip = compare(result.version, '0.1.1') < 0 ? '**/*.+(css|js|mjs)' : undefined;
 
   const clearOption = hasArgs({args, options: ['--clear']});
   const immediate = hasArgs({args, options: ['-i', '--immediate']});
