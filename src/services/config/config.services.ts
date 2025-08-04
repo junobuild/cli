@@ -493,7 +493,7 @@ const prepareConfig = async ({
           ...(!('mutablePermissions' in rule) && {mutablePermissions: true})
         };
 
-        return nonNullish(currentHash) && currentHash !== objHash(extendRuleWithDefault);
+        return isNullish(currentHash) || currentHash !== objHash(extendRuleWithDefault);
       });
 
     const storageCollections = filterCollections({
