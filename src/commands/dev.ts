@@ -1,6 +1,7 @@
 import {red} from 'kleur';
 import {logHelpDev} from '../help/dev.help';
 import {logHelpDevStart} from '../help/dev.start.help';
+import {logHelpDevWait} from '../help/dev.wait.help';
 import {logHelpFunctionsBuild} from '../help/functions.build.help';
 import {logHelpFunctionsEject} from '../help/functions.eject.help';
 import {start} from '../services/dev/start.services';
@@ -20,7 +21,7 @@ export const dev = async (args?: string[]) => {
       await stop();
       break;
     case 'wait':
-      await wait();
+      await wait(args);
       break;
     case 'eject':
       await eject(args);
@@ -40,6 +41,9 @@ export const helpDev = (args?: string[]) => {
   switch (subCommand) {
     case 'start':
       logHelpDevStart(args);
+      break;
+    case 'wait':
+      logHelpDevWait(args);
       break;
     case 'build':
       logHelpFunctionsBuild(args);
