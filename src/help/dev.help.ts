@@ -8,6 +8,7 @@ const usage = `Usage: ${green('juno')} ${cyan('dev')} ${magenta('<subcommand>')}
 Subcommands:
   ${magenta('start')}               ${DEV_START_DESCRIPTION}
   ${magenta('stop')}                Stop the local network.
+  ${magenta('wait')}                Wait until the emulator is ready.
   ${magenta('build')}               Alias for ${green('juno')} ${cyan('functions')} ${magenta('build')}.
   ${magenta('eject')}               Alias for ${green('juno')} ${cyan('functions')} ${magenta('eject')}.`;
 
