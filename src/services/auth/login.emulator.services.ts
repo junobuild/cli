@@ -4,7 +4,6 @@ import {green, red} from 'kleur';
 import ora from 'ora';
 import {saveCliConfig} from '../../configs/cli.config';
 import {readEmulatorConfig} from '../../configs/emulator.config';
-import {readJunoConfig} from '../../configs/juno.config';
 import {ENV} from '../../env';
 import {generateToken} from '../../utils/auth.utils';
 import {assertConfigAndReadSatelliteId} from '../../utils/satellite.utils';
@@ -45,8 +44,7 @@ const loginEmulator = async (): Promise<
 > => {
   // We read directly the Juno config because we cannot load an actor at this point as we are login in.
   // i.e. we cannot use assertConfigAndLoadSatelliteContext
-  const {satellite: satelliteConfig} = await readJunoConfig(ENV);
-  const {satelliteId} = assertConfigAndReadSatelliteId({satellite: satelliteConfig, env: ENV});
+  const {satelliteId} = await assertConfigAndReadSatelliteId();
 
   const parsedResult = await readEmulatorConfig();
 

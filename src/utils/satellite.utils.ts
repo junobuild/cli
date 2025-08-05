@@ -1,6 +1,6 @@
 import {assertNonNullish, isNullish} from '@dfinity/utils';
 import type {PrincipalText} from '@dfinity/zod-schemas';
-import type {SatelliteConfig} from '@junobuild/config';
+import type {JunoConfig, SatelliteConfig} from '@junobuild/config';
 import {red} from 'kleur';
 import {actorParameters} from '../api/actor.api';
 import {getCliOrbiters, getCliSatellites} from '../configs/cli.config';
@@ -14,12 +14,7 @@ export const assertConfigAndLoadSatelliteContext = async (): Promise<{
   satellite: SatelliteParametersWithId;
   satelliteConfig: SatelliteConfig;
 }> => {
-  if (!(await junoConfigExist())) {
-    consoleNoConfigFound();
-    process.exit(1);
-  }
-
-  const {satellite: satelliteConfig} = await readJunoConfig(ENV);
+  const {satellite: satelliteConfig} = await assertAndReadJunoConfig();
 
   const satellite = await satelliteParameters({satellite: satelliteConfig, env: ENV});
 
@@ -30,7 +25,25 @@ export const assertConfigAndLoadSatelliteContext = async (): Promise<{
   return {satellite, satelliteConfig};
 };
 
-export const assertConfigAndReadSatelliteId = ({
+// Useful for reading the configuration without initializing an actor.
+// For example, during the authentication flow when no identity is defined yet,
+// or in other cases where we want to avoid waiting for the actor initialization timeout.
+export const assertConfigAndReadSatelliteId = async (): Promise<{satelliteId: PrincipalText}> => {
+  const {satellite: satelliteConfig} = await assertAndReadJunoConfig();
+
+  return assertAndReadSatelliteId({satellite: satelliteConfig, env: ENV});
+};
+
+const assertAndReadJunoConfig = async (): Promise<JunoConfig> => {
+  if (!(await junoConfigExist())) {
+    consoleNoConfigFound();
+    process.exit(1);
+  }
+
+  return await readJunoConfig(ENV);
+};
+
+const assertAndReadSatelliteId = ({
   satellite,
   env: {mode}
 }: SatelliteConfigEnv): {satelliteId: PrincipalText} => {
@@ -58,7 +71,7 @@ export const assertConfigAndReadSatelliteId = ({
 const satelliteParameters = async (
   params: SatelliteConfigEnv
 ): Promise<SatelliteParametersWithId> => {
-  const {satelliteId} = assertConfigAndReadSatelliteId(params);
+  const {satelliteId} = assertAndReadSatelliteId(params);
 
   return {
     satelliteId,
