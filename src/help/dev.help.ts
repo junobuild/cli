@@ -1,5 +1,9 @@
 import {cyan, green, magenta, yellow} from 'kleur';
-import {DEV_DESCRIPTION, DEV_START_DESCRIPTION} from '../constants/help.constants';
+import {
+  DEV_DESCRIPTION,
+  DEV_START_DESCRIPTION,
+  DEV_WAIT_DESCRIPTION
+} from '../constants/help.constants';
 import {helpOutput} from './common.help';
 import {TITLE} from './help';
 
@@ -8,7 +12,7 @@ const usage = `Usage: ${green('juno')} ${cyan('dev')} ${magenta('<subcommand>')}
 Subcommands:
   ${magenta('start')}               ${DEV_START_DESCRIPTION}
   ${magenta('stop')}                Stop the local network.
-  ${magenta('wait')}                Wait until the emulator is ready.
+  ${magenta('wait')}                ${DEV_WAIT_DESCRIPTION}
   ${magenta('build')}               Alias for ${green('juno')} ${cyan('functions')} ${magenta('build')}.
   ${magenta('eject')}               Alias for ${green('juno')} ${cyan('functions')} ${magenta('eject')}.`;
 

@@ -1,13 +1,26 @@
+import {isEmptyString} from '@dfinity/utils';
+import {nextArg} from '@junobuild/cli-tools';
 import {green, red} from 'kleur';
 import ora from 'ora';
 import {readEmulatorConfig} from '../../configs/emulator.config';
 import type {CliEmulatorConfig} from '../../types/emulator';
 import {dispatchRequest} from '../emulator/emulator.admin.services';
 
-const TIMEOUT_IN_MILLISECONDS = 15000;
+const DEFAULT_TIMEOUT_IN_MILLISECONDS = 2 * 60 * 1000;
 const RETRY_IN_MILLISECONDS = 500;
 
-export const wait = async () => {
+export const wait = async (args?: string[]) => {
+  const timeout = parseTimeout(args);
+
+  if (!timeout.valid) {
+    console.log(
+      red(
+        `Invalid timeout argument. Must be a number in milliseconds greater than ${RETRY_IN_MILLISECONDS}ms.`
+      )
+    );
+    process.exit(1);
+  }
+
   const parsedResult = await readEmulatorConfig();
 
   if (!parsedResult.success) {
@@ -20,7 +33,7 @@ export const wait = async () => {
 
   try {
     status = await waitEmulatorReady({
-      count: TIMEOUT_IN_MILLISECONDS / RETRY_IN_MILLISECONDS,
+      count: timeout.value / RETRY_IN_MILLISECONDS,
       config: parsedResult.config
     });
   } finally {
@@ -33,6 +46,26 @@ export const wait = async () => {
   }
 
   console.log(`Emulator is ${green('ready')}.`);
+};
+
+const parseTimeout = (args?: string[]): {valid: true; value: number} | {valid: false} => {
+  const timoutArg = nextArg({args, option: '-t'}) ?? nextArg({args, option: '--timeout'});
+
+  if (isEmptyString(timoutArg)) {
+    return {valid: true, value: DEFAULT_TIMEOUT_IN_MILLISECONDS};
+  }
+
+  const timeout = parseInt(timoutArg);
+
+  if (isNaN(timeout)) {
+    return {valid: false};
+  }
+
+  if (timeout < RETRY_IN_MILLISECONDS) {
+    return {valid: false};
+  }
+
+  return {valid: true, value: timeout};
 };
 
 const waitEmulatorReady = async ({
