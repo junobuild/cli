@@ -33,7 +33,7 @@ export const assertSatelliteMemorySize = async () => {
 
   const maxMemorySize =
     assertions?.heapMemory !== undefined && typeof assertions.heapMemory !== 'boolean'
-      ? BigInt(assertions.heapMemory)
+      ? assertions.heapMemory
       : MEMORY_HEAP_WARNING;
 
   const {heap} = await satelliteMemorySize({satellite});
