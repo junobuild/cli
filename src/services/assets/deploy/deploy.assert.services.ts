@@ -5,6 +5,7 @@ import {
   MEMORY_HEAP_WARNING,
   MEMORY_SIZE_ENDPOINT_VERSION
 } from '../../../constants/deploy.constants';
+import {isHeadless} from '../../../utils/process.utils';
 import {NEW_CMD_LINE, confirmAndExit} from '../../../utils/prompt.utils';
 import {assertConfigAndLoadSatelliteContext} from '../../../utils/satellite.utils';
 
@@ -46,11 +47,14 @@ export const assertSatelliteMemorySize = async () => {
       maximumSignificantDigits: 3
     }).format(Number(value) / 1_000_000);
 
-  await confirmAndExit(
-    `⚠️  Your satellite's heap memory is ${formatNumber(
-      heap
-    )} MB, which exceeds the recommended limit of ${formatNumber(
-      maxMemorySize
-    )} MB. Are you sure you want to proceed with the deployment?`
-  );
+  const errorText = `⚠️  Your satellite's heap memory is ${formatNumber(
+    heap
+  )} MB, which exceeds the enforced limit of ${formatNumber(maxMemorySize)} MB.`;
+
+  if (isHeadless()) {
+    console.log(yellow(errorText));
+    process.exit(1);
+  }
+
+  await confirmAndExit(`${errorText} Are you sure you want to proceed with the deployment?`);
 };
