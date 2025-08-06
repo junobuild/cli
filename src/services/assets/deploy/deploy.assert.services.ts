@@ -49,7 +49,7 @@ export const assertSatelliteMemorySize = async () => {
 
   const errorText = `⚠️  Your satellite's heap memory is ${formatNumber(
     heap
-  )} MB, which exceeds the enforced limit of ${formatNumber(maxMemorySize)} MB.`;
+  )} MB, which exceeds the asserted limit of ${formatNumber(maxMemorySize)} MB.`;
 
   if (isHeadless()) {
     console.log(yellow(errorText));
