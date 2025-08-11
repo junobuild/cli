@@ -4,7 +4,6 @@ import type {
   DeployResult,
   DeployResultWithProposal,
   UploadFile,
-  UploadFiles,
   UploadFileStorage
 } from '@junobuild/cli-tools';
 import {postDeploy as cliPostDeploy, preDeploy as cliPreDeploy} from '@junobuild/cli-tools';
@@ -26,36 +25,41 @@ export interface DeployFnParams<T = UploadFile> {
 export type UploadFileFnParams = UploadFileStorage & {satellite: SatelliteParametersWithId};
 export type UploadFileFnParamsWithProposal = UploadFileFnParams & {proposalId: bigint};
 
-export type UploadFilesFnParams = {
+export interface UploadFilesFnParams {
   files: UploadFileStorage[];
   satellite: SatelliteParametersWithId;
-};
+}
 export type UploadFilesFnParamsWithProposal = UploadFilesFnParams & {proposalId: bigint};
+
+type UploadInput<T, R> = [R] extends [DeployResultWithProposal] ? T & {proposalId: bigint} : T;
+
+type UploadParams<T, R> = UploadInput<T, R> & {
+  satellite: SatelliteParametersWithId;
+};
 
 type UploadFn<P extends UploadFileStorage, R extends DeployResult | DeployResultWithProposal> =
   | {
-      deployFn: (params: DeployFnParams<(params: P) => Promise<void>>) => Promise<R>;
-      uploadFn: (params: P & {satellite: SatelliteParametersWithId}) => Promise<void>;
       method: 'single';
+      deployFn: (
+        params: DeployFnParams<(params: UploadInput<P, R>) => Promise<void>>
+      ) => Promise<R>;
+      uploadFn: (params: UploadParams<P, R>) => Promise<void>;
     }
   | {
-      deployFn: (params: DeployFnParams<(params: {files: P[]}) => Promise<void>>) => Promise<R>;
-      uploadFn: (params: {files: P[], satellite: SatelliteParametersWithId}) => Promise<void>;
       method: 'grouped';
+      deployFn: (
+        params: DeployFnParams<(params: UploadInput<{files: P[]}, R>) => Promise<void>>
+      ) => Promise<R>;
+      uploadFn: (params: UploadParams<{files: P[]}, R>) => Promise<void>;
     };
-
-type UploadFileStorageWithProposal = UploadFileStorage & {proposalId: bigint};
 
 export const executeDeployWithProposal = async ({
   options,
   ...rest
 }: {
   options: {deprecatedGzip?: string};
-} & UploadFn<
-  UploadFileStorageWithProposal,
-  DeployResultWithProposal
->): Promise<DeployResultWithProposal> => {
-  return await executeDeploy<UploadFileStorageWithProposal, DeployResultWithProposal>({
+} & UploadFn<UploadFileStorage, DeployResultWithProposal>): Promise<DeployResultWithProposal> => {
+  return await executeDeploy<UploadFileStorage, DeployResultWithProposal>({
     options,
     ...rest
   });
@@ -113,14 +117,11 @@ const executeDeploy = async <
   let result: R;
 
   if (method === 'grouped') {
-    const uploadFiles = async (params: {files: P[]}) => {
-      const paramsWithSatellite: {files: P[]} & {
-        satellite: SatelliteParametersWithId;
-      } = {
+    const uploadFiles = async (params: UploadInput<{files: P[]}, R>) => {
+      const paramsWithSatellite: UploadParams<{files: P[]}, R> = {
         ...params,
         satellite
       };
-
       await uploadFn(paramsWithSatellite);
     };
 
@@ -139,12 +140,11 @@ const executeDeploy = async <
       satellite
     });
   } else {
-    const uploadFile = async (params: P) => {
-      const paramsWithSatellite: P & {satellite: SatelliteParametersWithId} = {
+    const uploadFile = async (params: UploadInput<P, R>) => {
+      const paramsWithSatellite: UploadParams<P, R> = {
         ...params,
         satellite
       };
-
       await uploadFn(paramsWithSatellite);
     };
 

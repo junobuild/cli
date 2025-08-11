@@ -7,9 +7,9 @@ import {
   hasArgs,
   type UploadFile,
   type UploadFileStorage,
+  type UploadFilesWithProposal,
   type UploadFileWithProposal
 } from '@junobuild/cli-tools';
-import {UploadFilesWithProposal} from '@junobuild/cli-tools/dist/types/types/deploy';
 import {uploadBlob} from '@junobuild/core';
 import type {UploadAsset} from '@junobuild/storage';
 import {yellow} from 'kleur';
@@ -21,7 +21,7 @@ import {
   executeDeployWithProposal,
   type UploadFileFnParams,
   type UploadFileFnParamsWithProposal,
-  UploadFilesFnParamsWithProposal
+  type UploadFilesFnParamsWithProposal
 } from './assets/deploy/deploy.execute.services';
 import {clearProposalStagedAssets} from './changes/changes.clear.services';
 import {getSatelliteVersion} from './version.services';
@@ -207,7 +207,7 @@ const deployImmediate = async ({
 
   const deployFn = async ({
     deploy: {params, upload}
-  }: DeployFnParams<UploadFile>): Promise<DeployResult> =>
+  }: DeployFnParams): Promise<DeployResult> =>
     await cliDeploy({
       params,
       upload: {uploadFile: upload}
