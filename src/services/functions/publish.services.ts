@@ -6,7 +6,7 @@ import {
   hasArgs,
   nextArg,
   publishSatelliteWasmWithProposal,
-  type UploadFileStorageWithProposal
+  type UploadFileStorage
 } from '@junobuild/cli-tools';
 import {red} from 'kleur';
 import {dirname} from 'node:path';
@@ -115,10 +115,8 @@ const publishWasmWithProposal = async ({
     });
   };
 
-  const uploadFile = async (params: UploadFileStorageWithProposal) => {
-    const paramsWithSatellite: UploadFileStorageWithProposal & {
-      satellite: SatelliteParametersWithId;
-    } = {
+  const uploadFile = async (params: UploadFileStorage & {proposalId: bigint}) => {
+    const paramsWithSatellite = {
       ...params,
       satellite
     };
@@ -134,7 +132,7 @@ const publishWasmWithProposal = async ({
 
   return await publishSatelliteWasmWithProposal({
     publish: {
-      uploadFile,
+      upload: {uploadFile},
       fullPath,
       filePath,
       sourceAbsolutePath,
