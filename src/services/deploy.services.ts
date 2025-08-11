@@ -108,7 +108,6 @@ const deployWithProposal = async ({
       asset: {
         filename,
         fullPath,
-        // @ts-expect-error type incompatibility NodeJS vs bundle
         data,
         collection,
         headers,
@@ -162,7 +161,6 @@ const deployImmediate = async ({
       satellite,
       filename,
       fullPath,
-      // @ts-expect-error type incompatibility NodeJS vs bundle
       data,
       collection,
       headers,

@@ -2,13 +2,13 @@ import {isNullish} from '@dfinity/utils';
 import {
   listCustomDomains,
   satelliteVersion,
-  upgradeSatellite as upgradeSatelliteAdmin,
-  type SatelliteParameters
+  upgradeSatellite as upgradeSatelliteAdmin
 } from '@junobuild/admin';
 import {hasArgs, nextArg} from '@junobuild/cli-tools';
 import {cyan, red} from 'kleur';
 import {compare} from 'semver';
 import {SATELLITE_WASM_NAME} from '../../../constants/constants';
+import {type SatelliteParametersWithId} from '../../../types/satellite';
 import {
   type AssertWasmModule,
   type UpgradeCdn,
@@ -27,9 +27,6 @@ import {
   upgradeWasmJunoCdn,
   upgradeWasmLocal
 } from './upgrade.services';
-
-type Satellite = Omit<SatelliteParameters, 'satelliteId'> &
-  Required<Pick<SatelliteParameters, 'satelliteId'>>;
 
 export const upgradeSatellite = async (args?: string[]) => {
   const {satellite} = await assertConfigAndLoadSatelliteContext();
@@ -59,7 +56,7 @@ const upgradeSatelliteCustom = async ({
   satellite,
   args
 }: {
-  satellite: Satellite;
+  satellite: SatelliteParametersWithId;
   args?: string[];
 }): Promise<{success: boolean; err?: unknown}> => {
   const src = nextArg({args, option: '-s'}) ?? nextArg({args, option: '--src'});
@@ -81,7 +78,7 @@ export const upgradeSatelliteWithSrc = async ({
   satellite,
   ...rest
 }: {
-  satellite: Satellite;
+  satellite: SatelliteParametersWithId;
   src: string;
   args?: string[];
 }): Promise<{success: boolean; err?: unknown}> => {
@@ -106,7 +103,7 @@ export const upgradeSatelliteWithCdn = async ({
   satellite,
   ...rest
 }: {
-  satellite: Satellite;
+  satellite: SatelliteParametersWithId;
   cdn: UpgradeCdn;
   args?: string[];
 }): Promise<{success: boolean; err?: unknown}> => {
@@ -131,7 +128,7 @@ const upgradeSatelliteWithUpgradeFn = async ({
   args,
   upgradeFn
 }: {
-  satellite: Satellite;
+  satellite: SatelliteParametersWithId;
   args?: string[];
   upgradeFn: (params: UpgradeWasmParams) => Promise<{success: boolean; err?: unknown}>;
 }): Promise<{success: boolean; err?: unknown}> => {
@@ -156,7 +153,7 @@ const upgradeSatelliteRelease = async ({
   satellite,
   args
 }: {
-  satellite: Satellite;
+  satellite: SatelliteParametersWithId;
   args?: string[];
 }): Promise<{success: boolean; err?: unknown}> => {
   const currentVersion = await satelliteVersion({
@@ -199,7 +196,7 @@ const executeUpgradeSatellite = async ({
   preClearChunks,
   noSnapshot
 }: {
-  satellite: Satellite;
+  satellite: SatelliteParametersWithId;
   args?: string[];
   currentVersion: string;
   preClearChunks: boolean;

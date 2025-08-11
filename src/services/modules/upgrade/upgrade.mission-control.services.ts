@@ -1,10 +1,11 @@
 import {isNullish} from '@dfinity/utils';
+import type {PrincipalText} from '@dfinity/zod-schemas';
 import {
   missionControlVersion,
-  upgradeMissionControl as upgradeMissionControlAdmin,
-  type MissionControlParameters
+  upgradeMissionControl as upgradeMissionControlAdmin
 } from '@junobuild/admin';
 import {hasArgs, nextArg} from '@junobuild/cli-tools';
+import type {MissionControlParameters} from '@junobuild/ic-client';
 import {cyan, red} from 'kleur';
 import {actorParameters} from '../../../api/actor.api';
 import {getCliMissionControl} from '../../../configs/cli.config';
@@ -14,8 +15,9 @@ import {NEW_CMD_LINE} from '../../../utils/prompt.utils';
 import {logUpgradeResult, readUpgradeOptions} from '../../../utils/upgrade.utils';
 import {selectVersion, upgradeWasmJunoCdn, upgradeWasmLocal} from './upgrade.services';
 
-type MissionControl = Omit<MissionControlParameters, 'missionControlId'> &
-  Required<Pick<MissionControlParameters, 'missionControlId'>>;
+type MissionControl = Omit<MissionControlParameters, 'missionControlId'> & {
+  missionControlId: PrincipalText;
+};
 
 export const upgradeMissionControl = async (args?: string[]) => {
   const missionControl = await getCliMissionControl();
