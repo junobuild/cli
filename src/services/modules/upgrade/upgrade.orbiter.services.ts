@@ -1,9 +1,7 @@
-import {
-  orbiterVersion,
-  upgradeOrbiter as upgradeOrbiterAdmin,
-  type OrbiterParameters
-} from '@junobuild/admin';
+import type {PrincipalText} from '@dfinity/zod-schemas';
+import {orbiterVersion, upgradeOrbiter as upgradeOrbiterAdmin} from '@junobuild/admin';
 import {hasArgs, nextArg} from '@junobuild/cli-tools';
+import type {OrbiterParameters} from '@junobuild/ic-client';
 import {cyan, red} from 'kleur';
 import {actorParameters} from '../../../api/actor.api';
 import {getCliOrbiters} from '../../../configs/cli.config';
@@ -19,8 +17,7 @@ import {
   upgradeWasmLocal
 } from './upgrade.services';
 
-type Orbiter = Required<Pick<OrbiterParameters, 'orbiterId'>> &
-  Omit<OrbiterParameters, 'orbiterId'>;
+type Orbiter = Omit<OrbiterParameters, 'orbiterId'> & {orbiterId: PrincipalText};
 
 export const upgradeOrbiters = async (args?: string[]) => {
   const authOrbiters = await getCliOrbiters();

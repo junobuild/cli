@@ -5,10 +5,10 @@ import {
   UpgradeCodeProgressStep,
   UpgradeCodeUnchangedError,
   type CustomDomain,
-  type SatelliteParameters,
   type UpgradeCodeProgress
 } from '@junobuild/admin';
 import {assertAnswerCtrlC, downloadFromURL, hasArgs} from '@junobuild/cli-tools';
+import {type SatelliteParameters} from '@junobuild/ic-client';
 import {green, red, yellow} from 'kleur';
 import {createHash} from 'node:crypto';
 import {readFile} from 'node:fs/promises';

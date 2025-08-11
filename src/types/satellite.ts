@@ -1,4 +1,6 @@
-import {type SatelliteParameters} from '@junobuild/admin';
+import type {PrincipalText} from '@dfinity/zod-schemas';
+import type {SatelliteParameters} from '@junobuild/ic-client';
 
-export type SatelliteParametersWithId = Omit<SatelliteParameters, 'satelliteId'> &
-  Required<Pick<SatelliteParameters, 'satelliteId'>>;
+export type SatelliteParametersWithId = Omit<SatelliteParameters, 'satelliteId'> & {
+  satelliteId: PrincipalText;
+};

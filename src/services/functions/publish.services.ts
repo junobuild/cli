@@ -106,7 +106,6 @@ const publishWasmWithProposal = async ({
       proposalId,
       asset: {
         ...restAsset,
-        // @ts-expect-error type incompatibility NodeJS vs bundle
         data,
         fullPath: storagePath ?? fullPath,
         headers: [...headers, ['Access-Control-Allow-Origin', ENV.console.urls.root]],
