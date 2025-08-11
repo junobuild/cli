@@ -4,9 +4,8 @@ import type {
   DeployResult,
   DeployResultWithProposal,
   UploadFile,
-  UploadFileStorage,
-  UploadFileStorageWithProposal,
-  UploadFileWithProposal
+  UploadFiles,
+  UploadFileStorage
 } from '@junobuild/cli-tools';
 import {postDeploy as cliPostDeploy, preDeploy as cliPreDeploy} from '@junobuild/cli-tools';
 import type {SatelliteConfig} from '@junobuild/config';
@@ -19,42 +18,63 @@ import {assertSatelliteMemorySize} from './deploy.assert.services';
 import {listAssets} from './deploy.list.services';
 
 export interface DeployFnParams<T = UploadFile> {
-  deploy: DeployParams<T>;
+  deploy: {params: DeployParams; upload: T};
   satellite: SatelliteParametersWithId;
 }
 
+// TODO: refactor and naming?
 export type UploadFileFnParams = UploadFileStorage & {satellite: SatelliteParametersWithId};
 export type UploadFileFnParamsWithProposal = UploadFileFnParams & {proposalId: bigint};
 
+export type UploadFilesFnParams = {
+  files: UploadFileStorage[];
+  satellite: SatelliteParametersWithId;
+};
+export type UploadFilesFnParamsWithProposal = UploadFilesFnParams & {proposalId: bigint};
+
+type UploadFn<P extends UploadFileStorage, R extends DeployResult | DeployResultWithProposal> =
+  | {
+      deployFn: (params: DeployFnParams<(params: P) => Promise<void>>) => Promise<R>;
+      uploadFn: (params: P & {satellite: SatelliteParametersWithId}) => Promise<void>;
+      method: 'single';
+    }
+  | {
+      deployFn: (params: DeployFnParams<(params: {files: P[]}) => Promise<void>>) => Promise<R>;
+      uploadFn: (params: {files: P[], satellite: SatelliteParametersWithId}) => Promise<void>;
+      method: 'grouped';
+    };
+
+type UploadFileStorageWithProposal = UploadFileStorage & {proposalId: bigint};
+
 export const executeDeployWithProposal = async ({
-  deployFn,
-  uploadFileFn,
-  options
+  options,
+  ...rest
 }: {
-  deployFn: (params: DeployFnParams<UploadFileWithProposal>) => Promise<DeployResultWithProposal>;
-  uploadFileFn: (params: UploadFileFnParamsWithProposal) => Promise<void>;
   options: {deprecatedGzip?: string};
-}): Promise<DeployResultWithProposal> => {
+} & UploadFn<
+  UploadFileStorageWithProposal,
+  DeployResultWithProposal
+>): Promise<DeployResultWithProposal> => {
   return await executeDeploy<UploadFileStorageWithProposal, DeployResultWithProposal>({
-    deployFn,
-    uploadFileFn,
-    options
+    options,
+    ...rest
   });
 };
 
 export const executeDeployImmediate = async ({
   deployFn,
-  uploadFileFn,
+  uploadFn,
   options
 }: {
   deployFn: (params: DeployFnParams) => Promise<DeployResult>;
-  uploadFileFn: (params: UploadFileFnParams) => Promise<void>;
+  uploadFn: (params: UploadFileFnParams) => Promise<void>;
   options: {deprecatedGzip?: string};
 }): Promise<DeployResult> => {
   return await executeDeploy<UploadFileStorage, DeployResult>({
     deployFn,
-    uploadFileFn,
-    options
+    uploadFn,
+    options,
+    method: 'single'
   });
 };
 
@@ -63,13 +83,12 @@ const executeDeploy = async <
   R extends DeployResult | DeployResultWithProposal
 >({
   deployFn,
-  uploadFileFn,
+  uploadFn,
+  method,
   options
 }: {
-  deployFn: (params: DeployFnParams<(params: P) => Promise<void>>) => Promise<R>;
-  uploadFileFn: (params: P & {satellite: SatelliteParametersWithId}) => Promise<void>;
   options: {deprecatedGzip?: string};
-}): Promise<R> => {
+} & UploadFn<P, R>): Promise<R> => {
   const assertMemory = async () => {
     await assertSatelliteMemorySize();
   };
@@ -90,27 +109,60 @@ const executeDeploy = async <
       satellite
     });
 
-  const uploadFile = async (params: P) => {
-    const paramsWithSatellite: P & {satellite: SatelliteParametersWithId} = {
-      ...params,
-      satellite
+  // TODO: really ugly
+  let result: R;
+
+  if (method === 'grouped') {
+    const uploadFiles = async (params: {files: P[]}) => {
+      const paramsWithSatellite: {files: P[]} & {
+        satellite: SatelliteParametersWithId;
+      } = {
+        ...params,
+        satellite
+      };
+
+      await uploadFn(paramsWithSatellite);
     };
 
-    await uploadFileFn(paramsWithSatellite);
-  };
+    await cliPreDeploy({config: satelliteConfig});
 
-  await cliPreDeploy({config: satelliteConfig});
+    result = await deployFn({
+      deploy: {
+        params: {
+          config: satelliteConfig,
+          listAssets: listExistingAssets,
+          assertSourceDirExists,
+          assertMemory
+        },
+        upload: uploadFiles
+      },
+      satellite
+    });
+  } else {
+    const uploadFile = async (params: P) => {
+      const paramsWithSatellite: P & {satellite: SatelliteParametersWithId} = {
+        ...params,
+        satellite
+      };
 
-  const result = await deployFn({
-    deploy: {
-      config: satelliteConfig,
-      listAssets: listExistingAssets,
-      assertSourceDirExists,
-      assertMemory,
-      uploadFile
-    },
-    satellite
-  });
+      await uploadFn(paramsWithSatellite);
+    };
+
+    await cliPreDeploy({config: satelliteConfig});
+
+    result = await deployFn({
+      deploy: {
+        params: {
+          config: satelliteConfig,
+          listAssets: listExistingAssets,
+          assertSourceDirExists,
+          assertMemory
+        },
+        upload: uploadFile
+      },
+      satellite
+    });
+  }
 
   if (result.result === 'skipped') {
     process.exit(0);

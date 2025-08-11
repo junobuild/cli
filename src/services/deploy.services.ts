@@ -1,13 +1,17 @@
-import {uploadAssetWithProposal} from '@junobuild/cdn';
+import {uploadAssetsWithProposal, uploadAssetWithProposal} from '@junobuild/cdn';
 import {
   deploy as cliDeploy,
   deployWithProposal as cliDeployWithProposal,
   type DeployResult,
   type DeployResultWithProposal,
   hasArgs,
+  type UploadFile,
+  type UploadFileStorage,
   type UploadFileWithProposal
 } from '@junobuild/cli-tools';
+import {UploadFilesWithProposal} from '@junobuild/cli-tools/dist/types/types/deploy';
 import {uploadBlob} from '@junobuild/core';
+import type {UploadAsset} from '@junobuild/storage';
 import {yellow} from 'kleur';
 import {compare} from 'semver';
 import {clear} from './assets/clear.services';
@@ -16,7 +20,8 @@ import {
   executeDeployImmediate,
   executeDeployWithProposal,
   type UploadFileFnParams,
-  type UploadFileFnParamsWithProposal
+  type UploadFileFnParamsWithProposal,
+  UploadFilesFnParamsWithProposal
 } from './assets/deploy/deploy.execute.services';
 import {clearProposalStagedAssets} from './changes/changes.clear.services';
 import {getSatelliteVersion} from './version.services';
@@ -55,72 +60,127 @@ export const deploy = async (args?: string[]) => {
     return;
   }
 
-  await deployWithProposal({args, clearOption, deprecatedGzip});
+  // TODO: use version for grouped
+  await deployWithProposal({args, clearOption, deprecatedGzip, grouped: true});
 };
 
 const deployWithProposal = async ({
   args,
   clearOption,
+  grouped,
   deprecatedGzip
 }: {
   args?: string[];
   clearOption: boolean;
+  // TODO: rename
+  grouped: boolean;
   deprecatedGzip: string | undefined;
 }) => {
   const noCommit = hasArgs({args, options: ['--no-apply']});
 
-  const deployFn = async ({
-    deploy,
-    satellite
-  }: DeployFnParams<UploadFileWithProposal>): Promise<DeployResultWithProposal> =>
-    await cliDeployWithProposal({
-      deploy: {
-        ...deploy,
-        includeAllFiles: clearOption
-      },
-      proposal: {
-        clearAssets: clearOption,
-        autoCommit: !noCommit,
-        cdn: {
-          satellite
-        }
-      }
-    });
-
-  const uploadFileFn = async ({
+  // TODO: upgly
+  const mapFileToAssetForUpload = ({
     filename: storageFilename,
     fullPath: storagePath,
     data,
     collection,
     headers = [],
-    encoding,
-    satellite,
-    proposalId
-  }: UploadFileFnParamsWithProposal) => {
+    encoding
+  }: UploadFileStorage): UploadAsset => {
     // Similar as in Juno Core SDK
     // The IC certification does not currently support encoding
     const filename = decodeURI(storageFilename);
     const fullPath = storagePath ?? `/${collection}/${filename}`;
 
-    await uploadAssetWithProposal({
-      cdn: {satellite},
-      proposalId,
-      asset: {
-        filename,
-        fullPath,
-        data,
-        collection,
-        headers,
-        encoding
-      }
+    return {
+      filename,
+      fullPath,
+      data,
+      collection,
+      headers,
+      encoding
+    };
+  };
+
+  // TODO: much duplication
+  const uploadSingleFile = async (): Promise<DeployResultWithProposal> => {
+    const uploadFn = async ({satellite, proposalId, ...file}: UploadFileFnParamsWithProposal) => {
+      await uploadAssetWithProposal({
+        cdn: {satellite},
+        proposalId,
+        asset: mapFileToAssetForUpload(file)
+      });
+    };
+
+    const deployFn = async ({
+      deploy: {params, upload},
+      satellite
+    }: DeployFnParams<UploadFileWithProposal>): Promise<DeployResultWithProposal> =>
+      await cliDeployWithProposal({
+        deploy: {
+          params: {
+            ...params,
+            includeAllFiles: clearOption
+          },
+          upload: {uploadFile: upload}
+        },
+        proposal: {
+          clearAssets: clearOption,
+          autoCommit: !noCommit,
+          cdn: {
+            satellite
+          }
+        }
+      });
+
+    return await executeDeployWithProposal({
+      deployFn,
+      uploadFn,
+      options: {deprecatedGzip},
+      method: 'single'
     });
   };
 
-  const result = await executeDeployWithProposal({
-    deployFn,
-    uploadFileFn,
-    options: {deprecatedGzip}
-  });
+  const uploadGroupedFiles = async (): Promise<DeployResultWithProposal> => {
+    const uploadFn = async ({files, satellite, proposalId}: UploadFilesFnParamsWithProposal) => {
+      await uploadAssetsWithProposal({
+        cdn: {satellite},
+        proposalId,
+        assets: files.map(mapFileToAssetForUpload)
+      });
+    };
+
+    // TODO: basically just UploadFilesWithProposal different
+    const deployFn = async ({
+      deploy: {params, upload},
+      satellite
+    }: DeployFnParams<UploadFilesWithProposal>): Promise<DeployResultWithProposal> =>
+      await cliDeployWithProposal({
+        deploy: {
+          params: {
+            ...params,
+            includeAllFiles: clearOption
+          },
+          upload: {uploadFiles: upload}
+        },
+        proposal: {
+          clearAssets: clearOption,
+          autoCommit: !noCommit,
+          cdn: {
+            satellite
+          }
+        }
+      });
+
+    return await executeDeployWithProposal({
+      deployFn,
+      uploadFn,
+      method: 'grouped',
+      options: {deprecatedGzip}
+    });
+  };
+
+  const result = await (grouped ? uploadGroupedFiles() : uploadSingleFile());
 
   if (result.result !== 'deployed') {
     return;
@@ -145,10 +205,15 @@ const deployImmediate = async ({
     await clear();
   }
 
-  const deployFn = async ({deploy}: DeployFnParams): Promise<DeployResult> =>
-    await cliDeploy(deploy);
+  const deployFn = async ({
+    deploy: {params, upload}
+  }: DeployFnParams<UploadFile>): Promise<DeployResult> =>
+    await cliDeploy({
+      params,
+      upload: {uploadFile: upload}
+    });
 
-  const uploadFileFn = async ({
+  const uploadFn = async ({
     filename,
     fullPath,
     data,
@@ -170,7 +235,7 @@ const deployImmediate = async ({
 
   await executeDeployImmediate({
     deployFn,
-    uploadFileFn,
+    uploadFn,
     options: {deprecatedGzip}
   });
 };
