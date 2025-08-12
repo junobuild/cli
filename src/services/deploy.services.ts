@@ -5,7 +5,6 @@ import {
   type DeployResult,
   type DeployResultWithProposal,
   hasArgs,
-  type UploadFile,
   type UploadFileStorage,
   type UploadFilesWithProposal,
   type UploadFileWithProposal
@@ -104,10 +103,16 @@ const deployWithProposal = async ({
 
   // TODO: much duplication
   const uploadSingleFile = async (): Promise<DeployResultWithProposal> => {
-    const uploadFn = async ({satellite, proposalId, ...file}: UploadFileFnParamsWithProposal) => {
+    const uploadFn = async ({
+      satellite,
+      proposalId,
+      progress,
+      ...file
+    }: UploadFileFnParamsWithProposal) => {
       await uploadAssetWithProposal({
         cdn: {satellite},
         proposalId,
+        progress,
         asset: mapFileToAssetForUpload(file)
       });
     };
@@ -142,11 +147,11 @@ const deployWithProposal = async ({
   };
 
   const uploadGroupedFiles = async (): Promise<DeployResultWithProposal> => {
-    const uploadFn = async ({files, satellite, proposalId}: UploadFilesFnParamsWithProposal) => {
+    const uploadFn = async ({files, satellite, ...rest}: UploadFilesFnParamsWithProposal) => {
       await uploadAssetsWithProposal({
         cdn: {satellite},
-        proposalId,
-        assets: files.map(mapFileToAssetForUpload)
+        assets: files.map(mapFileToAssetForUpload),
+        ...rest
       });
     };
 
@@ -205,9 +210,7 @@ const deployImmediate = async ({
     await clear();
   }
 
-  const deployFn = async ({
-    deploy: {params, upload}
-  }: DeployFnParams): Promise<DeployResult> =>
+  const deployFn = async ({deploy: {params, upload}}: DeployFnParams): Promise<DeployResult> =>
     await cliDeploy({
       params,
       upload: {uploadFile: upload}

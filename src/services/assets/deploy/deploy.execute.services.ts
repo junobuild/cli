@@ -9,6 +9,7 @@ import type {
 import {postDeploy as cliPostDeploy, preDeploy as cliPreDeploy} from '@junobuild/cli-tools';
 import type {SatelliteConfig} from '@junobuild/config';
 import {type Asset} from '@junobuild/core';
+import {type OnUploadProgress} from '@junobuild/storage';
 import {red} from 'kleur';
 import {lstatSync} from 'node:fs';
 import type {SatelliteParametersWithId} from '../../../types/satellite';
@@ -23,12 +24,14 @@ export interface DeployFnParams<T = UploadFile> {
 
 // TODO: refactor and naming?
 export type UploadFileFnParams = UploadFileStorage & {satellite: SatelliteParametersWithId};
-export type UploadFileFnParamsWithProposal = UploadFileFnParams & {proposalId: bigint};
+export type UploadFileFnParamsWithProposal = UploadFileFnParams & {
+  proposalId: bigint;
+} & OnUploadProgress;
 
-export interface UploadFilesFnParams {
+export type UploadFilesFnParams = {
   files: UploadFileStorage[];
   satellite: SatelliteParametersWithId;
-}
+} & OnUploadProgress;
 export type UploadFilesFnParamsWithProposal = UploadFilesFnParams & {proposalId: bigint};
 
 type UploadInput<T, R> = [R] extends [DeployResultWithProposal] ? T & {proposalId: bigint} : T;
