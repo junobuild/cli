@@ -11,6 +11,7 @@ import {init} from './commands/init';
 import {open} from './commands/open';
 import {snapshot} from './commands/snapshot';
 import {startStop} from './commands/start-stop';
+import {status} from './commands/status';
 import {upgrade} from './commands/upgrade';
 import {version as versionCommand} from './commands/version';
 import {whoami} from './commands/whoami';
@@ -24,6 +25,7 @@ import {logHelpLogout} from './help/logout.help';
 import {logHelpOpen} from './help/open.help';
 import {logHelpSnapshot} from './help/snapshot.help';
 import {logHelpStart} from './help/start.help';
+import {logHelpStatus} from './help/status.help';
 import {logHelpStop} from './help/stop.help';
 import {logHelpUpgrade} from './help/upgrade.help';
 import {logHelpVersion} from './help/version.help';
@@ -52,7 +54,7 @@ export const run = async () => {
 
   // Special use case if dev runs "juno --version"
   if (['-v', '--version'].includes(cmd)) {
-    await versionCommand(args);
+    await versionCommand();
     return;
   }
 
@@ -95,6 +97,9 @@ export const run = async () => {
       case 'version':
         logHelpVersion(args);
         break;
+      case 'status':
+        logHelpStatus(args);
+        break;
       case 'whoami':
         logHelpWhoAmI(args);
         break;
@@ -134,7 +139,10 @@ export const run = async () => {
       await clear();
       break;
     case 'version':
-      await versionCommand(args);
+      await versionCommand();
+      break;
+    case 'status':
+      await status();
       break;
     case 'open':
       await open(args);

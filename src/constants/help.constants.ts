@@ -18,7 +18,8 @@ export const START_DESCRIPTION = 'Start a module.';
 export const STOP_DESCRIPTION = 'Stop a module.';
 export const UPGRADE_DESCRIPTION = 'Upgrade a module to a new version.';
 export const USE_DESCRIPTION = 'Switch between multiple profiles.';
-export const VERSION_DESCRIPTION = 'Check the version of the modules and CLI.';
+export const VERSION_DESCRIPTION = 'Check the version of the CLI.';
+export const STATUS_DESCRIPTION = 'Check the status of the modules.';
 export const WHOAMI_DESCRIPTION =
   'Display your current profile, access key, and links to your satellite.';
 

@@ -5,8 +5,9 @@ import {
   satelliteVersion as satelliteVersionLib
 } from '@junobuild/admin';
 import {JUNO_PACKAGE_SATELLITE_ID} from '@junobuild/config';
-import {red} from 'kleur';
+import {cyan, green, red, yellow} from 'kleur';
 import ora from 'ora';
+import {compare} from 'semver';
 import type {SatelliteParametersWithId} from '../types/satellite';
 import {assertConfigAndLoadSatelliteContext} from '../utils/satellite.utils';
 
@@ -74,4 +75,34 @@ const loadSatelliteVersion = async ({
   });
 
   return {result: 'success', version: legacyVersion};
+};
+
+export const checkVersion = ({
+  currentVersion,
+  latestVersion,
+  displayHint,
+  commandLineHint
+}: {
+  currentVersion: string;
+  latestVersion: string;
+  displayHint: string;
+  commandLineHint: string;
+}) => {
+  const diff = compare(currentVersion, latestVersion);
+
+  if (diff === 0) {
+    console.log(`Your ${displayHint} (${green(`v${currentVersion}`)}) is up-to-date.`);
+    return;
+  }
+
+  if (diff === 1) {
+    console.log(yellow(`Your ${displayHint} version is more recent than the latest available 🤔.`));
+    return;
+  }
+
+  console.log(
+    `Your ${displayHint} (${yellow(`v${currentVersion}`)}) is behind the latest version (${green(
+      `v${latestVersion}`
+    )}) available. Run ${cyan(commandLineHint)} to update it.`
+  );
 };
