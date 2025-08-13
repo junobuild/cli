@@ -22,7 +22,6 @@ export interface DeployFnParams<T = UploadFile> {
   satellite: SatelliteParametersWithId;
 }
 
-// TODO: refactor and naming?
 export type UploadFileFnParams = UploadFileStorage & {satellite: SatelliteParametersWithId};
 export type UploadFileFnParamsWithProposal = UploadFileFnParams & {
   proposalId: bigint;
