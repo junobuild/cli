@@ -1,11 +1,13 @@
 import {uploadAssetsWithProposal, uploadAssetWithProposal} from '@junobuild/cdn';
-import type {UploadIndividually, UploadWithBatch,
+import {
   deployWithProposal as cliDeployWithProposal,
   type DeployParams,
   type DeployResultWithProposal,
   type UploadFileStorage,
   type UploadFilesWithProposal,
-  type UploadFileWithProposal
+  type UploadFileWithProposal,
+  type UploadIndividually,
+  type UploadWithBatch
 } from '@junobuild/cli-tools';
 import type {UploadAsset} from '@junobuild/storage';
 import {type SatelliteParametersWithId} from '../../types/satellite';
