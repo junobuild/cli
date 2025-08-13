@@ -65,7 +65,7 @@ const uploadFilesIndividually = async ({
     deployFn,
     uploadFn,
     options: {deprecatedGzip},
-    method: 'single'
+    method: 'individual'
   });
 };
 
@@ -94,7 +94,7 @@ const uploadFilesWithBatch = async ({
   return await executeDeployWithProposal({
     deployFn,
     uploadFn,
-    method: 'grouped',
+    method: 'batch',
     options: {deprecatedGzip}
   });
 };

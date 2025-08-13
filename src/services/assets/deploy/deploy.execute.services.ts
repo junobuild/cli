@@ -41,14 +41,14 @@ type UploadParams<T, R> = UploadInput<T, R> & {
 
 type UploadFn<P extends UploadFileStorage, R extends DeployResult | DeployResultWithProposal> =
   | {
-      method: 'single';
+      method: 'individual';
       deployFn: (
         params: DeployFnParams<(params: UploadInput<P, R>) => Promise<void>>
       ) => Promise<R>;
       uploadFn: (params: UploadParams<P, R>) => Promise<void>;
     }
   | {
-      method: 'grouped';
+      method: 'batch';
       deployFn: (
         params: DeployFnParams<(params: UploadInput<{files: P[]}, R>) => Promise<void>>
       ) => Promise<R>;
@@ -80,7 +80,7 @@ export const executeDeployImmediate = async ({
     deployFn,
     uploadFn,
     options,
-    method: 'single'
+    method: 'individual'
   });
 };
 
@@ -150,7 +150,7 @@ const deployWithMethod = async <
     assertMemory
   };
 
-  if (method === 'grouped') {
+  if (method === 'batch') {
     const uploadFiles = async (params: UploadInput<{files: P[]}, R>) => {
       const paramsWithSatellite: UploadParams<{files: P[]}, R> = {
         ...params,

@@ -46,7 +46,7 @@ export const deploy = async (args?: string[]) => {
     return;
   }
 
-  // TODO: use version for grouped
+  // TODO: use version for batch
   // const withBatch = compare(result.version, '0.1.2') >= 0;
   const withBatch = true;
 
