@@ -2,13 +2,10 @@ import {deploy as cliDeploy, type DeployResult, hasArgs} from '@junobuild/cli-to
 import {uploadBlob} from '@junobuild/core';
 import {yellow} from 'kleur';
 import {compare} from 'semver';
+import type {DeployFnParams, UploadFileFnParams} from '../../types/deploy';
 import {clearProposalStagedAssets} from '../changes/changes.clear.services';
 import {getSatelliteVersion} from '../version.services';
-import {
-  type DeployFnParams,
-  executeDeployImmediate,
-  type UploadFileFnParams
-} from './_deploy/deploy.execute.services';
+import {executeDeployImmediate} from './_deploy/deploy.execute.services';
 import {deployWithProposal as executeDeployWithProposal} from './_deploy/deploy.with-proposal.services';
 import {clear} from './clear.services';
 

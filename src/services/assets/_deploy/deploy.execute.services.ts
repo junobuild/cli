@@ -3,57 +3,24 @@ import type {
   DeployParams,
   DeployResult,
   DeployResultWithProposal,
-  UploadFile,
   UploadFileStorage
 } from '@junobuild/cli-tools';
 import {postDeploy as cliPostDeploy, preDeploy as cliPreDeploy} from '@junobuild/cli-tools';
 import type {SatelliteConfig} from '@junobuild/config';
 import {type Asset} from '@junobuild/core';
-import {type OnUploadProgress} from '@junobuild/storage';
 import {red} from 'kleur';
 import {lstatSync} from 'node:fs';
+import {
+  type DeployFnParams,
+  type UploadFileFnParams,
+  type UploadFn,
+  type UploadInput,
+  type UploadParams
+} from '../../../types/deploy';
 import type {SatelliteParametersWithId} from '../../../types/satellite';
 import {assertConfigAndLoadSatelliteContext} from '../../../utils/satellite.utils';
 import {assertSatelliteMemorySize} from '../../assert.services';
 import {listAssets} from './deploy.list.services';
-
-export interface DeployFnParams<T = UploadFile> {
-  deploy: {params: DeployParams; upload: T};
-  satellite: SatelliteParametersWithId;
-}
-
-export type UploadFileFnParams = UploadFileStorage & {satellite: SatelliteParametersWithId};
-export type UploadFileFnParamsWithProposal = UploadFileFnParams & {
-  proposalId: bigint;
-} & OnUploadProgress;
-
-export type UploadFilesFnParams = {
-  files: UploadFileStorage[];
-  satellite: SatelliteParametersWithId;
-} & OnUploadProgress;
-export type UploadFilesFnParamsWithProposal = UploadFilesFnParams & {proposalId: bigint};
-
-type UploadInput<T, R> = [R] extends [DeployResultWithProposal] ? T & {proposalId: bigint} : T;
-
-type UploadParams<T, R> = UploadInput<T, R> & {
-  satellite: SatelliteParametersWithId;
-};
-
-type UploadFn<P extends UploadFileStorage, R extends DeployResult | DeployResultWithProposal> =
-  | {
-      method: 'individual';
-      deployFn: (
-        params: DeployFnParams<(params: UploadInput<P, R>) => Promise<void>>
-      ) => Promise<R>;
-      uploadFn: (params: UploadParams<P, R>) => Promise<void>;
-    }
-  | {
-      method: 'batch';
-      deployFn: (
-        params: DeployFnParams<(params: UploadInput<{files: P[]}, R>) => Promise<void>>
-      ) => Promise<R>;
-      uploadFn: (params: UploadParams<{files: P[]}, R>) => Promise<void>;
-    };
 
 export const executeDeployWithProposal = async ({
   options,

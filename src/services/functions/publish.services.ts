@@ -13,11 +13,11 @@ import {dirname} from 'node:path';
 import {SATELLITE_OUTPUT} from '../../constants/dev.constants';
 import {CDN_RELEASES_FULL_PATH} from '../../constants/functions.constants';
 import {ENV} from '../../env';
+import type {UploadFileFnParamsWithProposal} from '../../types/deploy';
 import type {SatelliteParametersWithId} from '../../types/satellite';
 import {assertConfigAndLoadSatelliteContext} from '../../utils/satellite.utils';
 import {readWasmFileMetadata} from '../../utils/wasm.utils';
 import {assertSatelliteMemorySize} from '../assert.services';
-import {type UploadFileFnParamsWithProposal} from '../assets/_deploy/deploy.execute.services';
 import {clearProposalStagedAssets} from '../changes/changes.clear.services';
 
 export const publish = async (args?: string[]) => {
