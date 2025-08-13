@@ -1,15 +1,19 @@
 import {nonNullish} from '@dfinity/utils';
-import type {
-  DeployParams,
-  DeployResult,
-  DeployResultWithProposal,
-  UploadFileStorage
+import {
+  postDeploy as cliPostDeploy,
+  preDeploy as cliPreDeploy,
+  type DeployParams,
+  DeployProgressStep,
+  type DeployResult,
+  type DeployResultWithProposal,
+  type OnDeployProgress,
+  type UploadFileStorage
 } from '@junobuild/cli-tools';
-import {postDeploy as cliPostDeploy, preDeploy as cliPreDeploy} from '@junobuild/cli-tools';
 import type {SatelliteConfig} from '@junobuild/config';
 import {type Asset} from '@junobuild/core';
 import {red} from 'kleur';
 import {lstatSync} from 'node:fs';
+import ora from 'ora';
 import {
   type DeployFnParams,
   type UploadFileFnParams,
@@ -117,6 +121,16 @@ const deployWithMethod = async <
     assertMemory
   };
 
+  const spinner = ora('Preparing deploy...').start();
+
+  const progress: OnDeployProgress = {
+    onProgress: ({step, state}) => {
+      if (step === DeployProgressStep.PrepareDeploy && state !== 'in_progress') {
+        spinner.stop();
+      }
+    }
+  };
+
   if (method === 'batch') {
     const uploadFiles = async (params: UploadInput<{files: P[]}, R>) => {
       const paramsWithSatellite: UploadParams<{files: P[]}, R> = {
@@ -129,7 +143,8 @@ const deployWithMethod = async <
     return await deployFn({
       deploy: {
         params: deployParams,
-        upload: uploadFiles
+        upload: uploadFiles,
+        ...progress
       },
       satellite
     });
@@ -146,7 +161,8 @@ const deployWithMethod = async <
   return await deployFn({
     deploy: {
       params: deployParams,
-      upload: uploadFile
+      upload: uploadFile,
+      ...progress
     },
     satellite
   });

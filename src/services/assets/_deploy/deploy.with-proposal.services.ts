@@ -1,6 +1,7 @@
 import {uploadAssetsWithProposal, uploadAssetWithProposal} from '@junobuild/cdn';
 import {
   deployWithProposal as cliDeployWithProposal,
+  type OnDeployProgress,
   type DeployParams,
   type DeployResultWithProposal,
   type UploadFileStorage,
@@ -52,11 +53,11 @@ const uploadFilesIndividually = async ({
   };
 
   const deployFn = async ({
-    deploy: {params, upload},
+    deploy: {params, upload, onProgress},
     satellite
   }: DeployFnParams<UploadFileWithProposal>): Promise<DeployResultWithProposal> =>
     await deployWithUpload({
-      deploy: {params, upload: {uploadFile: upload}},
+      deploy: {params, upload: {uploadFile: upload}, onProgress},
       satellite,
       cliParams
     });
@@ -82,11 +83,11 @@ const uploadFilesWithBatch = async ({
   };
 
   const deployFn = async ({
-    deploy: {params, upload},
+    deploy: {params, upload, onProgress},
     satellite
   }: DeployFnParams<UploadFilesWithProposal>): Promise<DeployResultWithProposal> =>
     await deployWithUpload({
-      deploy: {params, upload: {uploadFiles: upload}},
+      deploy: {params, upload: {uploadFiles: upload}, onProgress},
       satellite,
       cliParams
     });
@@ -100,14 +101,14 @@ const uploadFilesWithBatch = async ({
 };
 
 const deployWithUpload = async ({
-  deploy: {params, upload},
+  deploy: {params, upload, onProgress},
   satellite,
   cliParams: {clearOption, noCommit}
 }: {
   deploy: {
     params: DeployParams;
     upload: UploadIndividually<UploadFileWithProposal> | UploadWithBatch<UploadFilesWithProposal>;
-  };
+  } & OnDeployProgress;
   satellite: SatelliteParametersWithId;
   cliParams: Omit<DeployWithProposalParams, 'deprecatedGzip'>;
 }): Promise<DeployResultWithProposal> =>
@@ -117,7 +118,8 @@ const deployWithUpload = async ({
         ...params,
         includeAllFiles: clearOption
       },
-      upload
+      upload,
+      onProgress
     },
     proposal: {
       clearAssets: clearOption,

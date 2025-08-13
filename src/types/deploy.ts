@@ -2,6 +2,7 @@ import type {
   DeployParams,
   DeployResult,
   DeployResultWithProposal,
+  OnDeployProgress,
   UploadFile,
   UploadFileStorage
 } from '@junobuild/cli-tools';
@@ -9,7 +10,7 @@ import type {OnUploadProgress} from '@junobuild/storage';
 import type {SatelliteParametersWithId} from './satellite';
 
 export interface DeployFnParams<T = UploadFile> {
-  deploy: {params: DeployParams; upload: T};
+  deploy: {params: DeployParams; upload: T} & OnDeployProgress;
   satellite: SatelliteParametersWithId;
 }
 

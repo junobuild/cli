@@ -16,10 +16,13 @@ export const deployImmediate = async ({
     await clear();
   }
 
-  const deployFn = async ({deploy: {params, upload}}: DeployFnParams): Promise<DeployResult> =>
+  const deployFn = async ({
+    deploy: {params, upload, onProgress}
+  }: DeployFnParams): Promise<DeployResult> =>
     await cliDeploy({
       params,
-      upload: {uploadFile: upload}
+      upload: {uploadFile: upload},
+      onProgress
     });
 
   const uploadFn = async ({
