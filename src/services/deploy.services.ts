@@ -8,8 +8,8 @@ import {
   executeDeployImmediate,
   type UploadFileFnParams
 } from './assets/deploy/deploy.execute.services';
-import {clearProposalStagedAssets} from './changes/changes.clear.services';
 import {deployWithProposal as executeDeployWithProposal} from './assets/deploy/deploy.with-proposal.services';
+import {clearProposalStagedAssets} from './changes/changes.clear.services';
 import {getSatelliteVersion} from './version.services';
 
 export const deploy = async (args?: string[]) => {
