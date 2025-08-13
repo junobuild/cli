@@ -60,24 +60,25 @@ export const deploy = async (args?: string[]) => {
   }
 
   // TODO: use version for grouped
-  await deployWithProposal({args, clearOption, deprecatedGzip, grouped: true});
+  // const withBatch = compare(result.version, '0.1.2') >= 0;
+  const withBatch = true;
+
+  await deployWithProposal({args, clearOption, deprecatedGzip, withBatch});
 };
 
 const deployWithProposal = async ({
   args,
   clearOption,
-  grouped,
+  withBatch,
   deprecatedGzip
 }: {
   args?: string[];
   clearOption: boolean;
-  // TODO: rename
-  grouped: boolean;
+  withBatch: boolean;
   deprecatedGzip: string | undefined;
 }) => {
   const noCommit = hasArgs({args, options: ['--no-apply']});
 
-  // TODO: upgly
   const mapFileToAssetForUpload = ({
     filename: storageFilename,
     fullPath: storagePath,
@@ -102,7 +103,7 @@ const deployWithProposal = async ({
   };
 
   // TODO: much duplication
-  const uploadSingleFile = async (): Promise<DeployResultWithProposal> => {
+  const uploadFilesIndividually = async (): Promise<DeployResultWithProposal> => {
     const uploadFn = async ({
       satellite,
       proposalId,
@@ -146,7 +147,7 @@ const deployWithProposal = async ({
     });
   };
 
-  const uploadGroupedFiles = async (): Promise<DeployResultWithProposal> => {
+  const uploadFilesWithBatch = async (): Promise<DeployResultWithProposal> => {
     const uploadFn = async ({files, satellite, ...rest}: UploadFilesFnParamsWithProposal) => {
       await uploadAssetsWithProposal({
         cdn: {satellite},
@@ -185,7 +186,7 @@ const deployWithProposal = async ({
     });
   };
 
-  const result = await (grouped ? uploadGroupedFiles() : uploadSingleFile());
+  const result = await (withBatch ? uploadFilesWithBatch() : uploadFilesIndividually());
 
   if (result.result !== 'deployed') {
     return;
