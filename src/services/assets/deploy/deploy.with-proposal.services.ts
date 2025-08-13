@@ -10,13 +10,13 @@ import {
   type UploadWithBatch
 } from '@junobuild/cli-tools';
 import type {UploadAsset} from '@junobuild/storage';
-import {type SatelliteParametersWithId} from '../../types/satellite';
+import {type SatelliteParametersWithId} from '../../../types/satellite';
 import {
   type DeployFnParams,
   executeDeployWithProposal,
   type UploadFileFnParamsWithProposal,
   type UploadFilesFnParamsWithProposal
-} from '../assets/deploy/deploy.execute.services';
+} from './deploy.execute.services';
 
 interface DeployWithProposalParams {
   clearOption: boolean;

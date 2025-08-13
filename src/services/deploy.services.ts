@@ -9,7 +9,7 @@ import {
   type UploadFileFnParams
 } from './assets/deploy/deploy.execute.services';
 import {clearProposalStagedAssets} from './changes/changes.clear.services';
-import {deployWithProposal as executeDeployWithProposal} from './deploy/_deploy.with-proposal.services';
+import {deployWithProposal as executeDeployWithProposal} from './assets/deploy/deploy.with-proposal.services';
 import {getSatelliteVersion} from './version.services';
 
 export const deploy = async (args?: string[]) => {
