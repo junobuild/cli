@@ -1,7 +1,9 @@
 import {uploadAssetsWithProposal, uploadAssetWithProposal} from '@junobuild/cdn';
+import type {UploadIndividually, UploadWithBatch} from '@junobuild/cli-tools';
 import {
   deploy as cliDeploy,
   deployWithProposal as cliDeployWithProposal,
+  type DeployParams,
   type DeployResult,
   type DeployResultWithProposal,
   hasArgs,
@@ -13,6 +15,7 @@ import {uploadBlob} from '@junobuild/core';
 import type {UploadAsset} from '@junobuild/storage';
 import {yellow} from 'kleur';
 import {compare} from 'semver';
+import type {SatelliteParametersWithId} from '../types/satellite';
 import {clear} from './assets/clear.services';
 import {
   type DeployFnParams,
@@ -102,7 +105,33 @@ const deployWithProposal = async ({
     };
   };
 
-  // TODO: much duplication
+  const deployWithProposal = async ({
+    deploy: {params, upload},
+    satellite
+  }: {
+    deploy: {
+      params: DeployParams;
+      upload: UploadIndividually<UploadFileWithProposal> | UploadWithBatch<UploadFilesWithProposal>;
+    };
+    satellite: SatelliteParametersWithId;
+  }): Promise<DeployResultWithProposal> =>
+    await cliDeployWithProposal({
+      deploy: {
+        params: {
+          ...params,
+          includeAllFiles: clearOption
+        },
+        upload
+      },
+      proposal: {
+        clearAssets: clearOption,
+        autoCommit: !noCommit,
+        cdn: {
+          satellite
+        }
+      }
+    });
+
   const uploadFilesIndividually = async (): Promise<DeployResultWithProposal> => {
     const uploadFn = async ({
       satellite,
@@ -122,21 +151,9 @@ const deployWithProposal = async ({
       deploy: {params, upload},
       satellite
     }: DeployFnParams<UploadFileWithProposal>): Promise<DeployResultWithProposal> =>
-      await cliDeployWithProposal({
-        deploy: {
-          params: {
-            ...params,
-            includeAllFiles: clearOption
-          },
-          upload: {uploadFile: upload}
-        },
-        proposal: {
-          clearAssets: clearOption,
-          autoCommit: !noCommit,
-          cdn: {
-            satellite
-          }
-        }
+      await deployWithProposal({
+        deploy: {params, upload: {uploadFile: upload}},
+        satellite
       });
 
     return await executeDeployWithProposal({
@@ -156,26 +173,13 @@ const deployWithProposal = async ({
       });
     };
 
-    // TODO: basically just UploadFilesWithProposal different
     const deployFn = async ({
       deploy: {params, upload},
       satellite
     }: DeployFnParams<UploadFilesWithProposal>): Promise<DeployResultWithProposal> =>
-      await cliDeployWithProposal({
-        deploy: {
-          params: {
-            ...params,
-            includeAllFiles: clearOption
-          },
-          upload: {uploadFiles: upload}
-        },
-        proposal: {
-          clearAssets: clearOption,
-          autoCommit: !noCommit,
-          cdn: {
-            satellite
-          }
-        }
+      await deployWithProposal({
+        deploy: {params, upload: {uploadFiles: upload}},
+        satellite
       });
 
     return await executeDeployWithProposal({
