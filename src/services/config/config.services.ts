@@ -68,7 +68,7 @@ export const config = async (args?: string[]) => {
   // Get the hashes from the CLI state
   const lastAppliedConfig = getLatestAppliedConfig({satelliteId});
 
-  // Apply configuration without requiring the de
+  // Apply configuration regardless of whether differences are noticed
   const force = hasArgs({args, options: ['--force']});
 
   // Compare last hashes with current configuration of the Satellite
