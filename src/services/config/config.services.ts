@@ -10,6 +10,7 @@ import {
   setRule,
   setStorageConfig
 } from '@junobuild/admin';
+import {hasArgs} from '@junobuild/cli-tools';
 import type {
   AuthenticationConfig,
   DatastoreCollection,
@@ -21,7 +22,7 @@ import type {
   StorageCollection,
   StorageConfig
 } from '@junobuild/config';
-import {red} from 'kleur';
+import {red, yellow} from 'kleur';
 import ora from 'ora';
 import {getLatestAppliedConfig, saveLastAppliedConfig} from '../../configs/cli.state.config';
 import {
@@ -41,6 +42,7 @@ import {
 } from '../../types/cli.state';
 import type {SatelliteParametersWithId} from '../../types/satellite';
 import {objHash} from '../../utils/obj.utils';
+import {isHeadless} from '../../utils/process.utils';
 import {confirmAndExit} from '../../utils/prompt.utils';
 import {assertConfigAndLoadSatelliteContext} from '../../utils/satellite.utils';
 import {getSettings, setSettings} from './settings.services';
@@ -56,7 +58,7 @@ type SetConfigResults = [
 
 type EditConfig = Omit<SatelliteConfig, 'assertions'>;
 
-export const config = async () => {
+export const config = async (args?: string[]) => {
   const {satellite, satelliteConfig} = await assertConfigAndLoadSatelliteContext();
   const {satelliteId} = satellite;
 
@@ -66,13 +68,17 @@ export const config = async () => {
   // Get the hashes from the CLI state
   const lastAppliedConfig = getLatestAppliedConfig({satelliteId});
 
+  // Apply configuration without requiring the de
+  const force = hasArgs({args, options: ['--force']});
+
   // Compare last hashes with current configuration of the Satellite
   // Prompt the user if there will be an overwrite
   // Extends the configuration provided by the dev with the version fields (unless they specified the field themselves)
   const editConfig = await prepareConfig({
     currentConfig,
     lastAppliedConfig,
-    satelliteConfig
+    satelliteConfig,
+    force
   });
 
   if (Object.values(editConfig).filter(nonNullish).length === 0) {
@@ -333,11 +339,13 @@ const setConfigs = async ({
 const prepareConfig = async ({
   currentConfig,
   lastAppliedConfig,
-  satelliteConfig
+  satelliteConfig,
+  force
 }: {
   currentConfig: CurrentConfig;
   lastAppliedConfig: CliStateSatelliteAppliedConfigHashes | undefined;
   satelliteConfig: EditConfig;
+  force: boolean;
 }): Promise<EditConfig> => {
   const {
     storage: currentStorage,
@@ -536,6 +544,17 @@ const prepareConfig = async ({
   };
 
   const confirmAndExtendWithVersions = async (): Promise<EditConfig> => {
+    if (force) {
+      return filterIdenticalConfig(extendWithVersions());
+    }
+
+    if (isHeadless()) {
+      console.log(
+        yellow('Non-interactive mode detected. Re-run with --force to overwrite without checks.')
+      );
+      process.exit(1);
+    }
+
     await confirmAndExit(
       'This action will overwrite the current configuration of the Satellite. Are you sure you want to continue?'
     );

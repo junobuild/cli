@@ -6,6 +6,7 @@ import {TITLE} from './help';
 const usage = `Usage: ${green('juno')} ${cyan('config')} ${yellow('[options]')}
 
 Options:
+  ${yellow('--force')}               Overwrite configuration without checks.
   ${OPTIONS_ENV}
   ${OPTION_HELP}`;
 
