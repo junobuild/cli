@@ -89,17 +89,11 @@ const executeDeploy = async <
   P extends UploadFileStorage,
   R extends DeployResult | DeployResultWithProposal
 >({
-  deployFn,
-  uploadFn,
-  method,
-  options
+  options,
+  ...rest
 }: {
   options: {deprecatedGzip?: string};
 } & UploadFn<P, R>): Promise<R> => {
-  const assertMemory = async () => {
-    await assertSatelliteMemorySize();
-  };
-
   const {satellite, satelliteConfig: satelliteConfigRead} =
     await assertConfigAndLoadSatelliteContext();
 
@@ -110,14 +104,52 @@ const executeDeploy = async <
     ...(nonNullish(gzip) && {gzip})
   };
 
+  await cliPreDeploy({config: satelliteConfig});
+
+  const result = await deployWithMethod<P, R>({
+    ...rest,
+    satellite,
+    satelliteConfig
+  });
+
+  if (result.result === 'skipped') {
+    process.exit(0);
+  }
+
+  await cliPostDeploy({config: satelliteConfig});
+
+  return result;
+};
+
+const deployWithMethod = async <
+  P extends UploadFileStorage,
+  R extends DeployResult | DeployResultWithProposal
+>({
+  deployFn,
+  uploadFn,
+  method,
+  satellite,
+  satelliteConfig
+}: {
+  satellite: SatelliteParametersWithId;
+  satelliteConfig: SatelliteConfig;
+} & UploadFn<P, R>): Promise<R> => {
+  const assertMemory = async () => {
+    await assertSatelliteMemorySize();
+  };
+
   const listExistingAssets = async ({startAfter}: {startAfter?: string}): Promise<Asset[]> =>
     await listAssets({
       startAfter,
       satellite
     });
 
-  // TODO: really ugly
-  let result: R;
+  const deployParams: DeployParams = {
+    config: satelliteConfig,
+    listAssets: listExistingAssets,
+    assertSourceDirExists,
+    assertMemory
+  };
 
   if (method === 'grouped') {
     const uploadFiles = async (params: UploadInput<{files: P[]}, R>) => {
@@ -128,52 +160,30 @@ const executeDeploy = async <
       await uploadFn(paramsWithSatellite);
     };
 
-    await cliPreDeploy({config: satelliteConfig});
-
-    result = await deployFn({
+    return await deployFn({
       deploy: {
-        params: {
-          config: satelliteConfig,
-          listAssets: listExistingAssets,
-          assertSourceDirExists,
-          assertMemory
-        },
+        params: deployParams,
         upload: uploadFiles
       },
       satellite
     });
-  } else {
-    const uploadFile = async (params: UploadInput<P, R>) => {
-      const paramsWithSatellite: UploadParams<P, R> = {
-        ...params,
-        satellite
-      };
-      await uploadFn(paramsWithSatellite);
-    };
+  }
 
-    await cliPreDeploy({config: satelliteConfig});
-
-    result = await deployFn({
-      deploy: {
-        params: {
-          config: satelliteConfig,
-          listAssets: listExistingAssets,
-          assertSourceDirExists,
-          assertMemory
-        },
-        upload: uploadFile
-      },
+  const uploadFile = async (params: UploadInput<P, R>) => {
+    const paramsWithSatellite: UploadParams<P, R> = {
+      ...params,
       satellite
-    });
-  }
+    };
+    await uploadFn(paramsWithSatellite);
+  };
 
-  if (result.result === 'skipped') {
-    process.exit(0);
-  }
-
-  await cliPostDeploy({config: satelliteConfig});
-
-  return result;
+  return await deployFn({
+    deploy: {
+      params: deployParams,
+      upload: uploadFile
+    },
+    satellite
+  });
 };
 
 const assertSourceDirExists = (source: string) => {
