@@ -1,12 +1,4 @@
-import {uploadAssetWithProposal} from '@junobuild/cdn';
-import {
-  deploy as cliDeploy,
-  deployWithProposal as cliDeployWithProposal,
-  type DeployResult,
-  type DeployResultWithProposal,
-  hasArgs,
-  type UploadFileWithProposal
-} from '@junobuild/cli-tools';
+import {deploy as cliDeploy, type DeployResult, hasArgs} from '@junobuild/cli-tools';
 import {uploadBlob} from '@junobuild/core';
 import {yellow} from 'kleur';
 import {compare} from 'semver';
@@ -14,10 +6,9 @@ import {clear} from './assets/clear.services';
 import {
   type DeployFnParams,
   executeDeployImmediate,
-  executeDeployWithProposal,
-  type UploadFileFnParams,
-  type UploadFileFnParamsWithProposal
+  type UploadFileFnParams
 } from './assets/deploy/deploy.execute.services';
+import {deployWithProposal as executeDeployWithProposal} from './assets/deploy/deploy.with-proposal.services';
 import {clearProposalStagedAssets} from './changes/changes.clear.services';
 import {getSatelliteVersion} from './version.services';
 
@@ -55,71 +46,31 @@ export const deploy = async (args?: string[]) => {
     return;
   }
 
-  await deployWithProposal({args, clearOption, deprecatedGzip});
+  // TODO: use version for batch
+  // const withBatch = compare(result.version, '0.1.2') >= 0;
+  const withBatch = true;
+
+  await deployWithProposal({args, clearOption, deprecatedGzip, withBatch});
 };
 
 const deployWithProposal = async ({
   args,
   clearOption,
+  withBatch,
   deprecatedGzip
 }: {
   args?: string[];
   clearOption: boolean;
+  withBatch: boolean;
   deprecatedGzip: string | undefined;
 }) => {
   const noCommit = hasArgs({args, options: ['--no-apply']});
 
-  const deployFn = async ({
-    deploy,
-    satellite
-  }: DeployFnParams<UploadFileWithProposal>): Promise<DeployResultWithProposal> =>
-    await cliDeployWithProposal({
-      deploy: {
-        ...deploy,
-        includeAllFiles: clearOption
-      },
-      proposal: {
-        clearAssets: clearOption,
-        autoCommit: !noCommit,
-        cdn: {
-          satellite
-        }
-      }
-    });
-
-  const uploadFileFn = async ({
-    filename: storageFilename,
-    fullPath: storagePath,
-    data,
-    collection,
-    headers = [],
-    encoding,
-    satellite,
-    proposalId
-  }: UploadFileFnParamsWithProposal) => {
-    // Similar as in Juno Core SDK
-    // The IC certification does not currently support encoding
-    const filename = decodeURI(storageFilename);
-    const fullPath = storagePath ?? `/${collection}/${filename}`;
-
-    await uploadAssetWithProposal({
-      cdn: {satellite},
-      proposalId,
-      asset: {
-        filename,
-        fullPath,
-        data,
-        collection,
-        headers,
-        encoding
-      }
-    });
-  };
-
   const result = await executeDeployWithProposal({
-    deployFn,
-    uploadFileFn,
-    options: {deprecatedGzip}
+    withBatch,
+    clearOption,
+    deprecatedGzip,
+    noCommit
   });
 
   if (result.result !== 'deployed') {
@@ -145,10 +96,13 @@ const deployImmediate = async ({
     await clear();
   }
 
-  const deployFn = async ({deploy}: DeployFnParams): Promise<DeployResult> =>
-    await cliDeploy(deploy);
+  const deployFn = async ({deploy: {params, upload}}: DeployFnParams): Promise<DeployResult> =>
+    await cliDeploy({
+      params,
+      upload: {uploadFile: upload}
+    });
 
-  const uploadFileFn = async ({
+  const uploadFn = async ({
     filename,
     fullPath,
     data,
@@ -170,7 +124,7 @@ const deployImmediate = async ({
 
   await executeDeployImmediate({
     deployFn,
-    uploadFileFn,
+    uploadFn,
     options: {deprecatedGzip}
   });
 };
