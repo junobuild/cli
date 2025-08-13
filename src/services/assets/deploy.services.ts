@@ -2,15 +2,15 @@ import {deploy as cliDeploy, type DeployResult, hasArgs} from '@junobuild/cli-to
 import {uploadBlob} from '@junobuild/core';
 import {yellow} from 'kleur';
 import {compare} from 'semver';
-import {clear} from './assets/clear.services';
+import {clearProposalStagedAssets} from '../changes/changes.clear.services';
+import {getSatelliteVersion} from '../version.services';
 import {
   type DeployFnParams,
   executeDeployImmediate,
   type UploadFileFnParams
-} from './assets/deploy/deploy.execute.services';
-import {deployWithProposal as executeDeployWithProposal} from './assets/deploy/deploy.with-proposal.services';
-import {clearProposalStagedAssets} from './changes/changes.clear.services';
-import {getSatelliteVersion} from './version.services';
+} from './_deploy/deploy.execute.services';
+import {deployWithProposal as executeDeployWithProposal} from './_deploy/deploy.with-proposal.services';
+import {clear} from './clear.services';
 
 export const deploy = async (args?: string[]) => {
   // TODO: Remove fetching the version. We use it for backwards compatibility reasons.

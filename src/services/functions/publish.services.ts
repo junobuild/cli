@@ -16,8 +16,8 @@ import {ENV} from '../../env';
 import type {SatelliteParametersWithId} from '../../types/satellite';
 import {assertConfigAndLoadSatelliteContext} from '../../utils/satellite.utils';
 import {readWasmFileMetadata} from '../../utils/wasm.utils';
-import {assertSatelliteMemorySize} from '../assets/deploy/deploy.assert.services';
-import {type UploadFileFnParamsWithProposal} from '../assets/deploy/deploy.execute.services';
+import {assertSatelliteMemorySize} from '../assert.services';
+import {type UploadFileFnParamsWithProposal} from '../assets/_deploy/deploy.execute.services';
 import {clearProposalStagedAssets} from '../changes/changes.clear.services';
 
 export const publish = async (args?: string[]) => {

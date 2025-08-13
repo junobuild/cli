@@ -14,7 +14,7 @@ import {red} from 'kleur';
 import {lstatSync} from 'node:fs';
 import type {SatelliteParametersWithId} from '../../../types/satellite';
 import {assertConfigAndLoadSatelliteContext} from '../../../utils/satellite.utils';
-import {assertSatelliteMemorySize} from './deploy.assert.services';
+import {assertSatelliteMemorySize} from '../../assert.services';
 import {listAssets} from './deploy.list.services';
 
 export interface DeployFnParams<T = UploadFile> {

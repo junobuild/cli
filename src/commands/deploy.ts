@@ -1,7 +1,7 @@
 import {hasArgs} from '@junobuild/cli-tools';
 import {junoConfigExist} from '../configs/juno.config';
+import {deploy as deployServices} from '../services/assets/deploy.services';
 import {config} from '../services/config/config.services';
-import {deploy as deployServices} from '../services/deploy.services';
 import {links} from '../services/links.services';
 import {init} from './init';
 
