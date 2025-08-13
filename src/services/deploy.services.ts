@@ -1,31 +1,15 @@
-import {uploadAssetsWithProposal, uploadAssetWithProposal} from '@junobuild/cdn';
-import type {UploadIndividually, UploadWithBatch} from '@junobuild/cli-tools';
-import {
-  deploy as cliDeploy,
-  deployWithProposal as cliDeployWithProposal,
-  type DeployParams,
-  type DeployResult,
-  type DeployResultWithProposal,
-  hasArgs,
-  type UploadFileStorage,
-  type UploadFilesWithProposal,
-  type UploadFileWithProposal
-} from '@junobuild/cli-tools';
+import {deploy as cliDeploy, type DeployResult, hasArgs} from '@junobuild/cli-tools';
 import {uploadBlob} from '@junobuild/core';
-import type {UploadAsset} from '@junobuild/storage';
 import {yellow} from 'kleur';
 import {compare} from 'semver';
-import type {SatelliteParametersWithId} from '../types/satellite';
 import {clear} from './assets/clear.services';
 import {
   type DeployFnParams,
   executeDeployImmediate,
-  executeDeployWithProposal,
-  type UploadFileFnParams,
-  type UploadFileFnParamsWithProposal,
-  type UploadFilesFnParamsWithProposal
+  type UploadFileFnParams
 } from './assets/deploy/deploy.execute.services';
 import {clearProposalStagedAssets} from './changes/changes.clear.services';
+import {deployWithProposal as executeDeployWithProposal} from './deploy/_deploy.with-proposal.services';
 import {getSatelliteVersion} from './version.services';
 
 export const deploy = async (args?: string[]) => {
@@ -82,115 +66,12 @@ const deployWithProposal = async ({
 }) => {
   const noCommit = hasArgs({args, options: ['--no-apply']});
 
-  const mapFileToAssetForUpload = ({
-    filename: storageFilename,
-    fullPath: storagePath,
-    data,
-    collection,
-    headers = [],
-    encoding
-  }: UploadFileStorage): UploadAsset => {
-    // Similar as in Juno Core SDK
-    // The IC certification does not currently support encoding
-    const filename = decodeURI(storageFilename);
-    const fullPath = storagePath ?? `/${collection}/${filename}`;
-
-    return {
-      filename,
-      fullPath,
-      data,
-      collection,
-      headers,
-      encoding
-    };
-  };
-
-  const deployWithProposal = async ({
-    deploy: {params, upload},
-    satellite
-  }: {
-    deploy: {
-      params: DeployParams;
-      upload: UploadIndividually<UploadFileWithProposal> | UploadWithBatch<UploadFilesWithProposal>;
-    };
-    satellite: SatelliteParametersWithId;
-  }): Promise<DeployResultWithProposal> =>
-    await cliDeployWithProposal({
-      deploy: {
-        params: {
-          ...params,
-          includeAllFiles: clearOption
-        },
-        upload
-      },
-      proposal: {
-        clearAssets: clearOption,
-        autoCommit: !noCommit,
-        cdn: {
-          satellite
-        }
-      }
-    });
-
-  const uploadFilesIndividually = async (): Promise<DeployResultWithProposal> => {
-    const uploadFn = async ({
-      satellite,
-      proposalId,
-      progress,
-      ...file
-    }: UploadFileFnParamsWithProposal) => {
-      await uploadAssetWithProposal({
-        cdn: {satellite},
-        proposalId,
-        progress,
-        asset: mapFileToAssetForUpload(file)
-      });
-    };
-
-    const deployFn = async ({
-      deploy: {params, upload},
-      satellite
-    }: DeployFnParams<UploadFileWithProposal>): Promise<DeployResultWithProposal> =>
-      await deployWithProposal({
-        deploy: {params, upload: {uploadFile: upload}},
-        satellite
-      });
-
-    return await executeDeployWithProposal({
-      deployFn,
-      uploadFn,
-      options: {deprecatedGzip},
-      method: 'single'
-    });
-  };
-
-  const uploadFilesWithBatch = async (): Promise<DeployResultWithProposal> => {
-    const uploadFn = async ({files, satellite, ...rest}: UploadFilesFnParamsWithProposal) => {
-      await uploadAssetsWithProposal({
-        cdn: {satellite},
-        assets: files.map(mapFileToAssetForUpload),
-        ...rest
-      });
-    };
-
-    const deployFn = async ({
-      deploy: {params, upload},
-      satellite
-    }: DeployFnParams<UploadFilesWithProposal>): Promise<DeployResultWithProposal> =>
-      await deployWithProposal({
-        deploy: {params, upload: {uploadFiles: upload}},
-        satellite
-      });
-
-    return await executeDeployWithProposal({
-      deployFn,
-      uploadFn,
-      method: 'grouped',
-      options: {deprecatedGzip}
-    });
-  };
-
-  const result = await (withBatch ? uploadFilesWithBatch() : uploadFilesIndividually());
+  const result = await executeDeployWithProposal({
+    withBatch,
+    clearOption,
+    deprecatedGzip,
+    noCommit
+  });
 
   if (result.result !== 'deployed') {
     return;
