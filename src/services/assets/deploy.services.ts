@@ -1,13 +1,10 @@
-import {deploy as cliDeploy, type DeployResult, hasArgs} from '@junobuild/cli-tools';
-import {uploadBlob} from '@junobuild/core';
+import {hasArgs} from '@junobuild/cli-tools';
 import {yellow} from 'kleur';
 import {compare} from 'semver';
-import type {DeployFnParams, UploadFileFnParams} from '../../types/deploy';
 import {clearProposalStagedAssets} from '../changes/changes.clear.services';
 import {getSatelliteVersion} from '../version.services';
-import {executeDeployImmediate} from './_deploy/deploy.execute.services';
+import {deployImmediate} from './_deploy/deploy.individual.services';
 import {deployWithProposal as executeDeployWithProposal} from './_deploy/deploy.with-proposal.services';
-import {clear} from './clear.services';
 
 export const deploy = async (args?: string[]) => {
   // TODO: Remove fetching the version. We use it for backwards compatibility reasons.
@@ -79,49 +76,5 @@ const deployWithProposal = async ({
   await clearProposalStagedAssets({
     args,
     proposalId
-  });
-};
-
-const deployImmediate = async ({
-  clearOption,
-  deprecatedGzip
-}: {
-  clearOption: boolean;
-  deprecatedGzip: string | undefined;
-}) => {
-  if (clearOption) {
-    await clear();
-  }
-
-  const deployFn = async ({deploy: {params, upload}}: DeployFnParams): Promise<DeployResult> =>
-    await cliDeploy({
-      params,
-      upload: {uploadFile: upload}
-    });
-
-  const uploadFn = async ({
-    filename,
-    fullPath,
-    data,
-    collection,
-    headers,
-    encoding,
-    satellite
-  }: UploadFileFnParams) => {
-    await uploadBlob({
-      satellite,
-      filename,
-      fullPath,
-      data,
-      collection,
-      headers,
-      encoding
-    });
-  };
-
-  await executeDeployImmediate({
-    deployFn,
-    uploadFn,
-    options: {deprecatedGzip}
   });
 };
