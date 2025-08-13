@@ -15,7 +15,7 @@ export const deploy = async (args?: string[]) => {
   const configOption = hasArgs({args, options: ['--config']});
   if (configOption) {
     console.log('');
-    await config();
+    await config(args);
   }
 
   await links();

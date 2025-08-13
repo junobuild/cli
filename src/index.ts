@@ -133,7 +133,7 @@ export const run = async () => {
       await deploy(args);
       break;
     case 'config':
-      await config();
+      await config(args);
       break;
     case 'clear':
       await clear();
