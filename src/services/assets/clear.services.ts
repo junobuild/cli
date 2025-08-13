@@ -24,9 +24,13 @@ export const clear = async () => {
       domains
     });
 
-    console.log(`${green('✔')} App assets cleared.`);
-  } finally {
     spinner.stop();
+
+    console.log(`${green('✔')} App assets cleared.`);
+    console.log('');
+  } catch (err: unknown) {
+    spinner.stop();
+    throw err;
   }
 };
 
