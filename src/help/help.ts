@@ -12,6 +12,7 @@ import {
   OPEN_DESCRIPTION,
   SNAPSHOT_DESCRIPTION,
   START_DESCRIPTION,
+  STATUS_DESCRIPTION,
   STOP_DESCRIPTION,
   UPGRADE_DESCRIPTION,
   USE_DESCRIPTION,
@@ -47,6 +48,7 @@ Commands:
   ${cyan('snapshot')}            ${SNAPSHOT_DESCRIPTION}
   ${cyan('start')}               ${START_DESCRIPTION}
   ${cyan('stop')}                ${STOP_DESCRIPTION}
+  ${cyan('status')}              ${STATUS_DESCRIPTION}
   ${cyan('upgrade')}             ${UPGRADE_DESCRIPTION}
   ${cyan('use')}                 ${USE_DESCRIPTION}
   ${cyan('version')}             ${VERSION_DESCRIPTION}
