@@ -12,6 +12,7 @@ import {TITLE} from './help';
 const usage = `Usage: ${green('juno')} ${cyan('deploy')} ${yellow('[options]')}
 
 Options:
+  ${yellow('--batch')}               Number of files to upload in parallel per batch (default: 20).
   ${yellow('--clear')}               Clear existing app files before proceeding with deployment.
   ${yellow('--config')}              Apply configuration after deployment succeeds.
   ${yellow('--no-apply')}            Submit the deployment as a change but do not apply it yet.

@@ -1,6 +1,8 @@
-import {hasArgs} from '@junobuild/cli-tools';
+import {isEmptyString} from '@dfinity/utils';
+import {hasArgs, nextArg} from '@junobuild/cli-tools';
 import {yellow} from 'kleur';
 import {compare} from 'semver';
+import {type DeployOptions} from '../../types/deploy';
 import {clearProposalStagedAssets} from '../changes/changes.clear.services';
 import {getSatelliteVersion} from '../version.services';
 import {deployImmediate} from './_deploy/deploy.individual.services';
@@ -20,11 +22,13 @@ export const deploy = async (args?: string[]) => {
   // wouldn't harm usage, it might prevent crawlers from properly fetching content.
   const deprecatedGzip = compare(result.version, '0.1.1') < 0 ? '**/*.+(css|js|mjs)' : undefined;
 
+  const {value: uploadBatchSize} = parseUploadBatchSize(args);
+
   const clearOption = hasArgs({args, options: ['--clear']});
   const immediate = hasArgs({args, options: ['-i', '--immediate']});
 
   if (immediate) {
-    await deployImmediate({clearOption, deprecatedGzip});
+    await deployImmediate({clearOption, deprecatedGzip, uploadBatchSize});
     return;
   }
 
@@ -36,7 +40,7 @@ export const deploy = async (args?: string[]) => {
     console.log(
       `${yellow('[Warn]')} Your Satellite is outdated. Please upgrade to take full advantage of the new deployment flow.`
     );
-    await deployImmediate({clearOption, deprecatedGzip});
+    await deployImmediate({clearOption, deprecatedGzip, uploadBatchSize});
     return;
   }
 
@@ -44,27 +48,22 @@ export const deploy = async (args?: string[]) => {
   // const withBatch = compare(result.version, '0.1.2') >= 0;
   const withBatch = true;
 
-  await deployWithProposal({args, clearOption, deprecatedGzip, withBatch});
+  await deployWithProposal({args, clearOption, deprecatedGzip, uploadBatchSize, withBatch});
 };
 
 const deployWithProposal = async ({
   args,
-  clearOption,
-  withBatch,
-  deprecatedGzip
+  ...rest
 }: {
   args?: string[];
   clearOption: boolean;
   withBatch: boolean;
-  deprecatedGzip: string | undefined;
-}) => {
+} & DeployOptions) => {
   const noCommit = hasArgs({args, options: ['--no-apply']});
 
   const result = await executeDeployWithProposal({
-    withBatch,
-    clearOption,
-    deprecatedGzip,
-    noCommit
+    noCommit,
+    ...rest
   });
 
   if (result.result !== 'deployed') {
@@ -77,4 +76,24 @@ const deployWithProposal = async ({
     args,
     proposalId
   });
+};
+
+const parseUploadBatchSize = (args?: string[]): {valid: boolean; value?: number} => {
+  const batchArg = nextArg({args, option: '--batch'});
+
+  if (isEmptyString(batchArg)) {
+    return {valid: true};
+  }
+
+  const batch = parseInt(batchArg);
+
+  if (isNaN(batch)) {
+    return {valid: false};
+  }
+
+  if (batch <= 0) {
+    return {valid: false};
+  }
+
+  return {valid: true, value: batch};
 };
