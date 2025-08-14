@@ -63,11 +63,17 @@ const executeDeploy = async <
   const {satellite, satelliteConfig: satelliteConfigRead} =
     await assertConfigAndLoadSatelliteContext();
 
-  const gzip = satelliteConfigRead.gzip ?? options.deprecatedGzip;
+  const precompress =
+    satelliteConfigRead.precompress ??
+    (nonNullish(options.deprecatedGzip)
+      ? {
+          pattern: options.deprecatedGzip
+        }
+      : undefined);
 
   const satelliteConfig: SatelliteConfig = {
     ...satelliteConfigRead,
-    ...(nonNullish(gzip) && {gzip})
+    ...(nonNullish(precompress) && {precompress})
   };
 
   await cliPreDeploy({config: satelliteConfig});
