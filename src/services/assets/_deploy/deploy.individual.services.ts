@@ -1,7 +1,11 @@
 import type {DeployResult} from '@junobuild/cli-tools';
 import {deploy as cliDeploy} from '@junobuild/cli-tools';
 import {uploadBlob} from '@junobuild/core';
-import {type DeployFnParams, type DeployOptions, type UploadFileFnParams} from '../../../types/deploy';
+import {
+  type DeployFnParams,
+  type DeployOptions,
+  type UploadFileFnParams
+} from '../../../types/deploy';
 import {clear} from '../clear.services';
 import {executeDeployImmediate} from './deploy.execute.services';
 
