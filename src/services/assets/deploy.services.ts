@@ -44,9 +44,8 @@ export const deploy = async (args?: string[]) => {
     return;
   }
 
-  // TODO: use version for batch
-  // const withBatch = compare(result.version, '0.1.2') >= 0;
-  const withBatch = true;
+  // Deploying with batch requires endpoints init_proposal_many_assets_upload and commit_proposal_many_assets_upload
+  const withBatch = compare(result.version, '0.1.2') >= 0;
 
   await deployWithProposal({args, clearOption, deprecatedGzip, uploadBatchSize, withBatch});
 };
