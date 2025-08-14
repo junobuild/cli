@@ -12,17 +12,17 @@ import {
 import type {UploadAsset} from '@junobuild/storage';
 import {
   type DeployFnParams,
+  type DeployOptions,
   type UploadFileFnParamsWithProposal,
   type UploadFilesFnParamsWithProposal
 } from '../../../types/deploy';
 import type {SatelliteParametersWithId} from '../../../types/satellite';
 import {executeDeployWithProposal} from './deploy.execute.services';
 
-interface DeployWithProposalParams {
+type DeployWithProposalParams = DeployOptions & {
   clearOption: boolean;
-  deprecatedGzip: string | undefined;
   noCommit: boolean;
-}
+};
 
 export const deployWithProposal = async ({
   withBatch,
@@ -35,6 +35,7 @@ export const deployWithProposal = async ({
 
 const uploadFilesIndividually = async ({
   deprecatedGzip,
+  uploadBatchSize,
   ...cliParams
 }: DeployWithProposalParams): Promise<DeployResultWithProposal> => {
   const uploadFn = async ({
@@ -64,13 +65,14 @@ const uploadFilesIndividually = async ({
   return await executeDeployWithProposal({
     deployFn,
     uploadFn,
-    options: {deprecatedGzip},
+    options: {deprecatedGzip, uploadBatchSize},
     method: 'individual'
   });
 };
 
 const uploadFilesWithBatch = async ({
   deprecatedGzip,
+  uploadBatchSize,
   ...cliParams
 }: DeployWithProposalParams): Promise<DeployResultWithProposal> => {
   const uploadFn = async ({files, satellite, ...rest}: UploadFilesFnParamsWithProposal) => {
@@ -95,7 +97,7 @@ const uploadFilesWithBatch = async ({
     deployFn,
     uploadFn,
     method: 'batch',
-    options: {deprecatedGzip}
+    options: {deprecatedGzip, uploadBatchSize}
   });
 };
 
@@ -109,7 +111,7 @@ const deployWithUpload = async ({
     upload: UploadIndividually<UploadFileWithProposal> | UploadWithBatch<UploadFilesWithProposal>;
   };
   satellite: SatelliteParametersWithId;
-  cliParams: Omit<DeployWithProposalParams, 'deprecatedGzip'>;
+  cliParams: Omit<DeployWithProposalParams, 'deprecatedGzip' | 'uploadBatchSize'>;
 }): Promise<DeployResultWithProposal> =>
   await cliDeployWithProposal({
     deploy: {

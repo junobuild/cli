@@ -12,6 +12,7 @@ import {red} from 'kleur';
 import {lstatSync} from 'node:fs';
 import {
   type DeployFnParams,
+  type DeployOptions,
   type UploadFileFnParams,
   type UploadFn,
   type UploadInput,
@@ -26,7 +27,7 @@ export const executeDeployWithProposal = async ({
   options,
   ...rest
 }: {
-  options: {deprecatedGzip?: string};
+  options: DeployOptions;
 } & UploadFn<UploadFileStorage, DeployResultWithProposal>): Promise<DeployResultWithProposal> => {
   return await executeDeploy<UploadFileStorage, DeployResultWithProposal>({
     options,
@@ -41,7 +42,7 @@ export const executeDeployImmediate = async ({
 }: {
   deployFn: (params: DeployFnParams) => Promise<DeployResult>;
   uploadFn: (params: UploadFileFnParams) => Promise<void>;
-  options: {deprecatedGzip?: string};
+  options: DeployOptions;
 }): Promise<DeployResult> => {
   return await executeDeploy<UploadFileStorage, DeployResult>({
     deployFn,
@@ -55,19 +56,19 @@ const executeDeploy = async <
   P extends UploadFileStorage,
   R extends DeployResult | DeployResultWithProposal
 >({
-  options,
+  options: {deprecatedGzip, ...restOptions},
   ...rest
 }: {
-  options: {deprecatedGzip?: string};
+  options: DeployOptions;
 } & UploadFn<P, R>): Promise<R> => {
   const {satellite, satelliteConfig: satelliteConfigRead} =
     await assertConfigAndLoadSatelliteContext();
 
   const precompress =
     satelliteConfigRead.precompress ??
-    (nonNullish(options.deprecatedGzip)
+    (nonNullish(deprecatedGzip)
       ? {
-          pattern: options.deprecatedGzip
+          pattern: deprecatedGzip
         }
       : undefined);
 
@@ -80,6 +81,7 @@ const executeDeploy = async <
 
   const result = await deployWithMethod<P, R>({
     ...rest,
+    ...restOptions,
     satellite,
     satelliteConfig
   });
@@ -100,12 +102,14 @@ const deployWithMethod = async <
   deployFn,
   uploadFn,
   method,
+  uploadBatchSize,
   satellite,
   satelliteConfig
 }: {
   satellite: SatelliteParametersWithId;
   satelliteConfig: SatelliteConfig;
-} & UploadFn<P, R>): Promise<R> => {
+} & Omit<DeployOptions, 'deprecatedGzip'> &
+  UploadFn<P, R>): Promise<R> => {
   const assertMemory = async () => {
     await assertSatelliteMemorySize();
   };
@@ -120,7 +124,8 @@ const deployWithMethod = async <
     config: satelliteConfig,
     listAssets: listExistingAssets,
     assertSourceDirExists,
-    assertMemory
+    assertMemory,
+    uploadBatchSize
   };
 
   if (method === 'batch') {

@@ -8,6 +8,11 @@ import type {
 import type {OnUploadProgress} from '@junobuild/storage';
 import type {SatelliteParametersWithId} from './satellite';
 
+export interface DeployOptions {
+  deprecatedGzip?: string;
+  uploadBatchSize: number | undefined;
+}
+
 export interface DeployFnParams<T = UploadFile> {
   deploy: {params: DeployParams; upload: T};
   satellite: SatelliteParametersWithId;

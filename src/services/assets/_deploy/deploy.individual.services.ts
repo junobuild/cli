@@ -1,17 +1,16 @@
 import type {DeployResult} from '@junobuild/cli-tools';
 import {deploy as cliDeploy} from '@junobuild/cli-tools';
 import {uploadBlob} from '@junobuild/core';
-import type {DeployFnParams, UploadFileFnParams} from '../../../types/deploy';
+import {type DeployFnParams, type DeployOptions, type UploadFileFnParams} from '../../../types/deploy';
 import {clear} from '../clear.services';
 import {executeDeployImmediate} from './deploy.execute.services';
 
 export const deployImmediate = async ({
   clearOption,
-  deprecatedGzip
+  ...restOptions
 }: {
   clearOption: boolean;
-  deprecatedGzip: string | undefined;
-}) => {
+} & DeployOptions) => {
   if (clearOption) {
     await clear();
   }
@@ -45,6 +44,6 @@ export const deployImmediate = async ({
   await executeDeployImmediate({
     deployFn,
     uploadFn,
-    options: {deprecatedGzip}
+    options: restOptions
   });
 };
