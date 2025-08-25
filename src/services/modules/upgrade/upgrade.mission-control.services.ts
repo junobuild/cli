@@ -5,7 +5,7 @@ import {
   upgradeMissionControl as upgradeMissionControlAdmin
 } from '@junobuild/admin';
 import {hasArgs, nextArg} from '@junobuild/cli-tools';
-import type {MissionControlParameters} from '@junobuild/ic-client';
+import type {MissionControlParameters} from '@junobuild/ic-client/actor';
 import {cyan, red} from 'kleur';
 import {actorParameters} from '../../../api/actor.api';
 import {getCliMissionControl} from '../../../configs/cli.config';
