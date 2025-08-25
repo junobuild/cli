@@ -1,6 +1,6 @@
 import {isNullish} from '@dfinity/utils';
 import {satelliteBuildType} from '@junobuild/admin';
-import type {SatelliteParameters} from '@junobuild/ic-client';
+import type {SatelliteParameters} from '@junobuild/ic-client/actor';
 import {cyan, magenta, yellow} from 'kleur';
 import type {AssetKey} from '../../../types/asset-key';
 import type {AssertWasmModule, UpgradeWasm} from '../../../types/upgrade';

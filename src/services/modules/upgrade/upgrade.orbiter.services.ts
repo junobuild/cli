@@ -1,7 +1,7 @@
 import type {PrincipalText} from '@dfinity/zod-schemas';
 import {orbiterVersion, upgradeOrbiter as upgradeOrbiterAdmin} from '@junobuild/admin';
 import {hasArgs, nextArg} from '@junobuild/cli-tools';
-import type {OrbiterParameters} from '@junobuild/ic-client';
+import type {OrbiterParameters} from '@junobuild/ic-client/actor';
 import {cyan, red} from 'kleur';
 import {actorParameters} from '../../../api/actor.api';
 import {getCliOrbiters} from '../../../configs/cli.config';

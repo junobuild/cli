@@ -1,6 +1,6 @@
 import {Ed25519KeyIdentity} from '@dfinity/identity/lib/cjs/identity/ed25519';
 import {isNullish, nonNullish} from '@dfinity/utils';
-import type {ActorParameters} from '@junobuild/ic-client';
+import type {ActorParameters} from '@junobuild/ic-client/actor';
 import {green, red} from 'kleur';
 import {getToken} from '../configs/cli.config';
 import {ENV} from '../env';
