@@ -29,3 +29,5 @@ const configPath = (): string => {
 };
 
 export const configFileExists = (): boolean => existsSync(configPath());
+
+export const noConfigFile = (): boolean => !configFileExists();
