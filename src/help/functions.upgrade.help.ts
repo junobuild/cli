@@ -3,6 +3,7 @@ import {
   FUNCTIONS_UPGRADE_DESCRIPTION,
   OPTION_HELP,
   OPTION_SRC,
+  OPTIONS_ENV,
   OPTIONS_UPGRADE
 } from '../constants/help.constants';
 import {helpOutput} from './common.help';
@@ -13,8 +14,9 @@ const usage = `Usage: ${green('juno')} ${cyan('functions')} ${magenta('upgrade')
 Options:
   ${yellow('--cdn')}                 Select a previously published WASM file from the CDN (interactive).
   ${yellow('--cdn-path')}            Use a specific published WASM file from the CDN.
-  ${OPTIONS_UPGRADE}
   ${OPTION_SRC}
+  ${OPTIONS_UPGRADE}
+  ${OPTIONS_ENV}
   ${OPTION_HELP}
   
 Notes:
