@@ -1,5 +1,5 @@
 import {assertNonNullish} from '@dfinity/utils';
-import {junoConfigExist} from '../../../configs/juno.config';
+import {noJunoConfig} from '../../../configs/juno.config';
 import type {AssetKey} from '../../../types/asset-key';
 import {consoleNoConfigFound} from '../../../utils/msg.utils';
 import {assertConfigAndLoadSatelliteContext} from '../../../utils/satellite.utils';
@@ -28,7 +28,7 @@ const executeSnapshotFn = async ({
 }: {
   fn: (params: {canisterId: string; segment: AssetKey}) => Promise<void>;
 }) => {
-  if (!(await junoConfigExist())) {
+  if (await noJunoConfig()) {
     consoleNoConfigFound();
     return;
   }

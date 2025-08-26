@@ -32,6 +32,10 @@ export const junoConfigExist = async (): Promise<boolean> => {
   return await junoConfigExistTools(JUNO_CONFIG_FILE);
 };
 
+export const noJunoConfig = async (): Promise<boolean> => {
+  return !(await junoConfigExist());
+};
+
 export const junoConfigFile = (): ConfigFile => junoConfigFileTools(JUNO_CONFIG_FILE);
 
 export const detectJunoConfigType = (): ConfigFile | undefined =>

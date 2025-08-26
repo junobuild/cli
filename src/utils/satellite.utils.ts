@@ -4,7 +4,7 @@ import type {JunoConfig, SatelliteConfig} from '@junobuild/config';
 import {red} from 'kleur';
 import {actorParameters} from '../api/actor.api';
 import {getCliOrbiters, getCliSatellites} from '../configs/cli.config';
-import {junoConfigExist, readJunoConfig} from '../configs/juno.config';
+import {noJunoConfig, readJunoConfig} from '../configs/juno.config';
 import {ENV} from '../env';
 import type {SatelliteConfigEnv} from '../types/config';
 import type {SatelliteParametersWithId} from '../types/satellite';
@@ -35,7 +35,7 @@ export const assertConfigAndReadSatelliteId = async (): Promise<{satelliteId: Pr
 };
 
 const assertAndReadJunoConfig = async (): Promise<JunoConfig> => {
-  if (!(await junoConfigExist())) {
+  if (await noJunoConfig()) {
     consoleNoConfigFound();
     process.exit(1);
   }

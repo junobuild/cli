@@ -8,8 +8,8 @@ import prompts from 'prompts';
 import {getCliOrbiters, getCliSatellites} from '../configs/cli.config';
 import {
   detectJunoConfigType,
-  junoConfigExist,
   junoConfigFile,
+  noJunoConfig,
   writeJunoConfig,
   writeJunoConfigPlaceholder
 } from '../configs/juno.config';
@@ -143,7 +143,7 @@ const promptSource = async ({pm}: {pm: PackageManager | undefined}): Promise<str
 };
 
 const initConfigType = async (): Promise<PartialConfigFile> => {
-  if (!(await junoConfigExist())) {
+  if (await noJunoConfig()) {
     // We try to automatically detect if we should create a TypeScript or JavaScript (mjs) configuration.
     const detectedConfig = detectJunoConfigType();
 
