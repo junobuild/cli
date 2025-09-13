@@ -1,5 +1,5 @@
-import type {JsonnableEd25519KeyIdentity} from '@dfinity/identity/lib/cjs/identity/ed25519';
 import type {PrincipalText} from '@dfinity/zod-schemas';
+import {type JsonnableEd25519KeyIdentity} from './identity';
 
 export interface CliConfig {
   token: JsonnableEd25519KeyIdentity;

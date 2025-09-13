@@ -1,10 +1,10 @@
-import type {JsonnableEd25519KeyIdentity} from '@dfinity/identity/lib/cjs/identity/ed25519';
 import {assertNonNullish, nonNullish} from '@dfinity/utils';
 import type Conf from 'conf';
 import {red, yellow} from 'kleur';
 import {askForPassword} from '../services/cli.settings.services';
 import {getSettingsStore} from '../stores/settings.store';
 import type {CliConfig, CliOrbiterConfig, CliSatelliteConfig} from '../types/cli.config';
+import {type JsonnableEd25519KeyIdentity} from '../types/identity';
 import {loadConfig} from '../utils/config.utils';
 
 // Save in https://github.com/sindresorhus/env-paths#pathsconfig
