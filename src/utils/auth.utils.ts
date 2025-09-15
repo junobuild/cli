@@ -3,7 +3,7 @@ import {nonNullish} from '@dfinity/utils';
 import type {PrincipalText} from '@dfinity/zod-schemas';
 import {REDIRECT_URL} from '../constants/constants';
 import {ENV} from '../env';
-import {type JsonnableEd25519KeyIdentity} from '../types/identity';
+import type {JsonnableEd25519KeyIdentity} from '../types/identity';
 
 export const generateToken = (): {principal: PrincipalText; token: JsonnableEd25519KeyIdentity} => {
   const key = Ed25519KeyIdentity.generate();

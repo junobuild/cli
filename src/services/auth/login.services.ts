@@ -8,7 +8,7 @@ import path, {dirname} from 'node:path';
 import {fileURLToPath} from 'node:url';
 import util from 'node:util';
 import {saveCliConfig} from '../../configs/cli.config';
-import {type JsonnableEd25519KeyIdentity} from '../../types/identity';
+import type {JsonnableEd25519KeyIdentity} from '../../types/identity';
 import {authUrl, generateToken, requestUrl} from '../../utils/auth.utils';
 import {openUrl} from '../../utils/open.utils';
 import {getPort} from '../../utils/port.utils';
