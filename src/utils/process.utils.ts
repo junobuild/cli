@@ -1,5 +1,5 @@
+import type {JsonnableEd25519KeyIdentity} from '@dfinity/identity';
 import {hasArgs} from '@junobuild/cli-tools';
-import {type JsonnableEd25519KeyIdentity} from '../types/identity';
 
 export const getProcessToken = (): JsonnableEd25519KeyIdentity | undefined => {
   const envToken = process.env.JUNO_TOKEN;
