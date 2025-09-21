@@ -6,6 +6,7 @@ import {clear} from './commands/clear';
 import {config} from './commands/config';
 import {deploy} from './commands/deploy';
 import {dev, helpDev} from './commands/dev';
+import {emulator, helpEmulator} from './commands/emulator';
 import {functions, helpFunctions} from './commands/functions';
 import {init} from './commands/init';
 import {open} from './commands/open';
@@ -77,6 +78,9 @@ export const run = async () => {
         break;
       case 'deploy':
         logHelpDeploy(args);
+        break;
+      case 'emulator':
+        helpEmulator(args);
         break;
       case 'dev':
         helpDev(args);
@@ -158,6 +162,9 @@ export const run = async () => {
       break;
     case 'start':
       await startStop({args, action: 'start'});
+      break;
+    case 'emulator':
+      await emulator(args);
       break;
     case 'dev':
       await dev(args);

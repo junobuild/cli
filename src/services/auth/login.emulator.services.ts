@@ -7,7 +7,7 @@ import {readEmulatorConfig} from '../../configs/emulator.config';
 import {ENV} from '../../env';
 import {generateToken} from '../../utils/auth.utils';
 import {assertConfigAndReadSatelliteId} from '../../utils/satellite.utils';
-import {dispatchRequest} from '../emulator/emulator.admin.services';
+import {dispatchRequest} from '../emulator/admin.services';
 
 export const loginEmulatorOnly = async () => {
   const spinner = ora('Granting terminal access...').start();

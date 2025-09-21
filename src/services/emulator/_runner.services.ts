@@ -25,8 +25,8 @@ import {
   hasExistingContainer,
   isContainerRunning
 } from '../../utils/runner.utils';
-import {createDeployTargetDir} from '../emulator/emulator.fs.services';
 import {initConfigNoneInteractive} from '../init.services';
+import {createDeployTargetDir} from './_fs.services';
 
 export const startContainer = async () => {
   await assertAndInitConfig();
