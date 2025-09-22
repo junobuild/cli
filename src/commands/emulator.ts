@@ -1,16 +1,12 @@
 import {red} from 'kleur';
-import {logHelpDev} from '../help/dev.help';
+import {logHelpEmulator} from '../help/emulator.help';
 import {logHelpEmulatorStart} from '../help/emulator.start.help';
 import {logHelpEmulatorWait} from '../help/emulator.wait.help';
-import {logHelpFunctionsBuild} from '../help/functions.build.help';
-import {logHelpFunctionsEject} from '../help/functions.eject.help';
 import {start} from '../services/emulator/start.services';
 import {stop} from '../services/emulator/stop.services';
 import {wait} from '../services/emulator/wait.services';
-import {build} from '../services/functions/build/build.services';
-import {eject} from '../services/functions/eject/eject.services';
 
-export const dev = async (args?: string[]) => {
+export const emulator = async (args?: string[]) => {
   const [subCommand] = args ?? [];
 
   switch (subCommand) {
@@ -23,19 +19,13 @@ export const dev = async (args?: string[]) => {
     case 'wait':
       await wait(args);
       break;
-    case 'eject':
-      await eject(args);
-      break;
-    case 'build':
-      await build(args);
-      break;
     default:
       console.log(red('Unknown subcommand.'));
-      logHelpDev(args);
+      logHelpEmulator(args);
   }
 };
 
-export const helpDev = (args?: string[]) => {
+export const helpEmulator = (args?: string[]) => {
   const [subCommand] = args ?? [];
 
   switch (subCommand) {
@@ -45,13 +35,7 @@ export const helpDev = (args?: string[]) => {
     case 'wait':
       logHelpEmulatorWait(args);
       break;
-    case 'build':
-      logHelpFunctionsBuild(args);
-      break;
-    case 'eject':
-      logHelpFunctionsEject(args);
-      break;
     default:
-      logHelpDev(args);
+      logHelpEmulator(args);
   }
 };

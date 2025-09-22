@@ -4,7 +4,7 @@ import {green, red} from 'kleur';
 import ora from 'ora';
 import {readEmulatorConfig} from '../../configs/emulator.config';
 import type {CliEmulatorConfig} from '../../types/emulator';
-import {dispatchRequest} from '../emulator/emulator.admin.services';
+import {dispatchRequest} from './admin.services';
 
 const DEFAULT_TIMEOUT_IN_MILLISECONDS = 2 * 60 * 1000;
 const RETRY_IN_MILLISECONDS = 500;

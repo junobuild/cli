@@ -4,7 +4,7 @@ import {
   CLEAR_DESCRIPTION,
   CONFIG_DESCRIPTION,
   DEPLOY_DESCRIPTION,
-  DEV_DESCRIPTION,
+  EMULATOR_DESCRIPTION,
   FUNCTIONS_DESCRIPTION,
   INIT_DESCRIPTION,
   LOGIN_DESCRIPTION,
@@ -38,7 +38,7 @@ Commands:
   ${cyan('clear')}               ${CLEAR_DESCRIPTION}
   ${cyan('config')}              ${CONFIG_DESCRIPTION}
   ${cyan('deploy')}              ${DEPLOY_DESCRIPTION}
-  ${cyan('dev')}                 ${DEV_DESCRIPTION}
+  ${cyan('dev')}                 ${EMULATOR_DESCRIPTION}
   ${cyan('functions')}           ${FUNCTIONS_DESCRIPTION}
   ${cyan('init')}                ${INIT_DESCRIPTION}
   ${cyan('help')}                Display help information.

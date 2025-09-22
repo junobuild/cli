@@ -1,7 +1,7 @@
 import {red} from 'kleur';
 import {readEmulatorConfig} from '../../../configs/emulator.config';
 import {SATELLITE_WASM, SPUTNIK_INDEX_MJS} from '../../../constants/dev.constants';
-import {dispatchRequest} from '../../emulator/emulator.admin.services';
+import {dispatchRequest} from '../../emulator/admin.services';
 
 export const dispatchEmulatorTouchSatellite = async () => {
   await dispatchTouch({filename: `${SATELLITE_WASM}.gz`});

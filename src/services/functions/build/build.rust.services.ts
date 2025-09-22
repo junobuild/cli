@@ -29,7 +29,7 @@ import {readSatelliteDid} from '../../../utils/did.utils';
 import {checkRustVersion} from '../../../utils/env.utils';
 import {formatTime} from '../../../utils/format.utils';
 import {readPackageJson} from '../../../utils/pkg.utils';
-import {readEmulatorConfigAndCreateDeployTargetDir} from '../../emulator/emulator.fs.services';
+import {readEmulatorConfigAndCreateDeployTargetDir} from '../../emulator/_fs.services';
 import {prepareJunoPkgForSatellite, prepareJunoPkgForSputnik} from './build.metadata.services';
 import {dispatchEmulatorTouchSatellite} from './touch.services';
 

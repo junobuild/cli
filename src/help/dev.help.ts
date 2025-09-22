@@ -1,22 +1,18 @@
 import {cyan, green, magenta, yellow} from 'kleur';
-import {
-  DEV_DESCRIPTION,
-  DEV_START_DESCRIPTION,
-  DEV_WAIT_DESCRIPTION
-} from '../constants/help.constants';
+import {EMULATOR_DESCRIPTION} from '../constants/help.constants';
 import {helpOutput} from './common.help';
 import {TITLE} from './help';
 
 const usage = `Usage: ${green('juno')} ${cyan('dev')} ${magenta('<subcommand>')} ${yellow('[options]')}
 
 Subcommands:
-  ${magenta('start')}               ${DEV_START_DESCRIPTION}
-  ${magenta('stop')}                Stop the local network.
-  ${magenta('wait')}                ${DEV_WAIT_DESCRIPTION}
+  ${magenta('start')}               Alias for ${green('juno')} ${cyan('emulator')} ${magenta('start')}.
+  ${magenta('stop')}                Alias for ${green('juno')} ${cyan('emulator')} ${magenta('stop')}.
+  ${magenta('wait')}                Alias for ${green('juno')} ${cyan('emulator')} ${magenta('wait')}.
   ${magenta('build')}               Alias for ${green('juno')} ${cyan('functions')} ${magenta('build')}.
   ${magenta('eject')}               Alias for ${green('juno')} ${cyan('functions')} ${magenta('eject')}.`;
 
-const doc = `${DEV_DESCRIPTION}
+const doc = `${EMULATOR_DESCRIPTION}
 
 \`\`\`
 ${usage}
@@ -25,7 +21,7 @@ ${usage}
 
 const help = `${TITLE}
 
-${DEV_DESCRIPTION}
+${EMULATOR_DESCRIPTION}
 
 ${usage}
 `;
