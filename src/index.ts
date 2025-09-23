@@ -32,6 +32,7 @@ import {logHelpUpgrade} from './help/upgrade.help';
 import {logHelpVersion} from './help/version.help';
 import {logHelpWhoAmI} from './help/whoami.help';
 import {checkNodeVersion} from './utils/env.utils';
+import {helpRun, run as runCmd} from './commands/run';
 
 export const run = async () => {
   const {valid} = checkNodeVersion();
@@ -84,6 +85,9 @@ export const run = async () => {
         break;
       case 'dev':
         helpDev(args);
+        break;
+      case 'run':
+        helpRun(args);
         break;
       case 'fn':
       case 'functions':
@@ -168,6 +172,9 @@ export const run = async () => {
       break;
     case 'dev':
       await dev(args);
+      break;
+    case 'run':
+      await runCmd(args);
       break;
     case 'fn':
     case 'functions':
