@@ -23,6 +23,7 @@ export const VERSION_DESCRIPTION = 'Check the version of the CLI.';
 export const STATUS_DESCRIPTION = 'Check the status of the modules.';
 export const WHOAMI_DESCRIPTION =
   'Display your current profile, access key, and links to your satellite.';
+export const RUN_DESCRIPTION = 'Run a custom script in the CLI context.';
 
 export const EMULATOR_START_DESCRIPTION = 'Start the emulator for local development.';
 export const EMULATOR_WAIT_DESCRIPTION = 'Wait until the emulator is ready.';

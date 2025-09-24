@@ -1,4 +1,4 @@
-import {logHelpDev} from '../help/dev.help';
+import {logHelpRun} from '../help/run.help';
 import {run as runServices} from '../services/run.services';
 
 export const run = async (args?: string[]) => {
@@ -6,5 +6,5 @@ export const run = async (args?: string[]) => {
 };
 
 export const helpRun = (args?: string[]) => {
-  logHelpDev(args);
+  logHelpRun(args);
 };
