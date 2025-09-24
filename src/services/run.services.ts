@@ -4,8 +4,6 @@ import {nextArg} from '@junobuild/cli-tools';
 import {OnRunSchema, type RunFnOrObject, RunFnOrObjectSchema} from '@junobuild/config';
 import {build} from 'esbuild';
 import {red, yellow} from 'kleur';
-import {readFile} from 'node:fs/promises';
-import {extname} from 'node:path';
 import {ENV} from '../env';
 import {assertConfigAndLoadSatelliteContext} from '../utils/satellite.utils';
 
@@ -63,20 +61,13 @@ const importOnRun = async ({
 }: {
   infile: string;
 }): Promise<{onRun: RunFnOrObject | undefined}> => {
-  const isTypeScript = extname(infile) === '.ts';
-
-  const {code} = await (isTypeScript ? buildCode({infile}) : readCode({infile}));
+  const {code} = await buildCode({infile});
 
   const {onRun} = await import(
     `data:text/javascript;base64,${Buffer.from(code).toString(`base64`)}`
   );
 
   return {onRun: typeof onRun === 'undefined' ? undefined : onRun};
-};
-
-const readCode = async ({infile}: {infile: string}): Promise<{code: Uint8Array}> => {
-  const code = await readFile(infile);
-  return {code};
 };
 
 const buildCode = async ({infile}: {infile: string}): Promise<{code: Uint8Array}> => {
