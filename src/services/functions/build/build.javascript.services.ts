@@ -1,5 +1,5 @@
 import {notEmptyString} from '@dfinity/utils';
-import {buildEsm, formatBytes} from '@junobuild/cli-tools';
+import {buildFunctions, formatBytes} from '@junobuild/cli-tools';
 import type {Metafile} from 'esbuild';
 import {green, red, yellow} from 'kleur';
 import {join} from 'node:path';
@@ -69,7 +69,7 @@ const buildWithEsbuild = async ({
     js: `// @juno:package ${JSON.stringify(metadata)};`
   };
 
-  const {metafile, errors, warnings, version} = await buildEsm({
+  const {metafile, errors, warnings, version} = await buildFunctions({
     infile,
     outfile: DEPLOY_SPUTNIK_PATH,
     banner
