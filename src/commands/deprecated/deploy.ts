@@ -1,4 +1,4 @@
-import {logHelpHostingDeploy} from '../../help/hosting.deploy.help';
+import {logHelpDeploy} from '../../help/deprecated/deploy.help';
 import {deploy as deployServices} from '../../services/assets/deploy.services';
 
 /**
@@ -12,5 +12,5 @@ export const deploy = async (args?: string[]) => {
  * @deprecated
  */
 export const helpDeploy = (args?: string[]) => {
-  logHelpHostingDeploy(args);
+  logHelpDeploy(args);
 };
