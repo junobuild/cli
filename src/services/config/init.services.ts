@@ -87,7 +87,7 @@ type InitConfigParams = PartialConfigFile & {pm: PackageManager | undefined} & {
   source: string;
 };
 
-const initConfigNoneInteractive = async ({
+export const initConfigNoneInteractive = async ({
   emulatorConfig
 }: {emulatorConfig?: EmulatorConfigWithoutConsole} = {}) => {
   const writeFn = async ({source, ...rest}: InitConfigParams) => {
