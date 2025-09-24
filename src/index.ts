@@ -20,7 +20,7 @@ import {version as versionCommand} from './commands/version';
 import {whoami} from './commands/whoami';
 import {logHelpConfigApply} from './help/config.apply.help';
 import {help} from './help/help';
-import {logHelpInit} from './help/init.help';
+import {logHelpConfigInit} from './help/config.init.help';
 import {logHelpLogin} from './help/login.help';
 import {logHelpLogout} from './help/logout.help';
 import {logHelpOpen} from './help/open.help';
@@ -99,7 +99,7 @@ export const run = async () => {
         logHelpSnapshot(args);
         break;
       case 'init':
-        logHelpInit(args);
+        logHelpConfigInit(args);
         break;
       case 'logout':
         logHelpLogout(args);
