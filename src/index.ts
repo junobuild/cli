@@ -5,7 +5,7 @@ import {changes, helpChanges} from './commands/changes';
 import {config} from './commands/config';
 import {clear, helpClear} from './commands/deprecated/clear';
 import {deploy, helpDeploy} from './commands/deprecated/deploy';
-import {dev, helpDev} from './commands/dev';
+import {dev, helpDev} from './commands/deprecated/dev';
 import {emulator, helpEmulator} from './commands/emulator';
 import {functions, helpFunctions} from './commands/functions';
 import {helpHosting, hosting} from './commands/hosting';
