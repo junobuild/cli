@@ -1,6 +1,5 @@
 import {nextArg} from '@junobuild/cli-tools';
 import {red} from 'kleur';
-import {logHelpDev} from '../help/dev.help';
 import {logHelpSnapshot} from '../help/snapshot.help';
 import {
   createSnapshotMissionControl,
@@ -48,7 +47,7 @@ export const snapshot = async (args?: string[]) => {
       break;
     default:
       console.log(red('Unknown subcommand.'));
-      logHelpDev();
+      logHelpSnapshot(args);
   }
 };
 
