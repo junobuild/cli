@@ -10,6 +10,7 @@ import {emulator, helpEmulator} from './commands/emulator';
 import {functions, helpFunctions} from './commands/functions';
 import {init} from './commands/init';
 import {open} from './commands/open';
+import {helpRun, run as runCmd} from './commands/run';
 import {snapshot} from './commands/snapshot';
 import {startStop} from './commands/start-stop';
 import {status} from './commands/status';
@@ -32,7 +33,6 @@ import {logHelpUpgrade} from './help/upgrade.help';
 import {logHelpVersion} from './help/version.help';
 import {logHelpWhoAmI} from './help/whoami.help';
 import {checkNodeVersion} from './utils/env.utils';
-import {helpRun, run as runCmd} from './commands/run';
 
 export const run = async () => {
   const {valid} = checkNodeVersion();
