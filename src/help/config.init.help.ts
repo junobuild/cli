@@ -6,7 +6,7 @@ import {TITLE} from './help';
 const usage = `Usage: ${green('juno')} ${cyan('config')} ${magenta('init')} ${yellow('[options]')}
 
 Options:
-  ${yellow('--minimal')}         Skip few prompts and generate a config file with a placeholder satellite ID.
+  ${yellow('--minimal')}             Skip few prompts and generate a config file with a placeholder satellite ID.
   ${OPTIONS_ENV}
   ${OPTION_HELP}`;
 
