@@ -11,7 +11,7 @@ import {TITLE} from './help';
 const usage = `Usage: ${green('juno')} ${cyan('run')} ${yellow('[options]')}
 
 Options:
-  ${yellow('-s, --src')}        The path to your JavaScript or TypeScript script.
+  ${yellow('-s, --src')}             The path to your JavaScript or TypeScript script.
   ${OPTIONS_CONFIG}
   ${OPTIONS_CONTAINER}
   ${OPTION_HELP}`;
