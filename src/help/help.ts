@@ -5,7 +5,6 @@ import {
   EMULATOR_DESCRIPTION,
   FUNCTIONS_DESCRIPTION,
   HOSTING_DESCRIPTION,
-  INIT_DESCRIPTION,
   LOGIN_DESCRIPTION,
   LOGOUT_DESCRIPTION,
   OPEN_DESCRIPTION,
@@ -38,7 +37,6 @@ Commands:
   ${cyan('functions')}           ${FUNCTIONS_DESCRIPTION}
   ${cyan('help')}                Display help information.
   ${cyan('hosting')}             ${HOSTING_DESCRIPTION}
-  ${cyan('init')}                ${INIT_DESCRIPTION}
   ${cyan('login')}               ${LOGIN_DESCRIPTION}
   ${cyan('logout')}              ${LOGOUT_DESCRIPTION}
   ${cyan('open')}                ${OPEN_DESCRIPTION}

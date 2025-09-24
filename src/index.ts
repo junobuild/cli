@@ -18,7 +18,7 @@ import {status} from './commands/status';
 import {upgrade} from './commands/upgrade';
 import {version as versionCommand} from './commands/version';
 import {whoami} from './commands/whoami';
-import {logHelpConfig} from './help/config.help';
+import {logHelpConfigApply} from './help/config.apply.help';
 import {help} from './help/help';
 import {logHelpInit} from './help/init.help';
 import {logHelpLogin} from './help/login.help';
@@ -71,7 +71,7 @@ export const run = async () => {
         logHelpOpen(args);
         break;
       case 'config':
-        logHelpConfig(args);
+        logHelpConfigApply(args);
         break;
       case 'clear':
         helpClear(args);

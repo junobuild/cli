@@ -1,5 +1,5 @@
 import {cyan, green, yellow} from 'kleur';
-import {INIT_DESCRIPTION, OPTION_HELP, OPTIONS_ENV} from '../constants/help.constants';
+import {CONFIG_INIT_DESCRIPTION, OPTION_HELP, OPTIONS_ENV} from '../constants/help.constants';
 import {helpOutput} from './common.help';
 import {TITLE} from './help';
 
@@ -10,7 +10,7 @@ Options:
   ${OPTIONS_ENV}
   ${OPTION_HELP}`;
 
-const doc = `${INIT_DESCRIPTION}
+const doc = `${CONFIG_INIT_DESCRIPTION}
 
 \`\`\`
 ${usage}
@@ -19,7 +19,7 @@ ${usage}
 
 const help = `${TITLE}
 
-${INIT_DESCRIPTION}
+${CONFIG_INIT_DESCRIPTION}
 
 ${usage}
 `;
