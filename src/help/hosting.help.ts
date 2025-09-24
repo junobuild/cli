@@ -10,8 +10,8 @@ import {TITLE} from './help';
 const usage = `Usage: ${green('juno')} ${cyan('hosting')} ${magenta('<subcommand>')} ${yellow('[options]')}
 
 Subcommands:
-  ${magenta('deploy')}              ${HOSTING_DEPLOY_DESCRIPTION}
-  ${magenta('clear')}               ${HOSTING_CLEAR_DESCRIPTION}`;
+  ${magenta('clear')}               ${HOSTING_CLEAR_DESCRIPTION}
+  ${magenta('deploy')}              ${HOSTING_DEPLOY_DESCRIPTION}`;
 
 const doc = `${HOSTING_DESCRIPTION}
 
