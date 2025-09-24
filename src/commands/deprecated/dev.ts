@@ -1,5 +1,5 @@
 import {red} from 'kleur';
-import {logHelpDev} from '../../help/dev.help';
+import {logHelpDev} from '../../help/deprecated/dev.help';
 import {logHelpEmulatorStart} from '../../help/emulator.start.help';
 import {logHelpEmulatorWait} from '../../help/emulator.wait.help';
 import {logHelpFunctionsBuild} from '../../help/functions.build.help';
@@ -37,7 +37,9 @@ export const dev = async (args?: string[]) => {
       logHelpDev(args);
   }
 };
-
+/**
+ * @deprecated
+ */
 export const helpDev = (args?: string[]) => {
   const [subCommand] = args ?? [];
 

@@ -1,7 +1,7 @@
 import {cyan, green, magenta, yellow} from 'kleur';
-import {EMULATOR_DESCRIPTION} from '../constants/help.constants';
-import {helpOutput} from './common.help';
-import {TITLE} from './help';
+import {EMULATOR_DESCRIPTION} from '../../constants/help.constants';
+import {helpOutput} from '../common.help';
+import {TITLE} from '../help';
 
 const usage = `Usage: ${green('juno')} ${cyan('dev')} ${magenta('<subcommand>')} ${yellow('[options]')}
 
