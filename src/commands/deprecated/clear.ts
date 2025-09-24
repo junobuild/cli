@@ -1,4 +1,4 @@
-import {logHelpEmulatorClear} from '../../help/hosting.clear.help';
+import {logHelpClear} from '../../help/deprecated/clear.help';
 import {clear as clearServices} from '../../services/assets/clear.services';
 
 /**
@@ -12,5 +12,5 @@ export const clear = async (args?: string[]) => {
  * @deprecated
  */
 export const helpClear = (args?: string[]) => {
-  logHelpEmulatorClear(args);
+  logHelpClear(args);
 };
