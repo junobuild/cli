@@ -18,7 +18,7 @@ import type {CliOrbiterConfig, CliSatelliteConfig} from '../../types/cli.config'
 import {type EmulatorConfigWithoutConsole} from '../../types/emulator';
 import type {PackageManager} from '../../types/pm';
 import {detectPackageManager} from '../../utils/pm.utils';
-import {confirmAndExit, NEW_CMD_LINE} from '../../utils/prompt.utils';
+import {confirm, confirmAndExit, NEW_CMD_LINE} from '../../utils/prompt.utils';
 import {login as consoleLogin} from '../auth/login.services';
 
 export const init = async (args?: string[]) => {
