@@ -23,6 +23,7 @@ export const VERSION_DESCRIPTION = 'Check the version of the CLI.';
 export const STATUS_DESCRIPTION = 'Check the status of the modules.';
 export const WHOAMI_DESCRIPTION =
   'Display your current profile, access key, and links to your satellite.';
+export const RUN_DESCRIPTION = 'Run a custom script in the CLI context.';
 
 export const EMULATOR_START_DESCRIPTION = 'Start the emulator for local development.';
 export const EMULATOR_WAIT_DESCRIPTION = 'Wait until the emulator is ready.';
@@ -58,8 +59,9 @@ export const OPTIONS_BUILD = `${yellow('-l, --lang')}            Specify the lan
   ${yellow('--source-path')}         Optional path to the TypeScript or JavaScript entry file.`;
 export const OPTIONS_CONFIG = `${OPTION_MODE}
   ${OPTION_PROFILE}`;
+export const OPTIONS_CONTAINER = `${yellow('--container-url')}       Override a custom container URL. If not provided, defaults to production or the local container in development mode.`;
 export const OPTIONS_ENV = `${OPTIONS_CONFIG}
-  ${yellow('--container-url')}       Override a custom container URL. If not provided, defaults to production or the local container in development mode.
+  ${OPTIONS_CONTAINER}
   ${yellow('--console-url')}         Specify a custom URL to access the developer Console.`;
 
 export const NOTE_KEEP_STAGED = `The option ${yellow('--keep-staged')} only applies when ${yellow('--no-apply')} is NOT used (i.e. the change is applied immediately).`;

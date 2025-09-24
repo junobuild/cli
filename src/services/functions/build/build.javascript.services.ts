@@ -1,7 +1,7 @@
 import {notEmptyString} from '@dfinity/utils';
-import {buildEsm, execute, formatBytes} from '@junobuild/cli-tools';
+import {buildEsm, formatBytes} from '@junobuild/cli-tools';
 import type {Metafile} from 'esbuild';
-import {green, magenta, red, yellow} from 'kleur';
+import {green, red, yellow} from 'kleur';
 import {join} from 'node:path';
 import {
   DEPLOY_SPUTNIK_PATH,
@@ -10,9 +10,8 @@ import {
   INDEX_TS
 } from '../../../constants/dev.constants';
 import type {BuildArgs, BuildLang, BuildMetadata} from '../../../types/build';
+import {installEsbuild} from '../../../utils/esbuild.utils';
 import {formatTime} from '../../../utils/format.utils';
-import {detectPackageManager} from '../../../utils/pm.utils';
-import {confirmAndExit} from '../../../utils/prompt.utils';
 import {readEmulatorConfigAndCreateDeployTargetDir} from '../../emulator/_fs.services';
 import {prepareJavaScriptBuildMetadata} from './build.metadata.services';
 
@@ -99,34 +98,6 @@ const buildWithEsbuild = async ({
     output: entry[0],
     version
   };
-};
-
-const installEsbuild = async () => {
-  const esbuildInstalled = await hasEsbuild();
-
-  if (esbuildInstalled) {
-    return;
-  }
-
-  await confirmAndExit(
-    `${magenta('esbuild')} is required to build the serverless functions. Install it now?`
-  );
-
-  const pm = detectPackageManager();
-
-  await execute({
-    command: pm ?? 'npm',
-    args: [pm === 'npm' ? 'i' : 'add', 'esbuild', '-D']
-  });
-};
-
-const hasEsbuild = async (): Promise<boolean> => {
-  try {
-    await import('esbuild');
-    return true;
-  } catch (_err: unknown) {
-    return false;
-  }
 };
 
 const printResults = ({

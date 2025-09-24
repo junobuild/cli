@@ -10,6 +10,7 @@ import {emulator, helpEmulator} from './commands/emulator';
 import {functions, helpFunctions} from './commands/functions';
 import {init} from './commands/init';
 import {open} from './commands/open';
+import {helpRun, run as runCmd} from './commands/run';
 import {snapshot} from './commands/snapshot';
 import {startStop} from './commands/start-stop';
 import {status} from './commands/status';
@@ -84,6 +85,9 @@ export const run = async () => {
         break;
       case 'dev':
         helpDev(args);
+        break;
+      case 'run':
+        helpRun(args);
         break;
       case 'fn':
       case 'functions':
@@ -168,6 +172,9 @@ export const run = async () => {
       break;
     case 'dev':
       await dev(args);
+      break;
+    case 'run':
+      await runCmd(args);
       break;
     case 'fn':
     case 'functions':
