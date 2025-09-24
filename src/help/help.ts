@@ -38,7 +38,7 @@ Commands:
   ${cyan('clear')}               ${CLEAR_DESCRIPTION}
   ${cyan('config')}              ${CONFIG_DESCRIPTION}
   ${cyan('deploy')}              ${DEPLOY_DESCRIPTION}
-  ${cyan('dev')}                 ${EMULATOR_DESCRIPTION}
+  ${cyan('emulator')}            ${EMULATOR_DESCRIPTION}
   ${cyan('functions')}           ${FUNCTIONS_DESCRIPTION}
   ${cyan('init')}                ${INIT_DESCRIPTION}
   ${cyan('help')}                Display help information.
