@@ -2,13 +2,33 @@ import {isEmptyString} from '@dfinity/utils';
 import {hasArgs, nextArg} from '@junobuild/cli-tools';
 import {yellow} from 'kleur';
 import {compare} from 'semver';
+import {init} from '../../commands/init';
+import {noJunoConfig} from '../../configs/juno.config';
 import {type DeployOptions} from '../../types/deploy';
 import {clearProposalStagedAssets} from '../changes/changes.clear.services';
+import {config} from '../config/config.services';
+import {links} from '../links.services';
 import {getSatelliteVersion} from '../version.services';
 import {deployImmediate} from './_deploy/deploy.individual.services';
 import {deployWithProposal as executeDeployWithProposal} from './_deploy/deploy.with-proposal.services';
 
 export const deploy = async (args?: string[]) => {
+  if (await noJunoConfig()) {
+    await init();
+  }
+
+  await executeDeploy(args);
+
+  const configOption = hasArgs({args, options: ['--config']});
+  if (configOption) {
+    console.log('');
+    await config(args);
+  }
+
+  await links();
+};
+
+const executeDeploy = async (args?: string[]) => {
   // TODO: Remove fetching the version. We use it for backwards compatibility reasons.
   const result = await getSatelliteVersion();
 

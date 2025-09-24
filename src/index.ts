@@ -2,12 +2,13 @@ import {hasArgs} from '@junobuild/cli-tools';
 import {red} from 'kleur';
 import {login, logout} from './commands/auth';
 import {changes, helpChanges} from './commands/changes';
-import {clear} from './commands/clear';
 import {config} from './commands/config';
-import {deploy} from './commands/deploy';
+import {clear, helpClear} from './commands/deprecated/clear';
+import {deploy, helpDeploy} from './commands/deprecated/deploy';
 import {dev, helpDev} from './commands/dev';
 import {emulator, helpEmulator} from './commands/emulator';
 import {functions, helpFunctions} from './commands/functions';
+import {helpHosting, hosting} from './commands/hosting';
 import {init} from './commands/init';
 import {open} from './commands/open';
 import {helpRun, run as runCmd} from './commands/run';
@@ -17,9 +18,7 @@ import {status} from './commands/status';
 import {upgrade} from './commands/upgrade';
 import {version as versionCommand} from './commands/version';
 import {whoami} from './commands/whoami';
-import {logHelpClear} from './help/clear.help';
 import {logHelpConfig} from './help/config.help';
-import {logHelpDeploy} from './help/deploy.help';
 import {help} from './help/help';
 import {logHelpInit} from './help/init.help';
 import {logHelpLogin} from './help/login.help';
@@ -71,14 +70,17 @@ export const run = async () => {
       case 'open':
         logHelpOpen(args);
         break;
-      case 'clear':
-        logHelpClear(args);
-        break;
       case 'config':
         logHelpConfig(args);
         break;
+      case 'clear':
+        helpClear(args);
+        break;
       case 'deploy':
-        logHelpDeploy(args);
+        helpDeploy(args);
+        break;
+      case 'hosting':
+        helpHosting(args);
         break;
       case 'emulator':
         helpEmulator(args);
@@ -169,6 +171,9 @@ export const run = async () => {
       break;
     case 'emulator':
       await emulator(args);
+      break;
+    case 'hosting':
+      await hosting(args);
       break;
     case 'dev':
       await dev(args);

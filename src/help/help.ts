@@ -1,11 +1,10 @@
 import {cyan, green, grey} from 'kleur';
 import {version} from '../../package.json';
 import {
-  CLEAR_DESCRIPTION,
   CONFIG_DESCRIPTION,
-  DEPLOY_DESCRIPTION,
   EMULATOR_DESCRIPTION,
   FUNCTIONS_DESCRIPTION,
+  HOSTING_DESCRIPTION,
   INIT_DESCRIPTION,
   LOGIN_DESCRIPTION,
   LOGOUT_DESCRIPTION,
@@ -35,13 +34,12 @@ ${TITLE}
 Usage: ${green('juno')} ${cyan('<command>')}
 
 Commands:
-  ${cyan('clear')}               ${CLEAR_DESCRIPTION}
   ${cyan('config')}              ${CONFIG_DESCRIPTION}
-  ${cyan('deploy')}              ${DEPLOY_DESCRIPTION}
   ${cyan('emulator')}            ${EMULATOR_DESCRIPTION}
   ${cyan('functions')}           ${FUNCTIONS_DESCRIPTION}
-  ${cyan('init')}                ${INIT_DESCRIPTION}
   ${cyan('help')}                Display help information.
+  ${cyan('hosting')}             ${HOSTING_DESCRIPTION}
+  ${cyan('init')}                ${INIT_DESCRIPTION}
   ${cyan('login')}               ${LOGIN_DESCRIPTION}
   ${cyan('logout')}              ${LOGOUT_DESCRIPTION}
   ${cyan('open')}                ${OPEN_DESCRIPTION}

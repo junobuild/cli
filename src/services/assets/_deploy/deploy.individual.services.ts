@@ -6,7 +6,7 @@ import {
   type DeployOptions,
   type UploadFileFnParams
 } from '../../../types/deploy';
-import {clear} from '../clear.services';
+import {executeClear} from '../clear.services';
 import {executeDeployImmediate} from './deploy.execute.services';
 
 export const deployImmediate = async ({
@@ -16,7 +16,7 @@ export const deployImmediate = async ({
   clearOption: boolean;
 } & DeployOptions) => {
   if (clearOption) {
-    await clear();
+    await executeClear();
   }
 
   const deployFn = async ({deploy: {params, upload}}: DeployFnParams): Promise<DeployResult> =>
