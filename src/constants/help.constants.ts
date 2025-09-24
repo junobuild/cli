@@ -59,8 +59,9 @@ export const OPTIONS_BUILD = `${yellow('-l, --lang')}            Specify the lan
   ${yellow('--source-path')}         Optional path to the TypeScript or JavaScript entry file.`;
 export const OPTIONS_CONFIG = `${OPTION_MODE}
   ${OPTION_PROFILE}`;
+export const OPTIONS_CONTAINER = `${yellow('--container-url')}       Override a custom container URL. If not provided, defaults to production or the local container in development mode.`;
 export const OPTIONS_ENV = `${OPTIONS_CONFIG}
-  ${yellow('--container-url')}       Override a custom container URL. If not provided, defaults to production or the local container in development mode.
+  ${OPTIONS_CONTAINER}
   ${yellow('--console-url')}         Specify a custom URL to access the developer Console.`;
 
 export const NOTE_KEEP_STAGED = `The option ${yellow('--keep-staged')} only applies when ${yellow('--no-apply')} is NOT used (i.e. the change is applied immediately).`;

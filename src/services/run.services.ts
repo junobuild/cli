@@ -1,17 +1,85 @@
 import {Principal} from '@dfinity/principal';
-import {assertNonNullish} from '@dfinity/utils';
+import {assertNonNullish, isNullish, nonNullish} from '@dfinity/utils';
 import {nextArg} from '@junobuild/cli-tools';
-import {OnRunSchema} from '@junobuild/config';
+import {OnRunSchema, type RunFnOrObject, RunFnOrObjectSchema} from '@junobuild/config';
 import {build} from 'esbuild';
+import {red, yellow} from 'kleur';
+import {readFile} from 'node:fs/promises';
+import {extname} from 'node:path';
 import {ENV} from '../env';
 import {assertConfigAndLoadSatelliteContext} from '../utils/satellite.utils';
 
 export const run = async (args?: string[]) => {
   const infile = nextArg({args, option: '-s'}) ?? nextArg({args, option: '--src'});
 
-  // TODO
-  assertNonNullish(infile);
+  if (isNullish(infile)) {
+    console.log(red('Missing required path to script: --src <path>'));
+    return;
+  }
 
+  const {onRun} = await importOnRun({infile});
+
+  if (isNullish(onRun)) {
+    console.log(yellow('Cannot import a task to run. 🤷‍♂️'));
+    console.log(`\nDoes your script ${infile} export a function named "onRun"?`);
+    return;
+  }
+
+  if (!RunFnOrObjectSchema.safeParse(onRun).success) {
+    console.log(red('Your "onRun" export is invalid. It must be of type RunFnOrObject.'));
+    return;
+  }
+
+  const job =
+    typeof onRun === 'function'
+      ? onRun({
+          mode: ENV.mode,
+          profile: ENV.profile
+        })
+      : onRun;
+
+  const assertJob = OnRunSchema.safeParse(job);
+
+  if (!assertJob.success) {
+    console.log(red('Your job to run is invalid. It must be of type OnRun.'));
+    return;
+  }
+
+  const {data: assertedJob} = assertJob;
+
+  const {
+    satellite: {satelliteId, identity}
+  } = await assertConfigAndLoadSatelliteContext();
+
+  await assertedJob.run({
+    satelliteId: Principal.fromText(satelliteId),
+    identity,
+    ...(nonNullish(ENV.containerUrl) && {container: ENV.containerUrl})
+  });
+};
+
+const importOnRun = async ({
+  infile
+}: {
+  infile: string;
+}): Promise<{onRun: RunFnOrObject | undefined}> => {
+  const isTypeScript = extname(infile) === '.ts';
+
+  const {code} = await (isTypeScript ? buildCode({infile}) : readCode({infile}));
+
+  const {onRun} = await import(
+    `data:text/javascript;base64,${Buffer.from(code).toString(`base64`)}`
+  );
+
+  return {onRun: typeof onRun === 'undefined' ? undefined : onRun};
+};
+
+const readCode = async ({infile}: {infile: string}): Promise<{code: Uint8Array}> => {
+  const code = await readFile(infile);
+  return {code};
+};
+
+const buildCode = async ({infile}: {infile: string}): Promise<{code: Uint8Array}> => {
   const {outputFiles} = await build({
     entryPoints: [infile],
     bundle: true,
@@ -34,32 +102,9 @@ const require = topLevelCreateRequire(resolve(process.cwd(), '.juno-pseudo-requi
     }
   });
 
-  const script = outputFiles[0].contents;
+  const code = outputFiles[0]?.contents;
 
-  const {onRun} = await import(
-    `data:text/javascript;base64,${Buffer.from(script).toString(`base64`)}`
-  );
+  assertNonNullish(code, 'No script build');
 
-  if (typeof onRun === 'undefined') {
-    return;
-  }
-
-  const task =
-    typeof onRun === 'function'
-      ? onRun({
-          mode: ENV.mode,
-          profile: ENV.profile
-        })
-      : onRun;
-
-  const assertedTask = OnRunSchema.parse(task);
-
-  const {
-    satellite: {satelliteId, identity}
-  } = await assertConfigAndLoadSatelliteContext();
-
-  await assertedTask.run({
-    satelliteId: Principal.fromText(satelliteId),
-    identity
-  });
+  return {code};
 };
