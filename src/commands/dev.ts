@@ -10,6 +10,9 @@ import {wait} from '../services/emulator/wait.services';
 import {build} from '../services/functions/build/build.services';
 import {eject} from '../services/functions/eject/eject.services';
 
+/**
+ * @deprecated aliases for backwards compatibility
+ */
 export const dev = async (args?: string[]) => {
   const [subCommand] = args ?? [];
 
