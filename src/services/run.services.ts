@@ -19,7 +19,7 @@ export const run = async (args?: string[]) => {
 
   if (isNullish(onRun)) {
     console.log(yellow('Cannot import a task to run. 🤷‍♂️'));
-    console.log(`\nDoes your script ${infile} export a function named "onRun"?`);
+    console.log(`Does your script ${infile} export a function named "onRun"?`);
     return;
   }
 
