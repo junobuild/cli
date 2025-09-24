@@ -1,25 +1,70 @@
 import {isNullish, nonNullish} from '@dfinity/utils';
-import {assertAnswerCtrlC} from '@junobuild/cli-tools';
+import {assertAnswerCtrlC, hasArgs} from '@junobuild/cli-tools';
 import type {ConfigType, PartialConfigFile} from '@junobuild/config-loader';
 import {cyan, yellow} from 'kleur';
 import {unlink} from 'node:fs/promises';
 import {basename} from 'node:path';
 import prompts from 'prompts';
-import {getCliOrbiters, getCliSatellites} from '../configs/cli.config';
+import {getCliOrbiters, getCliSatellites, getToken} from '../../configs/cli.config';
 import {
   detectJunoConfigType,
+  junoConfigExist,
   junoConfigFile,
   noJunoConfig,
   writeJunoConfig,
   writeJunoConfigPlaceholder
-} from '../configs/juno.config';
-import type {CliOrbiterConfig, CliSatelliteConfig} from '../types/cli.config';
-import {type EmulatorConfigWithoutConsole} from '../types/emulator';
-import type {PackageManager} from '../types/pm';
-import {detectPackageManager} from '../utils/pm.utils';
-import {NEW_CMD_LINE} from '../utils/prompt.utils';
+} from '../../configs/juno.config';
+import type {CliOrbiterConfig, CliSatelliteConfig} from '../../types/cli.config';
+import {type EmulatorConfigWithoutConsole} from '../../types/emulator';
+import type {PackageManager} from '../../types/pm';
+import {detectPackageManager} from '../../utils/pm.utils';
+import {confirm, confirmAndExit, NEW_CMD_LINE} from '../../utils/prompt.utils';
+import {login as consoleLogin} from '../auth/login.services';
 
-export const promptConfigType = async (): Promise<ConfigType> => {
+export const init = async (args?: string[]) => {
+  if (hasArgs({args, options: ['--minimal']})) {
+    await initWithPlaceholder();
+    return;
+  }
+
+  await initWithSatelliteId(args);
+};
+
+const initWithPlaceholder = async () => {
+  await assertOverwrite();
+
+  await initConfigNoneInteractive();
+};
+
+const initWithSatelliteId = async (args?: string[]) => {
+  const token = await getToken();
+
+  if (isNullish(token)) {
+    const login = await confirm(
+      `Your terminal is not authenticated. Would you like to ${cyan('log in')} now?`
+    );
+
+    if (!login) {
+      return;
+    }
+
+    await consoleLogin(args);
+  }
+
+  await assertOverwrite();
+
+  await initConfigInteractive();
+};
+
+const assertOverwrite = async () => {
+  if (await junoConfigExist()) {
+    await confirmAndExit(
+      'Your existing configuration will be overwritten. Are you sure you want to continue?'
+    );
+  }
+};
+
+const promptConfigType = async (): Promise<ConfigType> => {
   const {configType}: {configType: ConfigType} = await prompts({
     type: 'select',
     name: 'configType',
@@ -38,7 +83,7 @@ export const promptConfigType = async (): Promise<ConfigType> => {
   return configType;
 };
 
-export type InitConfigParams = PartialConfigFile & {pm: PackageManager | undefined} & {
+type InitConfigParams = PartialConfigFile & {pm: PackageManager | undefined} & {
   source: string;
 };
 
@@ -60,7 +105,7 @@ export const initConfigNoneInteractive = async ({
   });
 };
 
-export const initConfigInteractive = async () => {
+const initConfigInteractive = async () => {
   const satelliteId = await initSatelliteConfig();
   const orbiterId = await initOrbiterConfig();
 

@@ -2,14 +2,14 @@ import {hasArgs} from '@junobuild/cli-tools';
 import {red} from 'kleur';
 import {login, logout} from './commands/auth';
 import {changes, helpChanges} from './commands/changes';
-import {config} from './commands/config';
+import {config, helpConfig} from './commands/config';
 import {clear, helpClear} from './commands/deprecated/clear';
 import {deploy, helpDeploy} from './commands/deprecated/deploy';
 import {dev, helpDev} from './commands/deprecated/dev';
+import {helpInit, init} from './commands/deprecated/init';
 import {emulator, helpEmulator} from './commands/emulator';
 import {functions, helpFunctions} from './commands/functions';
 import {helpHosting, hosting} from './commands/hosting';
-import {init} from './commands/init';
 import {open} from './commands/open';
 import {helpRun, run as runCmd} from './commands/run';
 import {snapshot} from './commands/snapshot';
@@ -18,9 +18,7 @@ import {status} from './commands/status';
 import {upgrade} from './commands/upgrade';
 import {version as versionCommand} from './commands/version';
 import {whoami} from './commands/whoami';
-import {logHelpConfig} from './help/config.help';
 import {help} from './help/help';
-import {logHelpInit} from './help/init.help';
 import {logHelpLogin} from './help/login.help';
 import {logHelpLogout} from './help/logout.help';
 import {logHelpOpen} from './help/open.help';
@@ -71,7 +69,7 @@ export const run = async () => {
         logHelpOpen(args);
         break;
       case 'config':
-        logHelpConfig(args);
+        helpConfig(args);
         break;
       case 'clear':
         helpClear(args);
@@ -99,7 +97,7 @@ export const run = async () => {
         logHelpSnapshot(args);
         break;
       case 'init':
-        logHelpInit(args);
+        helpInit(args);
         break;
       case 'logout':
         logHelpLogout(args);

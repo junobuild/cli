@@ -1,14 +1,17 @@
-import {cyan, green, yellow} from 'kleur';
-import {CONFIG_DESCRIPTION, OPTIONS_ENV, OPTION_HELP} from '../constants/help.constants';
+import {cyan, green, magenta, yellow} from 'kleur';
+import {
+  CONFIG_APPLY_DESCRIPTION,
+  CONFIG_DESCRIPTION,
+  CONFIG_INIT_DESCRIPTION
+} from '../constants/help.constants';
 import {helpOutput} from './common.help';
 import {TITLE} from './help';
 
-const usage = `Usage: ${green('juno')} ${cyan('config')} ${yellow('[options]')}
+const usage = `Usage: ${green('juno')} ${cyan('config')} ${magenta('<subcommand>')} ${yellow('[options]')}
 
-Options:
-  ${yellow('--force')}               Overwrite configuration without checks.
-  ${OPTIONS_ENV}
-  ${OPTION_HELP}`;
+Subcommands:
+  ${magenta('apply')}               ${CONFIG_APPLY_DESCRIPTION}
+  ${magenta('init')}                ${CONFIG_INIT_DESCRIPTION}`;
 
 const doc = `${CONFIG_DESCRIPTION}
 

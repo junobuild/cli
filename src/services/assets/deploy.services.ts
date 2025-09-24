@@ -2,11 +2,11 @@ import {isEmptyString} from '@dfinity/utils';
 import {hasArgs, nextArg} from '@junobuild/cli-tools';
 import {yellow} from 'kleur';
 import {compare} from 'semver';
-import {init} from '../../commands/init';
 import {noJunoConfig} from '../../configs/juno.config';
 import {type DeployOptions} from '../../types/deploy';
 import {clearProposalStagedAssets} from '../changes/changes.clear.services';
-import {config} from '../config/config.services';
+import {applyConfig} from '../config/apply.services';
+import {init} from '../config/init.services';
 import {links} from '../links.services';
 import {getSatelliteVersion} from '../version.services';
 import {deployImmediate} from './_deploy/deploy.individual.services';
@@ -22,7 +22,7 @@ export const deploy = async (args?: string[]) => {
   const configOption = hasArgs({args, options: ['--config']});
   if (configOption) {
     console.log('');
-    await config(args);
+    await applyConfig(args);
   }
 
   await links();
