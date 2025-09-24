@@ -60,6 +60,8 @@ const assertAndReadSatelliteId = ({
 
   const satelliteId = ids?.[mode] ?? id ?? deprecatedSatelliteId;
 
+  // TODO: Principal.isPrincipal
+
   if (isNullish(satelliteId)) {
     console.log(red(`A satellite ID for ${mode} must be set in your configuration.`));
     process.exit(1);

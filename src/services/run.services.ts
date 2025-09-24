@@ -1,16 +1,16 @@
+import {Principal} from '@dfinity/principal';
 import {assertNonNullish} from '@dfinity/utils';
 import {nextArg} from '@junobuild/cli-tools';
-import {TaskFnOrObjectSchema} from '@junobuild/config';
+import {OnRunSchema} from '@junobuild/config';
 import {build} from 'esbuild';
-import {extname} from 'node:path';
+import {ENV} from '../env';
+import {assertConfigAndLoadSatelliteContext} from '../utils/satellite.utils';
 
 export const run = async (args?: string[]) => {
   const infile = nextArg({args, option: '-s'}) ?? nextArg({args, option: '--src'});
 
   // TODO
   assertNonNullish(infile);
-
-  const isPathTypeScript = extname(infile) === '.ts';
 
   const {outputFiles} = await build({
     entryPoints: [infile],
@@ -44,8 +44,22 @@ const require = topLevelCreateRequire(resolve(process.cwd(), '.juno-pseudo-requi
     return;
   }
 
-  TaskFnOrObjectSchema.parse(onRun);
+  const task =
+    typeof onRun === 'function'
+      ? onRun({
+          mode: ENV.mode,
+          profile: ENV.profile
+        })
+      : onRun;
 
-  const config = typeof onRun === 'function' ? onRun({}) : onRun;
-  await config.run({});
+  const assertedTask = OnRunSchema.parse(task);
+
+  const {
+    satellite: {satelliteId, identity}
+  } = await assertConfigAndLoadSatelliteContext();
+
+  await assertedTask.run({
+    satelliteId: Principal.fromText(satelliteId),
+    identity
+  });
 };
