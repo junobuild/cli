@@ -14,7 +14,6 @@ import {
   STATUS_DESCRIPTION,
   STOP_DESCRIPTION,
   UPGRADE_DESCRIPTION,
-  USE_DESCRIPTION,
   VERSION_DESCRIPTION,
   WHOAMI_DESCRIPTION
 } from '../constants/help.constants';
@@ -48,7 +47,6 @@ Commands:
   ${cyan('stop')}                ${STOP_DESCRIPTION}
   ${cyan('status')}              ${STATUS_DESCRIPTION}
   ${cyan('upgrade')}             ${UPGRADE_DESCRIPTION}
-  ${cyan('use')}                 ${USE_DESCRIPTION}
   ${cyan('version')}             ${VERSION_DESCRIPTION}
   ${cyan('whoami')}              ${WHOAMI_DESCRIPTION}
   
