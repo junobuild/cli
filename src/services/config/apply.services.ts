@@ -58,7 +58,7 @@ type SetConfigResults = [
 
 type EditConfig = Omit<SatelliteConfig, 'assertions'>;
 
-export const config = async (args?: string[]) => {
+export const applyConfig = async (args?: string[]) => {
   const {satellite, satelliteConfig} = await assertConfigAndLoadSatelliteContext();
   const {satelliteId} = satellite;
 
@@ -87,7 +87,7 @@ export const config = async (args?: string[]) => {
   }
 
   // Effectively update the configurations and collections of the Satellite
-  const results = await applyConfig({satellite, editConfig});
+  const results = await executeSetConfigs({satellite, editConfig});
 
   // Save the new hashes in the CLI state
   saveLastAppliedConfigHashes({
@@ -251,7 +251,7 @@ const loadCurrentConfig = async (params: {
   }
 };
 
-const applyConfig = async ({
+const executeSetConfigs = async ({
   satellite,
   editConfig
 }: {

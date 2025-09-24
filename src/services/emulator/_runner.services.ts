@@ -25,7 +25,7 @@ import {
   hasExistingContainer,
   isContainerRunning
 } from '../../utils/runner.utils';
-import {initConfigNoneInteractive} from '../init.services';
+import {initConfigNoneInteractive} from '../config/init.services';
 import {createDeployTargetDir} from './_fs.services';
 
 export const startContainer = async () => {
