@@ -1,10 +1,9 @@
 import {magenta, yellow} from 'kleur';
 
 export const CHANGES_DESCRIPTION = 'Review and apply changes submitted to your module.';
-export const CLEAR_DESCRIPTION =
-  'Clear existing app code by removing JavaScript, HTML, CSS, and other files from your satellite.';
 export const CONFIG_DESCRIPTION = 'Apply configuration to satellite.';
-export const DEPLOY_DESCRIPTION = 'Deploy your app to your satellite.';
+export const HOSTING_DESCRIPTION =
+  'Deploy or clear the frontend code of your app on your satellite.';
 export const EMULATOR_DESCRIPTION =
   'Handle tasks related to the emulator like starting/stopping a local network.';
 export const FUNCTIONS_DESCRIPTION = "Build and upgrade your satellite's serverless functions.";
@@ -24,6 +23,10 @@ export const STATUS_DESCRIPTION = 'Check the status of the modules.';
 export const WHOAMI_DESCRIPTION =
   'Display your current profile, access key, and links to your satellite.';
 export const RUN_DESCRIPTION = 'Run a custom script in the CLI context.';
+
+export const HOSTING_DEPLOY_DESCRIPTION = 'Deploy your app to your satellite.';
+export const HOSTING_CLEAR_DESCRIPTION =
+  'Remove frontend files (JS, HTML, CSS, etc.) from your satellite.';
 
 export const EMULATOR_START_DESCRIPTION = 'Start the emulator for local development.';
 export const EMULATOR_WAIT_DESCRIPTION = 'Wait until the emulator is ready.';

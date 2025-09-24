@@ -1,11 +1,38 @@
+import {isNullish} from '@dfinity/utils';
 import {deleteAssets, listCustomDomains, setCustomDomains} from '@junobuild/admin';
-import {COLLECTION_DAPP} from '@junobuild/cli-tools';
+import {COLLECTION_DAPP, hasArgs, nextArg} from '@junobuild/cli-tools';
 import {deleteAsset} from '@junobuild/core';
-import {green} from 'kleur';
+import {green, yellow} from 'kleur';
 import ora from 'ora';
+import {noJunoConfig} from '../../configs/juno.config';
+import {consoleNoConfigFound} from '../../utils/msg.utils';
 import {assertConfigAndLoadSatelliteContext} from '../../utils/satellite.utils';
 
-export const clear = async () => {
+export const clear = async (args?: string[]) => {
+  if (await noJunoConfig()) {
+    consoleNoConfigFound();
+    return;
+  }
+
+  if (hasArgs({args, options: ['-f', '--fullpath', '--fullPath']})) {
+    const file =
+      nextArg({args, option: '-f'}) ??
+      nextArg({args, option: '--fullpath'}) ??
+      nextArg({args, option: '--fullPath'});
+
+    if (isNullish(file)) {
+      console.log(`You did not provide a ${yellow('fullPath')} to delete.`);
+      return;
+    }
+
+    await clearAsset({fullPath: file});
+    return;
+  }
+
+  await executeClear();
+};
+
+export const executeClear = async () => {
   const {satellite} = await assertConfigAndLoadSatelliteContext();
 
   const spinner = ora('Clearing app assets...').start();

@@ -1,6 +1,6 @@
-import {cyan, green, yellow} from 'kleur';
+import {cyan, green, magenta, yellow} from 'kleur';
 import {
-  DEPLOY_DESCRIPTION,
+  HOSTING_DEPLOY_DESCRIPTION,
   NOTE_KEEP_STAGED,
   OPTION_HELP,
   OPTION_KEEP_STAGED,
@@ -9,7 +9,7 @@ import {
 import {helpOutput} from './common.help';
 import {TITLE} from './help';
 
-const usage = `Usage: ${green('juno')} ${cyan('deploy')} ${yellow('[options]')}
+const usage = `Usage: ${green('juno')} ${cyan('hosting')} ${magenta('deploy')} ${yellow('[options]')}
 
 Options:
   ${yellow('--batch')}               Number of files to upload in parallel per batch (default: 50).
@@ -25,7 +25,7 @@ Notes:
 
 - ${NOTE_KEEP_STAGED}`;
 
-const doc = `${DEPLOY_DESCRIPTION}
+const doc = `${HOSTING_DEPLOY_DESCRIPTION}
 
 \`\`\`
 ${usage}
@@ -34,11 +34,11 @@ ${usage}
 
 const help = `${TITLE}
 
-${DEPLOY_DESCRIPTION}
+${HOSTING_DEPLOY_DESCRIPTION}
 
 ${usage}
 `;
 
-export const logHelpDeploy = (args?: string[]) => {
+export const logHelpHostingDeploy = (args?: string[]) => {
   console.log(helpOutput(args) === 'doc' ? doc : help);
 };
