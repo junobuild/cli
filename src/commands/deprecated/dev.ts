@@ -1,14 +1,14 @@
 import {red} from 'kleur';
-import {logHelpDev} from '../help/dev.help';
-import {logHelpEmulatorStart} from '../help/emulator.start.help';
-import {logHelpEmulatorWait} from '../help/emulator.wait.help';
-import {logHelpFunctionsBuild} from '../help/functions.build.help';
-import {logHelpFunctionsEject} from '../help/functions.eject.help';
-import {start} from '../services/emulator/start.services';
-import {stop} from '../services/emulator/stop.services';
-import {wait} from '../services/emulator/wait.services';
-import {build} from '../services/functions/build/build.services';
-import {eject} from '../services/functions/eject/eject.services';
+import {logHelpDev} from '../../help/dev.help';
+import {logHelpEmulatorStart} from '../../help/emulator.start.help';
+import {logHelpEmulatorWait} from '../../help/emulator.wait.help';
+import {logHelpFunctionsBuild} from '../../help/functions.build.help';
+import {logHelpFunctionsEject} from '../../help/functions.eject.help';
+import {start} from '../../services/emulator/start.services';
+import {stop} from '../../services/emulator/stop.services';
+import {wait} from '../../services/emulator/wait.services';
+import {build} from '../../services/functions/build/build.services';
+import {eject} from '../../services/functions/eject/eject.services';
 
 /**
  * @deprecated aliases for backwards compatibility
