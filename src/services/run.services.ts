@@ -1,8 +1,7 @@
 import {Principal} from '@dfinity/principal';
 import {assertNonNullish, isNullish, nonNullish} from '@dfinity/utils';
-import {nextArg} from '@junobuild/cli-tools';
+import {buildScript, nextArg} from '@junobuild/cli-tools';
 import {OnRunSchema, type RunFnOrObject, RunFnOrObjectSchema} from '@junobuild/config';
-import {build} from 'esbuild';
 import {red, yellow} from 'kleur';
 import {ENV} from '../env';
 import {assertConfigAndLoadSatelliteContext} from '../utils/satellite.utils';
@@ -71,29 +70,9 @@ const importOnRun = async ({
 };
 
 const buildCode = async ({infile}: {infile: string}): Promise<{code: Uint8Array}> => {
-  const {outputFiles} = await build({
-    entryPoints: [infile],
-    bundle: true,
-    minify: true,
-    format: 'esm',
-    platform: 'node',
-    write: false,
-    supported: {
-      'top-level-await': false,
-      'inline-script': false
-    },
-    define: {
-      self: 'globalThis'
-    },
-    metafile: true,
-    banner: {
-      js: `import { createRequire as topLevelCreateRequire } from 'node:module';
-import { resolve } from 'node:path';
-const require = topLevelCreateRequire(resolve(process.cwd(), '.juno-pseudo-require-anchor.mjs'));`
-    }
-  });
+  const {outputFiles} = await buildScript({infile});
 
-  const code = outputFiles[0]?.contents;
+  const code = outputFiles?.[0]?.contents;
 
   assertNonNullish(code, 'No script build');
 
