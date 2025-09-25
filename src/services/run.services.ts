@@ -35,20 +35,16 @@ export const run = async (args?: string[]) => {
         })
       : onRun;
 
-  const assertJob = OnRunSchema.safeParse(job);
-
-  if (!assertJob.success) {
+  if (!OnRunSchema.safeParse(job).success) {
     console.log(red('Your job to run is invalid. It must be of type OnRun.'));
     return;
   }
-
-  const {data: assertedJob} = assertJob;
 
   const {
     satellite: {satelliteId, identity}
   } = await assertConfigAndLoadSatelliteContext();
 
-  await assertedJob.run({
+  await job.run({
     satelliteId: Principal.fromText(satelliteId),
     identity,
     ...(nonNullish(ENV.containerUrl) && {container: ENV.containerUrl})
