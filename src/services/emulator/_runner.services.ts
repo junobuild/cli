@@ -18,7 +18,6 @@ import {
   type EmulatorRunnerType,
   type EmulatorType
 } from '../../types/emulator';
-import {mapEmulatorNetworkServices} from '../../utils/emulator.utils';
 import {isHeadless} from '../../utils/process.utils';
 import {
   assertContainerRunnerRunning,
@@ -214,7 +213,7 @@ const startEmulator = async ({config: extendedConfig}: {config: CliEmulatorConfi
 
   const platform = config.runner?.platform;
 
-  const networkServices = mapEmulatorNetworkServices({config});
+  const networkServices = config?.network?.services;
 
   await execute({
     command: runner,
