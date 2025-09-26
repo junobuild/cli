@@ -18,6 +18,7 @@ import {
   type EmulatorRunnerType,
   type EmulatorType
 } from '../../types/emulator';
+import {mapEmulatorNetworkServices} from '../../utils/emulator.utils';
 import {isHeadless} from '../../utils/process.utils';
 import {
   assertContainerRunnerRunning,
@@ -213,6 +214,8 @@ const startEmulator = async ({config: extendedConfig}: {config: CliEmulatorConfi
 
   const platform = config.runner?.platform;
 
+  const networkServices = mapEmulatorNetworkServices({config});
+
   await execute({
     command: runner,
     args: [
@@ -229,6 +232,9 @@ const startEmulator = async ({config: extendedConfig}: {config: CliEmulatorConfi
             '-p',
             `${config.skylab.ports?.console ?? EMULATOR_SKYLAB.ports.console}:${EMULATOR_PORT_CONSOLE}`
           ]
+        : []),
+      ...(nonNullish(networkServices)
+        ? ['-e', `NETWORK_SERVICES=${JSON.stringify(networkServices)}`]
         : []),
       '-v',
       `${volume}:/juno/.juno`,
