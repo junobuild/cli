@@ -16,7 +16,7 @@ import {type BuildArgs} from '../../../types/build';
 import {buildArgs} from '../../../utils/build.utils';
 import {buildJavaScript, buildTypeScript} from './build.javascript.services';
 import {buildRust} from './build.rust.services';
-import {dispatchEmulatorTouchSputnik} from './touch.services';
+import {dispatchEmulatorBuild} from './_dispatch.services';
 
 export const build = async (args?: string[]) => {
   const {watch, ...params} = buildArgs(args);
@@ -118,7 +118,7 @@ const executeSputnikBuild = async ({
   const withToolchain = nonNullish(paths?.cargo) || ENV.ci;
 
   if (!withToolchain) {
-    await dispatchEmulatorTouchSputnik();
+    await dispatchEmulatorBuild();
     return;
   }
 
