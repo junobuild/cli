@@ -56,7 +56,8 @@ export default [
         }
       ],
       'eslint-comments/require-description': 'off',
-      '@typescript-eslint/no-invalid-void-type': 'off'
+      '@typescript-eslint/no-invalid-void-type': 'off',
+      'no-negated-condition': 'off'
     }
   }
 ];
