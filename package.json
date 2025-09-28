@@ -47,7 +47,8 @@
     "portfinder": "^1.0.38",
     "prompts": "^2.4.2",
     "semver": "^7.7.2",
-    "terminal-link": "^5.0.0"
+    "terminal-link": "^5.0.0",
+    "zod": "^4.1.11"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3.3.1",

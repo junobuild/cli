@@ -1,5 +1,6 @@
 import {type EmulatorConfig, EmulatorConfigSchema} from '@junobuild/config';
 import {red} from 'kleur';
+import * as z from 'zod';
 import {DEPLOY_LOCAL_REPLICA_PATH} from '../constants/dev.constants';
 import {EMULATOR_SKYLAB} from '../constants/emulator.constants';
 import {ENV} from '../env';
@@ -16,11 +17,15 @@ export const readEmulatorConfig = async (): Promise<
 > => {
   const config = await getEmulatorConfig();
 
-  const {success} = EmulatorConfigSchema.safeParse(config);
+  const {success, error} = EmulatorConfigSchema.safeParse(config);
   if (!success) {
     console.log(
       red('Invalid configuration: please check the emulator options of your config file.')
     );
+
+    const prettyError = z.prettifyError(error);
+    console.log(prettyError);
+
     return {success: false};
   }
 
