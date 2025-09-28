@@ -213,8 +213,6 @@ const startEmulator = async ({config: extendedConfig}: {config: CliEmulatorConfi
 
   const platform = config.runner?.platform;
 
-  const network = config?.network;
-
   await execute({
     command: runner,
     args: [
@@ -232,7 +230,6 @@ const startEmulator = async ({config: extendedConfig}: {config: CliEmulatorConfi
             `${config.skylab.ports?.console ?? EMULATOR_SKYLAB.ports.console}:${EMULATOR_PORT_CONSOLE}`
           ]
         : []),
-      ...(nonNullish(network) ? ['-e', `NETWORK=${JSON.stringify(network)}`] : []),
       '-v',
       `${volume}:/juno/.juno`,
       ...(nonNullish(configFile) && nonNullish(configFilePath)
