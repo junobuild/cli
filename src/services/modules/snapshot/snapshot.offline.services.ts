@@ -85,7 +85,7 @@ const downloadSnapshotMetadataAndMemory = async ({
   await mkdir(folder, {recursive: true});
 
   const {
-    metadata: {wasmModuleSize, wasmMemorySize, stableMemorySize}
+    metadata: {wasmModuleSize, wasmMemorySize, stableMemorySize, wasmChunkStore}
   } = await downloadMetadata({folder, snapshotId, log, ...rest});
 
   await assertSizeAndDownloadChunks({
@@ -115,11 +115,19 @@ const downloadSnapshotMetadataAndMemory = async ({
     ...rest
   });
 
+  await assertAndDownloadWasmChunks({
+    folder,
+    snapshotId,
+    wasmChunkStore,
+    log: (text) => log(`[WASM store] ${text}`),
+    ...rest
+  });
+
   return {status: 'success', snapshotIdText, folder};
 };
 
-type Chunk = Exclude<CanisterSnapshotMetadataKind, {wasmChunk: unknown}>;
-type OrderedChunk = Chunk & {orderId: bigint};
+type Chunk = CanisterSnapshotMetadataKind;
+type OrderedChunk = Chunk & {orderId: number};
 
 type BuildChunkFn = (params: {offset: bigint; size: bigint}) => Chunk;
 
@@ -151,14 +159,36 @@ const assertSizeAndDownloadChunks = async ({
     return;
   }
 
-  await downloadChunks({
+  await downloadMemoryChunks({
     size,
     log,
     ...params
   });
 };
 
-const downloadChunks = async ({
+const assertAndDownloadWasmChunks = async ({
+  wasmChunkStore,
+  log,
+  ...params
+}: SnapshotParams & {folder: string} & Pick<
+    ReadCanisterSnapshotMetadataResponse,
+    'wasmChunkStore'
+  > &
+  Log) => {
+  if (wasmChunkStore.length === 0) {
+    log('No chunks to download (length = 0). Skipping.');
+    await new Promise((resolve) => setTimeout(resolve, 2500));
+    return;
+  }
+
+  await downloadWasmChunks({
+    wasmChunkStore,
+    log,
+    ...params
+  });
+};
+
+const downloadMemoryChunks = async ({
   size,
   build,
   log,
@@ -177,6 +207,26 @@ const downloadChunks = async ({
   }
 };
 
+const downloadWasmChunks = async ({
+  wasmChunkStore,
+  log,
+  ...params
+}: SnapshotParams & {folder: string} & Pick<
+    ReadCanisterSnapshotMetadataResponse,
+    'wasmChunkStore'
+  > &
+  Log) => {
+  log('[WASM store] Downloading chunks...');
+
+  for await (const progress of batchDownloadChunks({
+    chunks: wasmChunkStore.map((chunk, orderId) => ({wasmChunk: chunk, orderId})),
+    limit: 12,
+    ...params
+  })) {
+    log(`Chunks ${progress.done}/${progress.total} downloaded. Continuing...`);
+  }
+};
+
 const prepareDownloadChunks = ({
   size: totalSize,
   build
@@ -184,7 +234,7 @@ const prepareDownloadChunks = ({
   size: bigint;
   build: BuildChunkFn;
 }): {chunks: OrderedChunk[]} => {
-  let orderId = 0n;
+  let orderId = 0;
 
   const chunks: OrderedChunk[] = [];
 
@@ -200,7 +250,7 @@ const prepareDownloadChunks = ({
       orderId
     });
 
-    orderId += 1n;
+    orderId += 1;
   }
 
   return {chunks};
