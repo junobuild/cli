@@ -86,7 +86,7 @@ const downloadSnapshotMetadataAndMemory = async ({
 
   const {
     metadata: {wasmModuleSize, wasmMemorySize, stableMemorySize, wasmChunkStore}
-  } = await downloadMetadata({folder, snapshotId, log, ...rest});
+  } = await downloadMetadata({folder, snapshotId, log, snapshotIdText, ...rest});
 
   await assertSizeAndDownloadChunks({
     folder,
@@ -133,12 +133,13 @@ type BuildChunkFn = (params: {offset: bigint; size: bigint}) => Chunk;
 
 const downloadMetadata = async ({
   folder,
+  snapshotIdText,
   log,
   ...rest
-}: SnapshotParams & {folder: string} & Log): Promise<{
+}: SnapshotParams & {folder: string; snapshotIdText: string} & Log): Promise<{
   metadata: ReadCanisterSnapshotMetadataResponse;
 }> => {
-  log('Downloading the snapshot metadata...');
+  log(`[Metadata] Downloading snapshot ${snapshotIdText}...`);
 
   const metadata = await readCanisterSnapshotMetadata(rest);
 
