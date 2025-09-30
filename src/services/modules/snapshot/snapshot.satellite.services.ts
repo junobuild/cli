@@ -3,7 +3,7 @@ import {noJunoConfig} from '../../../configs/juno.config';
 import type {AssetKey} from '../../../types/asset-key';
 import {consoleNoConfigFound} from '../../../utils/msg.utils';
 import {assertConfigAndLoadSatelliteContext} from '../../../utils/satellite.utils';
-import {createSnapshot, deleteSnapshot, restoreSnapshot} from './snapshot.services';
+import {createSnapshot, deleteSnapshot, downloadSnapshot, restoreSnapshot} from './snapshot.services';
 
 export const createSnapshotSatellite = async () => {
   await executeSnapshotFn({
@@ -20,6 +20,12 @@ export const restoreSnapshotSatellite = async () => {
 export const deleteSnapshotSatellite = async () => {
   await executeSnapshotFn({
     fn: deleteSnapshot
+  });
+};
+
+export const downloadSnapshotSatellite = async () => {
+  await executeSnapshotFn({
+    fn: downloadSnapshot
   });
 };
 

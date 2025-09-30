@@ -13,6 +13,7 @@ import {
 import type {AssetKey} from '../../../types/asset-key';
 import {displaySegment} from '../../../utils/display.utils';
 import {confirmAndExit} from '../../../utils/prompt.utils';
+import {downloadExistingSnapshot} from './snapshot.offline.services';
 
 export const createSnapshot = async ({
   canisterId: cId,
@@ -47,12 +48,13 @@ export const restoreSnapshot = async ({
 }) => {
   const canisterId = Principal.fromText(cId);
 
-  const existingSnapshotId = await loadSnapshot({canisterId});
+  const result = await assertAndLoadSnapshot({canisterId, segment});
 
-  if (isNullish(existingSnapshotId)) {
-    console.log(red(`No snapshot found for your ${displaySegment(segment)}.`));
+  if (result.result === 'not_found') {
     return;
   }
+
+  const {snapshotId: existingSnapshotId} = result;
 
   await confirmAndExit(
     `Restoring the snapshot 0x${encodeSnapshotId(existingSnapshotId)} will permanently overwrite the current state of your ${displaySegment(segment)}. Are you sure you want to proceed?`
@@ -74,12 +76,13 @@ export const deleteSnapshot = async ({
 }) => {
   const canisterId = Principal.fromText(cId);
 
-  const existingSnapshotId = await loadSnapshot({canisterId});
+  const result = await assertAndLoadSnapshot({canisterId, segment});
 
-  if (isNullish(existingSnapshotId)) {
-    console.log(red(`No snapshot found for your ${displaySegment(segment)}.`));
+  if (result.result === 'not_found') {
     return;
   }
+
+  const {snapshotId: existingSnapshotId} = result;
 
   await confirmAndExit(
     `Are you sure you want to delete the snapshot 0x${encodeSnapshotId(existingSnapshotId)} of your ${displaySegment(segment)}?`
@@ -90,6 +93,32 @@ export const deleteSnapshot = async ({
     snapshotId: existingSnapshotId,
     segment
   });
+};
+
+export const downloadSnapshot = async ({
+  canisterId: cId,
+  segment
+}: {
+  canisterId: string;
+  segment: AssetKey;
+}) => {
+  const canisterId = Principal.fromText(cId);
+
+  const result = await assertAndLoadSnapshot({canisterId, segment});
+
+  if (result.result === 'not_found') {
+    return;
+  }
+
+
+
+  const {snapshotId: existingSnapshotId} = result;
+
+  await downloadExistingSnapshot({
+    canisterId,
+    snapshotId: existingSnapshotId,
+    segment
+  })
 };
 
 const restoreExistingSnapshot = async ({
@@ -165,4 +194,21 @@ const loadSnapshot = async ({
   } finally {
     spinner.stop();
   }
+};
+
+const assertAndLoadSnapshot = async ({
+  canisterId,
+  segment
+}: {
+  canisterId: Principal;
+  segment: AssetKey;
+}): Promise<{result: 'ok'; snapshotId: snapshot_id} | {result: 'not_found'}> => {
+  const existingSnapshotId = await loadSnapshot({canisterId});
+
+  if (isNullish(existingSnapshotId)) {
+    console.log(red(`No snapshot found for your ${displaySegment(segment)}.`));
+    return {result: 'not_found'};
+  }
+
+  return {result: 'ok', snapshotId: existingSnapshotId};
 };

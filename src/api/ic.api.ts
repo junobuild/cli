@@ -1,8 +1,11 @@
 import {ICManagementCanister} from '@dfinity/ic-management';
 import type {
   list_canister_snapshots_result,
+  read_canister_snapshot_data_response,
   snapshot_id
 } from '@dfinity/ic-management/dist/candid/ic-management';
+import type {ReadCanisterSnapshotMetadataParams} from '@dfinity/ic-management/dist/types/types/snapshot.params';
+import type {ReadCanisterSnapshotMetadataResponse} from '@dfinity/ic-management/dist/types/types/snapshot.responses';
 import type {Principal} from '@dfinity/principal';
 import {initAgent} from './agent.api';
 
@@ -75,4 +78,29 @@ export const deleteCanisterSnapshot = async (params: {
   });
 
   await deleteCanisterSnapshot(params);
+};
+
+export const readCanisterSnapshotMetadata = async (params: {
+  canisterId: Principal;
+  snapshotId: snapshot_id;
+}): Promise<ReadCanisterSnapshotMetadataResponse> => {
+  const agent = await initAgent();
+
+  const {readCanisterSnapshotMetadata} = ICManagementCanister.create({
+    agent
+  });
+
+  return await readCanisterSnapshotMetadata(params);
+};
+
+export const readCanisterSnapshotData = async (
+  params: ReadCanisterSnapshotMetadataParams
+): Promise<read_canister_snapshot_data_response> => {
+  const agent = await initAgent();
+
+  const {readCanisterSnapshotData} = ICManagementCanister.create({
+    agent
+  });
+
+  return await readCanisterSnapshotData(params);
 };

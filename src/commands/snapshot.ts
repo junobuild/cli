@@ -14,6 +14,7 @@ import {
 import {
   createSnapshotSatellite,
   deleteSnapshotSatellite,
+  downloadSnapshotSatellite,
   restoreSnapshotSatellite
 } from '../services/modules/snapshot/snapshot.satellite.services';
 
@@ -41,6 +42,14 @@ export const snapshot = async (args?: string[]) => {
       await executeSnapshotFn({
         args,
         satelliteFn: deleteSnapshotSatellite,
+        missionControlFn: deleteSnapshotMissionControl,
+        orbiterFn: deleteSnapshotOrbiter
+      });
+      break;
+    case 'download':
+      await executeSnapshotFn({
+        args,
+        satelliteFn: downloadSnapshotSatellite,
         missionControlFn: deleteSnapshotMissionControl,
         orbiterFn: deleteSnapshotOrbiter
       });
