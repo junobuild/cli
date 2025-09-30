@@ -110,15 +110,13 @@ export const downloadSnapshot = async ({
     return;
   }
 
-
-
   const {snapshotId: existingSnapshotId} = result;
 
   await downloadExistingSnapshot({
     canisterId,
     snapshotId: existingSnapshotId,
     segment
-  })
+  });
 };
 
 const restoreExistingSnapshot = async ({
