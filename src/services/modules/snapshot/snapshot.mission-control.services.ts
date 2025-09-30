@@ -2,7 +2,7 @@ import {isNullish} from '@dfinity/utils';
 import {red} from 'kleur';
 import {getCliMissionControl} from '../../../configs/cli.config';
 import type {AssetKey} from '../../../types/asset-key';
-import {createSnapshot, deleteSnapshot, restoreSnapshot} from './snapshot.services';
+import {createSnapshot, deleteSnapshot, downloadSnapshot, restoreSnapshot} from './snapshot.services';
 
 export const createSnapshotMissionControl = async () => {
   await executeSnapshotFn({
@@ -19,6 +19,12 @@ export const restoreSnapshotMissionControl = async () => {
 export const deleteSnapshotMissionControl = async () => {
   await executeSnapshotFn({
     fn: deleteSnapshot
+  });
+};
+
+export const downloadSnapshotMissionControl = async () => {
+  await executeSnapshotFn({
+    fn: downloadSnapshot
   });
 };
 

@@ -4,11 +4,13 @@ import {logHelpSnapshot} from '../help/snapshot.help';
 import {
   createSnapshotMissionControl,
   deleteSnapshotMissionControl,
+  downloadSnapshotMissionControl,
   restoreSnapshotMissionControl
 } from '../services/modules/snapshot/snapshot.mission-control.services';
 import {
   createSnapshotOrbiter,
   deleteSnapshotOrbiter,
+  downloadSnapshotOrbiter,
   restoreSnapshotOrbiter
 } from '../services/modules/snapshot/snapshot.orbiter.services';
 import {
@@ -50,8 +52,8 @@ export const snapshot = async (args?: string[]) => {
       await executeSnapshotFn({
         args,
         satelliteFn: downloadSnapshotSatellite,
-        missionControlFn: deleteSnapshotMissionControl,
-        orbiterFn: deleteSnapshotOrbiter
+        missionControlFn: downloadSnapshotMissionControl,
+        orbiterFn: downloadSnapshotOrbiter
       });
       break;
     default:

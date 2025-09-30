@@ -13,7 +13,7 @@ import {
 import type {AssetKey} from '../../../types/asset-key';
 import {displaySegment} from '../../../utils/display.utils';
 import {confirmAndExit} from '../../../utils/prompt.utils';
-import {downloadExistingSnapshot} from './snapshot.offline.services';
+import {downloadExistingSnapshot} from './snapshot.download.services';
 
 export const createSnapshot = async ({
   canisterId: cId,
