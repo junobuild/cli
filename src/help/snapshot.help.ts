@@ -8,8 +8,9 @@ const usage = `Usage: ${green('juno')} ${cyan('snapshot')} ${magenta('<subcomman
 
 Subcommands:
   ${magenta('create')}               Create a snapshot of your current state.
-  ${magenta('restore')}              Restore a previously created snapshot.
   ${magenta('delete')}               Delete an existing snapshot.
+  ${magenta('download')}             Download a snapshot to offline files.
+  ${magenta('restore')}              Restore a previously created snapshot.
   
 Options:
   ${targetOption('snapshot')}
