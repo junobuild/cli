@@ -85,7 +85,7 @@ const downloadSnapshotMetadataAndMemory = async ({
   await mkdir(folder, {recursive: true});
 
   const {
-    metadata: {wasmModuleSize}
+    metadata: {wasmModuleSize, wasmMemorySize, stableMemorySize}
   } = await downloadMetadata({folder, snapshotId, log, ...rest});
 
   await assertSizeAndDownloadChunks({
@@ -100,7 +100,7 @@ const downloadSnapshotMetadataAndMemory = async ({
   await assertSizeAndDownloadChunks({
     folder,
     snapshotId,
-    size: wasmModuleSize,
+    size: wasmMemorySize,
     build: (param) => ({wasmMemory: param}),
     log: (text) => log(`[Heap memory] ${text}`),
     ...rest
@@ -109,7 +109,7 @@ const downloadSnapshotMetadataAndMemory = async ({
   await assertSizeAndDownloadChunks({
     folder,
     snapshotId,
-    size: wasmModuleSize,
+    size: stableMemorySize,
     build: (param) => ({stableMemory: param}),
     log: (text) => log(`[Stable memory] ${text}`),
     ...rest
