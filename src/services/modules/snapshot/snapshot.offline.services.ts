@@ -1,16 +1,17 @@
 import {CanisterSnapshotMetadataKind, encodeSnapshotId, snapshot_id} from '@dfinity/ic-management';
-import {read_canister_snapshot_data_response} from '@dfinity/ic-management/dist/candid/ic-management';
+import type {ReadCanisterSnapshotMetadataResponse} from '@dfinity/ic-management/dist/types/types/snapshot.responses';
 import {Principal} from '@dfinity/principal';
-import {jsonReplacer} from '@dfinity/utils';
+import {arrayOfNumberToUint8Array, jsonReplacer} from '@dfinity/utils';
 import {red} from 'kleur';
 import {existsSync} from 'node:fs';
 import {mkdir, writeFile} from 'node:fs/promises';
 import {join} from 'node:path';
 import ora from 'ora';
 import {readCanisterSnapshotData, readCanisterSnapshotMetadata} from '../../../api/ic.api';
-import {SNAPSHOTS_PATH} from '../../../constants/snapshot.constants';
+import {SNAPSHOT_CHUNK_SIZE, SNAPSHOTS_PATH} from '../../../constants/snapshot.constants';
 import type {AssetKey} from '../../../types/asset-key';
 import {displaySegment} from '../../../utils/display.utils';
+import {size} from 'zod';
 
 interface SnapshotParams {
   canisterId: Principal;
@@ -66,59 +67,119 @@ const downloadSnapshotMetadataAndMemory = async ({
 
   await mkdir(folder, {recursive: true});
 
-  const metadata = await readCanisterSnapshotMetadata({snapshotId, ...rest});
+  const {
+    metadata: {wasmModuleSize}
+  } = await downloadMetadata({folder, snapshotId, ...rest});
 
-  const destination = join(folder, 'metadata.json');
-  await writeFile(destination, JSON.stringify(metadata, jsonReplacer, 2), 'utf-8');
+  await downloadWasmModule({
+    folder,
+    snapshotId,
+    size: wasmModuleSize,
+    ...rest
+  });
 
   return {status: 'success', snapshotIdText};
 };
 
-type RequestChunk = Exclude<CanisterSnapshotMetadataKind, {wasmChunk: unknown}>;
+type Chunk = Exclude<CanisterSnapshotMetadataKind, {wasmChunk: unknown}> & {orderId: bigint};
 
-type Chunk = read_canister_snapshot_data_response['chunk'];
+const downloadMetadata = async ({
+  folder,
+  ...rest
+}: SnapshotParams & {folder: string}): Promise<{
+  metadata: ReadCanisterSnapshotMetadataResponse;
+}> => {
+  const metadata = await readCanisterSnapshotMetadata(rest);
 
-const downloadWasmModule = async ({}: SnapshotParams) => {};
+  const destination = join(folder, 'metadata.json');
+  await writeFile(destination, JSON.stringify(metadata, jsonReplacer, 2), 'utf-8');
 
-const batchDownloadChunks = async (params: SnapshotParams) => {
-  let chunks: Chunk[] = [];
-  for await (const results of batchUploadChunks({requestedChunks: [], ...params})) {
-    chunks = [...chunks, ...results];
+  return {metadata};
+};
+
+const downloadWasmModule = async ({
+  size,
+  ...params
+}: SnapshotParams & {size: bigint; folder: string}) => {
+  const {chunks} = prepareDownloadChunks({size});
+
+  for await (const progress of batchDownloadChunks({
+    chunks,
+    filename: 'wasm-module',
+    limit: 12,
+    ...params
+  })) {
+    console.log(`Batch ${progress.index} of ${progress.total} done.`);
   }
 };
 
-async function* batchUploadChunks({
-  requestedChunks,
+const prepareDownloadChunks = ({size: totalSize}: {size: bigint}): {chunks: Chunk[]} => {
+  let orderId = 0n;
+
+  const chunks: Chunk[] = [];
+
+  for (let offset = 0n; offset < totalSize; offset += SNAPSHOT_CHUNK_SIZE) {
+    const size =
+      offset + SNAPSHOT_CHUNK_SIZE <= totalSize ? SNAPSHOT_CHUNK_SIZE : totalSize - offset;
+
+    chunks.push({
+      wasmModule: {
+        offset,
+        size
+      },
+      orderId
+    });
+
+    orderId++;
+  }
+
+  return {chunks};
+}
+
+async function* batchDownloadChunks({
+  chunks,
   limit = 12,
   ...params
-}: SnapshotParams & {
-  requestedChunks: RequestChunk[];
+}: SnapshotChunkFsParams & {
+  chunks: Chunk[];
   limit?: number;
-}): AsyncGenerator<Chunk[], void> {
-  for (let i = 0; i < requestedChunks.length; i = i + limit) {
-    const batch = requestedChunks.slice(i, i + limit);
-    const result = await Promise.all(
+}): AsyncGenerator<{index: number; total: number}, void> {
+  for (let i = 0; i < chunks.length; i = i + limit) {
+    const batch = chunks.slice(i, i + limit);
+    await Promise.all(
       batch.map((requestChunk) =>
         downloadChunk({
           ...params,
-          requestChunk
+          chunk: requestChunk
         })
       )
     );
-    yield result;
+    yield {index: i, total: chunks.length};
   }
 }
 
+interface SnapshotChunkFsParams extends SnapshotParams {
+  folder: string;
+  filename: string;
+}
+
 const downloadChunk = async ({
-  requestChunk: kind,
+  chunk: {orderId, ...kind},
+  folder,
+  filename,
   ...rest
-}: SnapshotParams & {
-  requestChunk: RequestChunk;
-}): Promise<Chunk> => {
-  const {chunk} = await readCanisterSnapshotData({
+}: SnapshotChunkFsParams & {
+  chunk: Chunk;
+}): Promise<void> => {
+  const {chunk: downloadedChunk} = await readCanisterSnapshotData({
     ...rest,
     kind
   });
 
-  return chunk;
+  // Note: we would not win much at gzipping the data.
+  const destination = join(folder, `${filename}-${orderId}.bin`);
+  await writeFile(
+    destination,
+    downloadedChunk instanceof Uint8Array ? downloadedChunk : arrayOfNumberToUint8Array(downloadedChunk)
+  );
 };
