@@ -88,7 +88,7 @@ const downloadSnapshotMetadataAndMemory = async ({
     metadata: {wasmModuleSize}
   } = await downloadMetadata({folder, snapshotId, log, ...rest});
 
-  await downloadChunks({
+  await assertSizeAndDownloadChunks({
     folder,
     snapshotId,
     size: wasmModuleSize,
@@ -97,7 +97,7 @@ const downloadSnapshotMetadataAndMemory = async ({
     ...rest
   });
 
-  await downloadChunks({
+  await assertSizeAndDownloadChunks({
     folder,
     snapshotId,
     size: wasmModuleSize,
@@ -106,7 +106,7 @@ const downloadSnapshotMetadataAndMemory = async ({
     ...rest
   });
 
-  await downloadChunks({
+  await assertSizeAndDownloadChunks({
     folder,
     snapshotId,
     size: wasmModuleSize,
@@ -140,6 +140,24 @@ const downloadMetadata = async ({
   return {metadata};
 };
 
+const assertSizeAndDownloadChunks = async ({
+  size,
+  log,
+  ...params
+}: SnapshotParams & {folder: string; size: bigint; build: BuildChunkFn} & Log) => {
+  if (size === 0n) {
+    log('No chunks to download (size = 0). Skipping.');
+    await new Promise((resolve) => setTimeout(resolve, 2500));
+    return;
+  }
+
+  await downloadChunks({
+    size,
+    log,
+    ...params
+  });
+};
+
 const downloadChunks = async ({
   size,
   build,
@@ -155,7 +173,7 @@ const downloadChunks = async ({
     limit: 12,
     ...params
   })) {
-    log(`Chunks ${progress.done}/${progress.total} downloaded. Continuing`);
+    log(`Chunks ${progress.done}/${progress.total} downloaded. Continuing...`);
   }
 };
 
