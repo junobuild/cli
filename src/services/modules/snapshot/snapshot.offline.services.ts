@@ -201,7 +201,7 @@ const downloadMemoryChunks = async ({
 
   for await (const progress of batchDownloadChunks({
     chunks,
-    limit: 12,
+    limit: 50,
     ...params
   })) {
     log(`Chunks ${progress.done}/${progress.total} downloaded. Continuing...`);
