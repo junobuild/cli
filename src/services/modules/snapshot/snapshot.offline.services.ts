@@ -1,4 +1,8 @@
-import {type CanisterSnapshotMetadataKind, encodeSnapshotId, type snapshot_id} from '@dfinity/ic-management';
+import {
+  type CanisterSnapshotMetadataKind,
+  encodeSnapshotId,
+  type snapshot_id
+} from '@dfinity/ic-management';
 import type {ReadCanisterSnapshotMetadataResponse} from '@dfinity/ic-management/dist/types/types/snapshot.responses';
 import {type Principal} from '@dfinity/principal';
 import {arrayOfNumberToUint8Array, jsonReplacer} from '@dfinity/utils';
@@ -26,7 +30,10 @@ export const downloadExistingSnapshot = async ({
   const spinner = ora('Downloading the snapshot...').start();
 
   try {
-    const result = await downloadSnapshotMetadataAndMemory(params);
+    const result = await downloadSnapshotMetadataAndMemory({
+      ...params,
+      log: (text) => (spinner.text = text)
+    });
 
     spinner.stop();
 
@@ -51,10 +58,15 @@ class SnapshotFsError extends Error {
   }
 }
 
+interface Log {
+  log: (text: string) => void;
+}
+
 const downloadSnapshotMetadataAndMemory = async ({
   snapshotId,
+  log,
   ...rest
-}: SnapshotParams): Promise<
+}: SnapshotParams & Log): Promise<
   {status: 'success'; snapshotIdText: string} | {status: 'error'; err: SnapshotFsError}
 > => {
   const snapshotIdText = `0x${encodeSnapshotId(snapshotId)}`;
@@ -68,13 +80,14 @@ const downloadSnapshotMetadataAndMemory = async ({
 
   const {
     metadata: {wasmModuleSize}
-  } = await downloadMetadata({folder, snapshotId, ...rest});
+  } = await downloadMetadata({folder, snapshotId, log, ...rest});
 
   await downloadChunks({
     folder,
     snapshotId,
     size: wasmModuleSize,
     build: (param) => ({wasmModule: param}),
+    log: (text) => log(`[WASM module] ${text}`),
     ...rest
   });
 
@@ -83,6 +96,7 @@ const downloadSnapshotMetadataAndMemory = async ({
     snapshotId,
     size: wasmModuleSize,
     build: (param) => ({wasmMemory: param}),
+    log: (text) => log(`[Heap memory] ${text}`),
     ...rest
   });
 
@@ -91,6 +105,7 @@ const downloadSnapshotMetadataAndMemory = async ({
     snapshotId,
     size: wasmModuleSize,
     build: (param) => ({stableMemory: param}),
+    log: (text) => log(`[Stable memory] ${text}`),
     ...rest
   });
 
@@ -104,10 +119,13 @@ type BuildChunkFn = (params: {offset: bigint; size: bigint}) => Chunk;
 
 const downloadMetadata = async ({
   folder,
+  log,
   ...rest
-}: SnapshotParams & {folder: string}): Promise<{
+}: SnapshotParams & {folder: string} & Log): Promise<{
   metadata: ReadCanisterSnapshotMetadataResponse;
 }> => {
+  log('Downloading the snapshot metadata...');
+
   const metadata = await readCanisterSnapshotMetadata(rest);
 
   const destination = join(folder, 'metadata.json');
@@ -119,16 +137,19 @@ const downloadMetadata = async ({
 const downloadChunks = async ({
   size,
   build,
+  log,
   ...params
-}: SnapshotParams & {folder: string; size: bigint; build: BuildChunkFn}) => {
+}: SnapshotParams & {folder: string; size: bigint; build: BuildChunkFn} & Log) => {
   const {chunks} = prepareDownloadChunks({size, build});
+
+  log("Downloading chunks...");
 
   for await (const progress of batchDownloadChunks({
     chunks,
     limit: 12,
     ...params
   })) {
-    console.log(`Batch ${progress.index} of ${progress.total} done.`);
+    log(`Chunks ${progress.done}/${progress.total} downloaded. Continuing`);
   }
 };
 
@@ -155,7 +176,7 @@ const prepareDownloadChunks = ({
       orderId
     });
 
-    orderId++;
+    orderId += 1n;
   }
 
   return {chunks};
@@ -168,18 +189,20 @@ async function* batchDownloadChunks({
 }: SnapshotChunkFsParams & {
   chunks: OrderedChunk[];
   limit?: number;
-}): AsyncGenerator<{index: number; total: number}, void> {
-  for (let i = 0; i < chunks.length; i = i + limit) {
+}): AsyncGenerator<{index: number; done: number; total: number}, void> {
+  const total = chunks.length;
+
+  for (let i = 0; i < total; i = i + limit) {
     const batch = chunks.slice(i, i + limit);
     await Promise.all(
-      batch.map(async (requestChunk) =>
-        { await downloadChunk({
+      batch.map(async (requestChunk) => {
+        await downloadChunk({
           ...params,
           chunk: requestChunk
-        }); }
-      )
+        });
+      })
     );
-    yield {index: i, total: chunks.length};
+    yield {index: i, done: Math.min(i + limit, total), total};
   }
 }
 
