@@ -44,7 +44,12 @@ export const downloadExistingSnapshot = async ({
       return;
     }
 
-    console.log(`✅ The snapshot for your ${displaySegment(segment)} was downloaded.`);
+    const {snapshotIdText, folder} = result;
+
+    console.log(
+      `✅ The snapshot ${snapshotIdText} for your ${displaySegment(segment)} has been downloaded.`
+    );
+    console.log(`🗂️  Files saved to ${folder}`);
   } catch (error: unknown) {
     spinner.stop();
 
@@ -67,7 +72,8 @@ const downloadSnapshotMetadataAndMemory = async ({
   log,
   ...rest
 }: SnapshotParams & Log): Promise<
-  {status: 'success'; snapshotIdText: string} | {status: 'error'; err: SnapshotFsError}
+  | {status: 'success'; snapshotIdText: string; folder: string}
+  | {status: 'error'; err: SnapshotFsError}
 > => {
   const snapshotIdText = `0x${encodeSnapshotId(snapshotId)}`;
   const folder = join(SNAPSHOTS_PATH, snapshotIdText);
@@ -109,7 +115,7 @@ const downloadSnapshotMetadataAndMemory = async ({
     ...rest
   });
 
-  return {status: 'success', snapshotIdText};
+  return {status: 'success', snapshotIdText, folder};
 };
 
 type Chunk = Exclude<CanisterSnapshotMetadataKind, {wasmChunk: unknown}>;
@@ -142,7 +148,7 @@ const downloadChunks = async ({
 }: SnapshotParams & {folder: string; size: bigint; build: BuildChunkFn} & Log) => {
   const {chunks} = prepareDownloadChunks({size, build});
 
-  log("Downloading chunks...");
+  log('Downloading chunks...');
 
   for await (const progress of batchDownloadChunks({
     chunks,
