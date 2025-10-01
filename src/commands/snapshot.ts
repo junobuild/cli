@@ -5,20 +5,24 @@ import {
   createSnapshotMissionControl,
   deleteSnapshotMissionControl,
   downloadSnapshotMissionControl,
-  restoreSnapshotMissionControl
+  restoreSnapshotMissionControl,
+  uploadSnapshotMissionControl
 } from '../services/modules/snapshot/snapshot.mission-control.services';
 import {
   createSnapshotOrbiter,
   deleteSnapshotOrbiter,
   downloadSnapshotOrbiter,
-  restoreSnapshotOrbiter
+  restoreSnapshotOrbiter,
+  uploadSnapshotOrbiter
 } from '../services/modules/snapshot/snapshot.orbiter.services';
 import {
   createSnapshotSatellite,
   deleteSnapshotSatellite,
   downloadSnapshotSatellite,
-  restoreSnapshotSatellite
+  restoreSnapshotSatellite,
+  uploadSnapshotSatellite
 } from '../services/modules/snapshot/snapshot.satellite.services';
+import {logHelpSnapshotUpload} from '../help/snapshot.upload.help';
 
 export const snapshot = async (args?: string[]) => {
   const [subCommand] = args ?? [];
@@ -56,6 +60,14 @@ export const snapshot = async (args?: string[]) => {
         orbiterFn: downloadSnapshotOrbiter
       });
       break;
+    case 'upload':
+      await executeSnapshotFn({
+        args,
+        satelliteFn: uploadSnapshotSatellite,
+        missionControlFn: uploadSnapshotMissionControl,
+        orbiterFn: uploadSnapshotOrbiter
+      });
+      break;
     default:
       console.log(red('Unknown subcommand.'));
       logHelpSnapshot(args);
@@ -69,27 +81,39 @@ const executeSnapshotFn = async ({
   orbiterFn
 }: {
   args?: string[];
-  satelliteFn: () => Promise<void>;
-  missionControlFn: () => Promise<void>;
-  orbiterFn: () => Promise<void>;
+  satelliteFn: (args?: string[]) => Promise<void>;
+  missionControlFn: (args?: string[]) => Promise<void>;
+  orbiterFn: (args?: string[]) => Promise<void>;
 }) => {
   const target = nextArg({args, option: '-t'}) ?? nextArg({args, option: '--target'});
 
   switch (target) {
     case 's':
     case 'satellite':
-      await satelliteFn();
+      await satelliteFn(args);
       break;
     case 'm':
     case 'mission-control':
-      await missionControlFn();
+      await missionControlFn(args);
       break;
     case 'o':
     case 'orbiter':
-      await orbiterFn();
+      await orbiterFn(args);
       break;
     default:
       console.log(red('Unknown target.'));
       logHelpSnapshot(args);
   }
 };
+
+export const helpSnapshot = (args?: string[]) => {
+  const [subCommand] = args ?? [];
+
+  switch (subCommand) {
+    case 'upload':
+      logHelpSnapshotUpload(args);
+      break;
+    default:
+      logHelpSnapshot(args);
+  }
+}

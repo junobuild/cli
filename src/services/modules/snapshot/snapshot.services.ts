@@ -14,6 +14,7 @@ import type {AssetKey} from '../../../types/asset-key';
 import {displaySegment} from '../../../utils/display.utils';
 import {confirmAndExit} from '../../../utils/prompt.utils';
 import {downloadExistingSnapshot} from './snapshot.download.services';
+import {uploadExistingSnapshot} from './snapshot.upload.services';
 
 export const createSnapshot = async ({
   canisterId: cId,
@@ -24,17 +25,11 @@ export const createSnapshot = async ({
 }) => {
   const canisterId = Principal.fromText(cId);
 
-  const existingSnapshotId = await loadSnapshot({canisterId});
-
-  if (nonNullish(existingSnapshotId)) {
-    await confirmAndExit(
-      `A snapshot for your ${displaySegment(segment)} already exists with ID 0x${encodeSnapshotId(existingSnapshotId)}. Do you want to overwrite it?`
-    );
-  }
+  const {snapshotId} = await loadSnapshotAndAssertOverwrite({canisterId, segment});
 
   await takeSnapshot({
     canisterId,
-    snapshotId: existingSnapshotId,
+    snapshotId,
     segment
   });
 };
@@ -48,7 +43,7 @@ export const restoreSnapshot = async ({
 }) => {
   const canisterId = Principal.fromText(cId);
 
-  const result = await assertAndLoadSnapshot({canisterId, segment});
+  const result = await loadSnapshotAndAssertExist({canisterId, segment});
 
   if (result.result === 'not_found') {
     return;
@@ -76,7 +71,7 @@ export const deleteSnapshot = async ({
 }) => {
   const canisterId = Principal.fromText(cId);
 
-  const result = await assertAndLoadSnapshot({canisterId, segment});
+  const result = await loadSnapshotAndAssertExist({canisterId, segment});
 
   if (result.result === 'not_found') {
     return;
@@ -104,7 +99,7 @@ export const downloadSnapshot = async ({
 }) => {
   const canisterId = Principal.fromText(cId);
 
-  const result = await assertAndLoadSnapshot({canisterId, segment});
+  const result = await loadSnapshotAndAssertExist({canisterId, segment});
 
   if (result.result === 'not_found') {
     return;
@@ -116,6 +111,27 @@ export const downloadSnapshot = async ({
     canisterId,
     snapshotId: existingSnapshotId,
     segment
+  });
+};
+
+export const uploadSnapshot = async ({
+  canisterId: cId,
+  segment,
+  args
+}: {
+  canisterId: string;
+  segment: AssetKey;
+  args?: string[];
+}) => {
+  const canisterId = Principal.fromText(cId);
+
+  const {snapshotId} = await loadSnapshotAndAssertOverwrite({canisterId, segment});
+
+  await uploadExistingSnapshot({
+    canisterId,
+    snapshotId,
+    segment,
+    args
   });
 };
 
@@ -194,7 +210,7 @@ const loadSnapshot = async ({
   }
 };
 
-const assertAndLoadSnapshot = async ({
+const loadSnapshotAndAssertExist = async ({
   canisterId,
   segment
 }: {
@@ -209,4 +225,22 @@ const assertAndLoadSnapshot = async ({
   }
 
   return {result: 'ok', snapshotId: existingSnapshotId};
+};
+
+const loadSnapshotAndAssertOverwrite = async ({
+  canisterId,
+  segment
+}: {
+  canisterId: Principal;
+  segment: AssetKey;
+}): Promise<{snapshotId: snapshot_id | undefined}> => {
+  const existingSnapshotId = await loadSnapshot({canisterId});
+
+  if (nonNullish(existingSnapshotId)) {
+    await confirmAndExit(
+      `A snapshot for your ${displaySegment(segment)} already exists with ID 0x${encodeSnapshotId(existingSnapshotId)}. Do you want to overwrite it?`
+    );
+  }
+
+  return {snapshotId: existingSnapshotId};
 };

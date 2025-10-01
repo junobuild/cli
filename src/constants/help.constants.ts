@@ -48,6 +48,8 @@ export const CHANGES_LIST_DESCRIPTION = 'List all submitted or applied changes.'
 export const CHANGES_APPLY_DESCRIPTION = 'Apply a submitted change.';
 export const CHANGES_REJECT_DESCRIPTION = 'Reject a change.';
 
+export const SNAPSHOT_UPLOAD_DESCRIPTION = 'Upload a snapshot from offline files.';
+
 export const OPTION_KEEP_STAGED = `${yellow('-k, --keep-staged')}     Keep staged assets in memory after applying the change.`;
 export const OPTION_HASH = `${yellow('--hash')}                The expected hash of all included changes (for verification).`;
 export const OPTION_HELP = `${yellow('-h, --help')}            Output usage information.`;

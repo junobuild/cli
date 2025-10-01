@@ -1,5 +1,5 @@
 import {cyan, green, magenta, yellow} from 'kleur';
-import {OPTIONS_ENV, OPTION_HELP, SNAPSHOT_DESCRIPTION} from '../constants/help.constants';
+import {OPTIONS_ENV, OPTION_HELP, SNAPSHOT_DESCRIPTION, SNAPSHOT_UPLOAD_DESCRIPTION} from '../constants/help.constants';
 import {helpOutput} from './common.help';
 import {TITLE} from './help';
 import {TARGET_OPTION_NOTE, targetOption} from './target.help';
@@ -10,6 +10,7 @@ Subcommands:
   ${magenta('create')}               Create a snapshot of your current state.
   ${magenta('delete')}               Delete an existing snapshot.
   ${magenta('download')}             Download a snapshot to offline files.
+  ${magenta('upload')}               ${SNAPSHOT_UPLOAD_DESCRIPTION}
   ${magenta('restore')}              Restore a previously created snapshot.
   
 Options:

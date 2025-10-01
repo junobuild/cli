@@ -1,10 +1,7 @@
-import {
-  type CanisterSnapshotMetadataKind,
-  encodeSnapshotId,
-  type snapshot_id
-} from '@dfinity/ic-management';
+import type {snapshot_id} from '@dfinity/ic-management';
+import {type CanisterSnapshotMetadataKind, encodeSnapshotId} from '@dfinity/ic-management';
 import type {ReadCanisterSnapshotMetadataResponse} from '@dfinity/ic-management/dist/types/types/snapshot.responses';
-import {type Principal} from '@dfinity/principal';
+import type {Principal} from '@dfinity/principal';
 import {arrayOfNumberToUint8Array, jsonReplacer} from '@dfinity/utils';
 import {red} from 'kleur';
 import {existsSync} from 'node:fs';
@@ -13,12 +10,30 @@ import {join} from 'node:path';
 import ora from 'ora';
 import {readCanisterSnapshotData, readCanisterSnapshotMetadata} from '../../../api/ic.api';
 import {SNAPSHOT_CHUNK_SIZE, SNAPSHOTS_PATH} from '../../../constants/snapshot.constants';
-import type {AssetKey} from '../../../types/asset-key';
+import {AssetKey} from '../../../types/asset-key';
 import {displaySegment} from '../../../utils/display.utils';
 
+// We override the ic-mgmt interface because we solely want snapshotId as Principal here
 interface SnapshotParams {
   canisterId: Principal;
   snapshotId: snapshot_id;
+}
+
+type Chunk = CanisterSnapshotMetadataKind;
+type OrderedChunk = Chunk & {orderId: number};
+
+type BuildChunkFn = (params: {offset: bigint; size: bigint}) => Chunk;
+
+class SnapshotFsFolderError extends Error {
+  constructor(public readonly folder: string) {
+    super();
+  }
+}
+
+// A handy wrapper to pass down a function that updates
+// the spinner log.
+interface SnapshotLog {
+  log: (text: string) => void;
 }
 
 export const downloadExistingSnapshot = async ({
@@ -57,29 +72,19 @@ export const downloadExistingSnapshot = async ({
   }
 };
 
-class SnapshotFsError extends Error {
-  constructor(public readonly folder: string) {
-    super();
-  }
-}
-
-interface Log {
-  log: (text: string) => void;
-}
-
 const downloadSnapshotMetadataAndMemory = async ({
   snapshotId,
   log,
   ...rest
-}: SnapshotParams & Log): Promise<
+}: SnapshotParams & SnapshotLog): Promise<
   | {status: 'success'; snapshotIdText: string; folder: string}
-  | {status: 'error'; err: SnapshotFsError}
+  | {status: 'error'; err: SnapshotFsFolderError}
 > => {
   const snapshotIdText = `0x${encodeSnapshotId(snapshotId)}`;
   const folder = join(SNAPSHOTS_PATH, snapshotIdText);
 
   if (existsSync(folder)) {
-    return {status: 'error', err: new SnapshotFsError(folder)};
+    return {status: 'error', err: new SnapshotFsFolderError(folder)};
   }
 
   await mkdir(folder, {recursive: true});
@@ -126,17 +131,12 @@ const downloadSnapshotMetadataAndMemory = async ({
   return {status: 'success', snapshotIdText, folder};
 };
 
-type Chunk = CanisterSnapshotMetadataKind;
-type OrderedChunk = Chunk & {orderId: number};
-
-type BuildChunkFn = (params: {offset: bigint; size: bigint}) => Chunk;
-
 const downloadMetadata = async ({
   folder,
   snapshotIdText,
   log,
   ...rest
-}: SnapshotParams & {folder: string; snapshotIdText: string} & Log): Promise<{
+}: SnapshotParams & {folder: string; snapshotIdText: string} & SnapshotLog): Promise<{
   metadata: ReadCanisterSnapshotMetadataResponse;
 }> => {
   log(`[Metadata] Downloading snapshot ${snapshotIdText}...`);
@@ -153,7 +153,7 @@ const assertSizeAndDownloadChunks = async ({
   size,
   log,
   ...params
-}: SnapshotParams & {folder: string; size: bigint; build: BuildChunkFn} & Log) => {
+}: SnapshotParams & {folder: string; size: bigint; build: BuildChunkFn} & SnapshotLog) => {
   if (size === 0n) {
     log('No chunks to download (size = 0). Skipping.');
     await new Promise((resolve) => setTimeout(resolve, 2500));
@@ -175,7 +175,7 @@ const assertAndDownloadWasmChunks = async ({
     ReadCanisterSnapshotMetadataResponse,
     'wasmChunkStore'
   > &
-  Log) => {
+  SnapshotLog) => {
   if (wasmChunkStore.length === 0) {
     log('No chunks to download (length = 0). Skipping.');
     await new Promise((resolve) => setTimeout(resolve, 2500));
@@ -194,7 +194,7 @@ const downloadMemoryChunks = async ({
   build,
   log,
   ...params
-}: SnapshotParams & {folder: string; size: bigint; build: BuildChunkFn} & Log) => {
+}: SnapshotParams & {folder: string; size: bigint; build: BuildChunkFn} & SnapshotLog) => {
   const {chunks} = prepareDownloadChunks({size, build});
 
   log('Downloading chunks...');
@@ -216,7 +216,7 @@ const downloadWasmChunks = async ({
     ReadCanisterSnapshotMetadataResponse,
     'wasmChunkStore'
   > &
-  Log) => {
+  SnapshotLog) => {
   log('[WASM store] Downloading chunks...');
 
   for await (const progress of batchDownloadChunks({
