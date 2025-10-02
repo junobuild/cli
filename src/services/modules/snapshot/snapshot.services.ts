@@ -1,8 +1,8 @@
 import type {snapshot_id} from '@dfinity/ic-management';
 import {encodeSnapshotId} from '@dfinity/ic-management';
 import {Principal} from '@dfinity/principal';
-import {isNullish, nonNullish} from '@dfinity/utils';
-import {red} from 'kleur';
+import {isEmptyString, isNullish, nonNullish} from '@dfinity/utils';
+import {red, yellow} from 'kleur';
 import ora from 'ora';
 import {
   deleteCanisterSnapshot,
@@ -15,6 +15,8 @@ import {displaySegment} from '../../../utils/display.utils';
 import {confirmAndExit} from '../../../utils/prompt.utils';
 import {downloadExistingSnapshot} from './snapshot.download.services';
 import {uploadExistingSnapshot} from './snapshot.upload.services';
+import {nextArg} from '@junobuild/cli-tools';
+import {existsSync, lstatSync} from 'node:fs';
 
 export const createSnapshot = async ({
   canisterId: cId,
@@ -125,13 +127,35 @@ export const uploadSnapshot = async ({
 }) => {
   const canisterId = Principal.fromText(cId);
 
+  const folder = nextArg({args, option: '--dir'});
+
+  if (isEmptyString(folder)) {
+    console.log(
+      `You did not provide a ${yellow('directory')} that contains metadata.json and chunks to upload.`
+    );
+    return;
+  }
+
+  if (!existsSync(folder)) {
+    console.log(`The directory ${yellow('directory')} does not exist.`);
+    return;
+  }
+
+  if (!lstatSync(folder).isDirectory()) {
+    console.log(red(`${folder} is not a directory.`));
+    return;
+  }
+
+  // TODO: extract assertions
+  // TODO: more assertion like is there a metadata.json and chunk files
+
   const {snapshotId} = await loadSnapshotAndAssertOverwrite({canisterId, segment});
 
   await uploadExistingSnapshot({
     canisterId,
     snapshotId,
     segment,
-    args
+    folder
   });
 };
 

@@ -37,7 +37,7 @@ export const downloadSnapshotSatellite = async () => {
 
 export const uploadSnapshotSatellite = async (args?: string[]) => {
   await executeSnapshotFn({
-    fn: (params) => uploadSnapshot({...params, ...args}),
+    fn: (params) => uploadSnapshot({...params, args}),
   });
 };
 

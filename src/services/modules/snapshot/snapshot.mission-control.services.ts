@@ -36,7 +36,7 @@ export const downloadSnapshotMissionControl = async () => {
 
 export const uploadSnapshotMissionControl = async (args?: string[]) => {
   await executeSnapshotFn({
-    fn: (params) => uploadSnapshot({...params, ...args}),
+    fn: (params) => uploadSnapshot({...params, args}),
   });
 };
 

@@ -1,17 +1,10 @@
 import {encodeSnapshotId, snapshot_id} from '@dfinity/ic-management';
 import {UploadCanisterSnapshotDataKind} from '@dfinity/ic-management/dist/types/types/snapshot.params';
 import type {Principal} from '@dfinity/principal';
-import {
-  arrayBufferToUint8Array,
-  isEmptyString,
-  isNullish,
-  jsonReviver,
-  nonNullish
-} from '@dfinity/utils';
-import {nextArg} from '@junobuild/cli-tools';
+import {arrayBufferToUint8Array, isNullish, jsonReviver, nonNullish} from '@dfinity/utils';
 import {FileHandle} from 'fs/promises';
-import {red, yellow} from 'kleur';
-import {existsSync, lstatSync} from 'node:fs';
+import {red} from 'kleur';
+import {lstatSync} from 'node:fs';
 import {open as openFile, readFile} from 'node:fs/promises';
 import {join, relative} from 'node:path';
 import ora from 'ora';
@@ -54,40 +47,16 @@ class SnapshotFsReadError extends Error {}
 
 export const uploadExistingSnapshot = async ({
   segment,
-  args,
   ...params
 }: SnapshotParams & {
   segment: AssetKey;
-  args?: string[];
+  folder: string;
 }): Promise<void> => {
-  const folder = nextArg({args, option: '--dir'});
-
-  if (isEmptyString(folder)) {
-    console.log(
-      `You did not provide a ${yellow('directory')} that contains metadata.json and chunks to upload.`
-    );
-    return;
-  }
-
-  if (!existsSync(folder)) {
-    console.log(`The directory ${yellow('directory')} does not exist.`);
-    return;
-  }
-
-  if (!lstatSync(folder).isDirectory()) {
-    console.log(red(`${folder} is not a directory.`));
-    return;
-  }
-
-  // TODO: extract assertions
-  // TODO: more assertion like is there a metadata.json and chunk files
-
   const spinner = ora('Uploading the snapshot...').start();
 
   try {
     const result = await uploadSnapshotMetadataAndMemory({
       ...params,
-      folder,
       log: (text) => (spinner.text = text)
     });
 
@@ -214,7 +183,9 @@ const readMetadata = async ({
 }: {folder: string} & SnapshotLog): Promise<{metadata: SnapshotMetadata}> => {
   log('Loading metadata...');
 
-  const data = await readFile(folder, 'utf-8');
+  const source = join(folder, 'metadata.json');
+
+  const data = await readFile(source, 'utf-8');
   const metadata = JSON.parse(data, jsonReviver);
 
   return {metadata: SnapshotMetadataSchema.parse(metadata)};
