@@ -237,7 +237,7 @@ const assertAndUploadChunks = async ({
   }
 
   const actualHash = await computeLargeFileHash(source);
-  if (hash !== (await computeLargeFileHash(source))) {
+  if (hash !== actualHash) {
     throw new SnapshotAssertError(
       `Hash mismatch for ${filename}: expected ${hash}, got ${actualHash}`
     );
