@@ -1,7 +1,7 @@
 import {encodeSnapshotId, snapshot_id} from '@dfinity/ic-management';
 import {UploadCanisterSnapshotDataKind} from '@dfinity/ic-management/dist/types/types/snapshot.params';
 import type {Principal} from '@dfinity/principal';
-import {arrayBufferToUint8Array, isNullish, jsonReviver, nonNullish} from '@dfinity/utils';
+import {arrayBufferToUint8Array, isNullish, jsonReviver} from '@dfinity/utils';
 import {FileHandle} from 'fs/promises';
 import {red} from 'kleur';
 import {lstatSync} from 'node:fs';
@@ -41,7 +41,6 @@ interface DataChunk {
   size: number;
 }
 
-class SnapshotUploadError extends Error {}
 class SnapshotAssertError extends Error {}
 class SnapshotFsReadError extends Error {}
 
@@ -69,11 +68,6 @@ export const uploadExistingSnapshot = async ({
     );
   } catch (error: unknown) {
     spinner.stop();
-
-    if (error instanceof SnapshotUploadError) {
-      console.log(error.message);
-      return;
-    }
 
     if (error instanceof SnapshotFsReadError || error instanceof SnapshotAssertError) {
       console.log(red(error.message));
@@ -110,16 +104,6 @@ const uploadSnapshotMetadataAndMemory = async ({
   });
 
   const snapshotIdText = `0x${encodeSnapshotId(snapshotId)}`;
-
-  // Unlikely but, just in case let's stop here if the snapshot was not overwritten as expected.
-  if (
-    nonNullish(replaceSnapshotId) &&
-    `0x${encodeSnapshotId(replaceSnapshotId)}` !== snapshotIdText
-  ) {
-    throw new SnapshotUploadError(
-      `⚠️ The existing snapshot 0x${encodeSnapshotId(replaceSnapshotId)} was not overwritten. A new snapshot ${snapshotIdText} was created instead. This is unexpected.`
-    );
-  }
 
   // 3. Upload chunks
   await assertAndUploadChunks({
@@ -263,29 +247,33 @@ const assertAndUploadChunks = async ({
 
   log(`Uploading chunks from ${relative(process.cwd(), source)}...`);
 
-  for await (const {progress} of batchUploadChunks({
-    source,
-    chunks,
-    ...rest
-  })) {
-    log(`Chunks ${progress.done}/${progress.total} uploaded. Continuing...`);
+  const sourceHandler = await openFile(source);
+
+  try {
+    for await (const {progress} of batchUploadChunks({
+      sourceHandler,
+      chunks,
+      ...rest
+    })) {
+      log(`Chunks ${progress.done}/${progress.total} uploaded. Continuing...`);
+    }
+  } finally {
+    await sourceHandler.close();
   }
 
   return {status: 'success'};
 };
 
 async function* batchUploadChunks({
-  source,
+  sourceHandler,
   chunks,
   limit = 20,
   ...params
 }: Required<SnapshotParams> & {
-  source: string;
+  sourceHandler: FileHandle;
   chunks: DataChunk[];
   limit?: number;
 }): AsyncGenerator<BatchResult, void> {
-  const sourceHandler = await openFile(source);
-
   const total = chunks.length;
 
   for (let i = 0; i < total; i = i + limit) {
