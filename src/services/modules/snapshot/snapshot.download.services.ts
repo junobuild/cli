@@ -4,7 +4,8 @@ import type {ReadCanisterSnapshotMetadataResponse} from '@dfinity/ic-management/
 import type {Principal} from '@dfinity/principal';
 import {arrayOfNumberToUint8Array, jsonReplacer} from '@dfinity/utils';
 import {red} from 'kleur';
-import {createWriteStream, existsSync} from 'node:fs';
+import {createHash} from 'node:crypto';
+import {createWriteStream, existsSync, statSync} from 'node:fs';
 import {mkdir, writeFile} from 'node:fs/promises';
 import {join, relative} from 'node:path';
 import {Readable, Transform} from 'node:stream';
@@ -13,6 +14,7 @@ import ora from 'ora';
 import {readCanisterSnapshotData, readCanisterSnapshotMetadata} from '../../../api/ic.api';
 import {SNAPSHOT_CHUNK_SIZE, SNAPSHOTS_PATH} from '../../../constants/snapshot.constants';
 import {AssetKey} from '../../../types/asset-key';
+import {SnapshotFile, SnapshotFilename, SnapshotMetadata} from '../../../types/snapshot';
 import {displaySegment} from '../../../utils/display.utils';
 
 // We override the ic-mgmt interface because we solely want snapshotId as Principal here
@@ -27,6 +29,16 @@ type BuildChunkFn = (params: {offset: bigint; size: bigint}) => RequestedChunk;
 
 class SnapshotFsFolderError extends Error {
   constructor(public readonly folder: string) {
+    super();
+  }
+}
+
+class SnapshotFsSizeError extends Error {
+  constructor(
+    public readonly filename: string,
+    public readonly expectedSize: bigint,
+    public readonly downloadedSize: bigint
+  ) {
     super();
   }
 }
@@ -48,7 +60,7 @@ export const downloadExistingSnapshot = async ({
 }: SnapshotParams & {
   segment: AssetKey;
 }): Promise<void> => {
-  const spinner = ora('Downloading the snapshot...').start();
+  const spinner = ora().start();
 
   try {
     const result = await downloadSnapshotMetadataAndMemory({
@@ -57,13 +69,6 @@ export const downloadExistingSnapshot = async ({
     });
 
     spinner.stop();
-
-    if (result.status === 'error') {
-      console.log(
-        `${red('Cannot proceed with download.')}\nDestination ${result.err.folder} already exists.`
-      );
-      return;
-    }
 
     const {snapshotIdText, folder} = result;
 
@@ -74,6 +79,20 @@ export const downloadExistingSnapshot = async ({
   } catch (error: unknown) {
     spinner.stop();
 
+    if (error instanceof SnapshotFsFolderError) {
+      console.log(
+        `${red('Cannot proceed with download.')}\nDestination ${error.folder} already exists.`
+      );
+      return;
+    }
+
+    if (error instanceof SnapshotFsSizeError) {
+      console.log(
+        `${red('Download size mismatch.')}\n${error.filename}: expected ${error.expectedSize} bytes, got ${error.downloadedSize} bytes.`
+      );
+      return;
+    }
+
     throw error;
   }
 };
@@ -82,26 +101,29 @@ const downloadSnapshotMetadataAndMemory = async ({
   snapshotId,
   log,
   ...rest
-}: SnapshotParams & SnapshotLog): Promise<
-  | {status: 'success'; snapshotIdText: string; folder: string}
-  | {status: 'error'; err: SnapshotFsFolderError}
-> => {
+}: SnapshotParams & SnapshotLog): Promise<{
+  status: 'success';
+  snapshotIdText: string;
+  folder: string;
+}> => {
   const snapshotIdText = `0x${encodeSnapshotId(snapshotId)}`;
   const folder = join(SNAPSHOTS_PATH, snapshotIdText);
 
   if (existsSync(folder)) {
-    return {status: 'error', err: new SnapshotFsFolderError(folder)};
+    throw new SnapshotFsFolderError(folder);
   }
 
   await mkdir(folder, {recursive: true});
 
-  const {
-    metadata: {wasmModuleSize, wasmMemorySize, stableMemorySize, wasmChunkStore}
-  } = await downloadMetadata({folder, snapshotId, log, snapshotIdText, ...rest});
+  // 1. Load the snapshot metadata
+  const {metadata} = await loadMetadata({snapshotId, log, snapshotIdText, ...rest});
 
-  await assertSizeAndDownloadChunks({
+  // 2. Download the snapshot data (WASM program code, heap and stable memory, WASM chunks store)
+  const {wasmModuleSize, wasmMemorySize, stableMemorySize, wasmChunkStore} = metadata;
+
+  const wasmModuleResult = await assertSizeAndDownloadChunks({
     folder,
-    filename: 'wasm-code',
+    filename: 'wasm-code.bin',
     snapshotId,
     size: wasmModuleSize,
     build: (param) => ({wasmModule: param}),
@@ -109,9 +131,9 @@ const downloadSnapshotMetadataAndMemory = async ({
     ...rest
   });
 
-  await assertSizeAndDownloadChunks({
+  const wasmMemoryResult = await assertSizeAndDownloadChunks({
     folder,
-    filename: 'heap',
+    filename: 'heap.bin',
     snapshotId,
     size: wasmMemorySize,
     build: (param) => ({wasmMemory: param}),
@@ -119,9 +141,9 @@ const downloadSnapshotMetadataAndMemory = async ({
     ...rest
   });
 
-  await assertSizeAndDownloadChunks({
+  const stableMemoryResult = await assertSizeAndDownloadChunks({
     folder,
-    filename: 'stable',
+    filename: 'stable.bin',
     snapshotId,
     size: stableMemorySize,
     build: (param) => ({stableMemory: param}),
@@ -129,35 +151,57 @@ const downloadSnapshotMetadataAndMemory = async ({
     ...rest
   });
 
-  await assertAndDownloadWasmChunks({
+  const wasmChunkStoreResult = await assertAndDownloadWasmChunks({
     folder,
-    filename: 'chunks-store',
+    filename: 'chunks-store.bin',
     snapshotId,
     wasmChunkStore,
     log,
     ...rest
   });
 
+  // 3. Save the metadata of the offline snapshot
+  await saveMetadata({
+    log,
+    folder,
+    metadata: {
+      snapshotId: snapshotIdText,
+      metadata,
+      data: {
+        wasmModule: 'ok' === wasmModuleResult.status ? wasmModuleResult.snapshotFile : null,
+        wasmMemory: 'ok' === wasmMemoryResult.status ? wasmMemoryResult.snapshotFile : null,
+        stableMemory: 'ok' === stableMemoryResult.status ? stableMemoryResult.snapshotFile : null,
+        wasmChunkStore:
+          'ok' === wasmChunkStoreResult.status ? wasmChunkStoreResult.snapshotFile : null
+      }
+    }
+  });
+
   return {status: 'success', snapshotIdText, folder};
 };
 
-const downloadMetadata = async ({
-  folder,
+const loadMetadata = async ({
   snapshotIdText,
   log,
   ...rest
-}: SnapshotParams & {folder: string; snapshotIdText: string} & SnapshotLog): Promise<{
+}: SnapshotParams & {snapshotIdText: string} & SnapshotLog): Promise<{
   metadata: ReadCanisterSnapshotMetadataResponse;
 }> => {
   log(`Downloading snapshot metadata ${snapshotIdText}...`);
 
   const metadata = await readCanisterSnapshotMetadata(rest);
+  return {metadata};
+};
 
-  // TODO: write the metadata at the end of the process. It's safer.
+const saveMetadata = async ({
+  folder,
+  log,
+  metadata
+}: {folder: string; metadata: SnapshotMetadata} & SnapshotLog) => {
+  log(`Saving snapshot metadata...`);
+
   const destination = join(folder, 'metadata.json');
   await writeFile(destination, JSON.stringify(metadata, jsonReplacer, 2), 'utf-8');
-
-  return {metadata};
 };
 
 const assertSizeAndDownloadChunks = async ({
@@ -167,44 +211,59 @@ const assertSizeAndDownloadChunks = async ({
   ...params
 }: SnapshotParams & {
   folder: string;
-  filename: string;
+  filename: SnapshotFilename;
   size: bigint;
   build: BuildChunkFn;
-} & SnapshotLog) => {
+} & SnapshotLog): Promise<{status: 'ok'; snapshotFile: SnapshotFile} | {status: 'skip'}> => {
   if (size === 0n) {
     log(`No chunks to download for ${filename} (size = 0). Skipping.`);
     await new Promise((resolve) => setTimeout(resolve, 2500));
-    return;
+    return {status: 'skip'};
   }
 
-  await downloadMemoryChunks({
+  const {size: downloadedSize, hash} = await downloadMemoryChunks({
     size,
     log,
     filename,
     ...params
   });
+
+  if (downloadedSize !== size) {
+    throw new SnapshotFsSizeError(filename, size, downloadedSize);
+  }
+
+  return {
+    status: 'ok',
+    snapshotFile: {
+      filename,
+      size: downloadedSize,
+      hash
+    }
+  };
 };
 
 const assertAndDownloadWasmChunks = async ({
   wasmChunkStore,
   log,
   ...params
-}: SnapshotParams & {folder: string; filename: string} & Pick<
+}: SnapshotParams & {folder: string; filename: SnapshotFilename} & Pick<
     ReadCanisterSnapshotMetadataResponse,
     'wasmChunkStore'
   > &
-  SnapshotLog) => {
+  SnapshotLog): Promise<{status: 'ok'; snapshotFile: SnapshotFile} | {status: 'skip'}> => {
   if (wasmChunkStore.length === 0) {
     log('Nothing to download from the WASM chunks store (length = 0). Skipping.');
     await new Promise((resolve) => setTimeout(resolve, 2500));
-    return;
+    return {status: 'skip'};
   }
 
-  await downloadWasmChunks({
+  const snapshotFile = await downloadWasmChunks({
     wasmChunkStore,
     log,
     ...params
   });
+
+  return {status: 'ok', snapshotFile};
 };
 
 const downloadMemoryChunks = async ({
@@ -216,10 +275,10 @@ const downloadMemoryChunks = async ({
   ...params
 }: SnapshotParams & {
   folder: string;
-  filename: string;
+  filename: SnapshotFilename;
   size: bigint;
   build: BuildChunkFn;
-} & SnapshotLog) => {
+} & SnapshotLog): Promise<SnapshotFile> => {
   const {chunks} = prepareDownloadChunks({size, build});
 
   const readable = Readable.from(
@@ -230,7 +289,7 @@ const downloadMemoryChunks = async ({
     })
   );
 
-  await downloadAndWrite({readable, folder, filename, log});
+  return await downloadAndWrite({readable, folder, filename, log});
 };
 
 const downloadWasmChunks = async ({
@@ -239,11 +298,11 @@ const downloadWasmChunks = async ({
   folder,
   filename,
   ...params
-}: SnapshotParams & {folder: string; filename: string} & Pick<
+}: SnapshotParams & {folder: string; filename: SnapshotFilename} & Pick<
     ReadCanisterSnapshotMetadataResponse,
     'wasmChunkStore'
   > &
-  SnapshotLog) => {
+  SnapshotLog): Promise<SnapshotFile> => {
   const readable = Readable.from(
     batchDownloadChunks({
       chunks: wasmChunkStore.map((chunk, orderId) => ({wasmChunk: chunk, orderId})),
@@ -252,7 +311,7 @@ const downloadWasmChunks = async ({
     })
   );
 
-  await downloadAndWrite({readable, folder, filename, log});
+  return await downloadAndWrite({readable, folder, filename, log});
 };
 
 const downloadAndWrite = async ({
@@ -260,12 +319,17 @@ const downloadAndWrite = async ({
   folder,
   filename,
   log
-}: {readable: Readable; folder: string; filename: string} & SnapshotLog) => {
+}: {
+  readable: Readable;
+  folder: string;
+  filename: SnapshotFilename;
+} & SnapshotLog): Promise<SnapshotFile> => {
   // Note: we would not win much at gzipping the data.
-  const destination = join(folder, `${filename}.bin`);
+  const destination = join(folder, filename);
 
   log(`Downloading chunks to ${relative(process.cwd(), destination)}...`);
 
+  // A transformer use to flatten the back of chunks when writing to the file
   const transformer = new Transform({
     objectMode: true,
     writableObjectMode: true,
@@ -284,7 +348,23 @@ const downloadAndWrite = async ({
     }
   });
 
-  await pipeline(readable, transformer, createWriteStream(destination));
+  // We want to compute a sha256 to assert the file in the upload process
+  const hash = createHash('sha256');
+
+  const hasher = new Transform({
+    transform(chunk, _enc, cb) {
+      hash.update(chunk);
+      cb(null, chunk);
+    }
+  });
+
+  await pipeline(readable, transformer, hasher, createWriteStream(destination));
+
+  return {
+    filename,
+    size: BigInt(statSync(destination).size),
+    hash: hash.digest('hex')
+  };
 };
 
 const prepareDownloadChunks = ({
