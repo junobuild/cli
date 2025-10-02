@@ -11,7 +11,7 @@ import {TITLE} from './help';
 const usage = `Usage: ${green('juno')} ${cyan('snapshot')} ${magenta('upload')} ${yellow('[options]')}
 
 Options:
-  ${yellow('--dir')}           Path to the snapshot directory that contains the metadata.json and chunks.
+  ${yellow('--dir')}                 Path to the snapshot directory that contains the metadata.json and chunks.
   ${OPTIONS_ENV}
   ${OPTION_HELP}`;
 

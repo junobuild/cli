@@ -67,3 +67,4 @@ export const SnapshotMetadataSchema = z.strictObject({
 export type SnapshotFilename = z.infer<typeof SnapshotFilenameSchema>;
 export type SnapshotFile = z.infer<typeof SnapshotFileSchema>;
 export type SnapshotMetadata = z.infer<typeof SnapshotMetadataSchema>;
+export type ReadCanisterSnapshotMetadataResponse = z.infer<typeof ReadCanisterSnapshotMetadataResponseSchema>;

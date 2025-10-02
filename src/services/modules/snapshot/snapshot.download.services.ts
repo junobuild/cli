@@ -16,6 +16,7 @@ import {SNAPSHOT_CHUNK_SIZE, SNAPSHOTS_PATH} from '../../../constants/snapshot.c
 import {AssetKey} from '../../../types/asset-key';
 import {SnapshotFile, SnapshotFilename, SnapshotMetadata} from '../../../types/snapshot';
 import {displaySegment} from '../../../utils/display.utils';
+import {BuildChunkFn, prepareDataChunks} from '../../../utils/snapshot.utils';
 
 // We override the ic-mgmt interface because we solely want snapshotId as Principal here
 interface SnapshotParams {
@@ -23,9 +24,8 @@ interface SnapshotParams {
   snapshotId: snapshot_id;
 }
 
-type RequestedChunk = CanisterSnapshotMetadataKind;
+type DataChunk = CanisterSnapshotMetadataKind;
 type DownloadedChunk = Uint8Array;
-type BuildChunkFn = (params: {offset: bigint; size: bigint}) => RequestedChunk;
 
 class SnapshotFsFolderError extends Error {
   constructor(public readonly folder: string) {
@@ -213,7 +213,7 @@ const assertSizeAndDownloadChunks = async ({
   folder: string;
   filename: SnapshotFilename;
   size: bigint;
-  build: BuildChunkFn;
+  build: BuildChunkFn<DataChunk>;
 } & SnapshotLog): Promise<{status: 'ok'; snapshotFile: SnapshotFile} | {status: 'skip'}> => {
   if (size === 0n) {
     log(`No chunks to download for ${filename} (size = 0). Skipping.`);
@@ -277,14 +277,13 @@ const downloadMemoryChunks = async ({
   folder: string;
   filename: SnapshotFilename;
   size: bigint;
-  build: BuildChunkFn;
+  build: BuildChunkFn<DataChunk>;
 } & SnapshotLog): Promise<SnapshotFile> => {
-  const {chunks} = prepareDownloadChunks({size, build});
+  const {chunks} = prepareDataChunks({size, build});
 
   const readable = Readable.from(
     batchDownloadChunks({
       chunks,
-      limit: 20,
       ...params
     })
   );
@@ -367,36 +366,12 @@ const downloadAndWrite = async ({
   };
 };
 
-const prepareDownloadChunks = ({
-  size: totalSize,
-  build
-}: {
-  size: bigint;
-  build: BuildChunkFn;
-}): {chunks: RequestedChunk[]} => {
-  const chunks: RequestedChunk[] = [];
-
-  for (let offset = 0n; offset < totalSize; offset += SNAPSHOT_CHUNK_SIZE) {
-    const size =
-      offset + SNAPSHOT_CHUNK_SIZE <= totalSize ? SNAPSHOT_CHUNK_SIZE : totalSize - offset;
-
-    chunks.push({
-      ...build({
-        offset,
-        size
-      })
-    });
-  }
-
-  return {chunks};
-};
-
 async function* batchDownloadChunks({
   chunks,
-  limit = 12,
+  limit = 20,
   ...params
 }: SnapshotParams & {
-  chunks: RequestedChunk[];
+  chunks: DataChunk[];
   limit?: number;
 }): AsyncGenerator<BatchResult, void> {
   const total = chunks.length;
@@ -419,7 +394,7 @@ const downloadChunk = async ({
   chunk: kind,
   ...rest
 }: SnapshotParams & {
-  chunk: RequestedChunk;
+  chunk: DataChunk;
 }): Promise<DownloadedChunk> => {
   const {chunk: downloadedChunk} = await readCanisterSnapshotData({
     ...rest,
