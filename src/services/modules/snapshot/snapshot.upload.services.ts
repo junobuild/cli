@@ -1,11 +1,13 @@
 import type {snapshot_id} from '@dfinity/ic-management';
 import type {Principal} from '@dfinity/principal';
-import {isEmptyString} from '@dfinity/utils';
+import {isEmptyString, jsonReviver} from '@dfinity/utils';
 import {nextArg} from '@junobuild/cli-tools';
 import {red, yellow} from 'kleur';
 import {existsSync, lstatSync} from 'node:fs';
+import {readFile} from 'node:fs/promises';
 import ora from 'ora';
 import type {AssetKey} from '../../../types/asset-key';
+import {SnapshotMetadata, SnapshotMetadataSchema} from '../../../types/snapshot';
 import {displaySegment} from '../../../utils/display.utils';
 
 // We override the ic-mgmt interface because we solely want snapshotId as Principal here
@@ -55,6 +57,7 @@ export const uploadExistingSnapshot = async ({
   try {
     const result = await uploadSnapshotMetadataAndMemory({
       ...params,
+      folder,
       log: (text) => (spinner.text = text)
     });
 
@@ -75,9 +78,22 @@ export const uploadExistingSnapshot = async ({
 const uploadSnapshotMetadataAndMemory = async ({
   snapshotId,
   log,
+  folder,
   ...rest
-}: SnapshotParams & SnapshotLog): Promise<{snapshotIdText: string}> => {
-  // TODO: yep todo
+}: SnapshotParams & {folder: string} & SnapshotLog): Promise<{snapshotIdText: string}> => {
+  const {metadata} = await readMetadata({folder, log});
 
-  return {snapshotIdText: ""}
+  return {snapshotIdText: ''};
+};
+
+const readMetadata = async ({
+  folder,
+  log
+}: {folder: string} & SnapshotLog): Promise<{metadata: SnapshotMetadata}> => {
+  log('Loading metadata...');
+
+  const data = await readFile(folder, 'utf-8');
+  const metadata = JSON.parse(data, jsonReviver);
+
+  return {metadata: SnapshotMetadataSchema.parse(metadata)};
 };
