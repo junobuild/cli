@@ -1,7 +1,5 @@
-import type {snapshot_id} from '@dfinity/ic-management';
 import {type CanisterSnapshotMetadataKind, encodeSnapshotId} from '@dfinity/ic-management';
 import type {ReadCanisterSnapshotMetadataResponse} from '@dfinity/ic-management/dist/types/types/snapshot.responses';
-import type {Principal} from '@dfinity/principal';
 import {arrayOfNumberToUint8Array, jsonReplacer} from '@dfinity/utils';
 import {red} from 'kleur';
 import {createHash} from 'node:crypto';
@@ -14,15 +12,16 @@ import ora from 'ora';
 import {readCanisterSnapshotData, readCanisterSnapshotMetadata} from '../../../api/ic.api';
 import {SNAPSHOTS_PATH} from '../../../constants/snapshot.constants';
 import {AssetKey} from '../../../types/asset-key';
-import {SnapshotFile, SnapshotFilename, SnapshotMetadata} from '../../../types/snapshot';
+import {
+  DownloadSnapshotParams,
+  SnapshotBatchResult,
+  SnapshotFile,
+  SnapshotFilename,
+  SnapshotLog,
+  SnapshotMetadata
+} from '../../../types/snapshot';
 import {displaySegment} from '../../../utils/display.utils';
 import {BuildChunkFn, prepareDataChunks} from '../../../utils/snapshot.utils';
-
-// We override the ic-mgmt interface because we solely want snapshotId as Principal here
-interface SnapshotParams {
-  canisterId: Principal;
-  snapshotId: snapshot_id;
-}
 
 type DataChunk = CanisterSnapshotMetadataKind;
 type DownloadedChunk = Uint8Array;
@@ -43,21 +42,14 @@ class SnapshotFsSizeError extends Error {
   }
 }
 
-// A handy wrapper to pass down a function that updates
-// the spinner log.
-interface SnapshotLog {
-  log: (text: string) => void;
-}
-
-interface BatchResult {
+interface DownloadSnapshotBatchResult extends SnapshotBatchResult {
   downloadedChunks: DownloadedChunk[];
-  progress: {index: number; done: number; total: number};
 }
 
 export const downloadExistingSnapshot = async ({
   segment,
   ...params
-}: SnapshotParams & {
+}: DownloadSnapshotParams & {
   segment: AssetKey;
 }): Promise<void> => {
   const spinner = ora().start();
@@ -101,7 +93,7 @@ const downloadSnapshotMetadataAndMemory = async ({
   snapshotId,
   log,
   ...rest
-}: SnapshotParams & SnapshotLog): Promise<{
+}: DownloadSnapshotParams & SnapshotLog): Promise<{
   status: 'success';
   snapshotIdText: string;
   folder: string;
@@ -184,7 +176,7 @@ const loadMetadata = async ({
   snapshotIdText,
   log,
   ...rest
-}: SnapshotParams & {snapshotIdText: string} & SnapshotLog): Promise<{
+}: DownloadSnapshotParams & {snapshotIdText: string} & SnapshotLog): Promise<{
   metadata: ReadCanisterSnapshotMetadataResponse;
 }> => {
   log(`Downloading snapshot metadata ${snapshotIdText}...`);
@@ -209,7 +201,7 @@ const assertSizeAndDownloadChunks = async ({
   log,
   filename,
   ...params
-}: SnapshotParams & {
+}: DownloadSnapshotParams & {
   folder: string;
   filename: SnapshotFilename;
   size: bigint;
@@ -246,7 +238,7 @@ const assertAndDownloadWasmChunks = async ({
   wasmChunkStore,
   log,
   ...params
-}: SnapshotParams & {folder: string; filename: SnapshotFilename} & Pick<
+}: DownloadSnapshotParams & {folder: string; filename: SnapshotFilename} & Pick<
     ReadCanisterSnapshotMetadataResponse,
     'wasmChunkStore'
   > &
@@ -273,7 +265,7 @@ const downloadMemoryChunks = async ({
   folder,
   filename,
   ...params
-}: SnapshotParams & {
+}: DownloadSnapshotParams & {
   folder: string;
   filename: SnapshotFilename;
   size: bigint;
@@ -297,7 +289,7 @@ const downloadWasmChunks = async ({
   folder,
   filename,
   ...params
-}: SnapshotParams & {folder: string; filename: SnapshotFilename} & Pick<
+}: DownloadSnapshotParams & {folder: string; filename: SnapshotFilename} & Pick<
     ReadCanisterSnapshotMetadataResponse,
     'wasmChunkStore'
   > &
@@ -333,7 +325,7 @@ const downloadAndWrite = async ({
     objectMode: true,
     writableObjectMode: true,
     readableObjectMode: false,
-    transform({downloadedChunks: chunks, progress}: BatchResult, _enc, cb) {
+    transform({downloadedChunks: chunks, progress}: DownloadSnapshotBatchResult, _enc, cb) {
       try {
         log(`Chunks ${progress.done}/${progress.total} downloaded. Continuing...`);
 
@@ -370,10 +362,10 @@ async function* batchDownloadChunks({
   chunks,
   limit = 20,
   ...params
-}: SnapshotParams & {
+}: DownloadSnapshotParams & {
   chunks: DataChunk[];
   limit?: number;
-}): AsyncGenerator<BatchResult, void> {
+}): AsyncGenerator<DownloadSnapshotBatchResult, void> {
   const total = chunks.length;
 
   for (let i = 0; i < total; i = i + limit) {
@@ -393,7 +385,7 @@ async function* batchDownloadChunks({
 const downloadChunk = async ({
   chunk: kind,
   ...rest
-}: SnapshotParams & {
+}: DownloadSnapshotParams & {
   chunk: DataChunk;
 }): Promise<DownloadedChunk> => {
   const {chunk: downloadedChunk} = await readCanisterSnapshotData({

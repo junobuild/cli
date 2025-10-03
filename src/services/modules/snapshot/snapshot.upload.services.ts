@@ -1,6 +1,5 @@
 import {encodeSnapshotId, snapshot_id} from '@dfinity/ic-management';
 import {UploadCanisterSnapshotDataKind} from '@dfinity/ic-management/dist/types/types/snapshot.params';
-import type {Principal} from '@dfinity/principal';
 import {arrayBufferToUint8Array, isNullish, jsonReviver} from '@dfinity/utils';
 import {FileHandle} from 'fs/promises';
 import {red} from 'kleur';
@@ -9,31 +8,18 @@ import {open as openFile, readFile} from 'node:fs/promises';
 import {join, relative} from 'node:path';
 import ora from 'ora';
 import {uploadCanisterSnapshotData, uploadCanisterSnapshotMetadata} from '../../../api/ic.api';
+import {SnapshotMetadataSchema} from '../../../schema/snapshot.schema';
 import type {AssetKey} from '../../../types/asset-key';
 import {
   ReadCanisterSnapshotMetadataResponse,
+  SnapshotBatchResult,
   SnapshotFile,
+  SnapshotLog,
   SnapshotMetadata,
-  SnapshotMetadataSchema
+  UploadSnapshotParams
 } from '../../../types/snapshot';
 import {displaySegment} from '../../../utils/display.utils';
 import {BuildChunkFn, computeLargeFileHash, prepareDataChunks} from '../../../utils/snapshot.utils';
-
-// We override the ic-mgmt interface because we solely want snapshotId as Principal here
-interface SnapshotParams {
-  canisterId: Principal;
-  snapshotId?: snapshot_id;
-}
-
-// A handy wrapper to pass down a function that updates
-// the spinner log.
-interface SnapshotLog {
-  log: (text: string) => void;
-}
-
-interface BatchResult {
-  progress: {index: number; done: number; total: number};
-}
 
 interface DataChunk {
   kind: UploadCanisterSnapshotDataKind;
@@ -47,7 +33,7 @@ class SnapshotFsReadError extends Error {}
 export const uploadExistingSnapshot = async ({
   segment,
   ...params
-}: SnapshotParams & {
+}: UploadSnapshotParams & {
   segment: AssetKey;
   folder: string;
 }): Promise<void> => {
@@ -83,7 +69,7 @@ const uploadSnapshotMetadataAndMemory = async ({
   folder,
   snapshotId: replaceSnapshotId,
   ...rest
-}: SnapshotParams & {folder: string} & SnapshotLog): Promise<{snapshotIdText: string}> => {
+}: UploadSnapshotParams & {folder: string} & SnapshotLog): Promise<{snapshotIdText: string}> => {
   // 1. Read the snapshot metadata
   const {
     metadata: {
@@ -187,7 +173,7 @@ const uploadMetadata = async ({
     wasmMemorySize
   },
   ...rest
-}: SnapshotParams & {metadata: ReadCanisterSnapshotMetadataResponse} & SnapshotLog): Promise<{
+}: UploadSnapshotParams & {metadata: ReadCanisterSnapshotMetadataResponse} & SnapshotLog): Promise<{
   snapshotId: snapshot_id;
 }> => {
   log('Uploading snapshot metadata...');
@@ -215,7 +201,7 @@ const assertAndUploadChunks = async ({
   log,
   build,
   ...rest
-}: Required<SnapshotParams> & {
+}: Required<UploadSnapshotParams> & {
   folder: string;
   file: SnapshotFile | null;
   build: BuildChunkFn<DataChunk>;
@@ -269,11 +255,11 @@ async function* batchUploadChunks({
   chunks,
   limit = 20,
   ...params
-}: Required<SnapshotParams> & {
+}: Required<UploadSnapshotParams> & {
   sourceHandler: FileHandle;
   chunks: DataChunk[];
   limit?: number;
-}): AsyncGenerator<BatchResult, void> {
+}): AsyncGenerator<SnapshotBatchResult, void> {
   const total = chunks.length;
 
   for (let i = 0; i < total; i = i + limit) {
@@ -295,7 +281,7 @@ const uploadChunk = async ({
   chunk: {kind, size, offset},
   sourceHandler,
   ...rest
-}: Required<SnapshotParams> & {
+}: Required<UploadSnapshotParams> & {
   sourceHandler: FileHandle;
   chunk: DataChunk;
 }): Promise<void> => {
