@@ -26,7 +26,7 @@
     "@dfinity/agent": "^3.2.6",
     "@dfinity/auth-client": "^3.2.6",
     "@dfinity/candid": "^3.2.6",
-    "@dfinity/ic-management": "^7.0.1",
+    "@dfinity/ic-management": "^7.0.2-beta-2025-09-30",
     "@dfinity/identity": "^3.2.6",
     "@dfinity/principal": "^3.2.6",
     "@dfinity/zod-schemas": "^2.1.0",

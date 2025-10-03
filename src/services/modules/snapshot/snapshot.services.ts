@@ -1,8 +1,10 @@
 import type {snapshot_id} from '@dfinity/ic-management';
 import {encodeSnapshotId} from '@dfinity/ic-management';
 import {Principal} from '@dfinity/principal';
-import {isNullish, nonNullish} from '@dfinity/utils';
-import {red} from 'kleur';
+import {isEmptyString, isNullish, nonNullish} from '@dfinity/utils';
+import {nextArg} from '@junobuild/cli-tools';
+import {red, yellow} from 'kleur';
+import {existsSync, lstatSync} from 'node:fs';
 import ora from 'ora';
 import {
   deleteCanisterSnapshot,
@@ -13,6 +15,8 @@ import {
 import type {AssetKey} from '../../../types/asset-key';
 import {displaySegment} from '../../../utils/display.utils';
 import {confirmAndExit} from '../../../utils/prompt.utils';
+import {downloadExistingSnapshot} from './snapshot.download.services';
+import {uploadExistingSnapshot} from './snapshot.upload.services';
 
 export const createSnapshot = async ({
   canisterId: cId,
@@ -23,17 +27,11 @@ export const createSnapshot = async ({
 }) => {
   const canisterId = Principal.fromText(cId);
 
-  const existingSnapshotId = await loadSnapshot({canisterId});
-
-  if (nonNullish(existingSnapshotId)) {
-    await confirmAndExit(
-      `A snapshot for your ${displaySegment(segment)} already exists with ID 0x${encodeSnapshotId(existingSnapshotId)}. Do you want to overwrite it?`
-    );
-  }
+  const {snapshotId} = await loadSnapshotAndAssertOverwrite({canisterId, segment});
 
   await takeSnapshot({
     canisterId,
-    snapshotId: existingSnapshotId,
+    snapshotId,
     segment
   });
 };
@@ -47,12 +45,13 @@ export const restoreSnapshot = async ({
 }) => {
   const canisterId = Principal.fromText(cId);
 
-  const existingSnapshotId = await loadSnapshot({canisterId});
+  const result = await loadSnapshotAndAssertExist({canisterId, segment});
 
-  if (isNullish(existingSnapshotId)) {
-    console.log(red(`No snapshot found for your ${displaySegment(segment)}.`));
+  if (result.result === 'not_found') {
     return;
   }
+
+  const {snapshotId: existingSnapshotId} = result;
 
   await confirmAndExit(
     `Restoring the snapshot 0x${encodeSnapshotId(existingSnapshotId)} will permanently overwrite the current state of your ${displaySegment(segment)}. Are you sure you want to proceed?`
@@ -74,12 +73,13 @@ export const deleteSnapshot = async ({
 }) => {
   const canisterId = Principal.fromText(cId);
 
-  const existingSnapshotId = await loadSnapshot({canisterId});
+  const result = await loadSnapshotAndAssertExist({canisterId, segment});
 
-  if (isNullish(existingSnapshotId)) {
-    console.log(red(`No snapshot found for your ${displaySegment(segment)}.`));
+  if (result.result === 'not_found') {
     return;
   }
+
+  const {snapshotId: existingSnapshotId} = result;
 
   await confirmAndExit(
     `Are you sure you want to delete the snapshot 0x${encodeSnapshotId(existingSnapshotId)} of your ${displaySegment(segment)}?`
@@ -89,6 +89,73 @@ export const deleteSnapshot = async ({
     canisterId,
     snapshotId: existingSnapshotId,
     segment
+  });
+};
+
+export const downloadSnapshot = async ({
+  canisterId: cId,
+  segment
+}: {
+  canisterId: string;
+  segment: AssetKey;
+}) => {
+  const canisterId = Principal.fromText(cId);
+
+  const result = await loadSnapshotAndAssertExist({canisterId, segment});
+
+  if (result.result === 'not_found') {
+    return;
+  }
+
+  const {snapshotId: existingSnapshotId} = result;
+
+  await downloadExistingSnapshot({
+    canisterId,
+    snapshotId: existingSnapshotId,
+    segment
+  });
+};
+
+export const uploadSnapshot = async ({
+  canisterId: cId,
+  segment,
+  args
+}: {
+  canisterId: string;
+  segment: AssetKey;
+  args?: string[];
+}) => {
+  const canisterId = Principal.fromText(cId);
+
+  const folder = nextArg({args, option: '--dir'});
+
+  if (isEmptyString(folder)) {
+    console.log(
+      `You did not provide a ${yellow('directory')} that contains metadata.json and chunks to upload.`
+    );
+    return;
+  }
+
+  if (!existsSync(folder)) {
+    console.log(`The directory ${yellow('directory')} does not exist.`);
+    return;
+  }
+
+  if (!lstatSync(folder).isDirectory()) {
+    console.log(red(`${folder} is not a directory.`));
+    return;
+  }
+
+  // TODO: extract assertions
+  // TODO: more assertion like is there a metadata.json and chunk files
+
+  const {snapshotId} = await loadSnapshotAndAssertOverwrite({canisterId, segment});
+
+  await uploadExistingSnapshot({
+    canisterId,
+    snapshotId,
+    segment,
+    folder
   });
 };
 
@@ -165,4 +232,39 @@ const loadSnapshot = async ({
   } finally {
     spinner.stop();
   }
+};
+
+const loadSnapshotAndAssertExist = async ({
+  canisterId,
+  segment
+}: {
+  canisterId: Principal;
+  segment: AssetKey;
+}): Promise<{result: 'ok'; snapshotId: snapshot_id} | {result: 'not_found'}> => {
+  const existingSnapshotId = await loadSnapshot({canisterId});
+
+  if (isNullish(existingSnapshotId)) {
+    console.log(red(`No snapshot found for your ${displaySegment(segment)}.`));
+    return {result: 'not_found'};
+  }
+
+  return {result: 'ok', snapshotId: existingSnapshotId};
+};
+
+const loadSnapshotAndAssertOverwrite = async ({
+  canisterId,
+  segment
+}: {
+  canisterId: Principal;
+  segment: AssetKey;
+}): Promise<{snapshotId: snapshot_id | undefined}> => {
+  const existingSnapshotId = await loadSnapshot({canisterId});
+
+  if (nonNullish(existingSnapshotId)) {
+    await confirmAndExit(
+      `A snapshot for your ${displaySegment(segment)} already exists with ID 0x${encodeSnapshotId(existingSnapshotId)}. Do you want to overwrite it?`
+    );
+  }
+
+  return {snapshotId: existingSnapshotId};
 };
