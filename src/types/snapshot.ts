@@ -1,11 +1,11 @@
 import type {snapshot_id} from '@dfinity/ic-management';
 import type {Principal} from '@dfinity/principal';
-import * as z from 'zod';
+import type * as z from 'zod';
 import {
-  ReadCanisterSnapshotMetadataResponseSchema,
-  SnapshotFilenameSchema,
-  SnapshotFileSchema,
-  SnapshotMetadataSchema
+  type ReadCanisterSnapshotMetadataResponseSchema,
+  type SnapshotFilenameSchema,
+  type SnapshotFileSchema,
+  type SnapshotMetadataSchema
 } from '../schema/snapshot.schema';
 
 export type SnapshotFilename = z.infer<typeof SnapshotFilenameSchema>;

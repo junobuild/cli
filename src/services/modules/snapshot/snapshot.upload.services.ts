@@ -1,26 +1,25 @@
-import {encodeSnapshotId, snapshot_id} from '@dfinity/ic-management';
-import {UploadCanisterSnapshotDataKind} from '@dfinity/ic-management/dist/types/types/snapshot.params';
+import {encodeSnapshotId, type snapshot_id} from '@dfinity/ic-management';
+import {type UploadCanisterSnapshotDataKind} from '@dfinity/ic-management/dist/types/types/snapshot.params';
 import {arrayBufferToUint8Array, isNullish, jsonReviver} from '@dfinity/utils';
-import {FileHandle} from 'fs/promises';
 import {red} from 'kleur';
 import {lstatSync} from 'node:fs';
-import {open as openFile, readFile} from 'node:fs/promises';
+import {type FileHandle, open as openFile, readFile} from 'node:fs/promises';
 import {join, relative} from 'node:path';
 import ora from 'ora';
 import {uploadCanisterSnapshotData, uploadCanisterSnapshotMetadata} from '../../../api/ic.api';
 import {SnapshotMetadataSchema} from '../../../schema/snapshot.schema';
 import type {AssetKey} from '../../../types/asset-key';
 import {
-  ReadCanisterSnapshotMetadataResponse,
-  SnapshotBatchResult,
-  SnapshotFile,
-  SnapshotLog,
-  SnapshotMetadata,
-  UploadSnapshotParams
+  type ReadCanisterSnapshotMetadataResponse,
+  type SnapshotBatchResult,
+  type SnapshotFile,
+  type SnapshotLog,
+  type SnapshotMetadata,
+  type UploadSnapshotParams
 } from '../../../types/snapshot';
 import {displaySegment} from '../../../utils/display.utils';
-import {BuildChunkFn, prepareDataChunks} from '../../../utils/snapshot.utils';
 import {computeLargeFileHash} from '../../../utils/hash.utils';
+import {type BuildChunkFn, prepareDataChunks} from '../../../utils/snapshot.utils';
 
 interface DataChunk {
   kind: UploadCanisterSnapshotDataKind;
@@ -266,13 +265,13 @@ async function* batchUploadChunks({
   for (let i = 0; i < total; i = i + limit) {
     const batch = chunks.slice(i, i + limit);
     await Promise.all(
-      batch.map((requestChunk) =>
-        uploadChunk({
+      batch.map(async (requestChunk) => {
+        await uploadChunk({
           ...params,
           sourceHandler,
           chunk: requestChunk
-        })
-      )
+        });
+      })
     );
     yield {progress: {index: i, done: Math.min(i + limit, total), total}};
   }

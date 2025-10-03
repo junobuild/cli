@@ -1,10 +1,5 @@
 import {cyan, green, magenta, yellow} from 'kleur';
-import {
-  FUNCTIONS_BUILD_DESCRIPTION,
-  FUNCTIONS_BUILD_NOTES,
-  OPTION_HELP,
-  OPTIONS_BUILD, OPTIONS_ENV, SNAPSHOT_UPLOAD_DESCRIPTION
-} from '../constants/help.constants';
+import {OPTION_HELP, OPTIONS_ENV, SNAPSHOT_UPLOAD_DESCRIPTION} from '../constants/help.constants';
 import {helpOutput} from './common.help';
 import {TITLE} from './help';
 

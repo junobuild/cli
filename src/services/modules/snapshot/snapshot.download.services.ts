@@ -11,17 +11,17 @@ import {pipeline} from 'node:stream/promises';
 import ora from 'ora';
 import {readCanisterSnapshotData, readCanisterSnapshotMetadata} from '../../../api/ic.api';
 import {SNAPSHOTS_PATH} from '../../../constants/snapshot.constants';
-import {AssetKey} from '../../../types/asset-key';
+import {type AssetKey} from '../../../types/asset-key';
 import {
-  DownloadSnapshotParams,
-  SnapshotBatchResult,
-  SnapshotFile,
-  SnapshotFilename,
-  SnapshotLog,
-  SnapshotMetadata
+  type DownloadSnapshotParams,
+  type SnapshotBatchResult,
+  type SnapshotFile,
+  type SnapshotFilename,
+  type SnapshotLog,
+  type SnapshotMetadata
 } from '../../../types/snapshot';
 import {displaySegment} from '../../../utils/display.utils';
-import {BuildChunkFn, prepareDataChunks} from '../../../utils/snapshot.utils';
+import {type BuildChunkFn, prepareDataChunks} from '../../../utils/snapshot.utils';
 
 type DataChunk = CanisterSnapshotMetadataKind;
 type DownloadedChunk = Uint8Array;
@@ -160,11 +160,11 @@ const downloadSnapshotMetadataAndMemory = async ({
       snapshotId: snapshotIdText,
       metadata,
       data: {
-        wasmModule: 'ok' === wasmModuleResult.status ? wasmModuleResult.snapshotFile : null,
-        wasmMemory: 'ok' === wasmMemoryResult.status ? wasmMemoryResult.snapshotFile : null,
-        stableMemory: 'ok' === stableMemoryResult.status ? stableMemoryResult.snapshotFile : null,
+        wasmModule: wasmModuleResult.status === 'ok' ? wasmModuleResult.snapshotFile : null,
+        wasmMemory: wasmMemoryResult.status === 'ok' ? wasmMemoryResult.snapshotFile : null,
+        stableMemory: stableMemoryResult.status === 'ok' ? stableMemoryResult.snapshotFile : null,
         wasmChunkStore:
-          'ok' === wasmChunkStoreResult.status ? wasmChunkStoreResult.snapshotFile : null
+          wasmChunkStoreResult.status === 'ok' ? wasmChunkStoreResult.snapshotFile : null
       }
     }
   });
@@ -209,7 +209,7 @@ const assertSizeAndDownloadChunks = async ({
 } & SnapshotLog): Promise<{status: 'ok'; snapshotFile: SnapshotFile} | {status: 'skip'}> => {
   if (size === 0n) {
     log(`No chunks to download for ${filename} (size = 0). Skipping.`);
-    await new Promise((resolve) => setTimeout(resolve, 2500));
+    await sleep();
     return {status: 'skip'};
   }
 
@@ -234,6 +234,9 @@ const assertSizeAndDownloadChunks = async ({
   };
 };
 
+// eslint-disable-next-line promise/avoid-new
+const sleep = async () => await new Promise((resolve) => setTimeout(resolve, 2500));
+
 const assertAndDownloadWasmChunks = async ({
   wasmChunkStore,
   log,
@@ -245,7 +248,7 @@ const assertAndDownloadWasmChunks = async ({
   SnapshotLog): Promise<{status: 'ok'; snapshotFile: SnapshotFile} | {status: 'skip'}> => {
   if (wasmChunkStore.length === 0) {
     log('Nothing to download from the WASM chunks store (length = 0). Skipping.');
-    await new Promise((resolve) => setTimeout(resolve, 2500));
+    await sleep();
     return {status: 'skip'};
   }
 
@@ -334,6 +337,7 @@ const downloadAndWrite = async ({
         }
         cb();
       } catch (err: unknown) {
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
         cb(err as Error);
       }
     }
@@ -343,7 +347,7 @@ const downloadAndWrite = async ({
   const hash = createHash('sha256');
 
   const hasher = new Transform({
-    transform(chunk, _enc, cb) {
+    transform(chunk: DownloadedChunk, _enc, cb) {
       hash.update(chunk);
       cb(null, chunk);
     }
@@ -371,11 +375,12 @@ async function* batchDownloadChunks({
   for (let i = 0; i < total; i = i + limit) {
     const batch = chunks.slice(i, i + limit);
     const downloadedChunks = await Promise.all(
-      batch.map((requestChunk) =>
-        downloadChunk({
-          ...params,
-          chunk: requestChunk
-        })
+      batch.map(
+        async (requestChunk) =>
+          await downloadChunk({
+            ...params,
+            chunk: requestChunk
+          })
       )
     );
     yield {downloadedChunks, progress: {index: i, done: Math.min(i + limit, total), total}};

@@ -2,7 +2,9 @@ import type {snapshot_id} from '@dfinity/ic-management';
 import {encodeSnapshotId} from '@dfinity/ic-management';
 import {Principal} from '@dfinity/principal';
 import {isEmptyString, isNullish, nonNullish} from '@dfinity/utils';
+import {nextArg} from '@junobuild/cli-tools';
 import {red, yellow} from 'kleur';
+import {existsSync, lstatSync} from 'node:fs';
 import ora from 'ora';
 import {
   deleteCanisterSnapshot,
@@ -15,8 +17,6 @@ import {displaySegment} from '../../../utils/display.utils';
 import {confirmAndExit} from '../../../utils/prompt.utils';
 import {downloadExistingSnapshot} from './snapshot.download.services';
 import {uploadExistingSnapshot} from './snapshot.upload.services';
-import {nextArg} from '@junobuild/cli-tools';
-import {existsSync, lstatSync} from 'node:fs';
 
 export const createSnapshot = async ({
   canisterId: cId,

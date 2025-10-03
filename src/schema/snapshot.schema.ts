@@ -1,6 +1,6 @@
 import * as z from 'zod';
 
-const Uint8ArrayLike = z.instanceof(Uint8Array) as z.ZodType<Uint8Array<ArrayBufferLike>>;
+const Uint8ArrayLike = z.instanceof(Uint8Array) as z.ZodType<Uint8Array>;
 
 // A Zod schema for the ic-management ReadCanisterSnapshotMetadataResponse type
 export const ReadCanisterSnapshotMetadataResponseSchema = z.strictObject({

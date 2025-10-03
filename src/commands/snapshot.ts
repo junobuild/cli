@@ -1,6 +1,7 @@
 import {nextArg} from '@junobuild/cli-tools';
 import {red} from 'kleur';
 import {logHelpSnapshot} from '../help/snapshot.help';
+import {logHelpSnapshotUpload} from '../help/snapshot.upload.help';
 import {
   createSnapshotMissionControl,
   deleteSnapshotMissionControl,
@@ -22,7 +23,6 @@ import {
   restoreSnapshotSatellite,
   uploadSnapshotSatellite
 } from '../services/modules/snapshot/snapshot.satellite.services';
-import {logHelpSnapshotUpload} from '../help/snapshot.upload.help';
 
 export const snapshot = async (args?: string[]) => {
   const [subCommand] = args ?? [];
@@ -116,4 +116,4 @@ export const helpSnapshot = (args?: string[]) => {
     default:
       logHelpSnapshot(args);
   }
-}
+};

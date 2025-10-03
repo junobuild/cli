@@ -1,5 +1,10 @@
 import {cyan, green, magenta, yellow} from 'kleur';
-import {OPTIONS_ENV, OPTION_HELP, SNAPSHOT_DESCRIPTION, SNAPSHOT_UPLOAD_DESCRIPTION} from '../constants/help.constants';
+import {
+  OPTIONS_ENV,
+  OPTION_HELP,
+  SNAPSHOT_DESCRIPTION,
+  SNAPSHOT_UPLOAD_DESCRIPTION
+} from '../constants/help.constants';
 import {helpOutput} from './common.help';
 import {TITLE} from './help';
 import {TARGET_OPTION_NOTE, targetOption} from './target.help';

@@ -6,10 +6,10 @@ import type {
   upload_canister_snapshot_metadata_response
 } from '@dfinity/ic-management/dist/candid/ic-management';
 import {
-  ReadCanisterSnapshotMetadataParams,
-  SnapshotParams,
-  UploadCanisterSnapshotDataParams,
-  UploadCanisterSnapshotMetadataParams
+  type ReadCanisterSnapshotMetadataParams,
+  type SnapshotParams,
+  type UploadCanisterSnapshotDataParams,
+  type UploadCanisterSnapshotMetadataParams
 } from '@dfinity/ic-management/dist/types/types/snapshot.params';
 import type {ReadCanisterSnapshotMetadataResponse} from '@dfinity/ic-management/dist/types/types/snapshot.responses';
 import type {Principal} from '@dfinity/principal';
