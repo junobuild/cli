@@ -134,8 +134,6 @@ export const uploadSnapshot = async ({
   segment: AssetKey;
   args?: string[];
 }) => {
-  const canisterId = Principal.fromText(cId);
-
   const folder = nextArg({args, option: '--dir'});
   assertNonNullishFolderExists(folder);
 
@@ -183,10 +181,12 @@ export const uploadSnapshot = async ({
     }
   }
 
+  const canisterId = Principal.fromText(notEmptyString(targetCanisterId) ? targetCanisterId : cId);
+
   const {snapshotId} = await loadSnapshotAndAssertOverwrite({canisterId, segment});
 
   await uploadExistingSnapshot({
-    canisterId: notEmptyString(targetCanisterId) ? Principal.from(targetCanisterId) : canisterId,
+    canisterId,
     snapshotId,
     segment,
     folder
