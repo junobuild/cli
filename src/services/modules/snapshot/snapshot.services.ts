@@ -10,7 +10,7 @@ import {
 } from '../../../api/ic.api';
 import type {AssetKey} from '../../../types/asset-key';
 import {displaySegment} from '../../../utils/display.utils';
-import {assertNonNullishValidFolder} from '../../../utils/fs.utils';
+import {assertNonNullishFolderExists} from '../../../utils/fs.utils';
 import {confirmAndExit} from '../../../utils/prompt.utils';
 import {
   loadSnapshotAndAssertExist,
@@ -129,7 +129,7 @@ export const uploadSnapshot = async ({
   const canisterId = Principal.fromText(cId);
 
   const folder = nextArg({args, option: '--dir'});
-  assertNonNullishValidFolder(folder);
+  assertNonNullishFolderExists(folder);
 
   const {snapshotId} = await loadSnapshotAndAssertOverwrite({canisterId, segment});
 

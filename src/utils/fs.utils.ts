@@ -49,7 +49,7 @@ export const readTemplateFile = async ({
   return await readFile(join(__dirname, sourceFolder, template), 'utf-8');
 };
 
-export const assertNonNullishValidFolder: (
+export const assertNonNullishFolderExists: (
   folder?: string
 ) => asserts folder is NonNullable<string> = (folder?: string): void => {
   if (isEmptyString(folder)) {
