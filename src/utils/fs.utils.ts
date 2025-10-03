@@ -1,5 +1,6 @@
-import {yellow} from 'kleur';
-import {existsSync} from 'node:fs';
+import {isEmptyString} from '@dfinity/utils';
+import {red, yellow} from 'kleur';
+import {existsSync, lstatSync} from 'node:fs';
 import {copyFile as fsCopyFile, readFile} from 'node:fs/promises';
 import {dirname, join, relative} from 'node:path';
 import {fileURLToPath} from 'node:url';
@@ -46,4 +47,25 @@ export const readTemplateFile = async ({
   template: string;
 }): Promise<string> => {
   return await readFile(join(__dirname, sourceFolder, template), 'utf-8');
+};
+
+export const assertNonNullishFolderExists: (
+  folder?: string
+) => asserts folder is NonNullable<string> = (folder?: string): void => {
+  if (isEmptyString(folder)) {
+    console.log(
+      `You did not provide a ${yellow('directory')} that contains metadata.json and chunks to upload.`
+    );
+    process.exit(1);
+  }
+
+  if (!existsSync(folder)) {
+    console.log(`The directory ${yellow('directory')} does not exist.`);
+    process.exit(1);
+  }
+
+  if (!lstatSync(folder).isDirectory()) {
+    console.log(red(`${folder} is not a directory.`));
+    process.exit(1);
+  }
 };
