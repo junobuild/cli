@@ -19,7 +19,8 @@ import {
   UploadSnapshotParams
 } from '../../../types/snapshot';
 import {displaySegment} from '../../../utils/display.utils';
-import {BuildChunkFn, computeLargeFileHash, prepareDataChunks} from '../../../utils/snapshot.utils';
+import {BuildChunkFn, prepareDataChunks} from '../../../utils/snapshot.utils';
+import {computeLargeFileHash} from '../../../utils/hash.utils';
 
 interface DataChunk {
   kind: UploadCanisterSnapshotDataKind;
