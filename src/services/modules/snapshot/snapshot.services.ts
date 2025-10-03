@@ -1,20 +1,23 @@
 import type {snapshot_id} from '@dfinity/ic-management';
 import {encodeSnapshotId} from '@dfinity/ic-management';
 import {Principal} from '@dfinity/principal';
-import {isEmptyString, isNullish, nonNullish} from '@dfinity/utils';
+import {isEmptyString} from '@dfinity/utils';
 import {nextArg} from '@junobuild/cli-tools';
 import {red, yellow} from 'kleur';
 import {existsSync, lstatSync} from 'node:fs';
 import ora from 'ora';
 import {
   deleteCanisterSnapshot,
-  listCanisterSnapshots,
   loadCanisterSnapshot,
   takeCanisterSnapshot
 } from '../../../api/ic.api';
 import type {AssetKey} from '../../../types/asset-key';
 import {displaySegment} from '../../../utils/display.utils';
 import {confirmAndExit} from '../../../utils/prompt.utils';
+import {
+  loadSnapshotAndAssertExist,
+  loadSnapshotAndAssertOverwrite
+} from './_snapshot.loader.services';
 import {downloadExistingSnapshot} from './snapshot.download.services';
 import {uploadExistingSnapshot} from './snapshot.upload.services';
 
@@ -214,57 +217,4 @@ const takeSnapshot = async ({
   }
 
   console.log(`✅ The snapshot for your ${displaySegment(segment)} was created.`);
-};
-
-const loadSnapshot = async ({
-  canisterId
-}: {
-  canisterId: Principal;
-}): Promise<snapshot_id | undefined> => {
-  const spinner = ora('Loading the existing snapshot...').start();
-
-  try {
-    const snapshots = await listCanisterSnapshots({
-      canisterId
-    });
-
-    return snapshots[0]?.id;
-  } finally {
-    spinner.stop();
-  }
-};
-
-const loadSnapshotAndAssertExist = async ({
-  canisterId,
-  segment
-}: {
-  canisterId: Principal;
-  segment: AssetKey;
-}): Promise<{result: 'ok'; snapshotId: snapshot_id} | {result: 'not_found'}> => {
-  const existingSnapshotId = await loadSnapshot({canisterId});
-
-  if (isNullish(existingSnapshotId)) {
-    console.log(red(`No snapshot found for your ${displaySegment(segment)}.`));
-    return {result: 'not_found'};
-  }
-
-  return {result: 'ok', snapshotId: existingSnapshotId};
-};
-
-const loadSnapshotAndAssertOverwrite = async ({
-  canisterId,
-  segment
-}: {
-  canisterId: Principal;
-  segment: AssetKey;
-}): Promise<{snapshotId: snapshot_id | undefined}> => {
-  const existingSnapshotId = await loadSnapshot({canisterId});
-
-  if (nonNullish(existingSnapshotId)) {
-    await confirmAndExit(
-      `A snapshot for your ${displaySegment(segment)} already exists with ID 0x${encodeSnapshotId(existingSnapshotId)}. Do you want to overwrite it?`
-    );
-  }
-
-  return {snapshotId: existingSnapshotId};
 };
