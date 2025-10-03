@@ -204,6 +204,11 @@ const startEmulator = async ({config: extendedConfig}: {config: CliEmulatorConfi
   const configFile = nonNullish(detectedConfig.configPath)
     ? basename(detectedConfig.configPath)
     : undefined;
+
+  /**
+   * @deprecated as of v0.4.0, the container does not read the juno.config anymore.
+   * Sputnik build and Satellite's upgrades are triggered with a POST request to the exposed server.
+   */
   const configFilePath = nonNullish(configFile) ? join(process.cwd(), configFile) : undefined;
 
   // Podman does not auto create the path folders.
