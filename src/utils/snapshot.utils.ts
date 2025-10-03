@@ -2,7 +2,7 @@ import {createHash} from 'node:crypto';
 import {createReadStream} from 'node:fs';
 import {Writable} from 'node:stream';
 import {pipeline} from 'node:stream/promises';
-import {SNAPSHOT_CHUNK_SIZE} from '../constants/snapshot.constants';
+import {SNAPSHOT_MAX_CHUNK_SIZE} from '../constants/snapshot.constants';
 
 export type BuildChunkFn<T> = (params: {offset: bigint; size: bigint}) => T;
 
@@ -15,9 +15,9 @@ export const prepareDataChunks = <T>({
 }): {chunks: T[]} => {
   const chunks: T[] = [];
 
-  for (let offset = 0n; offset < totalSize; offset += SNAPSHOT_CHUNK_SIZE) {
+  for (let offset = 0n; offset < totalSize; offset += SNAPSHOT_MAX_CHUNK_SIZE) {
     const size =
-      offset + SNAPSHOT_CHUNK_SIZE <= totalSize ? SNAPSHOT_CHUNK_SIZE : totalSize - offset;
+      offset + SNAPSHOT_MAX_CHUNK_SIZE <= totalSize ? SNAPSHOT_MAX_CHUNK_SIZE : totalSize - offset;
 
     chunks.push({
       ...build({

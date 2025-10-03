@@ -12,7 +12,7 @@ import {Readable, Transform} from 'node:stream';
 import {pipeline} from 'node:stream/promises';
 import ora from 'ora';
 import {readCanisterSnapshotData, readCanisterSnapshotMetadata} from '../../../api/ic.api';
-import {SNAPSHOT_CHUNK_SIZE, SNAPSHOTS_PATH} from '../../../constants/snapshot.constants';
+import {SNAPSHOTS_PATH} from '../../../constants/snapshot.constants';
 import {AssetKey} from '../../../types/asset-key';
 import {SnapshotFile, SnapshotFilename, SnapshotMetadata} from '../../../types/snapshot';
 import {displaySegment} from '../../../utils/display.utils';
