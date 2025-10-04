@@ -44,3 +44,5 @@ templates/eject/rust/src/satellite/satellite_extension.did
 /blob-report/
 /playwright/.cache/
 /playwright/.auth/
+
+.snapshots

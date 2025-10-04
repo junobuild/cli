@@ -1,5 +1,7 @@
+import {assertNonNullish} from '@dfinity/utils';
 import type {PrincipalText} from '@dfinity/zod-schemas';
 import {execute} from '@junobuild/cli-tools';
+import {readdirSync, statSync} from 'node:fs';
 import {readFile, writeFile} from 'node:fs/promises';
 import {join} from 'node:path';
 import {TestPage} from './_page';
@@ -100,6 +102,56 @@ export class CliPage extends TestPage {
     await execute({
       command: JUNO_CMD,
       args: buildArgs(['snapshot', 'restore', '--target', target])
+    });
+  }
+
+  async deleteSnapshot({
+    target
+  }: {
+    target: 'satellite' | 'orbiter' | 'mission-control';
+  }): Promise<void> {
+    await execute({
+      command: JUNO_CMD,
+      args: buildArgs(['snapshot', 'delete', '--target', target])
+    });
+  }
+
+  async downloadSnapshot({
+    target
+  }: {
+    target: 'satellite' | 'orbiter' | 'mission-control';
+  }): Promise<{snapshotFolder: string}> {
+    await execute({
+      command: JUNO_CMD,
+      args: buildArgs(['snapshot', 'download', '--target', target])
+    });
+
+    // Retrieve where the snapshot was created
+    const snapshotsFolder = join(process.cwd(), '.snapshots');
+    const [snapshotFolder] = readdirSync(snapshotsFolder, {withFileTypes: true})
+      .filter((d) => d.isDirectory())
+      .map(({name}) => {
+        const path = join(snapshotsFolder, name);
+        const {birthtimeMs: time} = statSync(path);
+        return {path, time};
+      })
+      .sort((a, b) => b.time - a.time);
+
+    assertNonNullish(snapshotFolder);
+
+    return {snapshotFolder: snapshotFolder.path};
+  }
+
+  async uploadSnapshot({
+    target,
+    folder
+  }: {
+    target: 'satellite' | 'orbiter' | 'mission-control';
+    folder: string;
+  }): Promise<void> {
+    await execute({
+      command: JUNO_CMD,
+      args: buildArgs(['snapshot', 'upload', '--target', target, '--dir', folder])
     });
   }
 
