@@ -37,3 +37,10 @@ target/
 templates/eject/rust/Cargo.lock
 templates/eject/rust/src/declarations
 templates/eject/rust/src/satellite/satellite_extension.did
+
+# Playwright
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/
+/playwright/.auth/
