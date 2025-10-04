@@ -4,7 +4,12 @@ import {readFile, writeFile} from 'node:fs/promises';
 import {join} from 'node:path';
 import {TestPage} from './_page';
 
+const DEV = (process.env.NODE_ENV ?? 'production') === 'development';
+
 const JUNO_CONFIG = join(process.cwd(), 'juno.config.ts');
+const {command: JUNO_CMD, args: JUNO_ARGS} = DEV
+  ? { command: 'node', args: ['dist/index.js'] }
+  : { command: 'juno', args: [] };
 
 export interface CliPageParams {
   satelliteId: PrincipalText;
@@ -45,36 +50,36 @@ export class CliPage extends TestPage {
 
   protected async loginWithEmulator(): Promise<void> {
     await execute({
-      command: 'juno',
-      args: ['login', '--emulator', '--mode', 'development', '--headless']
+      command: JUNO_CMD,
+      args: [...JUNO_ARGS, 'login', '--emulator', '--mode', 'development', '--headless']
     });
   }
 
   async applyConfig(): Promise<void> {
     await execute({
-      command: 'juno',
-      args: ['config', 'apply', '--mode', 'development', '--headless']
+      command: JUNO_CMD,
+      args: [...JUNO_ARGS, 'config', 'apply', '--mode', 'development', '--headless']
     });
   }
 
   private async logout(): Promise<void> {
     await execute({
-      command: 'juno',
-      args: ['logout']
+      command: JUNO_CMD,
+      args: [...JUNO_ARGS, 'logout']
     });
   }
 
   async clearHosting(): Promise<void> {
     await execute({
-      command: 'juno',
-      args: ['hosting', 'clear']
+      command: JUNO_CMD,
+      args: [...JUNO_ARGS, 'hosting', 'clear']
     });
   }
 
   async createSnapshot(): Promise<void> {
     await execute({
-      command: 'juno',
-      args: ['snapshot', 'create']
+      command: JUNO_CMD,
+      args: [...JUNO_ARGS, 'snapshot', 'create']
     });
   }
 
