@@ -1,6 +1,6 @@
-import {assertNonNullish} from '@dfinity/utils';
+import {assertNonNullish, notEmptyString} from '@dfinity/utils';
 import type {PrincipalText} from '@dfinity/zod-schemas';
-import {execute} from '@junobuild/cli-tools';
+import {execute, spawn} from '@junobuild/cli-tools';
 import {readdirSync, statSync} from 'node:fs';
 import {readFile, writeFile} from 'node:fs/promises';
 import {join} from 'node:path';
@@ -153,6 +153,24 @@ export class CliPage extends TestPage {
       command: JUNO_CMD,
       args: buildArgs(['snapshot', 'upload', '--target', target, '--dir', folder])
     });
+  }
+
+  async listSnapshot({
+    target
+  }: {
+    target: 'satellite' | 'orbiter' | 'mission-control';
+  }): Promise<{snapshotId: string | undefined}> {
+    let output = '';
+
+    await spawn({
+      command: JUNO_CMD,
+      args: buildArgs(['snapshot', 'list', '--target', target]),
+      stdout: (o) => (output += o),
+      silentErrors: true
+    });
+
+    const [_, snapshotId] = output.split('Snapshot found:');
+    return {snapshotId: notEmptyString(snapshotId) ? snapshotId.trim() : undefined};
   }
 
   /**
