@@ -13,6 +13,10 @@ jobs:
 
       - name: Prepare
         uses: ./.github/actions/prepare
+
+      - name: Prepare Playwright
+        run: npm run e2e:playwright:install
+
       - name: Setup Tests Environment
         uses: ./.github/actions/setup-e2e-env
 
