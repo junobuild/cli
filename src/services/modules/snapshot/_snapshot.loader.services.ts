@@ -7,7 +7,7 @@ import ora from 'ora';
 import {listCanisterSnapshots} from '../../../api/ic.api';
 import type {AssetKey} from '../../../types/asset-key';
 import {displaySegment} from '../../../utils/display.utils';
-import {confirmAndExit} from '../../../utils/prompt.utils';
+import {confirmAndExitUnlessHeadlessAndDev} from '../../../utils/prompt.utils';
 
 const loadSnapshot = async ({
   canisterId
@@ -54,7 +54,7 @@ export const loadSnapshotAndAssertOverwrite = async ({
   const existingSnapshotId = await loadSnapshot({canisterId});
 
   if (nonNullish(existingSnapshotId)) {
-    await confirmAndExit(
+    await confirmAndExitUnlessHeadlessAndDev(
       `A snapshot for your ${displaySegment(segment)} already exists with ID 0x${encodeSnapshotId(existingSnapshotId)}. Do you want to overwrite it?`
     );
   }

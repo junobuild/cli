@@ -12,7 +12,7 @@ import {
 import type {AssetKey} from '../../../types/asset-key';
 import {displaySegment} from '../../../utils/display.utils';
 import {assertNonNullishFolderExists} from '../../../utils/fs.utils';
-import {confirmAndExit} from '../../../utils/prompt.utils';
+import {confirmAndExitUnlessHeadlessAndDev} from '../../../utils/prompt.utils';
 import {assertMatchingJunoPackage} from './_snapshot.assert.services';
 import {
   loadSnapshotAndAssertExist,
@@ -56,7 +56,7 @@ export const restoreSnapshot = async ({
 
   const {snapshotId: existingSnapshotId} = result;
 
-  await confirmAndExit(
+  await confirmAndExitUnlessHeadlessAndDev(
     `Restoring the snapshot 0x${encodeSnapshotId(existingSnapshotId)} will permanently overwrite the current state of your ${displaySegment(segment)}. Are you sure you want to proceed?`
   );
 
@@ -84,7 +84,7 @@ export const deleteSnapshot = async ({
 
   const {snapshotId: existingSnapshotId} = result;
 
-  await confirmAndExit(
+  await confirmAndExitUnlessHeadlessAndDev(
     `Are you sure you want to delete the snapshot 0x${encodeSnapshotId(existingSnapshotId)} of your ${displaySegment(segment)}?`
   );
 

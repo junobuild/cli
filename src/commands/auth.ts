@@ -8,8 +8,7 @@ import {DEV} from '../env';
 import {loginEmulatorOnly} from '../services/auth/login.emulator.services';
 import {login as loginServices} from '../services/auth/login.services';
 import {reuseController} from '../services/controllers.services';
-import {isHeadless} from '../utils/process.utils';
-import {confirmAndExit} from '../utils/prompt.utils';
+import {confirmAndExitUnlessHeadlessAndDev} from '../utils/prompt.utils';
 
 export const logout = async () => {
   await clearCliConfig();
@@ -63,11 +62,6 @@ const emulatorLogin = async () => {
     return;
   }
 
-  if (isHeadless()) {
-    await loginEmulatorOnly();
-    return;
-  }
-
   const token = await getToken();
 
   if (isNullish(token)) {
@@ -78,7 +72,7 @@ const emulatorLogin = async () => {
   const identity = Ed25519KeyIdentity.fromParsedJson(token);
   console.log(`🔐 Your terminal already has access: ${green(identity.getPrincipal().toText())}\n`);
 
-  await confirmAndExit(
+  await confirmAndExitUnlessHeadlessAndDev(
     'Would you like to overwrite the saved development authentication on this device'
   );
 
