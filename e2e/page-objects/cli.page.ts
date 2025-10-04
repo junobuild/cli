@@ -7,9 +7,14 @@ import {TestPage} from './_page';
 const DEV = (process.env.NODE_ENV ?? 'production') === 'development';
 
 const JUNO_CONFIG = join(process.cwd(), 'juno.config.ts');
-const {command: JUNO_CMD, args: JUNO_ARGS} = DEV
-  ? { command: 'node', args: ['dist/index.js'] }
-  : { command: 'juno', args: [] };
+
+const JUNO_TEST_ARGS = ['--mode', 'development', '--headless'];
+
+const {command: JUNO_CMD, args: JUNO_CDM_ARGS} = DEV
+  ? {command: 'node', args: ['dist/index.js']}
+  : {command: 'juno', args: []};
+
+const buildArgs = (args: string[]): string[] => [...JUNO_CDM_ARGS, ...args, ...JUNO_TEST_ARGS];
 
 export interface CliPageParams {
   satelliteId: PrincipalText;
@@ -51,35 +56,46 @@ export class CliPage extends TestPage {
   protected async loginWithEmulator(): Promise<void> {
     await execute({
       command: JUNO_CMD,
-      args: [...JUNO_ARGS, 'login', '--emulator', '--mode', 'development', '--headless']
+      args: buildArgs(['login', '--emulator'])
     });
   }
 
   async applyConfig(): Promise<void> {
     await execute({
       command: JUNO_CMD,
-      args: [...JUNO_ARGS, 'config', 'apply', '--mode', 'development', '--headless']
+      args: buildArgs(['config', 'apply'])
     });
   }
 
   private async logout(): Promise<void> {
     await execute({
       command: JUNO_CMD,
-      args: [...JUNO_ARGS, 'logout']
+      args: buildArgs(['logout'])
     });
   }
 
   async clearHosting(): Promise<void> {
     await execute({
       command: JUNO_CMD,
-      args: [...JUNO_ARGS, 'hosting', 'clear']
+      args: buildArgs(['hosting', 'clear'])
     });
   }
 
-  async createSnapshot(): Promise<void> {
+  async createSnapshot({
+    target
+  }: {
+    target: 'satellite' | 'orbiter' | 'mission-control';
+  }): Promise<void> {
     await execute({
       command: JUNO_CMD,
-      args: [...JUNO_ARGS, 'snapshot', 'create']
+      args: buildArgs([
+        ...JUNO_CDM_ARGS,
+        'snapshot',
+        'create',
+        '--target',
+        target,
+        ...JUNO_TEST_ARGS
+      ])
     });
   }
 

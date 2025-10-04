@@ -7,11 +7,13 @@ const getTestPages = initTestSuite();
 testWithII('should create a snapshot', async () => {
   const {consolePage, cliPage} = getTestPages();
 
-  await cliPage.createSnapshot();
+  await cliPage.createSnapshot({target: 'satellite'});
 
   await cliPage.clearHosting();
 
-  const satellitePage = await consolePage.visitSatellite();
+  const satellitePage = await consolePage.visitSatellite({
+    title: 'Internet Computer - Error: response verification error'
+  });
 
   await expect(satellitePage).toHaveScreenshot({fullPage: true});
 });
