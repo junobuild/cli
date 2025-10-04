@@ -15,12 +15,6 @@ export default defineConfig({
       caret: 'hide'
     }
   },
-  webServer: {
-    command: 'npm run build',
-    url: 'http://localhost:5866',
-    reuseExistingServer: true,
-    timeout: 120 * 1000
-  },
   use: {
     testIdAttribute: 'data-tid',
     baseURL: 'http://localhost:5866',
