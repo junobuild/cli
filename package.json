@@ -21,11 +21,11 @@
     "build": "tsc --noEmit && node ./scripts/rmdir.mjs && node ./scripts/esbuild.mjs",
     "lint": "eslint --max-warnings 0 \"src/**/*\"",
     "prepublishOnly": "./scripts/prepublish.sh",
-    "test": "NODE_ENV=development playwright test",
-    "test:ci": "playwright test --reporter=html",
-    "test:snapshots": "playwright test --update-snapshots --reporter=list",
-    "test:report": "playwright show-report",
-    "test:playwright:install": "playwright install chromium --with-deps"
+    "e2e": "NODE_ENV=development playwright test",
+    "e2e:ci": "playwright test --reporter=html",
+    "e2e:snapshots": "playwright test --update-snapshots --reporter=list",
+    "e2e:report": "playwright show-report",
+    "e2e:playwright:install": "playwright install chromium --with-deps"
   },
   "dependencies": {
     "@dfinity/agent": "^3.2.6",

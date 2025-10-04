@@ -1,4 +1,4 @@
-name: Setup Tests Environment
+name: Setup E2E Environment
 
 description: Build the CLI and caches Docker layers
 
