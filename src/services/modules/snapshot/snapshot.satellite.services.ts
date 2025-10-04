@@ -7,6 +7,7 @@ import {
   createSnapshot,
   deleteSnapshot,
   downloadSnapshot,
+  listSnapshot,
   restoreSnapshot,
   uploadSnapshot
 } from './snapshot.services';
@@ -20,6 +21,12 @@ export const createSnapshotSatellite = async () => {
 export const restoreSnapshotSatellite = async () => {
   await executeSnapshotFn({
     fn: restoreSnapshot
+  });
+};
+
+export const listSnapshotSatellite = async () => {
+  await executeSnapshotFn({
+    fn: listSnapshot
   });
 };
 
