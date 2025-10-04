@@ -8,6 +8,7 @@ import {DEV} from '../env';
 import {loginEmulatorOnly} from '../services/auth/login.emulator.services';
 import {login as loginServices} from '../services/auth/login.services';
 import {reuseController} from '../services/controllers.services';
+import {isHeadless} from '../utils/process.utils';
 import {confirmAndExit} from '../utils/prompt.utils';
 
 export const logout = async () => {
@@ -59,6 +60,11 @@ const consoleLogin = async (args?: string[]) => {
 const emulatorLogin = async () => {
   if (!DEV) {
     console.log(red('The login option --emulator is only supported in development mode.'));
+    return;
+  }
+
+  if (isHeadless()) {
+    await loginEmulatorOnly();
     return;
   }
 
