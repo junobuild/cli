@@ -67,6 +67,26 @@ export const restoreSnapshot = async ({
   });
 };
 
+export const listSnapshot = async ({
+  canisterId: cId,
+  segment
+}: {
+  canisterId: string;
+  segment: AssetKey;
+}) => {
+  const canisterId = Principal.fromText(cId);
+
+  const result = await loadSnapshotAndAssertExist({canisterId, segment});
+
+  if (result.result === 'not_found') {
+    return;
+  }
+
+  const {snapshotId: existingSnapshotId} = result;
+
+  console.log(`🪣 Snapshot found: 0x${encodeSnapshotId(existingSnapshotId)}`);
+};
+
 export const deleteSnapshot = async ({
   canisterId: cId,
   segment

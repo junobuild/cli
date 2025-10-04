@@ -15,6 +15,7 @@ Subcommands:
   ${magenta('create')}               Create a snapshot of your current state.
   ${magenta('delete')}               Delete an existing snapshot.
   ${magenta('download')}             Download a snapshot to offline files.
+  ${magenta('list')}                 List the existing snapshot.
   ${magenta('upload')}               ${SNAPSHOT_UPLOAD_DESCRIPTION}
   ${magenta('restore')}              Restore a previously created snapshot.
   

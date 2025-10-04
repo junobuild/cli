@@ -6,6 +6,7 @@ import {
   createSnapshotMissionControl,
   deleteSnapshotMissionControl,
   downloadSnapshotMissionControl,
+  listSnapshotMissionControl,
   restoreSnapshotMissionControl,
   uploadSnapshotMissionControl
 } from '../services/modules/snapshot/snapshot.mission-control.services';
@@ -13,6 +14,7 @@ import {
   createSnapshotOrbiter,
   deleteSnapshotOrbiter,
   downloadSnapshotOrbiter,
+  listSnapshotOrbiter,
   restoreSnapshotOrbiter,
   uploadSnapshotOrbiter
 } from '../services/modules/snapshot/snapshot.orbiter.services';
@@ -20,6 +22,7 @@ import {
   createSnapshotSatellite,
   deleteSnapshotSatellite,
   downloadSnapshotSatellite,
+  listSnapshotSatellite,
   restoreSnapshotSatellite,
   uploadSnapshotSatellite
 } from '../services/modules/snapshot/snapshot.satellite.services';
@@ -42,6 +45,14 @@ export const snapshot = async (args?: string[]) => {
         satelliteFn: restoreSnapshotSatellite,
         missionControlFn: restoreSnapshotMissionControl,
         orbiterFn: restoreSnapshotOrbiter
+      });
+      break;
+    case 'list':
+      await executeSnapshotFn({
+        args,
+        satelliteFn: listSnapshotSatellite,
+        missionControlFn: listSnapshotMissionControl,
+        orbiterFn: listSnapshotOrbiter
       });
       break;
     case 'delete':
