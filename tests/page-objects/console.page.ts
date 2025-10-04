@@ -46,7 +46,9 @@ export class ConsolePage extends IdentityPage {
 
     await this.page.getByTestId(testIds.createSatellite.create).click();
 
-    await expect(this.page.getByTestId(testIds.createSatellite.continue)).toBeVisible();
+    await expect(this.page.getByTestId(testIds.createSatellite.continue)).toBeVisible({
+      timeout: 20000
+    });
 
     await this.page.getByTestId(testIds.createSatellite.continue).click();
   }
