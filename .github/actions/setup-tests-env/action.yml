@@ -27,5 +27,3 @@ runs:
         set -e
         juno emulator start --headless &
         juno emulator wait
-        juno login --emulator --mode development --headless
-        juno config apply --mode development --headless
