@@ -63,7 +63,7 @@ export class CliPage extends TestPage {
   async applyConfig(): Promise<void> {
     await execute({
       command: JUNO_CMD,
-      args: buildArgs(['config', 'apply'])
+      args: buildArgs(['config', 'apply', '--force'])
     });
   }
 
@@ -88,14 +88,18 @@ export class CliPage extends TestPage {
   }): Promise<void> {
     await execute({
       command: JUNO_CMD,
-      args: buildArgs([
-        ...JUNO_CDM_ARGS,
-        'snapshot',
-        'create',
-        '--target',
-        target,
-        ...JUNO_TEST_ARGS
-      ])
+      args: buildArgs(['snapshot', 'create', '--target', target])
+    });
+  }
+
+  async restoreSnapshot({
+    target
+  }: {
+    target: 'satellite' | 'orbiter' | 'mission-control';
+  }): Promise<void> {
+    await execute({
+      command: JUNO_CMD,
+      args: buildArgs(['snapshot', 'restore', '--target', target])
     });
   }
 

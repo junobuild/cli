@@ -65,7 +65,7 @@ export class ConsolePage extends IdentityPage {
     await this.page.getByTestId(testIds.createSatellite.continue).click();
   }
 
-  async visitSatellite({title = 'Juno / Satellite'}: {title?: string}): Promise<Page> {
+  async visitSatellite({title}: {title: string} = {title: 'Juno / Satellite'}): Promise<Page> {
     await expect(this.page.getByTestId(testIds.satelliteOverview.visit)).toBeVisible();
 
     const satellitePagePromise = this.context.waitForEvent('page');
