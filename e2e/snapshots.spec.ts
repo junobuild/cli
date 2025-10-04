@@ -1,5 +1,4 @@
 import {testWithII} from '@dfinity/internet-identity-playwright';
-import {expect} from '@playwright/test';
 import {initTestSuite} from './utils/init.utils';
 
 const getTestPages = initTestSuite();
@@ -11,13 +10,13 @@ testWithII('should create and restore a snapshot', async ({page}) => {
 
   await cliPage.clearHosting();
 
-  const satellitePage = await consolePage.visitSatellite({
+  const satellitePage = await consolePage.visitSatelliteSite({
     title: 'Internet Computer - Error: response verification error'
   });
-  await expect(satellitePage).toHaveScreenshot({fullPage: true});
+  await satellitePage.assertScreenshot();
 
   await cliPage.restoreSnapshot({target: 'satellite'});
 
-  await page.reload({waitUntil: 'load'});
-  await expect(satellitePage).toHaveScreenshot({fullPage: true});
+  await satellitePage.reload();
+  await satellitePage.assertScreenshot();
 });
