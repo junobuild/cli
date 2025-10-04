@@ -3,6 +3,7 @@ import {expect} from '@playwright/test';
 import {testIds} from '../constants/test-ids.constants';
 import {IdentityPage, type IdentityPageParams} from './identity.page';
 import {SatellitePage} from './satellite.page';
+import {assertNonNullish} from '@dfinity/utils';
 
 export class ConsolePage extends IdentityPage {
   readonly #consoleIIPage: InternetIdentityPage;
@@ -83,5 +84,31 @@ export class ConsolePage extends IdentityPage {
       browser: this.browser,
       context: this.context
     });
+  }
+
+  async copySatelliteId(): Promise<string> {
+    // TODO: replace with a testId that copies to Satellite ID from the Overview
+    const currentUrl = await this.page.evaluate(() => document.location.href);
+
+    const url = URL.parse(currentUrl);
+    assertNonNullish(url);
+
+    const urlParams = new URLSearchParams(url.searchParams);
+    const satelliteId = urlParams.get('s');
+
+    assertNonNullish(satelliteId);
+
+    return satelliteId;
+  }
+
+  // TODO: testIds
+  async getICP(): Promise<void> {
+    await this.goto();
+
+    await this.page.locator('button:text("Open Wallet")').click();
+
+    await this.page.locator('button:text("Receive")').click();
+
+    await expect(this.page.getByText('55.0001 ICP')).toBeVisible({timeout: 15000});
   }
 }

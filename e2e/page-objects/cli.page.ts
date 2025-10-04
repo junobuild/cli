@@ -1,8 +1,8 @@
 import {assertNonNullish, notEmptyString} from '@dfinity/utils';
 import type {PrincipalText} from '@dfinity/zod-schemas';
 import {execute, spawn} from '@junobuild/cli-tools';
-import {readdirSync, statSync} from 'node:fs';
-import {readFile, writeFile} from 'node:fs/promises';
+import {statSync} from 'node:fs';
+import {readdir, readFile, writeFile} from 'node:fs/promises';
 import {join} from 'node:path';
 import {TestPage} from './_page';
 
@@ -126,9 +126,16 @@ export class CliPage extends TestPage {
       args: buildArgs(['snapshot', 'download', '--target', target])
     });
 
-    // Retrieve where the snapshot was created
+    return await this.getSnapshotFsFolder();
+  }
+
+  // Retrieve where the snapshot was created
+  async getSnapshotFsFolder(): Promise<{snapshotFolder: string}> {
     const snapshotsFolder = join(process.cwd(), '.snapshots');
-    const [snapshotFolder] = readdirSync(snapshotsFolder, {withFileTypes: true})
+
+    const folders = await readdir(snapshotsFolder, {withFileTypes: true});
+
+    const [snapshotFolder] = folders
       .filter((d) => d.isDirectory())
       .map(({name}) => {
         const path = join(snapshotsFolder, name);

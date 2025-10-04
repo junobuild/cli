@@ -52,3 +52,20 @@ testWithII('should create, download, delete, upload and restore a snapshot', asy
   await satellitePage.reload();
   await satellitePage.assertScreenshot();
 });
+
+testWithII(
+  'should create, download, delete, upload and restore a snapshot to another satellite',
+  async () => {
+    testWithII.slow();
+
+    const {consolePage, cliPage} = getTestPages();
+
+    await consolePage.getICP();
+
+    await consolePage.createSatellite({kind: 'application'});
+
+    const satelliteId = await consolePage.copySatelliteId();
+
+
+  }
+);
