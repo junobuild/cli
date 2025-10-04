@@ -7,7 +7,7 @@ import {IdentityPage, type IdentityPageParams} from './identity.page';
 export class ConsolePage extends IdentityPage {
   readonly #consoleIIPage: InternetIdentityPage;
 
-  constructor(params: IdentityPageParams) {
+  private constructor(params: IdentityPageParams) {
     super(params);
 
     this.#consoleIIPage = new InternetIdentityPage({
@@ -15,6 +15,18 @@ export class ConsolePage extends IdentityPage {
       context: this.context,
       browser: this.browser
     });
+  }
+
+  static async initWithSignIn(params: IdentityPageParams): Promise<ConsolePage> {
+    const consolePage = new ConsolePage(params);
+
+    await consolePage.waitReady();
+
+    await consolePage.goto();
+
+    await consolePage.signIn();
+
+    return consolePage;
   }
 
   async goto(): Promise<void> {
