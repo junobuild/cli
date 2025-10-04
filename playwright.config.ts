@@ -3,8 +3,8 @@ import {defineConfig, devices} from '@playwright/test';
 const DEV = (process.env.NODE_ENV ?? 'production') === 'development';
 
 export default defineConfig({
-  testDir: './tests',
-  snapshotDir: `./${DEV ? 'tmp' : 'src'}/e2e/snapshots`,
+  testDir: './e2e',
+  snapshotDir: `./${DEV ? 'tmp' : 'e2e'}/snapshots`,
   testMatch: ['**/*.e2e.ts', '**/*.spec.ts'],
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
