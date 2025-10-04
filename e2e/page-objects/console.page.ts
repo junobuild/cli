@@ -1,13 +1,13 @@
 import {InternetIdentityPage} from '@dfinity/internet-identity-playwright';
 import {expect} from '@playwright/test';
-import type {Page} from 'playwright-core';
 import {testIds} from '../constants/test-ids.constants';
 import {IdentityPage, type IdentityPageParams} from './identity.page';
+import {SatellitePage} from './satellite.page';
 
 export class ConsolePage extends IdentityPage {
   readonly #consoleIIPage: InternetIdentityPage;
 
-  constructor(params: IdentityPageParams) {
+  private constructor(params: IdentityPageParams) {
     super(params);
 
     this.#consoleIIPage = new InternetIdentityPage({
@@ -15,6 +15,18 @@ export class ConsolePage extends IdentityPage {
       context: this.context,
       browser: this.browser
     });
+  }
+
+  static async initWithSignIn(params: IdentityPageParams): Promise<ConsolePage> {
+    const consolePage = new ConsolePage(params);
+
+    await consolePage.waitReady();
+
+    await consolePage.goto();
+
+    await consolePage.signIn();
+
+    return consolePage;
   }
 
   async goto(): Promise<void> {
@@ -53,7 +65,9 @@ export class ConsolePage extends IdentityPage {
     await this.page.getByTestId(testIds.createSatellite.continue).click();
   }
 
-  async visitSatellite(): Promise<Page> {
+  async visitSatelliteSite(
+    {title}: {title: string} = {title: 'Juno / Satellite'}
+  ): Promise<SatellitePage> {
     await expect(this.page.getByTestId(testIds.satelliteOverview.visit)).toBeVisible();
 
     const satellitePagePromise = this.context.waitForEvent('page');
@@ -62,8 +76,12 @@ export class ConsolePage extends IdentityPage {
 
     const satellitePage = await satellitePagePromise;
 
-    await expect(satellitePage).toHaveTitle('Juno / Satellite');
+    await expect(satellitePage).toHaveTitle(title);
 
-    return satellitePage;
+    return new SatellitePage({
+      page: satellitePage,
+      browser: this.browser,
+      context: this.context
+    });
   }
 }

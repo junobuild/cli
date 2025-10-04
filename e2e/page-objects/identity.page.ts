@@ -1,4 +1,5 @@
 import type {Browser, BrowserContext, Page} from '@playwright/test';
+import {TestPage} from './_page';
 
 export interface IdentityPageParams {
   page: Page;
@@ -6,7 +7,7 @@ export interface IdentityPageParams {
   browser: Browser;
 }
 
-export abstract class IdentityPage {
+export abstract class IdentityPage extends TestPage {
   protected identity: number | undefined;
 
   protected readonly page: Page;
@@ -14,11 +15,16 @@ export abstract class IdentityPage {
   protected readonly browser: Browser;
 
   protected constructor({page, context, browser}: IdentityPageParams) {
+    super();
+
     this.page = page;
     this.context = context;
     this.browser = browser;
   }
 
+  /**
+   * @override
+   */
   async close(): Promise<void> {
     await this.page.close();
   }
