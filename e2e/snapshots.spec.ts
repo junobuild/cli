@@ -65,7 +65,5 @@ testWithII(
     await consolePage.createSatellite({kind: 'application'});
 
     const satelliteId = await consolePage.copySatelliteId();
-
-
   }
 );
