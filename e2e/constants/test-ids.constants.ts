@@ -13,6 +13,11 @@ export const testIds: TestIds = {
     continue: 'btn-continue-overview'
   },
   satelliteOverview: {
-    visit: 'link-visit-satellite'
+    visit: 'link-visit-satellite',
+    copySatelliteId: 'btn-copy-satellite-id'
+  },
+  navbar: {
+    openWallet: 'btn-open-wallet',
+    getIcp: 'btn-get-icp'
   }
 };
