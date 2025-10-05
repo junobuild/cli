@@ -1,9 +1,10 @@
 import {InternetIdentityPage} from '@dfinity/internet-identity-playwright';
+import {notEmptyString} from '@dfinity/utils';
+import {PrincipalTextSchema} from '@dfinity/zod-schemas';
 import {expect} from '@playwright/test';
 import {testIds} from '../constants/test-ids.constants';
 import {IdentityPage, type IdentityPageParams} from './identity.page';
 import {SatellitePage} from './satellite.page';
-import {assertNonNullish} from '@dfinity/utils';
 
 export class ConsolePage extends IdentityPage {
   readonly #consoleIIPage: InternetIdentityPage;
@@ -86,29 +87,16 @@ export class ConsolePage extends IdentityPage {
     });
   }
 
-  async copySatelliteId(): Promise<string> {
-    // TODO: replace with a testId that copies to Satellite ID from the Overview
-    const currentUrl = await this.page.evaluate(() => document.location.href);
+  async copySatelliteID(): Promise<string> {
+    await expect(this.page.getByTestId(testIds.satelliteOverview.copySatelliteId)).toBeVisible();
 
-    const url = URL.parse(currentUrl);
-    assertNonNullish(url);
+    await this.page.getByTestId(testIds.satelliteOverview.copySatelliteId).click();
 
-    const urlParams = new URLSearchParams(url.searchParams);
-    const satelliteId = urlParams.get('s');
+    const satelliteId = await this.page.evaluate(() => navigator.clipboard.readText());
 
-    assertNonNullish(satelliteId);
+    expect(notEmptyString(satelliteId)).toBeTruthy();
+    expect(PrincipalTextSchema.safeParse(satelliteId).success).toBeTruthy();
 
     return satelliteId;
-  }
-
-  // TODO: testIds
-  async getICP(): Promise<void> {
-    await this.goto();
-
-    await this.page.locator('button:text("Open Wallet")').click();
-
-    await this.page.locator('button:text("Receive")').click();
-
-    await expect(this.page.getByText('55.0001 ICP')).toBeVisible({timeout: 15000});
   }
 }
