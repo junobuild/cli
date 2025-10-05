@@ -62,8 +62,12 @@ testWithII(
 
     await consolePage.getICP();
 
+    await consolePage.goto();
+
     await consolePage.createSatellite({kind: 'application'});
 
-    const satelliteId = await consolePage.copySatelliteId();
+    const satelliteId = await consolePage.copySatelliteID();
+
+    // TODO: create and restore in another satelliteID
   }
 );

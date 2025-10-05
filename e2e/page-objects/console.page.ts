@@ -87,6 +87,18 @@ export class ConsolePage extends IdentityPage {
     });
   }
 
+  async getICP(): Promise<void> {
+    await expect(this.page.getByTestId(testIds.navbar.openWallet)).toBeVisible();
+
+    await this.page.getByTestId(testIds.navbar.openWallet).click();
+
+    await expect(this.page.getByTestId(testIds.navbar.getIcp)).toBeVisible();
+
+    await this.page.getByTestId(testIds.navbar.getIcp).click();
+
+    await expect(this.page.getByText('55.0001')).toBeVisible({timeout: 35000});
+  }
+
   async copySatelliteID(): Promise<string> {
     await expect(this.page.getByTestId(testIds.satelliteOverview.copySatelliteId)).toBeVisible();
 
