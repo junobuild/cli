@@ -19,7 +19,8 @@ export default defineConfig({
     testIdAttribute: 'data-tid',
     baseURL: 'http://localhost:5866',
     trace: 'on',
-    ...(DEV && {headless: false})
+    ...(DEV && {headless: false}),
+    permissions: ['clipboard-read', 'clipboard-write']
   },
   projects: [
     {

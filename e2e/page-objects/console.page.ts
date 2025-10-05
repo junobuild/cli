@@ -1,4 +1,6 @@
 import {InternetIdentityPage} from '@dfinity/internet-identity-playwright';
+import {notEmptyString} from '@dfinity/utils';
+import {PrincipalTextSchema} from '@dfinity/zod-schemas';
 import {expect} from '@playwright/test';
 import {testIds} from '../constants/test-ids.constants';
 import {IdentityPage, type IdentityPageParams} from './identity.page';
@@ -83,5 +85,18 @@ export class ConsolePage extends IdentityPage {
       browser: this.browser,
       context: this.context
     });
+  }
+
+  async copySatelliteID(): Promise<string> {
+    await expect(this.page.getByTestId(testIds.satelliteOverview.copySatelliteId)).toBeVisible();
+
+    await this.page.getByTestId(testIds.satelliteOverview.copySatelliteId).click();
+
+    const satelliteId = await this.page.evaluate(() => navigator.clipboard.readText());
+
+    expect(notEmptyString(satelliteId)).toBeTruthy();
+    expect(PrincipalTextSchema.safeParse(satelliteId).success).toBeTruthy();
+
+    return satelliteId;
   }
 }

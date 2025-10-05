@@ -1,5 +1,4 @@
 import {testWithII} from '@dfinity/internet-identity-playwright';
-import {assertNonNullish} from '@dfinity/utils';
 import {CliPage} from '../page-objects/cli.page';
 import {ConsolePage} from '../page-objects/console.page';
 
@@ -30,13 +29,7 @@ export const initTestSuite = (): (() => TestSuitePages) => {
 
     await consolePage.createSatellite({kind: 'website'});
 
-    // TODO: replace with a testId that copies to Satellite ID from the Overview
-    const currentUrl = await page.evaluate(() => document.location.href);
-    const url = URL.parse(currentUrl);
-    assertNonNullish(url);
-    const urlParams = new URLSearchParams(url.searchParams);
-    const satelliteId = urlParams.get('s');
-    assertNonNullish(satelliteId);
+    const satelliteId = await consolePage.copySatelliteID();
 
     cliPage = await CliPage.initWithEmulatorLogin({satelliteId});
   });
