@@ -68,6 +68,10 @@ testWithII(
 
     const satelliteId = await consolePage.copySatelliteID();
 
-    // TODO: create and restore in another satelliteID
+    await cliPage.toggleSatelliteId({satelliteId});
+
+    const {accessKey} = await cliPage.whoami();
+
+    await consolePage.addSatelliteAdminAccessKey({accessKey, satelliteId});
   }
 );

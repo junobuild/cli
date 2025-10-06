@@ -1,6 +1,6 @@
 import {InternetIdentityPage} from '@dfinity/internet-identity-playwright';
 import {notEmptyString} from '@dfinity/utils';
-import {PrincipalTextSchema} from '@dfinity/zod-schemas';
+import {PrincipalText, PrincipalTextSchema} from '@dfinity/zod-schemas';
 import {expect} from '@playwright/test';
 import {testIds} from '../constants/test-ids.constants';
 import {IdentityPage, type IdentityPageParams} from './identity.page';
@@ -31,8 +31,8 @@ export class ConsolePage extends IdentityPage {
     return consolePage;
   }
 
-  async goto(): Promise<void> {
-    await this.page.goto('/');
+  async goto({path}: {path: string} = {path: '/'}): Promise<void> {
+    await this.page.goto(path);
   }
 
   async signIn(): Promise<void> {
@@ -49,7 +49,9 @@ export class ConsolePage extends IdentityPage {
   }
 
   async createSatellite({kind}: {kind: 'website' | 'application'}): Promise<void> {
-    await expect(this.page.getByTestId(testIds.createSatellite.launch)).toBeVisible();
+    await expect(this.page.getByTestId(testIds.createSatellite.launch)).toBeVisible({
+      timeout: 10000
+    });
 
     await this.page.getByTestId(testIds.createSatellite.launch).click();
 
@@ -110,5 +112,35 @@ export class ConsolePage extends IdentityPage {
     expect(PrincipalTextSchema.safeParse(satelliteId).success).toBeTruthy();
 
     return satelliteId;
+  }
+
+  async addSatelliteAdminAccessKey({
+    satelliteId,
+    accessKey
+  }: {
+    satelliteId: PrincipalText;
+    accessKey: string;
+  }): Promise<void> {
+    await this.goto({path: `/satellite/?s=${satelliteId}&tab=setup`});
+
+    const btnLocator = this.page.locator('button', {hasText: 'Add an access key'});
+    await expect(btnLocator).toBeVisible();
+    await btnLocator.click();
+
+    const form = this.page.locator('form');
+
+    await form.getByRole('radio', {name: /enter one manually/i}).check();
+
+    const keyField = form.getByLabel('Access Key ID');
+    await expect(keyField).toBeEnabled();
+    await keyField.fill(accessKey);
+
+    await form.locator('select[name="scope"]').selectOption('admin');
+
+    const submitLocator = form.getByRole('button', {name: /^submit$/i});
+    await expect(submitLocator).toBeEnabled();
+    await submitLocator.click();
+
+    await expect(this.page.getByText('Access Key Added')).toBeVisible({timeout: 10000});
   }
 }

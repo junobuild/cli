@@ -23,7 +23,7 @@ export interface CliPageParams {
 }
 
 export class CliPage extends TestPage {
-  readonly #satelliteId: PrincipalText;
+  #satelliteId: PrincipalText;
 
   private constructor({satelliteId}: CliPageParams) {
     super();
@@ -53,6 +53,12 @@ export class CliPage extends TestPage {
     let content = await readFile(JUNO_CONFIG, 'utf-8');
     content = content.replace(this.#satelliteId, '<DEV_SATELLITE_ID>');
     await writeFile(JUNO_CONFIG, content, 'utf-8');
+  }
+
+  async toggleSatelliteId({satelliteId}: {satelliteId: PrincipalText}): Promise<void> {
+    await this.revertConfig();
+    this.#satelliteId = satelliteId;
+    await this.initConfig();
   }
 
   protected async loginWithEmulator(): Promise<void> {
@@ -178,6 +184,23 @@ export class CliPage extends TestPage {
 
     const [_, snapshotId] = output.split('Snapshot found:');
     return {snapshotId: notEmptyString(snapshotId) ? snapshotId.trim() : undefined};
+  }
+
+  async whoami(): Promise<{accessKey: string}> {
+    let output = '';
+
+    await spawn({
+      command: JUNO_CMD,
+      args: buildArgs(['whoami']),
+      stdout: (o) => (output += o),
+      silentErrors: true
+    });
+
+    const [_, __, ___, text] = output.split(' ');
+    const [value] = text.split('\n');
+    const accessKey = value.replace('\x1B[32m', '').replace('\x1B[39m', '');
+
+    return {accessKey: accessKey.trim()};
   }
 
   /**
