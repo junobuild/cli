@@ -1,6 +1,6 @@
-import {TestIds} from '../types/test-id';
+import type {TestIds} from '../types/test-id';
 
-export const testIds: TestIds = {
+export const testIds = {
   auth: {
     signIn: 'btn-sign-in'
   },
@@ -20,4 +20,4 @@ export const testIds: TestIds = {
     openWallet: 'btn-open-wallet',
     getIcp: 'btn-get-icp'
   }
-};
+} as const satisfies TestIds;
