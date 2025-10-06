@@ -25,7 +25,7 @@ testWithII('should create and restore a snapshot', async () => {
 });
 
 testWithII('should create, download, delete, upload and restore a snapshot', async () => {
-  testWithII.slow();
+  testWithII.setTimeout(120_000);
 
   const {consolePage, cliPage} = getTestPages();
 
@@ -52,3 +52,44 @@ testWithII('should create, download, delete, upload and restore a snapshot', asy
   await satellitePage.reload();
   await satellitePage.assertScreenshot();
 });
+
+testWithII(
+  'should create, download, delete, upload and restore a snapshot to another satellite',
+  async () => {
+    testWithII.setTimeout(120_000);
+
+    const {consolePage, cliPage} = getTestPages();
+
+    await consolePage.getICP();
+
+    await consolePage.goto();
+
+    await consolePage.createSatellite({kind: 'application'});
+
+    const satelliteId = await consolePage.copySatelliteID();
+
+    await cliPage.toggleSatelliteId({satelliteId});
+
+    const {accessKey} = await cliPage.whoami();
+
+    await consolePage.addSatelliteAdminAccessKey({accessKey, satelliteId});
+
+    await cliPage.deployHosting({clear: true});
+
+    await consolePage.goto({path: `/satellite/?s=${satelliteId}`});
+
+    const satellitePage = await consolePage.visitSatelliteSite({
+      title: 'Hello World'
+    });
+    await satellitePage.assertScreenshot();
+
+    const {snapshotFolder} = await cliPage.getSnapshotFsFolder();
+
+    await cliPage.uploadSnapshot({...SNAPSHOT_TARGET, folder: snapshotFolder});
+
+    await cliPage.restoreSnapshot(SNAPSHOT_TARGET);
+
+    await satellitePage.reload();
+    await satellitePage.assertScreenshot();
+  }
+);
