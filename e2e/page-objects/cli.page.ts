@@ -89,6 +89,13 @@ export class CliPage extends TestPage {
     });
   }
 
+  async deployHosting({clear}: {clear: boolean}): Promise<void> {
+    await execute({
+      command: JUNO_CMD,
+      args: buildArgs(['hosting', 'deploy', ...(clear ? ['--clear'] : [])])
+    });
+  }
+
   async createSnapshot({
     target
   }: {

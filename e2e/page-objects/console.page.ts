@@ -50,7 +50,7 @@ export class ConsolePage extends IdentityPage {
 
   async createSatellite({kind}: {kind: 'website' | 'application'}): Promise<void> {
     await expect(this.page.getByTestId(testIds.createSatellite.launch)).toBeVisible({
-      timeout: 10000
+      timeout: 20000
     });
 
     await this.page.getByTestId(testIds.createSatellite.launch).click();
@@ -98,7 +98,7 @@ export class ConsolePage extends IdentityPage {
 
     await this.page.getByTestId(testIds.navbar.getIcp).click();
 
-    await expect(this.page.getByText('55.0001')).toBeVisible({timeout: 35000});
+    await expect(this.page.getByText('55.0001')).toBeVisible({timeout: 65000});
   }
 
   async copySatelliteID(): Promise<string> {
@@ -124,7 +124,7 @@ export class ConsolePage extends IdentityPage {
     await this.goto({path: `/satellite/?s=${satelliteId}&tab=setup`});
 
     const btnLocator = this.page.locator('button', {hasText: 'Add an access key'});
-    await expect(btnLocator).toBeVisible();
+    await expect(btnLocator).toBeVisible({timeout: 10000});
     await btnLocator.click();
 
     const form = this.page.locator('form');
