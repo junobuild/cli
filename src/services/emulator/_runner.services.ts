@@ -175,10 +175,12 @@ const startEmulator = async ({config: extendedConfig}: {config: CliEmulatorConfi
     return;
   }
 
-  const ports: Required<EmulatorPorts> = {
+  const ports: Required<Omit<EmulatorPorts, 'timeoutInSeconds'>> = {
     server: config[emulatorType]?.ports?.server ?? EMULATOR_SKYLAB.ports.server,
     admin: config[emulatorType]?.ports?.admin ?? EMULATOR_SKYLAB.ports.admin
   };
+
+  const portTimeoutInSeconds = config[emulatorType]?.ports?.timeoutInSeconds;
 
   // Support Ctrl+C:
   // -i: Keeps STDIN open for the container. Equivalent to `--interactive`.
@@ -229,6 +231,9 @@ const startEmulator = async ({config: extendedConfig}: {config: CliEmulatorConfi
             '-p',
             `${config.skylab.ports?.console ?? EMULATOR_SKYLAB.ports.console}:${EMULATOR_PORT_CONSOLE}`
           ]
+        : []),
+      ...(nonNullish(portTimeoutInSeconds)
+        ? ['-e', `PORT_TIMEOUT_SECONDS=${portTimeoutInSeconds}`]
         : []),
       '-v',
       `${volume}:/juno/.juno`,
