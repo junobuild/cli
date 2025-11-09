@@ -1,17 +1,15 @@
-import {ICManagementCanister} from '@dfinity/ic-management';
-import type {
-  list_canister_snapshots_result,
-  read_canister_snapshot_data_response,
-  snapshot_id,
-  upload_canister_snapshot_metadata_response
-} from '@dfinity/ic-management/dist/candid/ic-management';
 import {
+  ICManagementCanister,
+  type list_canister_snapshots_result,
+  type read_canister_snapshot_data_response,
   type ReadCanisterSnapshotMetadataParams,
+  type ReadCanisterSnapshotMetadataResponse,
+  type snapshot_id,
   type SnapshotParams,
+  type upload_canister_snapshot_metadata_response,
   type UploadCanisterSnapshotDataParams,
   type UploadCanisterSnapshotMetadataParams
-} from '@dfinity/ic-management/dist/types/types/snapshot.params';
-import type {ReadCanisterSnapshotMetadataResponse} from '@dfinity/ic-management/dist/types/types/snapshot.responses';
+} from '@dfinity/ic-management';
 import type {Principal} from '@dfinity/principal';
 import {initAgent} from './agent.api';
 
