@@ -83,14 +83,14 @@
     "url": "https://github.com/junobuild/cli"
   },
   "keywords": [
-    "blockchain-as-a-service",
-    "baas",
-    "dapps",
-    "dapps-development",
-    "internet computer",
-    "smart-contracts",
-    "web3",
-    "cli"
+    "serverless",
+    "developer-tools",
+    "cloud-computing",
+    "deployment",
+    "infrastructure",
+    "automation",
+    "cli",
+    "devops"
   ],
   "homepage": "https://juno.build",
   "engines": {
