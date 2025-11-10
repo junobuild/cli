@@ -1,5 +1,5 @@
-import type {snapshot_id} from '@dfinity/ic-management';
-import type {Principal} from '@dfinity/principal';
+import type {snapshot_id} from '@icp-sdk/canisters/ic-management';
+import type {Principal} from '@icp-sdk/core/principal';
 import type * as z from 'zod';
 import {
   type ReadCanisterSnapshotMetadataResponseSchema,

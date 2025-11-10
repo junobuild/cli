@@ -9,8 +9,8 @@ import {
   type upload_canister_snapshot_metadata_response,
   type UploadCanisterSnapshotDataParams,
   type UploadCanisterSnapshotMetadataParams
-} from '@dfinity/ic-management';
-import type {Principal} from '@dfinity/principal';
+} from '@icp-sdk/canisters/ic-management';
+import type {Principal} from '@icp-sdk/core/principal';
 import {initAgent} from './agent.api';
 
 export const canisterStop = async ({canisterId}: {canisterId: Principal}): Promise<void> => {

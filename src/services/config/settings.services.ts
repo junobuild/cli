@@ -1,6 +1,6 @@
-import {ICManagementCanister, LogVisibility} from '@dfinity/ic-management';
-import {Principal} from '@dfinity/principal';
 import {isNullish} from '@dfinity/utils';
+import {ICManagementCanister, LogVisibility} from '@icp-sdk/canisters/ic-management';
+import {Principal} from '@icp-sdk/core/principal';
 import type {ModuleSettings} from '@junobuild/config';
 import {initAgent} from '../../api/agent.api';
 import type {SatelliteParametersWithId} from '../../types/satellite';

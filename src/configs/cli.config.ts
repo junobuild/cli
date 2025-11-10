@@ -1,5 +1,5 @@
-import type {JsonnableEd25519KeyIdentity} from '@dfinity/identity';
 import {assertNonNullish, nonNullish} from '@dfinity/utils';
+import type {JsonnableEd25519KeyIdentity} from '@icp-sdk/core/identity';
 import type Conf from 'conf';
 import {red, yellow} from 'kleur';
 import {askForPassword} from '../services/cli.settings.services';
