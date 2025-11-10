@@ -1,5 +1,8 @@
-import {type CanisterSnapshotMetadataKind, encodeSnapshotId} from '@dfinity/ic-management';
-import type {ReadCanisterSnapshotMetadataResponse} from '@dfinity/ic-management/dist/types/types/snapshot.responses';
+import {
+  type CanisterSnapshotMetadataKind,
+  type ReadCanisterSnapshotMetadataResponse,
+  encodeSnapshotId
+} from '@dfinity/ic-management';
 import {arrayOfNumberToUint8Array, jsonReplacer} from '@dfinity/utils';
 import {red} from 'kleur';
 import {createHash} from 'node:crypto';

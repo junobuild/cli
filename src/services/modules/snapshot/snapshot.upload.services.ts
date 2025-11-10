@@ -1,5 +1,8 @@
-import {encodeSnapshotId, type snapshot_id} from '@dfinity/ic-management';
-import {type UploadCanisterSnapshotDataKind} from '@dfinity/ic-management/dist/types/types/snapshot.params';
+import {
+  encodeSnapshotId,
+  type snapshot_id,
+  type UploadCanisterSnapshotDataKind
+} from '@dfinity/ic-management';
 import {arrayBufferToUint8Array, isNullish, jsonReviver} from '@dfinity/utils';
 import {red} from 'kleur';
 import {lstatSync} from 'node:fs';
