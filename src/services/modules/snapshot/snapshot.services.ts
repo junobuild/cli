@@ -1,7 +1,7 @@
-import type {snapshot_id} from '@dfinity/ic-management';
-import {encodeSnapshotId} from '@dfinity/ic-management';
-import {Principal} from '@dfinity/principal';
 import {notEmptyString} from '@dfinity/utils';
+import type {snapshot_id} from '@icp-sdk/canisters/ic-management';
+import {encodeSnapshotId} from '@icp-sdk/canisters/ic-management';
+import {Principal} from '@icp-sdk/core/principal';
 import {nextArg} from '@junobuild/cli-tools';
 import ora from 'ora';
 import {

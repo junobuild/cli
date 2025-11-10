@@ -1,7 +1,7 @@
-import type {snapshot_id} from '@dfinity/ic-management';
-import {encodeSnapshotId} from '@dfinity/ic-management';
-import {type Principal} from '@dfinity/principal';
 import {isNullish, nonNullish} from '@dfinity/utils';
+import type {snapshot_id} from '@icp-sdk/canisters/ic-management';
+import {encodeSnapshotId} from '@icp-sdk/canisters/ic-management';
+import {type Principal} from '@icp-sdk/core/principal';
 import {red} from 'kleur';
 import ora from 'ora';
 import {listCanisterSnapshots} from '../../../api/ic.api';

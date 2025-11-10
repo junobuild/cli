@@ -1,4 +1,4 @@
-import {type Principal} from '@dfinity/principal';
+import {type Principal} from '@icp-sdk/core/principal';
 import {assertAnswerCtrlC} from '@junobuild/cli-tools';
 import {bold, green, red} from 'kleur';
 import prompts from 'prompts';

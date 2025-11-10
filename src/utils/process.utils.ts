@@ -1,4 +1,4 @@
-import type {JsonnableEd25519KeyIdentity} from '@dfinity/identity';
+import type {JsonnableEd25519KeyIdentity} from '@icp-sdk/core/identity';
 import {hasArgs} from '@junobuild/cli-tools';
 
 export const getProcessToken = (): JsonnableEd25519KeyIdentity | undefined => {

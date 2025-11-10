@@ -1,4 +1,4 @@
-import type {JsonnableEd25519KeyIdentity} from '@dfinity/identity';
+import type {JsonnableEd25519KeyIdentity} from '@icp-sdk/core/identity';
 import {nextArg} from '@junobuild/cli-tools';
 import {bold, green, underline} from 'kleur';
 import {randomBytes} from 'node:crypto';

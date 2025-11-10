@@ -1,5 +1,5 @@
-import {Principal} from '@dfinity/principal';
 import {assertNonNullish, isNullish, nonNullish} from '@dfinity/utils';
+import {Principal} from '@icp-sdk/core/principal';
 import {buildScript, nextArg} from '@junobuild/cli-tools';
 import {OnRunSchema, type RunFnOrObject, RunFnOrObjectSchema} from '@junobuild/config';
 import {red, yellow} from 'kleur';

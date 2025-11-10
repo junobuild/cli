@@ -1,9 +1,9 @@
+import {arrayOfNumberToUint8Array, jsonReplacer} from '@dfinity/utils';
 import {
   type CanisterSnapshotMetadataKind,
   type ReadCanisterSnapshotMetadataResponse,
   encodeSnapshotId
-} from '@dfinity/ic-management';
-import {arrayOfNumberToUint8Array, jsonReplacer} from '@dfinity/utils';
+} from '@icp-sdk/canisters/ic-management';
 import {red} from 'kleur';
 import {createHash} from 'node:crypto';
 import {createWriteStream, existsSync, statSync} from 'node:fs';

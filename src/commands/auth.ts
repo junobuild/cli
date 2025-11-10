@@ -1,5 +1,5 @@
-import {Ed25519KeyIdentity} from '@dfinity/identity';
 import {isNullish} from '@dfinity/utils';
+import {Ed25519KeyIdentity} from '@icp-sdk/core/identity';
 import {assertAnswerCtrlC, hasArgs} from '@junobuild/cli-tools';
 import {green, red} from 'kleur';
 import prompts from 'prompts';

@@ -1,9 +1,9 @@
+import {arrayBufferToUint8Array, isNullish, jsonReviver} from '@dfinity/utils';
 import {
   encodeSnapshotId,
   type snapshot_id,
   type UploadCanisterSnapshotDataKind
-} from '@dfinity/ic-management';
-import {arrayBufferToUint8Array, isNullish, jsonReviver} from '@dfinity/utils';
+} from '@icp-sdk/canisters/ic-management';
 import {red} from 'kleur';
 import {lstatSync} from 'node:fs';
 import {type FileHandle, open as openFile, readFile} from 'node:fs/promises';
