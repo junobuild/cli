@@ -1,5 +1,5 @@
-import {Ed25519KeyIdentity} from '@dfinity/identity';
 import {isNullish, nonNullish} from '@dfinity/utils';
+import {Ed25519KeyIdentity} from '@icp-sdk/core/identity';
 import {green} from 'kleur';
 import {getToken} from '../configs/cli.config';
 import {ENV} from '../env';

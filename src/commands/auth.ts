@@ -1,5 +1,5 @@
-import {Ed25519KeyIdentity} from '@dfinity/identity';
 import {isNullish} from '@dfinity/utils';
+import {Ed25519KeyIdentity} from '@icp-sdk/core/identity';
 import {assertAnswerCtrlC, hasArgs} from '@junobuild/cli-tools';
 import {green, red} from 'kleur';
 import prompts from 'prompts';
@@ -8,7 +8,7 @@ import {DEV} from '../env';
 import {loginEmulatorOnly} from '../services/auth/login.emulator.services';
 import {login as loginServices} from '../services/auth/login.services';
 import {reuseController} from '../services/controllers.services';
-import {confirmAndExit} from '../utils/prompt.utils';
+import {confirmAndExitUnlessHeadlessAndDev} from '../utils/prompt.utils';
 
 export const logout = async () => {
   await clearCliConfig();
@@ -72,7 +72,7 @@ const emulatorLogin = async () => {
   const identity = Ed25519KeyIdentity.fromParsedJson(token);
   console.log(`🔐 Your terminal already has access: ${green(identity.getPrincipal().toText())}\n`);
 
-  await confirmAndExit(
+  await confirmAndExitUnlessHeadlessAndDev(
     'Would you like to overwrite the saved development authentication on this device'
   );
 

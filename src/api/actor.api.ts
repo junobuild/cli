@@ -1,5 +1,5 @@
-import {Ed25519KeyIdentity} from '@dfinity/identity';
 import {isNullish, nonNullish, notEmptyString} from '@dfinity/utils';
+import {Ed25519KeyIdentity} from '@icp-sdk/core/identity';
 import type {ActorParameters} from '@junobuild/ic-client/actor';
 import {green, red, yellow} from 'kleur';
 import {getToken} from '../configs/cli.config';

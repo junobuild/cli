@@ -1,9 +1,16 @@
-import {ICManagementCanister} from '@dfinity/ic-management';
-import type {
-  list_canister_snapshots_result,
-  snapshot_id
-} from '@dfinity/ic-management/dist/candid/ic-management';
-import type {Principal} from '@dfinity/principal';
+import {
+  ICManagementCanister,
+  type list_canister_snapshots_result,
+  type read_canister_snapshot_data_response,
+  type ReadCanisterSnapshotMetadataParams,
+  type ReadCanisterSnapshotMetadataResponse,
+  type snapshot_id,
+  type SnapshotParams,
+  type upload_canister_snapshot_metadata_response,
+  type UploadCanisterSnapshotDataParams,
+  type UploadCanisterSnapshotMetadataParams
+} from '@icp-sdk/canisters/ic-management';
+import type {Principal} from '@icp-sdk/core/principal';
 import {initAgent} from './agent.api';
 
 export const canisterStop = async ({canisterId}: {canisterId: Principal}): Promise<void> => {
@@ -75,4 +82,52 @@ export const deleteCanisterSnapshot = async (params: {
   });
 
   await deleteCanisterSnapshot(params);
+};
+
+export const readCanisterSnapshotMetadata = async (
+  params: SnapshotParams
+): Promise<ReadCanisterSnapshotMetadataResponse> => {
+  const agent = await initAgent();
+
+  const {readCanisterSnapshotMetadata} = ICManagementCanister.create({
+    agent
+  });
+
+  return await readCanisterSnapshotMetadata(params);
+};
+
+export const readCanisterSnapshotData = async (
+  params: ReadCanisterSnapshotMetadataParams
+): Promise<read_canister_snapshot_data_response> => {
+  const agent = await initAgent();
+
+  const {readCanisterSnapshotData} = ICManagementCanister.create({
+    agent
+  });
+
+  return await readCanisterSnapshotData(params);
+};
+
+export const uploadCanisterSnapshotMetadata = async (
+  params: UploadCanisterSnapshotMetadataParams
+): Promise<upload_canister_snapshot_metadata_response> => {
+  const agent = await initAgent();
+
+  const {uploadCanisterSnapshotMetadata} = ICManagementCanister.create({
+    agent
+  });
+
+  return await uploadCanisterSnapshotMetadata(params);
+};
+
+export const uploadCanisterSnapshotData = async (
+  params: UploadCanisterSnapshotDataParams
+): Promise<void> => {
+  const agent = await initAgent();
+
+  const {uploadCanisterSnapshotData} = ICManagementCanister.create({
+    agent
+  });
+
+  await uploadCanisterSnapshotData(params);
 };

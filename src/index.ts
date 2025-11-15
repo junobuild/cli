@@ -12,7 +12,7 @@ import {functions, helpFunctions} from './commands/functions';
 import {helpHosting, hosting} from './commands/hosting';
 import {open} from './commands/open';
 import {helpRun, run as runCmd} from './commands/run';
-import {snapshot} from './commands/snapshot';
+import {helpSnapshot, snapshot} from './commands/snapshot';
 import {startStop} from './commands/start-stop';
 import {status} from './commands/status';
 import {upgrade} from './commands/upgrade';
@@ -22,7 +22,6 @@ import {help} from './help/help';
 import {logHelpLogin} from './help/login.help';
 import {logHelpLogout} from './help/logout.help';
 import {logHelpOpen} from './help/open.help';
-import {logHelpSnapshot} from './help/snapshot.help';
 import {logHelpStart} from './help/start.help';
 import {logHelpStatus} from './help/status.help';
 import {logHelpStop} from './help/stop.help';
@@ -94,7 +93,7 @@ export const run = async () => {
         helpFunctions(args);
         break;
       case 'snapshot':
-        logHelpSnapshot(args);
+        helpSnapshot(args);
         break;
       case 'init':
         helpInit(args);

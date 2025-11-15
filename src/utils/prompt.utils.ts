@@ -1,4 +1,6 @@
 import prompts from 'prompts';
+import {DEV} from '../env';
+import {isHeadless} from './process.utils';
 
 export const NEW_CMD_LINE = '\n  ';
 
@@ -45,4 +47,12 @@ export const confirmAndExit = async (message: string) => {
   if (!answer) {
     process.exit(1);
   }
+};
+
+export const confirmAndExitUnlessHeadlessAndDev = async (message: string) => {
+  if (isHeadless() && DEV) {
+    return;
+  }
+
+  await confirmAndExit(message);
 };

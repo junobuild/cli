@@ -1,5 +1,5 @@
-import {Principal} from '@dfinity/principal';
 import {isNullish} from '@dfinity/utils';
+import {Principal} from '@icp-sdk/core/principal';
 import {cyan, red} from 'kleur';
 import ora from 'ora';
 import {canisterStart, canisterStop} from '../../api/ic.api';

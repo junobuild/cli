@@ -1,6 +1,13 @@
 import {getCliOrbiters} from '../../../configs/cli.config';
 import type {AssetKey} from '../../../types/asset-key';
-import {createSnapshot, deleteSnapshot, restoreSnapshot} from './snapshot.services';
+import {
+  createSnapshot,
+  deleteSnapshot,
+  downloadSnapshot,
+  listSnapshot,
+  restoreSnapshot,
+  uploadSnapshot
+} from './snapshot.services';
 
 export const createSnapshotOrbiter = async () => {
   await executeSnapshotFn({
@@ -14,9 +21,29 @@ export const restoreSnapshotOrbiter = async () => {
   });
 };
 
+export const listSnapshotOrbiter = async () => {
+  await executeSnapshotFn({
+    fn: listSnapshot
+  });
+};
+
 export const deleteSnapshotOrbiter = async () => {
   await executeSnapshotFn({
     fn: deleteSnapshot
+  });
+};
+
+export const downloadSnapshotOrbiter = async () => {
+  await executeSnapshotFn({
+    fn: downloadSnapshot
+  });
+};
+
+export const uploadSnapshotOrbiter = async (args?: string[]) => {
+  await executeSnapshotFn({
+    fn: async (params) => {
+      await uploadSnapshot({...params, args});
+    }
   });
 };
 
