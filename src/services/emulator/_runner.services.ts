@@ -1,11 +1,10 @@
 import {nonNullish} from '@dfinity/utils';
 import {assertAnswerCtrlC, execute, spawn} from '@junobuild/cli-tools';
-import {type EmulatorPorts, type EmulatorRunner} from '@junobuild/config';
+import {type EmulatorPorts} from '@junobuild/config';
 import {red, yellow} from 'kleur';
-import {basename, join} from 'node:path';
 import prompts from 'prompts';
 import {readEmulatorConfig} from '../../configs/emulator.config';
-import {junoConfigExist, junoConfigFile} from '../../configs/juno.config';
+import {junoConfigExist} from '../../configs/juno.config';
 import {
   EMULATOR_PORT_ADMIN,
   EMULATOR_PORT_CONSOLE,
@@ -23,7 +22,6 @@ import {
   assertContainerRunnerRunning,
   checkDockerVersion,
   hasExistingContainer,
-  hasExistingVolume,
   isContainerRunning
 } from '../../utils/runner.utils';
 import {initConfigNoneInteractive} from '../config/init.services';
@@ -204,22 +202,8 @@ const startEmulator = async ({config: extendedConfig}: {config: CliEmulatorConfi
 
   const volume = config.runner?.volume ?? containerName.replaceAll('-', '_');
 
-  const detectedConfig = junoConfigFile();
-  const configFile = nonNullish(detectedConfig.configPath)
-    ? basename(detectedConfig.configPath)
-    : undefined;
-  const configFilePath = nonNullish(configFile) ? join(process.cwd(), configFile) : undefined;
-
   // Podman does not auto create the path folders.
   await createDeployTargetDir({targetDeploy});
-
-  // Apple container does not auto create the volume.
-  const {result: createResult} = await createVolume({volume, runner});
-
-  if (createResult === 'error') {
-    console.log(red(`Unable to create a volume ${volume} for ${runner}.`));
-    return;
-  }
 
   const image = config.runner?.image ?? `junobuild/${emulatorType}:latest`;
 
@@ -247,9 +231,6 @@ const startEmulator = async ({config: extendedConfig}: {config: CliEmulatorConfi
         : []),
       '-v',
       `${volume}:/juno/.juno`,
-      ...(nonNullish(configFile) && nonNullish(configFilePath)
-        ? ['-v', `${configFilePath}:/juno/${configFile}`]
-        : []),
       '-v',
       `${targetDeploy}:/juno/target/deploy`,
       ...(nonNullish(platform) ? [`--platform=${platform}`] : []),
@@ -289,38 +270,4 @@ const assertContainerRunning = async ({
   }
 
   return result;
-};
-
-const createVolume = async ({
-  volume,
-  runner
-}: Pick<CliEmulatorDerivedConfig, 'runner'> & Required<Pick<EmulatorRunner, 'volume'>>): Promise<{
-  result: 'success' | 'error' | 'skip';
-}> => {
-  // Docker and Podman auto-create the volume on run
-  if (runner !== 'container') {
-    return {result: 'skip'};
-  }
-
-  const check = await hasExistingVolume({
-    volume,
-    runner
-  });
-
-  if ('err' in check) {
-    return {result: 'error'};
-  }
-
-  const {exist} = check;
-
-  if (exist) {
-    return {result: 'skip'};
-  }
-
-  await execute({
-    command: runner,
-    args: ['volume', 'create', volume]
-  });
-
-  return {result: 'success'};
 };

@@ -1,6 +1,5 @@
 import {notEmptyString} from '@dfinity/utils';
 import {spawn} from '@junobuild/cli-tools';
-import {type EmulatorRunner} from '@junobuild/config';
 import {green, red, yellow} from 'kleur';
 import {lt} from 'semver';
 import {DOCKER_MIN_VERSION} from '../constants/dev.constants';
@@ -77,43 +76,6 @@ export const hasExistingContainer = async ({
         .map((line) => line.trim())
         .filter(notEmptyString)
         .some((name) => name === containerName);
-
-      return {exist};
-    }
-
-    return {exist: output.trim().length > 0};
-  } catch (err: unknown) {
-    return {err};
-  }
-};
-
-export const hasExistingVolume = async ({
-  volume,
-  runner
-}: Pick<CliEmulatorDerivedConfig, 'runner'> & Required<Pick<EmulatorRunner, 'volume'>>): Promise<
-  {exist: boolean} | {err: unknown}
-> => {
-  try {
-    let output = '';
-
-    const args =
-      runner === 'container'
-        ? ['volume', 'ls', '-q']
-        : ['volume', 'ls', '-q', '-f', `name=^${volume}$`];
-
-    await spawn({
-      command: runner,
-      args,
-      stdout: (o) => (output += o),
-      silentOut: true
-    });
-
-    if (runner === 'container') {
-      const exist = output
-        .split(/\r?\n/)
-        .map((line) => line.trim())
-        .filter(notEmptyString)
-        .some((name) => name === volume);
 
       return {exist};
     }
