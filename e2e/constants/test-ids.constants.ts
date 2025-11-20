@@ -2,7 +2,7 @@ import type {TestIds} from '../types/test-id';
 
 export const testIds = {
   auth: {
-    signIn: 'btn-sign-in'
+    signInII: 'btn-sign-in-ii'
   },
   createSatellite: {
     launch: 'btn-launch-satellite',
@@ -19,5 +19,14 @@ export const testIds = {
   navbar: {
     openWallet: 'btn-open-wallet',
     getIcp: 'btn-get-icp'
+  },
+  createAnalytics: {
+    navLink: 'link-analytics-dashboard',
+    launch: 'btn-launch-analytics',
+    create: 'btn-create-analytics',
+    close: 'btn-close-analytics-wizard'
+  },
+  wizard: {
+    closeInsufficientFunds: 'btn-close-insufficient-funds'
   }
 } as const satisfies TestIds;
