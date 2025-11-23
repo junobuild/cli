@@ -77,7 +77,7 @@ export const checkIcWasmVersion = async (): Promise<{valid: boolean | 'error'}> 
   return {valid: true};
 };
 
-export const checkCargoBinInstalled = async ({
+export const checkToolInstalled = async ({
   command,
   args
 }: {

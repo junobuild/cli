@@ -1,7 +1,9 @@
+import {isNullish} from '@dfinity/utils';
 import {execute} from '@junobuild/cli-tools';
 import {magenta, yellow} from 'kleur';
 import {IC_WASM_MIN_VERSION} from '../constants/dev.constants';
-import {checkCargoBinInstalled, checkIcWasmVersion} from './env.utils';
+import {checkIcWasmVersion, checkToolInstalled} from './env.utils';
+import {detectPackageManager} from './pm.utils';
 import {confirmAndExit} from './prompt.utils';
 
 export const checkIcWasm = async (): Promise<{valid: boolean}> => {
@@ -28,7 +30,7 @@ export const checkIcWasm = async (): Promise<{valid: boolean}> => {
 };
 
 export const checkCandidExtractor = async (): Promise<{valid: boolean}> => {
-  const {valid} = await checkCargoBinInstalled({
+  const {valid} = await checkToolInstalled({
     command: 'candid-extractor',
     args: ['--version']
   });
@@ -53,10 +55,14 @@ export const checkCandidExtractor = async (): Promise<{valid: boolean}> => {
   return {valid: true};
 };
 
-export const checkJunoDidc = async (): Promise<{valid: boolean}> => {
-  const {valid} = await checkCargoBinInstalled({
-    command: 'junobuild-didc',
-    args: ['--version']
+export const checkBindgen = async (): Promise<{valid: boolean}> => {
+  const pm = detectPackageManager();
+
+  const command = pm === 'npm' || isNullish(pm) ? 'npx' : pm;
+
+  const {valid} = await checkToolInstalled({
+    command,
+    args: ['icp-bindgen', '--version']
   });
 
   if (valid === false) {
@@ -66,13 +72,13 @@ export const checkJunoDidc = async (): Promise<{valid: boolean}> => {
   if (valid === 'error') {
     await confirmAndExit(
       `It seems that ${magenta(
-        'junobuild-didc'
-      )} is not installed. This is a useful tool for generating automatically JavaScript or TypeScript bindings. Would you like to install it?`
+        'icp-bindgen'
+      )} is not installed. This tool generates JavaScript or TypeScript bindings. Would you like to install it?`
     );
 
     await execute({
-      command: 'cargo',
-      args: ['install', `junobuild-didc`]
+      command: pm ?? 'npm',
+      args: [pm === 'npm' ? 'i' : 'add', '@icp-sdk/bindgen', '-D']
     });
   }
 
@@ -80,7 +86,7 @@ export const checkJunoDidc = async (): Promise<{valid: boolean}> => {
 };
 
 export const checkWasi2ic = async (): Promise<{valid: boolean}> => {
-  const {valid} = await checkCargoBinInstalled({
+  const {valid} = await checkToolInstalled({
     command: 'wasi2ic',
     args: ['--version']
   });

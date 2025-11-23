@@ -3,7 +3,7 @@ import {execute, formatBytes, gzipFile, spawn} from '@junobuild/cli-tools';
 import {generateApi} from '@junobuild/did-tools';
 import {red, yellow} from 'kleur';
 import {existsSync} from 'node:fs';
-import {copyFile, lstat, mkdir, readFile, rename, writeFile} from 'node:fs/promises';
+import {copyFile, lstat, mkdir, readFile, rename, rm, writeFile} from 'node:fs/promises';
 import {join, relative} from 'node:path';
 import ora, {type Ora} from 'ora';
 import {compare, minVersion, satisfies} from 'semver';
@@ -20,15 +20,16 @@ import {
 } from '../../../constants/dev.constants';
 import type {BuildArgs, BuildType} from '../../../types/build';
 import {
+  checkBindgen,
   checkCandidExtractor,
   checkIcWasm,
-  checkJunoDidc,
   checkWasi2ic
 } from '../../../utils/build.rust.utils';
 import {readSatelliteDid} from '../../../utils/did.utils';
 import {checkRustVersion} from '../../../utils/env.utils';
 import {formatTime} from '../../../utils/format.utils';
 import {readPackageJson} from '../../../utils/pkg.utils';
+import {detectPackageManager} from '../../../utils/pm.utils';
 import {readEmulatorConfigAndCreateDeployTargetDir} from '../../emulator/_fs.services';
 import {prepareJunoPkgForSatellite, prepareJunoPkgForSputnik} from './build.metadata.services';
 import {dispatchEmulatorTouchSatellite} from './touch.services';
@@ -55,9 +56,9 @@ export const buildRust = async ({
     return;
   }
 
-  const {valid: validDidc} = await checkJunoDidc();
+  const {valid: validBindgen} = await checkBindgen();
 
-  if (!validDidc) {
+  if (!validBindgen) {
     return;
   }
 
@@ -216,40 +217,35 @@ const didc = async () => {
     return;
   }
 
-  const generate = async (type: 'js' | 'ts') => {
-    const output = satellitedIdl(type);
+  const pm = detectPackageManager();
 
-    await spawn({
-      command: 'junobuild-didc',
-      args: ['-i', SATELLITE_CUSTOM_DID_FILE, '-t', type, '-o', output]
-    });
+  const command = pm === 'npm' || isNullish(pm) ? 'npx' : pm;
 
-    const content = await readFile(output, 'utf-8');
+  // --actor-disabled: skip generating actor files, since we handle those ourselves
+  // --force: overwrite files. Required; otherwise, icp-bindgen would delete files at preprocess,
+  // which causes issues when multiple .did files are located in the same folder.
+  await spawn({
+    command,
+    args: [
+      'icp-bindgen',
+      '--did-file',
+      SATELLITE_CUSTOM_DID_FILE,
+      '--out-dir',
+      DEVELOPER_PROJECT_SATELLITE_DECLARATIONS_PATH,
+      '--actor-disabled',
+      '--force'
+    ]
+  });
 
-    // Depending on the `tsconfig`, the `factory.did.js` file might be validated.
-    // Cleaning the file prevents errors such as:
-    // TS7031: Binding element 'IDL' implicitly has an 'any' type.
-    const cleanJs = (content: string): string => {
-      const cleanFactory = content.replace(
-        /export const idlFactory = \({ IDL }\) => {/g,
-        `// @ts-expect-error
-export const idlFactory = ({ IDL }) => {`
-      );
-      return cleanFactory.replace(
-        /export const init = \({ IDL }\) => {/g,
-        `// @ts-expect-error
-export const init = ({ IDL }) => {`
-      );
-    };
+  // icp-bindgen generates the files in a `declarations` subfolder
+  // using a different suffix for JavaScript as the one we used to use.
+  // That's why we have to post-process the results.
+  const generatedFolder = join(DEVELOPER_PROJECT_SATELLITE_DECLARATIONS_PATH, 'declarations');
 
-    const cleanedContent = type === 'js' ? cleanJs(content) : content;
+  await rename(join(generatedFolder, `${SATELLITE_PROJECT_NAME}.did.d.ts`), satellitedIdl('ts'));
+  await rename(join(generatedFolder, `${SATELLITE_PROJECT_NAME}.did.js`), satellitedIdl('js'));
 
-    await writeFile(output, `${AUTO_GENERATED}\n\n${cleanedContent}`);
-  };
-
-  const promises = (['js', 'ts'] as Array<'js' | 'ts'>).map(generate);
-
-  await Promise.all(promises);
+  await rm(generatedFolder, {recursive: true, force: true});
 };
 
 const api = async () => {
