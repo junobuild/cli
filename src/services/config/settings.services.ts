@@ -27,7 +27,7 @@ export const getSettings = async ({
       compute_allocation: computeAllocation,
       log_visibility
     }
-  } = await canisterStatus(Principal.fromText(satelliteId));
+  } = await canisterStatus({canisterId: Principal.fromText(satelliteId)});
 
   return {
     freezingThreshold,
