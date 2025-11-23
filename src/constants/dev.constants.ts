@@ -4,11 +4,14 @@ export const SATELLITE_PROJECT_NAME = 'satellite';
 export const SPUTNIK_PROJECT_NAME = 'sputnik';
 
 export const DEVELOPER_PROJECT_SRC_PATH = join(process.cwd(), 'src');
-export const DEVELOPER_PROJECT_SATELLITE_PATH = join(DEVELOPER_PROJECT_SRC_PATH, 'satellite');
+export const DEVELOPER_PROJECT_SATELLITE_PATH = join(
+  DEVELOPER_PROJECT_SRC_PATH,
+  SATELLITE_PROJECT_NAME
+);
 export const DEVELOPER_PROJECT_SATELLITE_DECLARATIONS_PATH = join(
   DEVELOPER_PROJECT_SRC_PATH,
   'declarations',
-  'satellite'
+  SATELLITE_PROJECT_NAME
 );
 
 export const CARGO_TOML = 'Cargo.toml';
@@ -31,7 +34,7 @@ export const DEVELOPER_PROJECT_SATELLITE_INDEX_MJS = join(
 const TEMPLATE_PATH = '../templates/eject';
 
 export const RUST_TEMPLATE_PATH = join(TEMPLATE_PATH, 'rust');
-export const RUST_TEMPLATE_SATELLITE_PATH = join(RUST_TEMPLATE_PATH, 'src', 'satellite');
+export const RUST_TEMPLATE_SATELLITE_PATH = join(RUST_TEMPLATE_PATH, 'src', SATELLITE_PROJECT_NAME);
 
 export const TS_TEMPLATE_PATH = join(TEMPLATE_PATH, 'typescript');
 export const MJS_TEMPLATE_PATH = join(TEMPLATE_PATH, 'javascript');
