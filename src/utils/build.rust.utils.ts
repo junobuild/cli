@@ -71,9 +71,9 @@ export const checkBindgen = async (): Promise<{valid: boolean}> => {
 
   if (valid === 'error') {
     await confirmAndExit(
-      `It seems that ${magenta(
+      `${magenta(
         'icp-bindgen'
-      )} is not installed. This tool generates JavaScript or TypeScript bindings. Would you like to install it?`
+      )} is not available. This tool is required to generate API bindings. Would you like to install it now?`
     );
 
     await execute({
