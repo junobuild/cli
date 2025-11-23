@@ -31,6 +31,7 @@ export default [
       'no-console': 'off',
       'arrow-body-style': 'off',
       complexity: 'off',
+      radix: 'off',
       'max-lines': ['error', 1000],
       '@typescript-eslint/explicit-function-return-type': 'off',
       '@typescript-eslint/ban-ts-comment': 'off',
@@ -57,7 +58,9 @@ export default [
       ],
       'eslint-comments/require-description': 'off',
       '@typescript-eslint/no-invalid-void-type': 'off',
-      'no-negated-condition': 'off'
+      'no-negated-condition': 'off',
+      'no-useless-assignment': 'off',
+      'no-await-in-loop': 'off'
     }
   }
 ];

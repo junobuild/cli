@@ -237,7 +237,7 @@ const assertSizeAndDownloadChunks = async ({
   };
 };
 
-// eslint-disable-next-line promise/avoid-new
+// eslint-disable-next-line promise/avoid-new, no-promise-executor-return
 const sleep = async () => await new Promise((resolve) => setTimeout(resolve, 2500));
 
 const assertAndDownloadWasmChunks = async ({
