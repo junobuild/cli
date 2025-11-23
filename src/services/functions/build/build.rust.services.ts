@@ -234,7 +234,8 @@ const didc = async () => {
       DEVELOPER_PROJECT_SATELLITE_DECLARATIONS_PATH,
       '--actor-disabled',
       '--force'
-    ]
+    ],
+    silentOut: true
   });
 
   // icp-bindgen generates the files in a `declarations` subfolder
@@ -242,8 +243,8 @@ const didc = async () => {
   // That's why we have to post-process the results.
   const generatedFolder = join(DEVELOPER_PROJECT_SATELLITE_DECLARATIONS_PATH, 'declarations');
 
-  await rename(join(generatedFolder, `${SATELLITE_PROJECT_NAME}.did.d.ts`), satellitedIdl('ts'));
-  await rename(join(generatedFolder, `${SATELLITE_PROJECT_NAME}.did.js`), satellitedIdl('js'));
+  await rename(join(generatedFolder, `${EXTENSION_DID_FILE_NAME}.d.ts`), satellitedIdl('ts'));
+  await rename(join(generatedFolder, `${EXTENSION_DID_FILE_NAME}.js`), satellitedIdl('js'));
 
   await rm(generatedFolder, {recursive: true, force: true});
 };
