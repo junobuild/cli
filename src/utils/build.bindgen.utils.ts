@@ -51,7 +51,7 @@ export const checkIcpBindgen = async ({
   return {valid: true};
 };
 
-const checkLocalIcpBindgen = async ({
+export const checkLocalIcpBindgen = async ({
   pm
 }: {
   pm: PackageManager | undefined;
