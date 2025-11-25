@@ -6,11 +6,7 @@ import {checkToolInstalled} from './env.utils';
 import {detectPackageManager} from './pm.utils';
 import {confirmAndExit} from './prompt.utils';
 
-export const checkIcpBindgen = async ({
-  withGlobalFallback
-}: {
-  withGlobalFallback: boolean;
-}): Promise<{valid: boolean}> => {
+export const checkIcpBindgen = async (): Promise<{valid: boolean}> => {
   const pm = detectPackageManager();
 
   const {valid: localValid} = await checkLocalIcpBindgen({pm});
@@ -19,17 +15,10 @@ export const checkIcpBindgen = async ({
     return {valid: true};
   }
 
-  if (withGlobalFallback) {
-    const {valid: globalValid} = await checkGlobalIcpBindgen();
+  const {valid: globalValid} = await checkGlobalIcpBindgen();
 
-    if (globalValid === true) {
-      return {valid: true};
-    }
-
-    // Useful the day we require a specific version of the tool.
-    if (globalValid === false) {
-      return {valid: globalValid};
-    }
+  if (globalValid === true) {
+    return {valid: true};
   }
 
   // Useful the day we require a specific version of the tool.
