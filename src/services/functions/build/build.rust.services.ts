@@ -26,6 +26,7 @@ import {checkCandidExtractor, checkIcWasm, checkWasi2ic} from '../../../utils/bu
 import {readSatelliteDid} from '../../../utils/did.utils';
 import {checkRustVersion} from '../../../utils/env.utils';
 import {formatTime} from '../../../utils/format.utils';
+import {isHeadless} from '../../../utils/process.utils';
 import {readEmulatorConfigAndCreateDeployTargetDir} from '../../emulator/_fs.services';
 import {generateApi, generateDid} from './build.did.services';
 import {prepareJunoPkgForSatellite, prepareJunoPkgForSputnik} from './build.metadata.services';
@@ -53,7 +54,7 @@ export const buildRust = async ({
     return;
   }
 
-  const {valid: validBindgen} = await checkIcpBindgen();
+  const {valid: validBindgen} = await checkIcpBindgen({withGlobalFallback: isHeadless()});
 
   if (!validBindgen) {
     return;
