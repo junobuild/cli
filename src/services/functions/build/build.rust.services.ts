@@ -19,12 +19,8 @@ import {
   TARGET_PATH
 } from '../../../constants/dev.constants';
 import type {BuildArgs, BuildType} from '../../../types/build';
-import {
-  checkBindgen,
-  checkCandidExtractor,
-  checkIcWasm,
-  checkWasi2ic
-} from '../../../utils/build.rust.utils';
+import {checkIcpBindgen} from '../../../utils/build.bindgen.utils';
+import {checkCandidExtractor, checkIcWasm, checkWasi2ic} from '../../../utils/build.cargo.utils';
 import {readSatelliteDid} from '../../../utils/did.utils';
 import {checkRustVersion} from '../../../utils/env.utils';
 import {formatTime} from '../../../utils/format.utils';
@@ -56,7 +52,7 @@ export const buildRust = async ({
     return;
   }
 
-  const {valid: validBindgen} = await checkBindgen();
+  const {valid: validBindgen} = await checkIcpBindgen();
 
   if (!validBindgen) {
     return;
