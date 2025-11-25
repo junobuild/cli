@@ -40,7 +40,7 @@ export const checkIcpBindgen = async (): Promise<{valid: boolean}> => {
   return {valid: true};
 };
 
-const checkLocalIcpBindgen = async ({
+export const checkLocalIcpBindgen = async ({
   pm
 }: {
   pm: PackageManager | undefined;

@@ -10,6 +10,7 @@ import {
   SATELLITE_CUSTOM_DID_FILE
 } from '../../../constants/build.constants';
 import {DEVELOPER_PROJECT_SATELLITE_DECLARATIONS_PATH} from '../../../constants/dev.constants';
+import {checkLocalIcpBindgen} from '../../../utils/build.bindgen.utils';
 import {readPackageJson} from '../../../utils/pkg.utils';
 import {detectPackageManager} from '../../../utils/pm.utils';
 
@@ -30,26 +31,7 @@ export const generateDid = async () => {
     return;
   }
 
-  const pm = detectPackageManager();
-
-  const command = pm === 'npm' || isNullish(pm) ? 'npx' : pm;
-
-  // --actor-disabled: skip generating actor files, since we handle those ourselves
-  // --force: overwrite files. Required; otherwise, icp-bindgen would delete files at preprocess,
-  // which causes issues when multiple .did files are located in the same folder.
-  await spawn({
-    command,
-    args: [
-      'icp-bindgen',
-      '--did-file',
-      SATELLITE_CUSTOM_DID_FILE,
-      '--out-dir',
-      DEVELOPER_PROJECT_SATELLITE_DECLARATIONS_PATH,
-      '--actor-disabled',
-      '--force'
-    ],
-    silentOut: true
-  });
+  await executeIcpBindgen();
 
   // icp-bindgen generates the files in a `declarations` subfolder
   // using a different suffix for JavaScript as the one we used to use.
@@ -60,6 +42,35 @@ export const generateDid = async () => {
   await rename(join(generatedFolder, `${EXTENSION_DID_FILE_NAME}.js`), satellitedIdl('js'));
 
   await rm(generatedFolder, {recursive: true, force: true});
+};
+
+const executeIcpBindgen = async () => {
+  const pm = detectPackageManager();
+
+  // The assertion on checkIcpBindgen() which requires the installation of icp-bindgen
+  // is performed earlier to reaching this point. Therefore, we can optimistically
+  // assume that if no tool is available locally, it should be available globally.
+  const {valid: localValid} = await checkLocalIcpBindgen({pm});
+  const withGlobalCmd = localValid !== true;
+
+  const localCommand = pm === 'npm' || isNullish(pm) ? 'npx' : pm;
+
+  // --actor-disabled: skip generating actor files, since we handle those ourselves
+  // --force: overwrite files. Required; otherwise, icp-bindgen would delete files at preprocess,
+  // which causes issues when multiple .did files are located in the same folder.
+  await spawn({
+    command: withGlobalCmd ? 'icp-bindgen' : localCommand,
+    args: [
+      ...(withGlobalCmd ? [] : ['icp-bindgen']),
+      '--did-file',
+      SATELLITE_CUSTOM_DID_FILE,
+      '--out-dir',
+      DEVELOPER_PROJECT_SATELLITE_DECLARATIONS_PATH,
+      '--actor-disabled',
+      '--force'
+    ],
+    silentOut: true
+  });
 };
 
 export const generateApi = async () => {
