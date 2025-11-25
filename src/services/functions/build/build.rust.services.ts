@@ -26,6 +26,7 @@ import {checkRustVersion} from '../../../utils/env.utils';
 import {formatTime} from '../../../utils/format.utils';
 import {readPackageJson} from '../../../utils/pkg.utils';
 import {detectPackageManager} from '../../../utils/pm.utils';
+import {isHeadless} from '../../../utils/process.utils';
 import {readEmulatorConfigAndCreateDeployTargetDir} from '../../emulator/_fs.services';
 import {prepareJunoPkgForSatellite, prepareJunoPkgForSputnik} from './build.metadata.services';
 import {dispatchEmulatorTouchSatellite} from './touch.services';
@@ -52,7 +53,7 @@ export const buildRust = async ({
     return;
   }
 
-  const {valid: validBindgen} = await checkIcpBindgen();
+  const {valid: validBindgen} = await checkIcpBindgen({withGlobalFallback: isHeadless()});
 
   if (!validBindgen) {
     return;

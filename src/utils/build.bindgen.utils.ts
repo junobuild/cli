@@ -1,47 +1,61 @@
 import {isNullish} from '@dfinity/utils';
 import {execute} from '@junobuild/cli-tools';
 import {magenta} from 'kleur';
+import {PackageManager} from '../types/pm';
 import {checkToolInstalled} from './env.utils';
 import {detectPackageManager} from './pm.utils';
 import {confirmAndExit} from './prompt.utils';
 
 export const checkIcpBindgen = async ({
-  globalFallback
+  withGlobalFallback
 }: {
-  globalFallback: boolean;
+  withGlobalFallback: boolean;
 }): Promise<{valid: boolean}> => {
-  const {valid: localValid} = await checkLocalIcpBindgen();
+  const pm = detectPackageManager();
+
+  const {valid: localValid} = await checkLocalIcpBindgen({pm});
 
   if (localValid === true) {
     return {valid: true};
   }
 
-  if (globalFallback) {
+  if (withGlobalFallback) {
+    const {valid: globalValid} = await checkGlobalIcpBindgen();
+
+    if (globalValid === true) {
+      return {valid: true};
+    }
+
+    // Useful the day we require a specific version of the tool.
+    if (globalValid === false) {
+      return {valid: globalValid};
+    }
   }
 
-  if (valid === false) {
-    return {valid};
+  // Useful the day we require a specific version of the tool.
+  if (localValid === false) {
+    return {valid: localValid};
   }
 
-  if (valid === 'error') {
-    await confirmAndExit(
-      `${magenta(
-        '@icp-sdk/bindgen'
-      )} is not available. This tool is required to generate API bindings. Would you like to install it now?`
-    );
+  await confirmAndExit(
+    `${magenta(
+      '@icp-sdk/bindgen'
+    )} is not available. This tool is required to generate API bindings. Would you like to install it now?`
+  );
 
-    await execute({
-      command: pm ?? 'npm',
-      args: [pm === 'npm' ? 'i' : 'add', '@icp-sdk/bindgen', '-D']
-    });
-  }
+  await execute({
+    command: pm ?? 'npm',
+    args: [pm === 'npm' ? 'i' : 'add', '@icp-sdk/bindgen', '-D']
+  });
 
   return {valid: true};
 };
 
-const checkLocalIcpBindgen = async (): Promise<{valid: boolean | 'error'}> => {
-  const pm = detectPackageManager();
-
+const checkLocalIcpBindgen = async ({
+  pm
+}: {
+  pm: PackageManager | undefined;
+}): Promise<{valid: boolean | 'error'}> => {
   const command = pm === 'npm' || isNullish(pm) ? 'npx' : pm;
 
   return await checkToolInstalled({
