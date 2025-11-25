@@ -33,6 +33,7 @@ export const generateDid = async () => {
 
   await executeIcpBindgen();
 
+
   // icp-bindgen generates the files in a `declarations` subfolder
   // using a different suffix for JavaScript as the one we used to use.
   // That's why we have to post-process the results.
