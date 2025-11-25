@@ -1,7 +1,7 @@
 import {isNullish} from '@dfinity/utils';
 import {execute} from '@junobuild/cli-tools';
 import {magenta} from 'kleur';
-import {PackageManager} from '../types/pm';
+import {type PackageManager} from '../types/pm';
 import {checkToolInstalled} from './env.utils';
 import {detectPackageManager} from './pm.utils';
 import {confirmAndExit} from './prompt.utils';
