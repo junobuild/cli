@@ -30,6 +30,20 @@ export const generateDid = async () => {
     return;
   }
 
+  await executeIcpBindgen();
+
+  // icp-bindgen generates the files in a `declarations` subfolder
+  // using a different suffix for JavaScript as the one we used to use.
+  // That's why we have to post-process the results.
+  const generatedFolder = join(DEVELOPER_PROJECT_SATELLITE_DECLARATIONS_PATH, 'declarations');
+
+  await rename(join(generatedFolder, `${EXTENSION_DID_FILE_NAME}.d.ts`), satellitedIdl('ts'));
+  await rename(join(generatedFolder, `${EXTENSION_DID_FILE_NAME}.js`), satellitedIdl('js'));
+
+  await rm(generatedFolder, {recursive: true, force: true});
+};
+
+const executeIcpBindgen = async () => {
   const pm = detectPackageManager();
 
   const command = pm === 'npm' || isNullish(pm) ? 'npx' : pm;
@@ -50,16 +64,6 @@ export const generateDid = async () => {
     ],
     silentOut: true
   });
-
-  // icp-bindgen generates the files in a `declarations` subfolder
-  // using a different suffix for JavaScript as the one we used to use.
-  // That's why we have to post-process the results.
-  const generatedFolder = join(DEVELOPER_PROJECT_SATELLITE_DECLARATIONS_PATH, 'declarations');
-
-  await rename(join(generatedFolder, `${EXTENSION_DID_FILE_NAME}.d.ts`), satellitedIdl('ts'));
-  await rename(join(generatedFolder, `${EXTENSION_DID_FILE_NAME}.js`), satellitedIdl('js'));
-
-  await rm(generatedFolder, {recursive: true, force: true});
 };
 
 export const generateApi = async () => {
