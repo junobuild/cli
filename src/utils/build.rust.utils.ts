@@ -62,7 +62,7 @@ export const checkBindgen = async (): Promise<{valid: boolean}> => {
 
   const {valid} = await checkToolInstalled({
     command,
-    args: ['icp-bindgen', '--version']
+    args: ['icp-bindgen', '--version', ...(command === 'npx' ? ['--no'] : [])]
   });
 
   if (valid === false) {
