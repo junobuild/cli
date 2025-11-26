@@ -7,8 +7,8 @@ import {getCliMissionControl} from '../../configs/cli.config';
 import type {AssetKey} from '../../types/asset-key';
 import type {StartStopAction} from '../../types/start-stop';
 import {
-  assertConfigAndLoadSatelliteContext,
-  assertConfigAndReadOrbiterId
+  assertConfigAndLoadOrbiterContext,
+  assertConfigAndLoadSatelliteContext
 } from '../../utils/juno.config.utils';
 
 export const startStopMissionControl = async ({
@@ -32,11 +32,15 @@ export const startStopMissionControl = async ({
 };
 
 export const startStopOrbiter = async ({action}: {args?: string[]; action: StartStopAction}) => {
-  const {orbiterId} = await assertConfigAndReadOrbiterId();
+  const orbiter = await assertConfigAndLoadOrbiterContext();
 
-  if (isNullish(orbiterId)) {
+  if (isNullish(orbiter)) {
     return;
   }
+
+  const {
+    orbiter: {orbiterId}
+  } = orbiter;
 
   await startStop({
     action,

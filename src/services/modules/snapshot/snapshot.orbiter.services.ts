@@ -1,6 +1,6 @@
 import {isNullish} from '@dfinity/utils';
 import type {AssetKey} from '../../../types/asset-key';
-import {assertConfigAndReadOrbiterId} from '../../../utils/juno.config.utils';
+import {assertConfigAndLoadOrbiterContext} from '../../../utils/juno.config.utils';
 import {
   createSnapshot,
   deleteSnapshot,
@@ -53,11 +53,15 @@ const executeSnapshotFn = async ({
 }: {
   fn: (params: {canisterId: string; segment: AssetKey}) => Promise<void>;
 }) => {
-  const {orbiterId} = await assertConfigAndReadOrbiterId();
+  const orbiter = await assertConfigAndLoadOrbiterContext();
 
-  if (isNullish(orbiterId)) {
+  if (isNullish(orbiter)) {
     return;
   }
+
+  const {
+    orbiter: {orbiterId}
+  } = orbiter;
 
   await fn({
     canisterId: orbiterId,

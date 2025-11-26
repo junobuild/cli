@@ -5,7 +5,7 @@ import {red} from 'kleur';
 import {actorParameters} from '../api/actor.api';
 import {noJunoConfig, readJunoConfig} from '../configs/juno.config';
 import {ENV} from '../env';
-import type {SatelliteParametersWithId} from '../types/satellite';
+import type {OrbiterParametersWithId, SatelliteParametersWithId} from '../types/satellite';
 import {consoleNoConfigFound} from './msg.utils';
 
 interface SatelliteConfigEnv {
@@ -33,6 +33,35 @@ export const assertConfigAndLoadSatelliteContext = async (): Promise<{
   return {satellite, satelliteConfig};
 };
 
+export const assertConfigAndLoadOrbiterContext = async (): Promise<
+  | {
+      orbiter: OrbiterParametersWithId;
+      orbiterConfig: OrbiterConfig;
+    }
+  | undefined
+> => {
+  const {orbiter: orbiterConfig} = await assertAndReadJunoConfig();
+
+  if (isNullish(orbiterConfig)) {
+    return undefined;
+  }
+
+  const {orbiterId} = readOrbiterId({orbiter: orbiterConfig, env: ENV});
+
+  // Unlikely
+  if (isNullish(orbiterId)) {
+    return undefined;
+  }
+
+  return {
+    orbiter: {
+      orbiterId,
+      ...(await actorParameters())
+    },
+    orbiterConfig
+  };
+};
+
 // Useful for reading the configuration without initializing an actor.
 // For example, during the authentication flow when no identity is defined yet,
 // or in other cases where we want to avoid waiting for the actor initialization timeout.
@@ -40,14 +69,6 @@ export const assertConfigAndReadSatelliteId = async (): Promise<{satelliteId: Pr
   const {satellite: satelliteConfig} = await assertAndReadJunoConfig();
 
   return assertAndReadSatelliteId({satellite: satelliteConfig, env: ENV});
-};
-
-export const assertConfigAndReadOrbiterId = async (): Promise<{
-  orbiterId: PrincipalText | undefined;
-}> => {
-  const {orbiter: orbiterConfig} = await assertAndReadJunoConfig();
-
-  return readOrbiterId({orbiter: orbiterConfig, env: ENV});
 };
 
 const assertAndReadJunoConfig = async (): Promise<JunoConfig> => {
