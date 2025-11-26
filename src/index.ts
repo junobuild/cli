@@ -1,3 +1,5 @@
+import {nonNullish} from '@dfinity/utils';
+import {AgentError} from '@icp-sdk/core/agent';
 import {hasArgs} from '@junobuild/cli-tools';
 import {red} from 'kleur';
 import {login, logout} from './commands/auth';
@@ -203,7 +205,21 @@ export const run = async () => {
     await run();
   } catch (err: unknown) {
     console.log(`${red('An unexpected error happened 😫.')}\n`);
-    console.log(typeof err === 'string' ? err : err instanceof Error ? err.message : undefined);
+
+    const prettifyError = (): string | undefined =>
+      typeof err === 'string'
+        ? err
+        : err instanceof AgentError
+          ? err.code.toErrorMessage()
+          : err instanceof Error
+            ? err.message
+            : undefined;
+
+    const message = prettifyError();
+    if (nonNullish(message)) {
+      console.log(message);
+    }
+
     process.exit(1);
   }
 })();
