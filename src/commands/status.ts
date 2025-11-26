@@ -17,8 +17,8 @@ import type {AssetKey} from '../types/asset-key';
 import {toAssetKeys} from '../utils/asset-key.utils';
 import {orbiterKey, satelliteKey} from '../utils/cli.config.utils';
 import {
-  assertConfigAndLoadSatelliteContext,
-  assertConfigAndReadOrbiterId
+  assertConfigAndLoadOrbiterContext,
+  assertConfigAndLoadSatelliteContext
 } from '../utils/juno.config.utils';
 import {lastRelease} from '../utils/upgrade.utils';
 
@@ -96,9 +96,9 @@ const satelliteVersion = async () => {
 };
 
 const orbitersVersion = async () => {
-  const {orbiterId} = await assertConfigAndReadOrbiterId();
+  const orbiter = await assertConfigAndLoadOrbiterContext();
 
-  if (isNullish(orbiterId)) {
+  if (isNullish(orbiter)) {
     return;
   }
 
@@ -136,6 +136,10 @@ const orbitersVersion = async () => {
       displayHint
     });
   };
+
+  const {
+    orbiter: {orbiterId}
+  } = orbiter;
 
   await checkOrbiterVersion(orbiterId);
 };

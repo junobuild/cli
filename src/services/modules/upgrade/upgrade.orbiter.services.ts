@@ -8,7 +8,7 @@ import {actorParameters} from '../../../api/actor.api';
 import {ORBITER_WASM_NAME} from '../../../constants/constants';
 import type {UpgradeWasmModule} from '../../../types/upgrade';
 import {orbiterKey} from '../../../utils/cli.config.utils';
-import {assertConfigAndReadOrbiterId} from '../../../utils/juno.config.utils';
+import {assertConfigAndLoadOrbiterContext} from '../../../utils/juno.config.utils';
 import {NEW_CMD_LINE} from '../../../utils/prompt.utils';
 import {logUpgradeResult, readUpgradeOptions} from '../../../utils/upgrade.utils';
 import {
@@ -21,9 +21,9 @@ import {
 type Orbiter = Omit<OrbiterParameters, 'orbiterId'> & {orbiterId: PrincipalText};
 
 export const upgradeOrbiters = async (args?: string[]) => {
-  const {orbiterId} = await assertConfigAndReadOrbiterId();
+  const orbiter = await assertConfigAndLoadOrbiterContext();
 
-  if (isNullish(orbiterId)) {
+  if (isNullish(orbiter)) {
     return;
   }
 
@@ -50,6 +50,10 @@ export const upgradeOrbiters = async (args?: string[]) => {
 
     logResult(result);
   };
+
+  const {
+    orbiter: {orbiterId}
+  } = orbiter;
 
   await upgradeOrbiter(orbiterId);
 };
