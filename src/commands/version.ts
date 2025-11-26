@@ -26,17 +26,15 @@ const cliVersion = async () => {
     return;
   }
 
-  const commandLineHint = getCommandLineHint();
-
   checkVersion({
     currentVersion: cliCurrentVersion,
     latestVersion,
     displayHint: 'CLI',
-    commandLineHint
+    commandLineHint: installHint()
   });
 };
 
-const getCommandLineHint = () => {
+const installHint = (): string => {
   const pm = detectPackageManager();
 
   switch (pm) {
@@ -44,7 +42,6 @@ const getCommandLineHint = () => {
       return 'yarn global add @junobuild/cli';
     case 'pnpm':
       return 'pnpm add -g @junobuild/cli';
-    case 'npm':
     default:
       return 'npm i -g @junobuild/cli';
   }
