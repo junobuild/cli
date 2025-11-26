@@ -4,7 +4,7 @@ import {buildScript, nextArg} from '@junobuild/cli-tools';
 import {OnRunSchema, type RunFnOrObject, RunFnOrObjectSchema} from '@junobuild/config';
 import {red, yellow} from 'kleur';
 import {ENV} from '../env';
-import {assertConfigAndLoadSatelliteContext} from '../utils/satellite.utils';
+import {assertConfigAndLoadSatelliteContext} from '../utils/juno.config.utils';
 
 export const run = async (args?: string[]) => {
   const infile = nextArg({args, option: '-s'}) ?? nextArg({args, option: '--src'});

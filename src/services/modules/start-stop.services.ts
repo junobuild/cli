@@ -6,7 +6,7 @@ import {canisterStart, canisterStop} from '../../api/ic.api';
 import {getCliMissionControl, getCliOrbiters} from '../../configs/cli.config';
 import type {AssetKey} from '../../types/asset-key';
 import type {StartStopAction} from '../../types/start-stop';
-import {assertConfigAndLoadSatelliteContext} from '../../utils/satellite.utils';
+import {assertConfigAndLoadSatelliteContext} from '../../utils/juno.config.utils';
 
 export const startStopMissionControl = async ({
   action

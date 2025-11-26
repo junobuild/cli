@@ -2,7 +2,7 @@ import {deleteProposalAssets} from '@junobuild/cdn';
 import {hasArgs} from '@junobuild/cli-tools';
 import {green} from 'kleur';
 import ora from 'ora';
-import {assertConfigAndLoadSatelliteContext} from '../../utils/satellite.utils';
+import {assertConfigAndLoadSatelliteContext} from '../../utils/juno.config.utils';
 
 export const clearProposalStagedAssets = async ({
   args,

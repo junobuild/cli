@@ -1,9 +1,9 @@
 import {listCustomDomains} from '@junobuild/admin';
 import {yellow} from 'kleur';
 import {consoleUrl, defaultSatelliteDomain} from '../utils/domain.utils';
+import {assertConfigAndLoadSatelliteContext} from '../utils/juno.config.utils';
 import {terminalLink} from '../utils/links.utils';
 import {isHeadless} from '../utils/process.utils';
-import {assertConfigAndLoadSatelliteContext} from '../utils/satellite.utils';
 
 export const links = async () => {
   const {satellite} = await assertConfigAndLoadSatelliteContext();
