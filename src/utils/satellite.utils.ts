@@ -3,7 +3,6 @@ import type {PrincipalText} from '@dfinity/zod-schemas';
 import type {JunoConfig, SatelliteConfig} from '@junobuild/config';
 import {red} from 'kleur';
 import {actorParameters} from '../api/actor.api';
-import {getCliOrbiters, getCliSatellites} from '../configs/cli.config';
 import {noJunoConfig, readJunoConfig} from '../configs/juno.config';
 import {ENV} from '../env';
 import type {SatelliteConfigEnv} from '../types/config';
@@ -79,20 +78,4 @@ const satelliteParameters = async (
     satelliteId,
     ...(await actorParameters())
   };
-};
-
-/**
- * For display purpose, use either the name or id. Most probably we should find a name but for simplicity reason we fallback to Id.
- * @param satelliteId name or id
- */
-export const satelliteKey = async (satelliteId: string): Promise<string> => {
-  const satellites = await getCliSatellites();
-  const satellite = satellites.find(({p}) => p === satelliteId);
-  return satellite?.n ?? satelliteId;
-};
-
-export const orbiterKey = async (orbiterId: string): Promise<string> => {
-  const orbiters = await getCliOrbiters();
-  const orbiter = orbiters?.find(({p}) => p === orbiterId);
-  return orbiter?.n !== undefined && orbiter.n !== '' ? orbiter.n : orbiterId;
 };
