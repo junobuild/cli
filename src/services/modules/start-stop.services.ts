@@ -3,10 +3,13 @@ import {Principal} from '@icp-sdk/core/principal';
 import {cyan, red} from 'kleur';
 import ora from 'ora';
 import {canisterStart, canisterStop} from '../../api/ic.api';
-import {getCliMissionControl, getCliOrbiters} from '../../configs/cli.config';
+import {getCliMissionControl} from '../../configs/cli.config';
 import type {AssetKey} from '../../types/asset-key';
 import type {StartStopAction} from '../../types/start-stop';
-import {assertConfigAndLoadSatelliteContext} from '../../utils/juno.config.utils';
+import {
+  assertConfigAndLoadSatelliteContext,
+  assertConfigAndReadOrbiterId
+} from '../../utils/juno.config.utils';
 
 export const startStopMissionControl = async ({
   action
@@ -29,23 +32,16 @@ export const startStopMissionControl = async ({
 };
 
 export const startStopOrbiter = async ({action}: {args?: string[]; action: StartStopAction}) => {
-  const authOrbiters = await getCliOrbiters();
+  const {orbiterId} = await assertConfigAndReadOrbiterId();
 
-  if (authOrbiters === undefined || authOrbiters.length === 0) {
+  if (isNullish(orbiterId)) {
     return;
   }
-
-  if (authOrbiters.length > 0) {
-    console.log(red(`The CLI supports only one orbiter per project. Reach out to Juno.`));
-    process.exit(1);
-  }
-
-  const [orbiter] = authOrbiters;
 
   await startStop({
     action,
     segment: 'orbiter',
-    canisterId: orbiter.p
+    canisterId: orbiterId
   });
 };
 

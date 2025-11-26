@@ -1,13 +1,14 @@
+import {isNullish} from '@dfinity/utils';
 import type {PrincipalText} from '@dfinity/zod-schemas';
 import {orbiterVersion, upgradeOrbiter as upgradeOrbiterAdmin} from '@junobuild/admin';
 import {hasArgs, nextArg} from '@junobuild/cli-tools';
 import type {OrbiterParameters} from '@junobuild/ic-client/actor';
 import {cyan, red} from 'kleur';
 import {actorParameters} from '../../../api/actor.api';
-import {getCliOrbiters} from '../../../configs/cli.config';
 import {ORBITER_WASM_NAME} from '../../../constants/constants';
 import type {UpgradeWasmModule} from '../../../types/upgrade';
 import {orbiterKey} from '../../../utils/cli.config.utils';
+import {assertConfigAndReadOrbiterId} from '../../../utils/juno.config.utils';
 import {NEW_CMD_LINE} from '../../../utils/prompt.utils';
 import {logUpgradeResult, readUpgradeOptions} from '../../../utils/upgrade.utils';
 import {
@@ -20,9 +21,9 @@ import {
 type Orbiter = Omit<OrbiterParameters, 'orbiterId'> & {orbiterId: PrincipalText};
 
 export const upgradeOrbiters = async (args?: string[]) => {
-  const authOrbiters = await getCliOrbiters();
+  const {orbiterId} = await assertConfigAndReadOrbiterId();
 
-  if (authOrbiters === undefined || authOrbiters.length === 0) {
+  if (isNullish(orbiterId)) {
     return;
   }
 
@@ -50,9 +51,7 @@ export const upgradeOrbiters = async (args?: string[]) => {
     logResult(result);
   };
 
-  for (const orbiter of authOrbiters) {
-    await upgradeOrbiter(orbiter.p);
-  }
+  await upgradeOrbiter(orbiterId);
 };
 
 const upgradeOrbiterCustom = async ({
