@@ -5,7 +5,7 @@ import {initTestSuite} from './utils/init.utils';
 testWithII.describe.configure({mode: 'serial'});
 
 const snapshotTests = ({satelliteKind}: {satelliteKind: 'website' | 'application'}) => {
-  testWithII.describe(`Satellite ${satelliteKind}`, () => {
+  testWithII.describe(`satellite ${satelliteKind}`, () => {
     const getTestPages = initTestSuite({satelliteKind});
 
     const SNAPSHOT_TARGET = {target: 'satellite' as const};
