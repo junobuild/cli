@@ -19,7 +19,7 @@ import {
   type UploadParams
 } from '../../../types/deploy';
 import type {SatelliteParametersWithId} from '../../../types/satellite';
-import {assertConfigAndLoadSatelliteContext} from '../../../utils/satellite.utils';
+import {assertConfigAndLoadSatelliteContext} from '../../../utils/juno.config.utils';
 import {assertSatelliteMemorySize} from '../../assert.services';
 import {listAssets} from './deploy.list.services';
 

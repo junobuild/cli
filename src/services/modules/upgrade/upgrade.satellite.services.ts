@@ -16,8 +16,8 @@ import {
   type UpgradeWasmParams
 } from '../../../types/upgrade';
 import {satelliteKey} from '../../../utils/cli.config.utils';
+import {assertConfigAndLoadSatelliteContext} from '../../../utils/juno.config.utils';
 import {NEW_CMD_LINE} from '../../../utils/prompt.utils';
-import {assertConfigAndLoadSatelliteContext} from '../../../utils/satellite.utils';
 import {logUpgradeResult, readUpgradeOptions} from '../../../utils/upgrade.utils';
 import {assertSatelliteBuildType} from './upgrade-assert.services';
 import {

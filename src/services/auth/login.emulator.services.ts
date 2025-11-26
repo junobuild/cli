@@ -6,7 +6,7 @@ import {saveCliConfig} from '../../configs/cli.config';
 import {readEmulatorConfig} from '../../configs/emulator.config';
 import {ENV} from '../../env';
 import {generateToken} from '../../utils/auth.utils';
-import {assertConfigAndReadSatelliteId} from '../../utils/satellite.utils';
+import {assertConfigAndReadSatelliteId} from '../../utils/juno.config.utils';
 import {dispatchRequest} from '../emulator/admin.services';
 
 export const loginEmulatorOnly = async () => {
