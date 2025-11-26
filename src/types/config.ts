@@ -1,9 +1,4 @@
-import type {JunoConfig, JunoConfigEnv, OrbiterConfig, SatelliteConfig} from '@junobuild/config';
-
-export interface SatelliteConfigEnv {
-  satellite: SatelliteConfig;
-  env: JunoConfigEnv;
-}
+import type {JunoConfig, OrbiterConfig, SatelliteConfig} from '@junobuild/config';
 
 export type JunoConfigWithSatelliteId = Omit<JunoConfig, 'satellite' | 'orbiter'> & {
   satellite: Omit<SatelliteConfig, 'id' | 'satellitesIds'> & Required<Pick<SatelliteConfig, 'id'>>;

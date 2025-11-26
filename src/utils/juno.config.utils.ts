@@ -1,13 +1,17 @@
 import {assertNonNullish, isNullish} from '@dfinity/utils';
 import type {PrincipalText} from '@dfinity/zod-schemas';
-import type {JunoConfig, SatelliteConfig} from '@junobuild/config';
+import type {JunoConfig, JunoConfigEnv, SatelliteConfig} from '@junobuild/config';
 import {red} from 'kleur';
 import {actorParameters} from '../api/actor.api';
 import {noJunoConfig, readJunoConfig} from '../configs/juno.config';
 import {ENV} from '../env';
-import type {SatelliteConfigEnv} from '../types/config';
 import type {SatelliteParametersWithId} from '../types/satellite';
 import {consoleNoConfigFound} from './msg.utils';
+
+interface SatelliteConfigEnv {
+  satellite: SatelliteConfig;
+  env: JunoConfigEnv;
+}
 
 export const assertConfigAndLoadSatelliteContext = async (): Promise<{
   satellite: SatelliteParametersWithId;
