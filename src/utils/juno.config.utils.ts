@@ -1,6 +1,6 @@
 import {assertNonNullish, isNullish} from '@dfinity/utils';
 import type {PrincipalText} from '@dfinity/zod-schemas';
-import type {JunoConfig, JunoConfigEnv, SatelliteConfig} from '@junobuild/config';
+import type {JunoConfig, JunoConfigEnv, OrbiterConfig, SatelliteConfig} from '@junobuild/config';
 import {red} from 'kleur';
 import {actorParameters} from '../api/actor.api';
 import {noJunoConfig, readJunoConfig} from '../configs/juno.config';
@@ -10,6 +10,11 @@ import {consoleNoConfigFound} from './msg.utils';
 
 interface SatelliteConfigEnv {
   satellite: SatelliteConfig;
+  env: JunoConfigEnv;
+}
+
+interface OrbiterConfigEnv {
+  orbiter: OrbiterConfig | undefined;
   env: JunoConfigEnv;
 }
 
@@ -35,6 +40,14 @@ export const assertConfigAndReadSatelliteId = async (): Promise<{satelliteId: Pr
   const {satellite: satelliteConfig} = await assertAndReadJunoConfig();
 
   return assertAndReadSatelliteId({satellite: satelliteConfig, env: ENV});
+};
+
+export const assertConfigAndReadOrbiterId = async (): Promise<{
+  orbiterId: PrincipalText | undefined;
+}> => {
+  const {orbiter: orbiterConfig} = await assertAndReadJunoConfig();
+
+  return readOrbiterId({orbiter: orbiterConfig, env: ENV});
 };
 
 const assertAndReadJunoConfig = async (): Promise<JunoConfig> => {
@@ -71,6 +84,19 @@ const assertAndReadSatelliteId = ({
   }
 
   return {satelliteId};
+};
+
+const readOrbiterId = ({
+  orbiter,
+  env: {mode}
+}: OrbiterConfigEnv): {orbiterId: PrincipalText | undefined} => {
+  const {id, ids} = orbiter ?? {};
+
+  const orbiterId = ids?.[mode] ?? id;
+
+  // TODO: Principal.isPrincipal
+
+  return {orbiterId};
 };
 
 const satelliteParameters = async (
