@@ -5,31 +5,30 @@ import {initTestSuite} from './utils/init.utils';
 testWithII.describe.configure({mode: 'serial'});
 
 const snapshotTests = ({satelliteKind}: {satelliteKind: 'website' | 'application'}) => {
-  const getTestPages = initTestSuite({satelliteKind});
+  testWithII.describe(`Satellite ${satelliteKind}`, () => {
+    const getTestPages = initTestSuite({satelliteKind});
 
-  const SNAPSHOT_TARGET = {target: 'satellite' as const};
+    const SNAPSHOT_TARGET = {target: 'satellite' as const};
 
-  testWithII(`[${satelliteKind}] should create and restore a snapshot`, async () => {
-    const {consolePage, cliPage} = getTestPages();
+    testWithII('should create and restore a snapshot', async () => {
+      const {consolePage, cliPage} = getTestPages();
 
-    await cliPage.createSnapshot(SNAPSHOT_TARGET);
+      await cliPage.createSnapshot(SNAPSHOT_TARGET);
 
-    await cliPage.clearHosting();
+      await cliPage.clearHosting();
 
-    const satellitePage = await consolePage.visitSatelliteSite({
-      title: 'Internet Computer - Error: response verification error'
+      const satellitePage = await consolePage.visitSatelliteSite({
+        title: 'Internet Computer - Error: response verification error'
+      });
+      await satellitePage.assertScreenshot();
+
+      await cliPage.restoreSnapshot(SNAPSHOT_TARGET);
+
+      await satellitePage.reload();
+      await satellitePage.assertScreenshot();
     });
-    await satellitePage.assertScreenshot();
 
-    await cliPage.restoreSnapshot(SNAPSHOT_TARGET);
-
-    await satellitePage.reload();
-    await satellitePage.assertScreenshot();
-  });
-
-  testWithII(
-    `[${satelliteKind}]  should create, download, delete, upload and restore a snapshot`,
-    async () => {
+    testWithII('should create, download, delete, upload and restore a snapshot', async () => {
       testWithII.setTimeout(120_000);
 
       const {consolePage, cliPage} = getTestPages();
@@ -56,49 +55,49 @@ const snapshotTests = ({satelliteKind}: {satelliteKind: 'website' | 'application
 
       await satellitePage.reload();
       await satellitePage.assertScreenshot();
-    }
-  );
+    });
 
-  testWithII(
-    `[${satelliteKind}] should create, download, delete, upload and restore a snapshot to another satellite`,
-    async () => {
-      testWithII.setTimeout(120_000);
+    testWithII(
+      'should create, download, delete, upload and restore a snapshot to another satellite',
+      async () => {
+        testWithII.setTimeout(120_000);
 
-      const {consolePage, cliPage} = getTestPages();
+        const {consolePage, cliPage} = getTestPages();
 
-      await consolePage.getICP();
+        await consolePage.getICP();
 
-      await consolePage.goto();
+        await consolePage.goto();
 
-      await consolePage.createSatellite({kind: 'application'});
+        await consolePage.createSatellite({kind: 'application'});
 
-      const satelliteId = await consolePage.copySatelliteID();
+        const satelliteId = await consolePage.copySatelliteID();
 
-      await cliPage.toggleSatelliteId({satelliteId});
+        await cliPage.toggleSatelliteId({satelliteId});
 
-      const {accessKey} = await cliPage.whoami();
+        const {accessKey} = await cliPage.whoami();
 
-      await consolePage.addSatelliteAdminAccessKey({accessKey, satelliteId});
+        await consolePage.addSatelliteAdminAccessKey({accessKey, satelliteId});
 
-      await cliPage.deployHosting({clear: true});
+        await cliPage.deployHosting({clear: true});
 
-      await consolePage.goto({path: `/satellite/?s=${satelliteId}`});
+        await consolePage.goto({path: `/satellite/?s=${satelliteId}`});
 
-      const satellitePage = await consolePage.visitSatelliteSite({
-        title: 'Hello World'
-      });
-      await satellitePage.assertScreenshot();
+        const satellitePage = await consolePage.visitSatelliteSite({
+          title: 'Hello World'
+        });
+        await satellitePage.assertScreenshot();
 
-      const {snapshotFolder} = await cliPage.getSnapshotFsFolder();
+        const {snapshotFolder} = await cliPage.getSnapshotFsFolder();
 
-      await cliPage.uploadSnapshot({...SNAPSHOT_TARGET, folder: snapshotFolder});
+        await cliPage.uploadSnapshot({...SNAPSHOT_TARGET, folder: snapshotFolder});
 
-      await cliPage.restoreSnapshot(SNAPSHOT_TARGET);
+        await cliPage.restoreSnapshot(SNAPSHOT_TARGET);
 
-      await satellitePage.reload();
-      await satellitePage.assertScreenshot();
-    }
-  );
+        await satellitePage.reload();
+        await satellitePage.assertScreenshot();
+      }
+    );
+  });
 };
 
 snapshotTests({satelliteKind: 'application'});
