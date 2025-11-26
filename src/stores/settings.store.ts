@@ -4,7 +4,7 @@ import {yellow} from 'kleur';
 import {getSettingsConfig, saveEncryption} from '../configs/cli.settings.config';
 import {askForPassword} from '../services/cli.settings.services';
 import type {CliSettings} from '../types/cli.settings';
-import {configFileExists, loadConfig} from '../utils/config.utils';
+import {configFileExists, loadConfig} from '../utils/cli.config.utils';
 import {isHeadless} from '../utils/process.utils';
 import {confirm} from '../utils/prompt.utils';
 
