@@ -7,9 +7,11 @@ interface TestSuitePages {
   cliPage: CliPage;
 }
 
-export const initTestSuite = (): (() => TestSuitePages) => {
-  testWithII.describe.configure({mode: 'serial'});
-
+export const initTestSuite = ({
+  satelliteKind
+}: {
+  satelliteKind: 'website' | 'application';
+}): (() => TestSuitePages) => {
   let consolePage: ConsolePage;
   let cliPage: CliPage;
 
@@ -27,7 +29,7 @@ export const initTestSuite = (): (() => TestSuitePages) => {
       browser
     });
 
-    await consolePage.createSatellite({kind: 'website'});
+    await consolePage.createSatellite({kind: satelliteKind});
 
     const satelliteId = await consolePage.copySatelliteID();
 
