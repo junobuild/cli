@@ -4,7 +4,6 @@ import {
   type snapshot_id,
   type UploadCanisterSnapshotDataKind
 } from '@icp-sdk/canisters/ic-management';
-import {red} from 'kleur';
 import {lstatSync} from 'node:fs';
 import {type FileHandle, open as openFile, readFile} from 'node:fs/promises';
 import {join, relative} from 'node:path';
@@ -30,8 +29,8 @@ interface DataChunk {
   size: number;
 }
 
-class SnapshotAssertError extends Error {}
-class SnapshotFsReadError extends Error {}
+export class SnapshotAssertError extends Error {}
+export class SnapshotFsReadError extends Error {}
 
 export const uploadExistingSnapshot = async ({
   segment,
@@ -39,7 +38,12 @@ export const uploadExistingSnapshot = async ({
 }: UploadSnapshotParams & {
   segment: AssetKey;
   folder: string;
-}): Promise<void> => {
+}): Promise<
+  | {
+      success: true;
+    }
+  | {success: false; err: unknown}
+> => {
   const spinner = ora('Uploading the snapshot...').start();
 
   try {
@@ -55,15 +59,12 @@ export const uploadExistingSnapshot = async ({
     console.log(
       `✅ The snapshot ${snapshotIdText} for your ${displaySegment(segment)} has been uploaded.`
     );
-  } catch (error: unknown) {
+
+    return {success: true};
+  } catch (err: unknown) {
     spinner.stop();
 
-    if (error instanceof SnapshotFsReadError || error instanceof SnapshotAssertError) {
-      console.log(red(error.message));
-      return;
-    }
-
-    throw error;
+    return {success: false, err};
   }
 };
 
