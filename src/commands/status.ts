@@ -15,11 +15,8 @@ import {
 import {checkVersion, getSatelliteVersion} from '../services/version.services';
 import type {AssetKey} from '../types/asset-key';
 import {toAssetKeys} from '../utils/asset-key.utils';
-import {
-  assertConfigAndLoadSatelliteContext,
-  orbiterKey,
-  satelliteKey
-} from '../utils/satellite.utils';
+import {orbiterKey, satelliteKey} from '../utils/cli.config.utils';
+import {assertConfigAndLoadSatelliteContext} from '../utils/satellite.utils';
 import {lastRelease} from '../utils/upgrade.utils';
 
 export const status = async () => {

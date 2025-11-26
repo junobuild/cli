@@ -7,8 +7,8 @@ import {actorParameters} from '../../../api/actor.api';
 import {getCliOrbiters} from '../../../configs/cli.config';
 import {ORBITER_WASM_NAME} from '../../../constants/constants';
 import type {UpgradeWasmModule} from '../../../types/upgrade';
+import {orbiterKey} from '../../../utils/cli.config.utils';
 import {NEW_CMD_LINE} from '../../../utils/prompt.utils';
-import {orbiterKey} from '../../../utils/satellite.utils';
 import {logUpgradeResult, readUpgradeOptions} from '../../../utils/upgrade.utils';
 import {
   confirmReset,
