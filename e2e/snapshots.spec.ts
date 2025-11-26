@@ -102,3 +102,4 @@ const snapshotTests = ({satelliteKind}: {satelliteKind: 'website' | 'application
 
 snapshotTests({satelliteKind: 'application'});
 snapshotTests({satelliteKind: 'website'});
+
