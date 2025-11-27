@@ -145,6 +145,7 @@ const readOrbiterId = ({
   const orbiterId = ids?.[mode] ?? id;
 
   // TODO: Principal.isPrincipal
+  // If e.g. <DEVELOPMENT_ID> then undefined
 
   return {orbiterId};
 };
