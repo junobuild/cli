@@ -4,7 +4,7 @@ import {buildScript, nextArg} from '@junobuild/cli-tools';
 import {OnRunSchema, type RunFnOrObject, RunFnOrObjectSchema} from '@junobuild/config';
 import {red, yellow} from 'kleur';
 import {ENV} from '../env';
-import {assertConfigAndLoadSatelliteContext} from '../utils/juno.config.utils';
+import {assertConfigAndLoadContext} from '../utils/juno.config.utils';
 
 export const run = async (args?: string[]) => {
   const infile = nextArg({args, option: '-s'}) ?? nextArg({args, option: '--src'});
@@ -41,11 +41,15 @@ export const run = async (args?: string[]) => {
   }
 
   const {
-    satellite: {satelliteId, identity}
-  } = await assertConfigAndLoadSatelliteContext();
+    satellite: {
+      satellite: {satelliteId, identity}
+    },
+    orbiter
+  } = await assertConfigAndLoadContext();
 
   await job.run({
     satelliteId: Principal.fromText(satelliteId),
+    ...(nonNullish(orbiter) && {orbiterId: Principal.fromText(orbiter.orbiter.orbiterId)}),
     identity,
     ...(nonNullish(ENV.containerUrl) && {container: ENV.containerUrl})
   });

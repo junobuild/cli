@@ -1,4 +1,4 @@
-import {assertNonNullish, isNullish} from '@dfinity/utils';
+import {assertNonNullish, isNullish, nonNullish} from '@dfinity/utils';
 import type {PrincipalText} from '@dfinity/zod-schemas';
 import type {JunoConfig, JunoConfigEnv, OrbiterConfig, SatelliteConfig} from '@junobuild/config';
 import {red} from 'kleur';
@@ -18,28 +18,57 @@ interface OrbiterConfigEnv {
   env: JunoConfigEnv;
 }
 
-export const assertConfigAndLoadSatelliteContext = async (): Promise<{
+interface SatelliteContext {
   satellite: SatelliteParametersWithId;
   satelliteConfig: SatelliteConfig;
+}
+
+interface OrbiterContext {
+  orbiter: OrbiterParametersWithId;
+  orbiterConfig: OrbiterConfig;
+}
+
+export const assertConfigAndLoadContext = async (): Promise<{
+  satellite: SatelliteContext;
+  orbiter: OrbiterContext | undefined;
 }> => {
+  const {satellite: satelliteConfig, orbiter: orbiterConfig} = await assertAndReadJunoConfig();
+
+  const {satelliteId} = assertAndReadSatelliteId({satellite: satelliteConfig, env: ENV});
+
+  // TS guard. assertAndReadSatelliteId exist if satelliteId is undefined.
+  // Should not happen.
+  assertNonNullish(satelliteId);
+
+  const {orbiterId} = readOrbiterId({orbiter: orbiterConfig, env: ENV});
+
+  const parameters = await actorParameters();
+
+  return {
+    satellite: {satellite: {satelliteId, ...parameters}, satelliteConfig},
+    orbiter:
+      nonNullish(orbiterId) && nonNullish(orbiterConfig)
+        ? {
+            orbiter: {orbiterId, ...parameters},
+            orbiterConfig
+          }
+        : undefined
+  };
+};
+
+export const assertConfigAndLoadSatelliteContext = async (): Promise<SatelliteContext> => {
   const {satellite: satelliteConfig} = await assertAndReadJunoConfig();
 
   const satellite = await satelliteParameters({satellite: satelliteConfig, env: ENV});
 
-  // TS guard. satelliteParameters exit if satelliteId is undefined.
+  // TS guard. satelliteParameters exist if satelliteId is undefined.
   // Should not happen.
   assertNonNullish(satellite.satelliteId);
 
   return {satellite, satelliteConfig};
 };
 
-export const assertConfigAndLoadOrbiterContext = async (): Promise<
-  | {
-      orbiter: OrbiterParametersWithId;
-      orbiterConfig: OrbiterConfig;
-    }
-  | undefined
-> => {
+export const assertConfigAndLoadOrbiterContext = async (): Promise<OrbiterContext | undefined> => {
   const {orbiter: orbiterConfig} = await assertAndReadJunoConfig();
 
   if (isNullish(orbiterConfig)) {
