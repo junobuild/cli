@@ -1,7 +1,7 @@
 import {arrayBufferToUint8Array, isNullish, jsonReviver} from '@dfinity/utils';
 import {
   encodeSnapshotId,
-  type snapshot_id,
+  type IcManagementDid,
   type UploadCanisterSnapshotDataKind
 } from '@icp-sdk/canisters/ic-management';
 import {lstatSync} from 'node:fs';
@@ -178,7 +178,7 @@ const uploadMetadata = async ({
   },
   ...rest
 }: UploadSnapshotParams & {metadata: ReadCanisterSnapshotMetadataResponse} & SnapshotLog): Promise<{
-  snapshotId: snapshot_id;
+  snapshotId: IcManagementDid.snapshot_id;
 }> => {
   log('Uploading snapshot metadata...');
 

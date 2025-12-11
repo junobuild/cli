@@ -1,5 +1,5 @@
 import {isNullish} from '@dfinity/utils';
-import {ICManagementCanister, LogVisibility} from '@icp-sdk/canisters/ic-management';
+import {IcManagementCanister, LogVisibility} from '@icp-sdk/canisters/ic-management';
 import {Principal} from '@icp-sdk/core/principal';
 import type {ModuleSettings} from '@junobuild/config';
 import {initAgent} from '../../api/agent.api';
@@ -14,7 +14,7 @@ export const getSettings = async ({
 
   const agent = await initAgent();
 
-  const {canisterStatus} = ICManagementCanister.create({
+  const {canisterStatus} = IcManagementCanister.create({
     agent
   });
 
@@ -59,7 +59,7 @@ export const setSettings = async ({
 
   const agent = await initAgent();
 
-  const {updateSettings} = ICManagementCanister.create({
+  const {updateSettings} = IcManagementCanister.create({
     agent
   });
 
