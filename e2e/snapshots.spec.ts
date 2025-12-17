@@ -18,7 +18,7 @@ const snapshotTests = ({satelliteKind}: {satelliteKind: 'website' | 'application
       await cliPage.clearHosting();
 
       const satellitePage = await consolePage.visitSatelliteSite({
-        title: 'Internet Computer - Error: response verification error'
+        title: 'Response Verification Error - 503 | Internet Computer'
       });
       await satellitePage.assertScreenshot();
 
@@ -45,7 +45,7 @@ const snapshotTests = ({satelliteKind}: {satelliteKind: 'website' | 'application
       await cliPage.clearHosting();
 
       const satellitePage = await consolePage.visitSatelliteSite({
-        title: 'Internet Computer - Error: response verification error'
+        title: 'Response Verification Error - 503 | Internet Computer'
       });
       await satellitePage.assertScreenshot();
 
