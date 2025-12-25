@@ -29,7 +29,7 @@ import {formatTime} from '../../../utils/format.utils';
 import {readEmulatorConfigAndCreateDeployTargetDir} from '../../emulator/_fs.services';
 import {generateApi, generateDid} from './build.did.services';
 import {prepareJunoPkgForSatellite, prepareJunoPkgForSputnik} from './build.metadata.services';
-import {dispatchEmulatorTouchSatellite} from './touch.services';
+import {dispatchEmulatorUpgrade} from './_dispatch.services';
 
 export const buildRust = async ({
   paths,
@@ -159,7 +159,7 @@ export const buildRust = async ({
     spinner.stop();
   }
 
-  await dispatchEmulatorTouchSatellite();
+  await dispatchEmulatorUpgrade();
 };
 
 const did = async ({cargoOutputWasm}: {cargoOutputWasm: string}) => {
