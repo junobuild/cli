@@ -375,7 +375,7 @@ async function* batchDownloadChunks({
 }): AsyncGenerator<DownloadSnapshotBatchResult, void> {
   const total = chunks.length;
 
-  for (let i = 0; i < total; i = i + limit) {
+  for (let i = 0; i < total; i += limit) {
     const batch = chunks.slice(i, i + limit);
     const downloadedChunks = await Promise.all(
       batch.map(
