@@ -170,6 +170,7 @@ const did = async ({cargoOutputWasm}: {cargoOutputWasm: string}) => {
     stdout: (o) => (candid += o)
   });
 
+  // eslint-disable-next-line prefer-named-capture-group
   const empty = candid.replace(/(\r\n|\n|\r)/gm, '').trim() === '';
 
   const templateDid = await readSatelliteDid();

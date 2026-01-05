@@ -266,7 +266,7 @@ async function* batchUploadChunks({
 }): AsyncGenerator<SnapshotBatchResult, void> {
   const total = chunks.length;
 
-  for (let i = 0; i < total; i = i + limit) {
+  for (let i = 0; i < total; i += limit) {
     const batch = chunks.slice(i, i + limit);
     await Promise.all(
       batch.map(async (requestChunk) => {
