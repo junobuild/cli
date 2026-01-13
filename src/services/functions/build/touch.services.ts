@@ -12,14 +12,18 @@ export const dispatchEmulatorTouchSputnik = async () => {
 };
 
 /**
- * Workaround Podman and Apple container issues on macOS:
+ * Workaround:
+ *
+ * 1. Podman and Apple container issues on macOS:
  * - https://github.com/containers/podman/issues/22343
  * - https://github.com/apple/container/issues/141
+ *
+ * 2. According to our debugging with developers, a similar issue arises with Docker on Windows.
  */
 const dispatchTouch = async ({filename}: {filename: string}) => {
-  if (process.platform !== 'darwin') {
-    // Workaround only required on macOS. Not sure if it's required on old Intel process, maybe not but
-    // for simplicity reasons let's consider all Apple devices require the workaround.
+  if (!['darwin', 'win32'].includes(process.platform)) {
+    // Workaround required on macOS with Podman and Windows with Docker.
+    // Not sure if required on Intel-based Macs, but for simplicity we apply it to all macOS devices.
     return;
   }
 
@@ -35,8 +39,13 @@ const dispatchTouch = async ({filename}: {filename: string}) => {
     }
   } = parsedResult;
 
-  if (runner === 'docker') {
-    // No need of the workaround for Docker
+  // No need of the workaround for Docker on macOS
+  if (process.platform === 'darwin' && runner === 'docker') {
+    return;
+  }
+
+  // We did not test this use case therefore we assume it works (no reports so far)
+  if (process.platform === 'win32' && runner === 'podman') {
     return;
   }
 
