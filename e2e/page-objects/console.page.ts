@@ -112,16 +112,16 @@ export class ConsolePage extends IdentityPage {
     });
   }
 
-  async getICP(): Promise<void> {
+  async getCycles(): Promise<void> {
     await expect(this.page.getByTestId(testIds.navbar.openWallet)).toBeVisible();
 
     await this.page.getByTestId(testIds.navbar.openWallet).click();
 
-    await expect(this.page.getByTestId(testIds.navbar.getIcp)).toBeVisible();
+    await expect(this.page.getByTestId(testIds.navbar.getCycles)).toBeVisible();
 
-    await this.page.getByTestId(testIds.navbar.getIcp).click();
+    await this.page.getByTestId(testIds.navbar.getCycles).click();
 
-    await expect(this.page.getByText('55.0001')).toBeVisible({timeout: 65000});
+    await expect(this.page.getByText('330.010 T Cycles')).toBeVisible({timeout: 65000});
   }
 
   async copySatelliteID(): Promise<string> {
