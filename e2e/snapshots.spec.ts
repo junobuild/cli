@@ -64,11 +64,11 @@ const snapshotTests = ({satelliteKind}: {satelliteKind: 'website' | 'application
 
         const {consolePage, cliPage} = getTestPages();
 
-        await consolePage.getICP();
+        await consolePage.getCycles();
 
         await consolePage.goto();
 
-        await consolePage.createSatellite({kind: 'application'});
+        await consolePage.openCreateAdditionalSatelliteWizard({kind: 'application'});
 
         const satelliteId = await consolePage.copySatelliteID();
 
