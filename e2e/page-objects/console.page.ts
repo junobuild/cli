@@ -2,6 +2,7 @@ import {InternetIdentityPage} from '@dfinity/internet-identity-playwright';
 import {notEmptyString} from '@dfinity/utils';
 import {PrincipalText, PrincipalTextSchema} from '@dfinity/zod-schemas';
 import {expect} from '@playwright/test';
+import {TIMEOUT_AVERAGE, TIMEOUT_SHORT} from '../constants/e2e.constants';
 import {testIds} from '../constants/test-ids.constants';
 import {IdentityPage, type IdentityPageParams} from './identity.page';
 import {SatellitePage} from './satellite.page';
@@ -48,13 +49,31 @@ export class ConsolePage extends IdentityPage {
     await this.#consoleIIPage.waitReady({url: CONTAINER_URL, canisterId: INTERNET_IDENTITY_ID});
   }
 
-  async createSatellite({kind}: {kind: 'website' | 'application'}): Promise<void> {
-    await expect(this.page.getByTestId(testIds.createSatellite.launch)).toBeVisible({
-      timeout: 20000
-    });
+  async createSatellite(params: {kind: 'website' | 'application'}): Promise<void> {
+    await expect(this.page.getByTestId(testIds.launchpad.launch)).toBeVisible(TIMEOUT_AVERAGE);
 
-    await this.page.getByTestId(testIds.createSatellite.launch).click();
+    await this.page.getByTestId(testIds.launchpad.launch).click();
 
+    await this.createSatelliteWizard(params);
+  }
+
+  async openCreateAdditionalSatelliteWizard(params: {
+    kind: 'website' | 'application';
+  }): Promise<void> {
+    await expect(this.page.getByTestId(testIds.launchpad.actions)).toBeVisible(TIMEOUT_AVERAGE);
+
+    await this.page.getByTestId(testIds.launchpad.actions).click();
+
+    await expect(this.page.getByTestId(testIds.launchpad.launchExtraSatellite)).toBeVisible(
+      TIMEOUT_AVERAGE
+    );
+
+    await this.page.getByTestId(testIds.launchpad.launchExtraSatellite).click();
+
+    await this.createSatelliteWizard(params);
+  }
+
+  private async createSatelliteWizard({kind}: {kind: 'website' | 'application'}): Promise<void> {
     await expect(this.page.getByTestId(testIds.createSatellite.create)).toBeVisible({
       timeout: 15000
     });
@@ -64,9 +83,9 @@ export class ConsolePage extends IdentityPage {
 
     await this.page.getByTestId(testIds.createSatellite.create).click();
 
-    await expect(this.page.getByTestId(testIds.createSatellite.continue)).toBeVisible({
-      timeout: 20000
-    });
+    await expect(this.page.getByTestId(testIds.createSatellite.continue)).toBeVisible(
+      TIMEOUT_AVERAGE
+    );
 
     await this.page.getByTestId(testIds.createSatellite.continue).click();
   }
@@ -74,9 +93,9 @@ export class ConsolePage extends IdentityPage {
   async visitSatelliteSite(
     {title}: {title: string} = {title: 'Juno / Satellite'}
   ): Promise<SatellitePage> {
-    await expect(this.page.getByTestId(testIds.satelliteOverview.visit)).toBeVisible({
-      timeout: 20000
-    });
+    await expect(this.page.getByTestId(testIds.satelliteOverview.visit)).toBeVisible(
+      TIMEOUT_AVERAGE
+    );
 
     const satellitePagePromise = this.context.waitForEvent('page');
 
@@ -128,7 +147,7 @@ export class ConsolePage extends IdentityPage {
     await this.goto({path: `/satellite/?s=${satelliteId}&tab=setup`});
 
     const btnLocator = this.page.locator('button', {hasText: 'Add an access key'});
-    await expect(btnLocator).toBeVisible({timeout: 10000});
+    await expect(btnLocator).toBeVisible(TIMEOUT_SHORT);
     await btnLocator.click();
 
     const form = this.page.locator('form');
@@ -145,6 +164,6 @@ export class ConsolePage extends IdentityPage {
     await expect(submitLocator).toBeEnabled();
     await submitLocator.click();
 
-    await expect(this.page.getByText('Access Key Added')).toBeVisible({timeout: 10000});
+    await expect(this.page.getByText('Access Key Added')).toBeVisible(TIMEOUT_SHORT);
   }
 }

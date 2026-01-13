@@ -68,7 +68,7 @@ const snapshotTests = ({satelliteKind}: {satelliteKind: 'website' | 'application
 
         await consolePage.goto();
 
-        await consolePage.createSatellite({kind: 'application'});
+        await consolePage.openCreateAdditionalSatelliteWizard({kind: 'application'});
 
         const satelliteId = await consolePage.copySatelliteID();
 
