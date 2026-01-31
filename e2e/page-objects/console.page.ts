@@ -37,8 +37,10 @@ export class ConsolePage extends IdentityPage {
   }
 
   async signIn(): Promise<void> {
-    this.identity = await this.#consoleIIPage.signInWithNewIdentity({
-      selector: `[data-tid=${testIds.auth.signInII}]`
+    await this.#consoleIIPage.signIn({
+      passkey: {
+        selector: `[data-tid=${testIds.auth.signInII}]`
+      }
     });
   }
 
