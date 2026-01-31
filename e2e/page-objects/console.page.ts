@@ -123,7 +123,7 @@ export class ConsolePage extends IdentityPage {
 
     await this.page.getByTestId(testIds.navbar.getCycles).click();
 
-    await expect(this.page.getByText('330.010 T Cycles')).toBeVisible({timeout: 65000});
+    await expect(this.page.getByText('330.010 TCycles')).toBeVisible({timeout: 65000});
   }
 
   async copySatelliteID(): Promise<string> {
