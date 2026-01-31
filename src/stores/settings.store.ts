@@ -50,6 +50,7 @@ class SettingsConfigStore {
     return this.#config.get('encryption');
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-private-class-members
   private async migrateConfig() {
     try {
       const config = loadConfig(undefined);

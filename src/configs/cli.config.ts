@@ -21,6 +21,7 @@ const initConfig = async () => {
   const encryptionKey = settingsStore.isEncryptionEnabled() ? await askForPassword() : undefined;
 
   try {
+    // eslint-disable-next-line require-atomic-updates
     config = loadConfig(encryptionKey);
   } catch (_: unknown) {
     console.log(red('Your current configuration cannot be read.'));
