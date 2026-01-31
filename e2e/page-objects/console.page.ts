@@ -37,8 +37,10 @@ export class ConsolePage extends IdentityPage {
   }
 
   async signIn(): Promise<void> {
-    this.identity = await this.#consoleIIPage.signInWithNewIdentity({
-      selector: `[data-tid=${testIds.auth.signInII}]`
+    await this.#consoleIIPage.signIn({
+      passkey: {
+        selector: `[data-tid=${testIds.auth.signInII}]`
+      }
     });
   }
 
@@ -121,7 +123,7 @@ export class ConsolePage extends IdentityPage {
 
     await this.page.getByTestId(testIds.navbar.getCycles).click();
 
-    await expect(this.page.getByText('330.010 T Cycles')).toBeVisible({timeout: 65000});
+    await expect(this.page.getByText('330.010 TCycles')).toBeVisible({timeout: 65000});
   }
 
   async copySatelliteID(): Promise<string> {
