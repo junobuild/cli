@@ -26,9 +26,19 @@ export class ConsolePage extends IdentityPage {
   }
 
   private async signIn(): Promise<void> {
-    await expect(this.page.getByTestId(testIds.auth.signInDev)).toBeVisible(TIMEOUT_AVERAGE);
+    await expect(this.page.getByTestId(testIds.auth.switchDevAccount)).toBeVisible(TIMEOUT_AVERAGE);
 
-    await this.page.getByTestId(testIds.auth.signInDev).click();
+    await this.page.getByTestId(testIds.auth.switchDevAccount).click();
+
+    await expect(this.page.getByTestId(testIds.auth.inputDevIdentifier)).toBeVisible();
+
+    await this.page
+      .getByTestId(testIds.auth.inputDevIdentifier)
+      .fill(crypto.randomUUID().replaceAll('-', ''));
+
+    await expect(this.page.getByTestId(testIds.auth.continueDevAccount)).toBeVisible();
+
+    await this.page.getByTestId(testIds.auth.continueDevAccount).click();
   }
 
   async createSatellite(params: {kind: 'website' | 'application'}): Promise<void> {
