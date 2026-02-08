@@ -1,8 +1,8 @@
 import {assertNonNullish} from '@dfinity/utils';
 import {noJunoConfig} from '../../../configs/juno.config';
 import type {AssetKey} from '../../../types/asset-key';
+import {assertConfigAndLoadSatelliteContext} from '../../../utils/juno.config.utils';
 import {consoleNoConfigFound} from '../../../utils/msg.utils';
-import {assertConfigAndLoadSatelliteContext} from '../../../utils/satellite.utils';
 import {
   createSnapshot,
   deleteSnapshot,

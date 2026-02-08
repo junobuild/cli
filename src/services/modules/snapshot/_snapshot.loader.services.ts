@@ -1,5 +1,5 @@
 import {isNullish, nonNullish} from '@dfinity/utils';
-import type {snapshot_id} from '@icp-sdk/canisters/ic-management';
+import type {IcManagementDid} from '@icp-sdk/canisters/ic-management';
 import {encodeSnapshotId} from '@icp-sdk/canisters/ic-management';
 import {type Principal} from '@icp-sdk/core/principal';
 import {red} from 'kleur';
@@ -13,7 +13,7 @@ const loadSnapshot = async ({
   canisterId
 }: {
   canisterId: Principal;
-}): Promise<snapshot_id | undefined> => {
+}): Promise<IcManagementDid.snapshot_id | undefined> => {
   const spinner = ora('Loading the existing snapshot...').start();
 
   try {
@@ -33,7 +33,7 @@ export const loadSnapshotAndAssertExist = async ({
 }: {
   canisterId: Principal;
   segment: AssetKey;
-}): Promise<{result: 'ok'; snapshotId: snapshot_id} | {result: 'not_found'}> => {
+}): Promise<{result: 'ok'; snapshotId: IcManagementDid.snapshot_id} | {result: 'not_found'}> => {
   const existingSnapshotId = await loadSnapshot({canisterId});
 
   if (isNullish(existingSnapshotId)) {
@@ -50,7 +50,7 @@ export const loadSnapshotAndAssertOverwrite = async ({
 }: {
   canisterId: Principal;
   segment: AssetKey;
-}): Promise<{snapshotId: snapshot_id | undefined}> => {
+}): Promise<{snapshotId: IcManagementDid.snapshot_id | undefined}> => {
   const existingSnapshotId = await loadSnapshot({canisterId});
 
   if (nonNullish(existingSnapshotId)) {

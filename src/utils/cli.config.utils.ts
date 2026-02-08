@@ -3,6 +3,7 @@ import Conf from 'conf';
 import envPaths from 'env-paths';
 import {existsSync} from 'node:fs';
 import {resolve} from 'node:path';
+import {getCliOrbiters, getCliSatellites} from '../configs/cli.config';
 import {CONFIG_OPTIONS} from '../constants/config.constants';
 import type {CliConfig} from '../types/cli.config';
 
@@ -31,3 +32,19 @@ const configPath = (): string => {
 export const configFileExists = (): boolean => existsSync(configPath());
 
 export const noConfigFile = (): boolean => !configFileExists();
+
+/**
+ * For display purpose, use either the name or id. Most probably we should find a name but for simplicity reason we fallback to Id.
+ * @param satelliteId name or id
+ */
+export const satelliteKey = async (satelliteId: string): Promise<string> => {
+  const satellites = await getCliSatellites();
+  const satellite = satellites.find(({p}) => p === satelliteId);
+  return satellite?.n ?? satelliteId;
+};
+
+export const orbiterKey = async (orbiterId: string): Promise<string> => {
+  const orbiters = await getCliOrbiters();
+  const orbiter = orbiters?.find(({p}) => p === orbiterId);
+  return orbiter?.n !== undefined && orbiter.n !== '' ? orbiter.n : orbiterId;
+};

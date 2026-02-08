@@ -1,7 +1,7 @@
 import {execute} from '@junobuild/cli-tools';
 import {magenta, yellow} from 'kleur';
 import {IC_WASM_MIN_VERSION} from '../constants/dev.constants';
-import {checkCargoBinInstalled, checkIcWasmVersion} from './env.utils';
+import {checkIcWasmVersion, checkToolInstalled} from './env.utils';
 import {confirmAndExit} from './prompt.utils';
 
 export const checkIcWasm = async (): Promise<{valid: boolean}> => {
@@ -28,7 +28,7 @@ export const checkIcWasm = async (): Promise<{valid: boolean}> => {
 };
 
 export const checkCandidExtractor = async (): Promise<{valid: boolean}> => {
-  const {valid} = await checkCargoBinInstalled({
+  const {valid} = await checkToolInstalled({
     command: 'candid-extractor',
     args: ['--version']
   });
@@ -53,34 +53,8 @@ export const checkCandidExtractor = async (): Promise<{valid: boolean}> => {
   return {valid: true};
 };
 
-export const checkJunoDidc = async (): Promise<{valid: boolean}> => {
-  const {valid} = await checkCargoBinInstalled({
-    command: 'junobuild-didc',
-    args: ['--version']
-  });
-
-  if (valid === false) {
-    return {valid};
-  }
-
-  if (valid === 'error') {
-    await confirmAndExit(
-      `It seems that ${magenta(
-        'junobuild-didc'
-      )} is not installed. This is a useful tool for generating automatically JavaScript or TypeScript bindings. Would you like to install it?`
-    );
-
-    await execute({
-      command: 'cargo',
-      args: ['install', `junobuild-didc`]
-    });
-  }
-
-  return {valid: true};
-};
-
 export const checkWasi2ic = async (): Promise<{valid: boolean}> => {
-  const {valid} = await checkCargoBinInstalled({
+  const {valid} = await checkToolInstalled({
     command: 'wasi2ic',
     args: ['--version']
   });

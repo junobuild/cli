@@ -3,7 +3,7 @@ import {listProposals as listProposalsLib, type Proposal, type ProposalKey} from
 import {hasArgs} from '@junobuild/cli-tools';
 import {type SatelliteParametersWithId} from '../../types/satellite';
 import {formatDate} from '../../utils/format.utils';
-import {assertConfigAndLoadSatelliteContext} from '../../utils/satellite.utils';
+import {assertConfigAndLoadSatelliteContext} from '../../utils/juno.config.utils';
 
 export const listChanges = async (args?: string[]) => {
   const {satellite} = await assertConfigAndLoadSatelliteContext();

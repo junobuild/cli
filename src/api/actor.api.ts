@@ -5,7 +5,7 @@ import {green, red, yellow} from 'kleur';
 import {getToken} from '../configs/cli.config';
 import {readEmulatorConfig} from '../configs/emulator.config';
 import {ENV} from '../env';
-import {noConfigFile} from '../utils/config.utils';
+import {noConfigFile} from '../utils/cli.config.utils';
 import {getProcessToken, isHeadless} from '../utils/process.utils';
 import {initAgent} from './agent.api';
 

@@ -9,7 +9,7 @@ import {hasArgs} from '@junobuild/cli-tools';
 import ora from 'ora';
 import type {SatelliteParametersWithId} from '../../types/satellite';
 import {readChangesIdAndHash} from '../../utils/changes.utils';
-import {assertConfigAndLoadSatelliteContext} from '../../utils/satellite.utils';
+import {assertConfigAndLoadSatelliteContext} from '../../utils/juno.config.utils';
 
 export const rejectChanges = async (args?: string[]) => {
   const {satellite} = await assertConfigAndLoadSatelliteContext();

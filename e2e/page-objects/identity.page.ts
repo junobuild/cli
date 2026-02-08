@@ -8,8 +8,6 @@ export interface IdentityPageParams {
 }
 
 export abstract class IdentityPage extends TestPage {
-  protected identity: number | undefined;
-
   protected readonly page: Page;
   protected readonly context: BrowserContext;
   protected readonly browser: Browser;

@@ -6,7 +6,7 @@ import {
 } from '@junobuild/admin';
 import {red, yellow} from 'kleur';
 import {actorParameters} from '../api/actor.api';
-import {getCliMissionControl, getCliOrbiters} from '../configs/cli.config';
+import {getCliMissionControl} from '../configs/cli.config';
 import {
   MISSION_CONTROL_WASM_NAME,
   ORBITER_WASM_NAME,
@@ -15,11 +15,11 @@ import {
 import {checkVersion, getSatelliteVersion} from '../services/version.services';
 import type {AssetKey} from '../types/asset-key';
 import {toAssetKeys} from '../utils/asset-key.utils';
+import {orbiterKey, satelliteKey} from '../utils/cli.config.utils';
 import {
-  assertConfigAndLoadSatelliteContext,
-  orbiterKey,
-  satelliteKey
-} from '../utils/satellite.utils';
+  assertConfigAndLoadOrbiterContext,
+  assertConfigAndLoadSatelliteContext
+} from '../utils/juno.config.utils';
 import {lastRelease} from '../utils/upgrade.utils';
 
 export const status = async () => {
@@ -96,9 +96,9 @@ const satelliteVersion = async () => {
 };
 
 const orbitersVersion = async () => {
-  const orbiters = await getCliOrbiters();
+  const orbiter = await assertConfigAndLoadOrbiterContext();
 
-  if (isNullish(orbiters) || orbiters.length === 0) {
+  if (isNullish(orbiter)) {
     return;
   }
 
@@ -137,11 +137,11 @@ const orbitersVersion = async () => {
     });
   };
 
-  await Promise.allSettled(
-    orbiters.map(async ({p: orbiterId}) => {
-      await checkOrbiterVersion(orbiterId);
-    })
-  );
+  const {
+    orbiter: {orbiterId}
+  } = orbiter;
+
+  await checkOrbiterVersion(orbiterId);
 };
 
 const checkSegmentVersion = async ({

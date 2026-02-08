@@ -5,7 +5,7 @@ import {red, yellow} from 'kleur';
 import {askForPassword} from '../services/cli.settings.services';
 import {getSettingsStore} from '../stores/settings.store';
 import type {CliConfig, CliOrbiterConfig, CliSatelliteConfig} from '../types/cli.config';
-import {loadConfig} from '../utils/config.utils';
+import {loadConfig} from '../utils/cli.config.utils';
 
 // Save in https://github.com/sindresorhus/env-paths#pathsconfig
 
@@ -21,6 +21,7 @@ const initConfig = async () => {
   const encryptionKey = settingsStore.isEncryptionEnabled() ? await askForPassword() : undefined;
 
   try {
+    // eslint-disable-next-line require-atomic-updates
     config = loadConfig(encryptionKey);
   } catch (_: unknown) {
     console.log(red('Your current configuration cannot be read.'));

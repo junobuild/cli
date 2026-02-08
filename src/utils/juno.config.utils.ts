@@ -1,28 +1,94 @@
-import {assertNonNullish, isNullish} from '@dfinity/utils';
+import {assertNonNullish, isNullish, nonNullish} from '@dfinity/utils';
 import type {PrincipalText} from '@dfinity/zod-schemas';
-import type {JunoConfig, SatelliteConfig} from '@junobuild/config';
+import type {JunoConfig, JunoConfigEnv, OrbiterConfig, SatelliteConfig} from '@junobuild/config';
 import {red} from 'kleur';
 import {actorParameters} from '../api/actor.api';
-import {getCliOrbiters, getCliSatellites} from '../configs/cli.config';
 import {noJunoConfig, readJunoConfig} from '../configs/juno.config';
 import {ENV} from '../env';
-import type {SatelliteConfigEnv} from '../types/config';
-import type {SatelliteParametersWithId} from '../types/satellite';
+import type {OrbiterParametersWithId, SatelliteParametersWithId} from '../types/satellite';
 import {consoleNoConfigFound} from './msg.utils';
 
-export const assertConfigAndLoadSatelliteContext = async (): Promise<{
+interface SatelliteConfigEnv {
+  satellite: SatelliteConfig;
+  env: JunoConfigEnv;
+}
+
+interface OrbiterConfigEnv {
+  orbiter: OrbiterConfig | undefined;
+  env: JunoConfigEnv;
+}
+
+interface SatelliteContext {
   satellite: SatelliteParametersWithId;
   satelliteConfig: SatelliteConfig;
+}
+
+interface OrbiterContext {
+  orbiter: OrbiterParametersWithId;
+  orbiterConfig: OrbiterConfig;
+}
+
+export const assertConfigAndLoadContext = async (): Promise<{
+  satellite: SatelliteContext;
+  orbiter: OrbiterContext | undefined;
 }> => {
+  const {satellite: satelliteConfig, orbiter: orbiterConfig} = await assertAndReadJunoConfig();
+
+  const {satelliteId} = assertAndReadSatelliteId({satellite: satelliteConfig, env: ENV});
+
+  // TS guard. assertAndReadSatelliteId exist if satelliteId is undefined.
+  // Should not happen.
+  assertNonNullish(satelliteId);
+
+  const {orbiterId} = readOrbiterId({orbiter: orbiterConfig, env: ENV});
+
+  const parameters = await actorParameters();
+
+  return {
+    satellite: {satellite: {satelliteId, ...parameters}, satelliteConfig},
+    orbiter:
+      nonNullish(orbiterId) && nonNullish(orbiterConfig)
+        ? {
+            orbiter: {orbiterId, ...parameters},
+            orbiterConfig
+          }
+        : undefined
+  };
+};
+
+export const assertConfigAndLoadSatelliteContext = async (): Promise<SatelliteContext> => {
   const {satellite: satelliteConfig} = await assertAndReadJunoConfig();
 
   const satellite = await satelliteParameters({satellite: satelliteConfig, env: ENV});
 
-  // TS guard. satelliteParameters exit if satelliteId is undefined.
+  // TS guard. satelliteParameters exist if satelliteId is undefined.
   // Should not happen.
   assertNonNullish(satellite.satelliteId);
 
   return {satellite, satelliteConfig};
+};
+
+export const assertConfigAndLoadOrbiterContext = async (): Promise<OrbiterContext | undefined> => {
+  const {orbiter: orbiterConfig} = await assertAndReadJunoConfig();
+
+  if (isNullish(orbiterConfig)) {
+    return undefined;
+  }
+
+  const {orbiterId} = readOrbiterId({orbiter: orbiterConfig, env: ENV});
+
+  // Unlikely
+  if (isNullish(orbiterId)) {
+    return undefined;
+  }
+
+  return {
+    orbiter: {
+      orbiterId,
+      ...(await actorParameters())
+    },
+    orbiterConfig
+  };
 };
 
 // Useful for reading the configuration without initializing an actor.
@@ -70,6 +136,20 @@ const assertAndReadSatelliteId = ({
   return {satelliteId};
 };
 
+const readOrbiterId = ({
+  orbiter,
+  env: {mode}
+}: OrbiterConfigEnv): {orbiterId: PrincipalText | undefined} => {
+  const {id, ids} = orbiter ?? {};
+
+  const orbiterId = ids?.[mode] ?? id;
+
+  // TODO: Principal.isPrincipal
+  // If e.g. <DEVELOPMENT_ID> then undefined
+
+  return {orbiterId};
+};
+
 const satelliteParameters = async (
   params: SatelliteConfigEnv
 ): Promise<SatelliteParametersWithId> => {
@@ -79,20 +159,4 @@ const satelliteParameters = async (
     satelliteId,
     ...(await actorParameters())
   };
-};
-
-/**
- * For display purpose, use either the name or id. Most probably we should find a name but for simplicity reason we fallback to Id.
- * @param satelliteId name or id
- */
-export const satelliteKey = async (satelliteId: string): Promise<string> => {
-  const satellites = await getCliSatellites();
-  const satellite = satellites.find(({p}) => p === satelliteId);
-  return satellite?.n ?? satelliteId;
-};
-
-export const orbiterKey = async (orbiterId: string): Promise<string> => {
-  const orbiters = await getCliOrbiters();
-  const orbiter = orbiters?.find(({p}) => p === orbiterId);
-  return orbiter?.n !== undefined && orbiter.n !== '' ? orbiter.n : orbiterId;
 };

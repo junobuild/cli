@@ -41,10 +41,10 @@ import {
   type SettingsHash
 } from '../../types/cli.state';
 import type {SatelliteParametersWithId} from '../../types/satellite';
+import {assertConfigAndLoadSatelliteContext} from '../../utils/juno.config.utils';
 import {objHash} from '../../utils/obj.utils';
 import {isHeadless} from '../../utils/process.utils';
 import {confirmAndExit} from '../../utils/prompt.utils';
-import {assertConfigAndLoadSatelliteContext} from '../../utils/satellite.utils';
 import {getSettings, setSettings} from './settings.services';
 
 type SetConfigResults = [

@@ -2,10 +2,14 @@ import type {TestIds} from '../types/test-id';
 
 export const testIds = {
   auth: {
-    signIn: 'btn-sign-in'
+    signInII: 'btn-sign-in-ii'
+  },
+  launchpad: {
+    launch: 'btn-launch-first-satellite',
+    launchExtraSatellite: 'btn-launch-extra-satellite',
+    actions: 'btn-open-actions'
   },
   createSatellite: {
-    launch: 'btn-launch-satellite',
     create: 'btn-create-satellite',
     input: 'input-satellite-name',
     website: 'input-radio-satellite-website',
@@ -18,6 +22,16 @@ export const testIds = {
   },
   navbar: {
     openWallet: 'btn-open-wallet',
-    getIcp: 'btn-get-icp'
+    getIcp: 'btn-get-icp',
+    getCycles: 'btn-get-cycles'
+  },
+  createAnalytics: {
+    navLink: 'link-analytics-dashboard',
+    launch: 'btn-launch-analytics',
+    create: 'btn-create-analytics',
+    close: 'btn-close-analytics-wizard'
+  },
+  wizard: {
+    closeInsufficientFunds: 'btn-close-insufficient-funds'
   }
 } as const satisfies TestIds;

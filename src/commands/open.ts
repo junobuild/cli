@@ -2,8 +2,8 @@ import {listCustomDomains, type CustomDomain} from '@junobuild/admin';
 import {assertAnswerCtrlC, hasArgs, nextArg} from '@junobuild/cli-tools';
 import prompts from 'prompts';
 import {consoleUrl, defaultSatelliteDomain} from '../utils/domain.utils';
+import {assertConfigAndLoadSatelliteContext} from '../utils/juno.config.utils';
 import {openUrl} from '../utils/open.utils';
-import {assertConfigAndLoadSatelliteContext} from '../utils/satellite.utils';
 
 export const open = async (args?: string[]) => {
   const {satellite} = await assertConfigAndLoadSatelliteContext();

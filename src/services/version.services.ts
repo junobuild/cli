@@ -9,7 +9,7 @@ import {cyan, green, red, yellow} from 'kleur';
 import ora from 'ora';
 import {compare} from 'semver';
 import type {SatelliteParametersWithId} from '../types/satellite';
-import {assertConfigAndLoadSatelliteContext} from '../utils/satellite.utils';
+import {assertConfigAndLoadSatelliteContext} from '../utils/juno.config.utils';
 
 export const getSatelliteVersion = async (): Promise<
   {result: 'success'; version: string} | {result: 'error'}

@@ -1,4 +1,4 @@
-import type {snapshot_id} from '@icp-sdk/canisters/ic-management';
+import type {IcManagementDid} from '@icp-sdk/canisters/ic-management';
 import type {Principal} from '@icp-sdk/core/principal';
 import type * as z from 'zod';
 import {
@@ -17,7 +17,7 @@ export type ReadCanisterSnapshotMetadataResponse = z.infer<
 
 export interface DownloadSnapshotParams {
   canisterId: Principal;
-  snapshotId: snapshot_id;
+  snapshotId: IcManagementDid.snapshot_id;
 }
 
 export type UploadSnapshotParams = Omit<DownloadSnapshotParams, 'snapshotId'> &

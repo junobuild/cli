@@ -237,7 +237,7 @@ const assertSizeAndDownloadChunks = async ({
   };
 };
 
-// eslint-disable-next-line promise/avoid-new
+// eslint-disable-next-line promise/avoid-new, no-promise-executor-return
 const sleep = async () => await new Promise((resolve) => setTimeout(resolve, 2500));
 
 const assertAndDownloadWasmChunks = async ({
@@ -375,7 +375,7 @@ async function* batchDownloadChunks({
 }): AsyncGenerator<DownloadSnapshotBatchResult, void> {
   const total = chunks.length;
 
-  for (let i = 0; i < total; i = i + limit) {
+  for (let i = 0; i < total; i += limit) {
     const batch = chunks.slice(i, i + limit);
     const downloadedChunks = await Promise.all(
       batch.map(

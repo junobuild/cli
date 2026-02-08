@@ -18,7 +18,7 @@ export const ReadCanisterSnapshotMetadataResponseSchema = z.strictObject({
     z.object({metadataUpload: z.unknown()}),
     z.object({takenFromCanister: z.unknown()})
   ]),
-  certifiedData: z.union([Uint8ArrayLike, z.array(z.number())]),
+  certifiedData: Uint8ArrayLike,
   globalTimer: z.union([z.object({active: z.bigint()}), z.object({inactive: z.null()})]).optional(),
   onLowWasmMemoryHookStatus: z
     .union([
@@ -31,7 +31,7 @@ export const ReadCanisterSnapshotMetadataResponseSchema = z.strictObject({
   stableMemorySize: z.bigint(),
   wasmChunkStore: z.array(
     z.object({
-      hash: z.union([Uint8ArrayLike, z.array(z.number())])
+      hash: Uint8ArrayLike
     })
   ),
   takenAtTimestamp: z.bigint(),

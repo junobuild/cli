@@ -1,4 +1,5 @@
 import {expect} from '@playwright/test';
+import {TIMEOUT_AVERAGE} from '../constants/e2e.constants';
 import {IdentityPage} from './identity.page';
 
 export class SatellitePage extends IdentityPage {
@@ -10,7 +11,7 @@ export class SatellitePage extends IdentityPage {
           return await this.page.title();
         },
         {
-          timeout: 30000,
+          ...TIMEOUT_AVERAGE,
           intervals: [1_000, 2_000, 10_000]
         }
       )

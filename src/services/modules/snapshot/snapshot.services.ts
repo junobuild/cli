@@ -1,8 +1,9 @@
 import {notEmptyString} from '@dfinity/utils';
-import type {snapshot_id} from '@icp-sdk/canisters/ic-management';
+import type {IcManagementDid} from '@icp-sdk/canisters/ic-management';
 import {encodeSnapshotId} from '@icp-sdk/canisters/ic-management';
 import {Principal} from '@icp-sdk/core/principal';
 import {nextArg} from '@junobuild/cli-tools';
+import {red} from 'kleur';
 import ora from 'ora';
 import {
   deleteCanisterSnapshot,
@@ -19,7 +20,11 @@ import {
   loadSnapshotAndAssertOverwrite
 } from './_snapshot.loader.services';
 import {downloadExistingSnapshot} from './snapshot.download.services';
-import {uploadExistingSnapshot} from './snapshot.upload.services';
+import {
+  SnapshotAssertError,
+  SnapshotFsReadError,
+  uploadExistingSnapshot
+} from './snapshot.upload.services';
 
 export const createSnapshot = async ({
   canisterId: cId,
@@ -164,12 +169,25 @@ export const uploadSnapshot = async ({
 
   const {snapshotId} = await loadSnapshotAndAssertOverwrite({canisterId, segment});
 
-  await uploadExistingSnapshot({
+  const result = await uploadExistingSnapshot({
     canisterId,
     snapshotId,
     segment,
     folder
   });
+
+  if (result.success) {
+    return;
+  }
+
+  const {err} = result;
+
+  if (err instanceof SnapshotFsReadError || err instanceof SnapshotAssertError) {
+    console.log(red(err.message));
+    process.exit(1);
+  }
+
+  throw err;
 };
 
 const restoreExistingSnapshot = async ({
@@ -177,7 +195,7 @@ const restoreExistingSnapshot = async ({
   ...rest
 }: {
   canisterId: Principal;
-  snapshotId: snapshot_id;
+  snapshotId: IcManagementDid.snapshot_id;
   segment: AssetKey;
 }): Promise<void> => {
   const spinner = ora('Restoring the snapshot...').start();
@@ -196,7 +214,7 @@ const deleteExistingSnapshot = async ({
   ...rest
 }: {
   canisterId: Principal;
-  snapshotId: snapshot_id;
+  snapshotId: IcManagementDid.snapshot_id;
   segment: AssetKey;
 }): Promise<void> => {
   const spinner = ora('Deleting the snapshot...').start();
@@ -215,7 +233,7 @@ const takeSnapshot = async ({
   ...rest
 }: {
   canisterId: Principal;
-  snapshotId: snapshot_id | undefined;
+  snapshotId: IcManagementDid.snapshot_id | undefined;
   segment: AssetKey;
 }): Promise<void> => {
   const spinner = ora('Creating a new snapshot...').start();

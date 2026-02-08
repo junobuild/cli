@@ -1,5 +1,6 @@
-import {getCliOrbiters} from '../../../configs/cli.config';
+import {isNullish} from '@dfinity/utils';
 import type {AssetKey} from '../../../types/asset-key';
+import {assertConfigAndLoadOrbiterContext} from '../../../utils/juno.config.utils';
 import {
   createSnapshot,
   deleteSnapshot,
@@ -52,16 +53,18 @@ const executeSnapshotFn = async ({
 }: {
   fn: (params: {canisterId: string; segment: AssetKey}) => Promise<void>;
 }) => {
-  const authOrbiters = await getCliOrbiters();
+  const orbiter = await assertConfigAndLoadOrbiterContext();
 
-  if (authOrbiters === undefined || authOrbiters.length === 0) {
+  if (isNullish(orbiter)) {
     return;
   }
 
-  for (const orbiter of authOrbiters) {
-    await fn({
-      canisterId: orbiter.p,
-      segment: 'orbiter'
-    });
-  }
+  const {
+    orbiter: {orbiterId}
+  } = orbiter;
+
+  await fn({
+    canisterId: orbiterId,
+    segment: 'orbiter'
+  });
 };

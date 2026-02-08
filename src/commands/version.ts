@@ -4,7 +4,7 @@ import {clean} from 'semver';
 import {version as cliCurrentVersion} from '../../package.json';
 import {githubCliLastRelease} from '../rest/github.rest';
 import {checkVersion} from '../services/version.services';
-
+import {detectPackageManager} from '../utils/pm.utils';
 export const version = async () => {
   await cliVersion();
 };
@@ -30,6 +30,19 @@ const cliVersion = async () => {
     currentVersion: cliCurrentVersion,
     latestVersion,
     displayHint: 'CLI',
-    commandLineHint: `npm i -g @junobuild/cli`
+    commandLineHint: installHint()
   });
+};
+
+const installHint = (): string => {
+  const pm = detectPackageManager();
+
+  switch (pm) {
+    case 'yarn':
+      return 'yarn global add @junobuild/cli';
+    case 'pnpm':
+      return 'pnpm add -g @junobuild/cli';
+    default:
+      return 'npm i -g @junobuild/cli';
+  }
 };

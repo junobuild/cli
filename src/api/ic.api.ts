@@ -1,12 +1,9 @@
 import {
-  ICManagementCanister,
-  type list_canister_snapshots_result,
-  type read_canister_snapshot_data_response,
+  IcManagementCanister,
+  type IcManagementDid,
   type ReadCanisterSnapshotMetadataParams,
   type ReadCanisterSnapshotMetadataResponse,
-  type snapshot_id,
   type SnapshotParams,
-  type upload_canister_snapshot_metadata_response,
   type UploadCanisterSnapshotDataParams,
   type UploadCanisterSnapshotMetadataParams
 } from '@icp-sdk/canisters/ic-management';
@@ -16,7 +13,7 @@ import {initAgent} from './agent.api';
 export const canisterStop = async ({canisterId}: {canisterId: Principal}): Promise<void> => {
   const agent = await initAgent();
 
-  const {stopCanister} = ICManagementCanister.create({
+  const {stopCanister} = IcManagementCanister.create({
     agent
   });
 
@@ -26,7 +23,7 @@ export const canisterStop = async ({canisterId}: {canisterId: Principal}): Promi
 export const canisterStart = async ({canisterId}: {canisterId: Principal}): Promise<void> => {
   const agent = await initAgent();
 
-  const {startCanister} = ICManagementCanister.create({
+  const {startCanister} = IcManagementCanister.create({
     agent
   });
 
@@ -35,11 +32,11 @@ export const canisterStart = async ({canisterId}: {canisterId: Principal}): Prom
 
 export const takeCanisterSnapshot = async (params: {
   canisterId: Principal;
-  snapshotId?: snapshot_id;
+  snapshotId?: IcManagementDid.snapshot_id;
 }): Promise<void> => {
   const agent = await initAgent();
 
-  const {takeCanisterSnapshot} = ICManagementCanister.create({
+  const {takeCanisterSnapshot} = IcManagementCanister.create({
     agent
   });
 
@@ -48,10 +45,10 @@ export const takeCanisterSnapshot = async (params: {
 
 export const listCanisterSnapshots = async (params: {
   canisterId: Principal;
-}): Promise<list_canister_snapshots_result> => {
+}): Promise<IcManagementDid.list_canister_snapshots_result> => {
   const agent = await initAgent();
 
-  const {listCanisterSnapshots} = ICManagementCanister.create({
+  const {listCanisterSnapshots} = IcManagementCanister.create({
     agent
   });
 
@@ -60,11 +57,11 @@ export const listCanisterSnapshots = async (params: {
 
 export const loadCanisterSnapshot = async (params: {
   canisterId: Principal;
-  snapshotId: snapshot_id;
+  snapshotId: IcManagementDid.snapshot_id;
 }): Promise<void> => {
   const agent = await initAgent();
 
-  const {loadCanisterSnapshot} = ICManagementCanister.create({
+  const {loadCanisterSnapshot} = IcManagementCanister.create({
     agent
   });
 
@@ -73,11 +70,11 @@ export const loadCanisterSnapshot = async (params: {
 
 export const deleteCanisterSnapshot = async (params: {
   canisterId: Principal;
-  snapshotId: snapshot_id;
+  snapshotId: IcManagementDid.snapshot_id;
 }): Promise<void> => {
   const agent = await initAgent();
 
-  const {deleteCanisterSnapshot} = ICManagementCanister.create({
+  const {deleteCanisterSnapshot} = IcManagementCanister.create({
     agent
   });
 
@@ -89,7 +86,7 @@ export const readCanisterSnapshotMetadata = async (
 ): Promise<ReadCanisterSnapshotMetadataResponse> => {
   const agent = await initAgent();
 
-  const {readCanisterSnapshotMetadata} = ICManagementCanister.create({
+  const {readCanisterSnapshotMetadata} = IcManagementCanister.create({
     agent
   });
 
@@ -98,10 +95,10 @@ export const readCanisterSnapshotMetadata = async (
 
 export const readCanisterSnapshotData = async (
   params: ReadCanisterSnapshotMetadataParams
-): Promise<read_canister_snapshot_data_response> => {
+): Promise<IcManagementDid.read_canister_snapshot_data_response> => {
   const agent = await initAgent();
 
-  const {readCanisterSnapshotData} = ICManagementCanister.create({
+  const {readCanisterSnapshotData} = IcManagementCanister.create({
     agent
   });
 
@@ -110,10 +107,10 @@ export const readCanisterSnapshotData = async (
 
 export const uploadCanisterSnapshotMetadata = async (
   params: UploadCanisterSnapshotMetadataParams
-): Promise<upload_canister_snapshot_metadata_response> => {
+): Promise<IcManagementDid.upload_canister_snapshot_metadata_response> => {
   const agent = await initAgent();
 
-  const {uploadCanisterSnapshotMetadata} = ICManagementCanister.create({
+  const {uploadCanisterSnapshotMetadata} = IcManagementCanister.create({
     agent
   });
 
@@ -125,7 +122,7 @@ export const uploadCanisterSnapshotData = async (
 ): Promise<void> => {
   const agent = await initAgent();
 
-  const {uploadCanisterSnapshotData} = ICManagementCanister.create({
+  const {uploadCanisterSnapshotData} = IcManagementCanister.create({
     agent
   });
 

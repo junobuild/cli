@@ -26,6 +26,7 @@ export const assertSatelliteBuildType = async ({
   ]);
 
   // Redo console.warn
+  // eslint-disable-next-line require-atomic-updates
   globalThis.console.warn = hideAgentJsConsoleWarn;
 
   if (wasmMetadataResult.status === 'rejected') {

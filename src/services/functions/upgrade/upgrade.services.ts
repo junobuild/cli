@@ -1,7 +1,7 @@
 import {hasArgs, nextArg} from '@junobuild/cli-tools';
 import {SATELLITE_OUTPUT} from '../../../constants/dev.constants';
 import {type SatelliteParametersWithId} from '../../../types/satellite';
-import {assertConfigAndLoadSatelliteContext} from '../../../utils/satellite.utils';
+import {assertConfigAndLoadSatelliteContext} from '../../../utils/juno.config.utils';
 import {upgradeSatelliteWithSrc} from '../../modules/upgrade/upgrade.satellite.services';
 import {upgradeWithCdn} from './upgrade.cdn.services';
 

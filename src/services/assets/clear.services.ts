@@ -5,8 +5,8 @@ import {deleteAsset} from '@junobuild/core';
 import {green, yellow} from 'kleur';
 import ora from 'ora';
 import {noJunoConfig} from '../../configs/juno.config';
+import {assertConfigAndLoadSatelliteContext} from '../../utils/juno.config.utils';
 import {consoleNoConfigFound} from '../../utils/msg.utils';
-import {assertConfigAndLoadSatelliteContext} from '../../utils/satellite.utils';
 
 export const clear = async (args?: string[]) => {
   if (await noJunoConfig()) {
