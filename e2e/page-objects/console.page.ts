@@ -1,4 +1,3 @@
-import {InternetIdentityPage} from '@dfinity/internet-identity-playwright';
 import {notEmptyString} from '@dfinity/utils';
 import {PrincipalText, PrincipalTextSchema} from '@dfinity/zod-schemas';
 import {expect} from '@playwright/test';
@@ -8,22 +7,12 @@ import {IdentityPage, type IdentityPageParams} from './identity.page';
 import {SatellitePage} from './satellite.page';
 
 export class ConsolePage extends IdentityPage {
-  readonly #consoleIIPage: InternetIdentityPage;
-
   private constructor(params: IdentityPageParams) {
     super(params);
-
-    this.#consoleIIPage = new InternetIdentityPage({
-      page: this.page,
-      context: this.context,
-      browser: this.browser
-    });
   }
 
   static async initWithSignIn(params: IdentityPageParams): Promise<ConsolePage> {
     const consolePage = new ConsolePage(params);
-
-    await consolePage.waitReady();
 
     await consolePage.goto();
 
@@ -36,19 +25,10 @@ export class ConsolePage extends IdentityPage {
     await this.page.goto(path);
   }
 
-  async signIn(): Promise<void> {
-    await this.#consoleIIPage.signIn({
-      passkey: {
-        selector: `[data-tid=${testIds.auth.signInII}]`
-      }
-    });
-  }
+  private async signIn(): Promise<void> {
+    await expect(this.page.getByTestId(testIds.auth.signInDev)).toBeVisible(TIMEOUT_AVERAGE);
 
-  async waitReady(): Promise<void> {
-    const CONTAINER_URL = 'http://127.0.0.1:5987';
-    const INTERNET_IDENTITY_ID = 'rdmx6-jaaaa-aaaaa-aaadq-cai';
-
-    await this.#consoleIIPage.waitReady({url: CONTAINER_URL, canisterId: INTERNET_IDENTITY_ID});
+    await this.page.getByTestId(testIds.auth.signInDev).click();
   }
 
   async createSatellite(params: {kind: 'website' | 'application'}): Promise<void> {
