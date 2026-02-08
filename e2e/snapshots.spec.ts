@@ -1,16 +1,15 @@
-import {testWithII} from '@dfinity/internet-identity-playwright';
-import {expect} from '@playwright/test';
+import {expect, test} from '@playwright/test';
 import {initTestSuite} from './utils/init.utils';
 
-testWithII.describe.configure({mode: 'serial'});
+test.describe.configure({mode: 'serial'});
 
 const snapshotTests = ({satelliteKind}: {satelliteKind: 'website' | 'application'}) => {
-  testWithII.describe(`satellite ${satelliteKind}`, () => {
+  test.describe(`satellite ${satelliteKind}`, () => {
     const getTestPages = initTestSuite({satelliteKind});
 
     const SNAPSHOT_TARGET = {target: 'satellite' as const};
 
-    testWithII('should create and restore a snapshot', async () => {
+    test('should create and restore a snapshot', async () => {
       const {consolePage, cliPage} = getTestPages();
 
       await cliPage.createSnapshot(SNAPSHOT_TARGET);
@@ -28,8 +27,8 @@ const snapshotTests = ({satelliteKind}: {satelliteKind: 'website' | 'application
       await satellitePage.assertScreenshot();
     });
 
-    testWithII('should create, download, delete, upload and restore a snapshot', async () => {
-      testWithII.setTimeout(120_000);
+    test('should create, download, delete, upload and restore a snapshot', async () => {
+      test.setTimeout(120_000);
 
       const {consolePage, cliPage} = getTestPages();
 
@@ -57,46 +56,43 @@ const snapshotTests = ({satelliteKind}: {satelliteKind: 'website' | 'application
       await satellitePage.assertScreenshot();
     });
 
-    testWithII(
-      'should create, download, delete, upload and restore a snapshot to another satellite',
-      async () => {
-        testWithII.setTimeout(120_000);
+    test('should create, download, delete, upload and restore a snapshot to another satellite', async () => {
+      test.setTimeout(120_000);
 
-        const {consolePage, cliPage} = getTestPages();
+      const {consolePage, cliPage} = getTestPages();
 
-        await consolePage.getCycles();
+      await consolePage.getCycles();
 
-        await consolePage.goto();
+      await consolePage.goto();
 
-        await consolePage.openCreateAdditionalSatelliteWizard({kind: 'application'});
+      await consolePage.openCreateAdditionalSatelliteWizard({kind: 'application'});
 
-        const satelliteId = await consolePage.copySatelliteID();
+      const satelliteId = await consolePage.copySatelliteID();
 
-        await cliPage.toggleSatelliteId({satelliteId});
+      await cliPage.toggleSatelliteId({satelliteId});
 
-        const {accessKey} = await cliPage.whoami();
+      const {accessKey} = await cliPage.whoami();
 
-        await consolePage.addSatelliteAdminAccessKey({accessKey, satelliteId});
+      await consolePage.addSatelliteAdminAccessKey({accessKey, satelliteId});
 
-        await cliPage.deployHosting({clear: true});
+      await cliPage.deployHosting({clear: true});
 
-        await consolePage.goto({path: `/satellite/?s=${satelliteId}`});
+      await consolePage.goto({path: `/satellite/?s=${satelliteId}`});
 
-        const satellitePage = await consolePage.visitSatelliteSite({
-          title: 'Hello World'
-        });
-        await satellitePage.assertScreenshot();
+      const satellitePage = await consolePage.visitSatelliteSite({
+        title: 'Hello World'
+      });
+      await satellitePage.assertScreenshot();
 
-        const {snapshotFolder} = await cliPage.getSnapshotFsFolder();
+      const {snapshotFolder} = await cliPage.getSnapshotFsFolder();
 
-        await cliPage.uploadSnapshot({...SNAPSHOT_TARGET, folder: snapshotFolder});
+      await cliPage.uploadSnapshot({...SNAPSHOT_TARGET, folder: snapshotFolder});
 
-        await cliPage.restoreSnapshot(SNAPSHOT_TARGET);
+      await cliPage.restoreSnapshot(SNAPSHOT_TARGET);
 
-        await satellitePage.reload();
-        await satellitePage.assertScreenshot();
-      }
-    );
+      await satellitePage.reload();
+      await satellitePage.assertScreenshot();
+    });
   });
 };
 
