@@ -1,4 +1,4 @@
-import {testWithII} from '@dfinity/internet-identity-playwright';
+import {test} from '@playwright/test';
 import {CliPage} from '../page-objects/cli.page';
 import {ConsolePage} from '../page-objects/console.page';
 
@@ -15,8 +15,8 @@ export const initTestSuite = ({
   let consolePage: ConsolePage;
   let cliPage: CliPage;
 
-  testWithII.beforeAll(async ({playwright}) => {
-    testWithII.setTimeout(120000);
+  test.beforeAll(async ({playwright}) => {
+    test.setTimeout(120000);
 
     const browser = await playwright.chromium.launch();
 
@@ -36,7 +36,7 @@ export const initTestSuite = ({
     cliPage = await CliPage.initWithEmulatorLogin({satelliteId});
   });
 
-  testWithII.afterAll(async () => {
+  test.afterAll(async () => {
     const results = await Promise.allSettled([consolePage.close(), cliPage.close()]);
 
     if (results.find(({status}) => status === 'rejected')) {
