@@ -1,11 +1,13 @@
 import {isNullish, nonNullish} from '@dfinity/utils';
 import {
   getAuthConfig,
+  getAutomationConfig,
   getDatastoreConfig,
   getStorageConfig,
   listRules,
   type ListRulesResults,
   setAuthConfig,
+  setAutomationConfig,
   setDatastoreConfig,
   setRule,
   setStorageConfig
@@ -13,6 +15,7 @@ import {
 import {hasArgs} from '@junobuild/cli-tools';
 import type {
   AuthenticationConfig,
+  AutomationConfig,
   DatastoreCollection,
   DatastoreConfig,
   ModuleSettings,
@@ -51,6 +54,7 @@ type SetConfigResults = [
   PromiseSettledResult<StorageConfig | void>,
   PromiseSettledResult<DatastoreConfig | void>,
   PromiseSettledResult<AuthenticationConfig | void>,
+  PromiseSettledResult<AutomationConfig | void>,
   PromiseSettledResult<void>,
   PromiseSettledResult<undefined | Array<PromiseSettledResult<Rule>>>,
   PromiseSettledResult<undefined | Array<PromiseSettledResult<Rule>>>
@@ -106,16 +110,17 @@ const saveLastAppliedConfigHashes = ({
 }: {results: SetConfigResults} & Pick<SatelliteConfig, 'settings'> &
   Pick<SatelliteParametersWithId, 'satelliteId'>) => {
   const fulfilledValue = (
-    index: 0 | 1 | 2
+    index: 0 | 1 | 2 | 3
   ): void | StorageConfig | DatastoreConfig | AuthenticationConfig | undefined =>
     results[index].status === 'fulfilled' ? results[index].value : undefined;
 
   const storage = fulfilledValue(0);
   const datastore = fulfilledValue(1);
   const auth = fulfilledValue(2);
+  const automation = fulfilledValue(3);
 
   const fulfilledCollectionsValues = (
-    index: 4 | 5
+    index: 5 | 6
   ): Record<CliStateSatelliteAppliedCollection, RuleHash> | undefined =>
     results[index].status === 'fulfilled'
       ? results[index].value
@@ -130,13 +135,14 @@ const saveLastAppliedConfigHashes = ({
           )
       : undefined;
 
-  const storageCollections = fulfilledCollectionsValues(4);
-  const datastoreCollections = fulfilledCollectionsValues(5);
+  const storageCollections = fulfilledCollectionsValues(5);
+  const datastoreCollections = fulfilledCollectionsValues(6);
 
   const lastAppliedConfig: CliStateSatelliteAppliedConfigHashes = {
     storage: nonNullish(storage) ? objHash(storage) : undefined,
     datastore: nonNullish(datastore) ? objHash(datastore) : undefined,
     auth: nonNullish(auth) ? objHash(auth) : undefined,
+    automation: nonNullish(automation) ? objHash(automation) : undefined,
     settings: nonNullish(settings) ? objHash(settings) : undefined,
     collections:
       nonNullish(storageCollections) || nonNullish(datastoreCollections)
@@ -182,6 +188,7 @@ interface CurrentConfig {
   storage?: [StorageConfig, ConfigHash];
   datastore?: [DatastoreConfig, ConfigHash];
   auth?: [AuthenticationConfig, ConfigHash];
+  automation?: [AutomationConfig, ConfigHash];
   settings?: [ModuleSettings, SettingsHash];
   storageCollections?: CurrentCollectionsConfig;
   datastoreCollections?: CurrentCollectionsConfig;
@@ -198,6 +205,7 @@ const getCurrentConfig = async ({
     storage: userStorageConfig,
     datastore: userDatastoreConfig,
     authentication: userAuthConfig,
+    automation: userAutomationConfig,
     settings: userSettingConfig,
     collections: userCollectionsConfig
   } = satelliteConfig;
@@ -205,11 +213,12 @@ const getCurrentConfig = async ({
   const userStorageCollectionsConfig = userCollectionsConfig?.storage;
   const userDatastoreCollectionsConfig = userCollectionsConfig?.datastore;
 
-  const [storage, datastore, auth, settings, storageCollections, datastoreCollections] =
+  const [storage, datastore, auth, automation, settings, storageCollections, datastoreCollections] =
     await Promise.all([
       nonNullish(userStorageConfig) ? getStorageConfig({satellite}) : Promise.resolve(),
       nonNullish(userDatastoreConfig) ? getDatastoreConfig({satellite}) : Promise.resolve(),
       nonNullish(userAuthConfig) ? getAuthConfig({satellite}) : Promise.resolve(),
+      nonNullish(userAutomationConfig) ? getAutomationConfig({satellite}) : Promise.resolve(),
       nonNullish(userSettingConfig) ? getSettings({satellite}) : Promise.resolve(),
       nonNullish(userStorageCollectionsConfig) && userStorageCollectionsConfig.length > 0
         ? listRules({type: 'storage', satellite})
@@ -232,6 +241,7 @@ const getCurrentConfig = async ({
     ...(nonNullish(storage) && {storage: [storage, objHash(storage)]}),
     ...(nonNullish(datastore) && {datastore: [datastore, objHash(datastore)]}),
     ...(nonNullish(auth) && {auth: [auth, objHash(auth)]}),
+    ...(nonNullish(automation) && {automation: [automation, objHash(automation)]}),
     ...(nonNullish(settings) && {settings: [settings, objHash(settings)]}),
     ...(nonNullish(storageCollections) && {storageCollections: mapRules(storageCollections)}),
     ...(nonNullish(datastoreCollections) && {datastoreCollections: mapRules(datastoreCollections)})
@@ -274,7 +284,7 @@ const setConfigs = async ({
   satellite: SatelliteParametersWithId;
   editConfig: EditConfig;
 }): Promise<SetConfigResults> => {
-  const {storage, authentication, datastore, settings, collections} = editConfig;
+  const {storage, authentication, automation, datastore, settings, collections} = editConfig;
 
   const storageCollections = collections?.storage;
   const datastoreCollections = collections?.datastore;
@@ -320,6 +330,12 @@ const setConfigs = async ({
           config: authentication,
           satellite
         }),
+    isNullish(automation)
+      ? Promise.resolve()
+      : setAutomationConfig({
+          config: automation,
+          satellite
+        }),
     isNullish(settings) ? Promise.resolve() : setSettings({settings, satellite}),
     isNullish(storageCollections) || storageCollections.length === 0
       ? Promise.resolve(undefined)
@@ -351,6 +367,7 @@ const prepareConfig = async ({
     storage: currentStorage,
     datastore: currentDatastore,
     auth: currentAuth,
+    automation: currentAutomation,
     settings: currentSettings,
     storageCollections: currentStorageCollections,
     datastoreCollections: currentDatastoreCollections
@@ -392,6 +409,12 @@ const prepareConfig = async ({
       return false;
     }
 
+    const automationVersion = currentAutomation?.[0].version;
+
+    if (nonNullish(automationVersion)) {
+      return false;
+    }
+
     const hasStorageCollections =
       nonNullish(currentStorageCollections) && Object.keys(currentStorageCollections).length > 0;
 
@@ -419,7 +442,7 @@ const prepareConfig = async ({
     return satelliteConfig;
   }
 
-  const {storage, datastore, authentication, settings, collections} = satelliteConfig;
+  const {storage, datastore, authentication, automation, settings, collections} = satelliteConfig;
 
   const storageCollections = collections?.storage;
   const datastoreCollections = collections?.datastore;
@@ -430,6 +453,7 @@ const prepareConfig = async ({
     const versionStorage = currentStorage?.[0]?.version;
     const versionDatastore = currentDatastore?.[0]?.version;
     const versionAuth = currentAuth?.[0]?.version;
+    const versionAutomation = currentAutomation?.[0]?.version;
 
     const extendCollections = ({
       collections,
@@ -467,6 +491,10 @@ const prepareConfig = async ({
         nonNullish(authentication) && isNullish(authentication.version)
           ? {...authentication, version: versionAuth}
           : authentication,
+      automation:
+        nonNullish(automation) && isNullish(automation.version)
+          ? {...automation, version: versionAutomation}
+          : automation,
       settings,
       ...(nonNullish(collections) && {
         collections: {
@@ -484,6 +512,7 @@ const prepareConfig = async ({
     const storageHash = currentStorage?.[1];
     const datastoreHash = currentDatastore?.[1];
     const authHash = currentAuth?.[1];
+    const automationHash = currentAutomation?.[1];
     const settingsHash = currentSettings?.[1];
 
     const filterCollections = ({
@@ -527,6 +556,12 @@ const prepareConfig = async ({
         nonNullish(authHash) && nonNullish(authentication) && authHash === objHash(authentication)
           ? undefined
           : authentication,
+      automation:
+        nonNullish(automationHash) &&
+        nonNullish(automation) &&
+        automationHash === objHash(automation)
+          ? undefined
+          : automation,
       settings:
         nonNullish(settingsHash) && nonNullish(settings) && settingsHash === objHash(settings)
           ? undefined
@@ -575,6 +610,7 @@ const prepareConfig = async ({
       storage: lastStorageHash,
       datastore: lastDatastoreHash,
       auth: lastAuthHash,
+      automation: lastAutomationHash,
       settings: lastSettingsHash,
       collections: lastCollectionsHashes
     } = lastAppliedConfig;
@@ -594,6 +630,12 @@ const prepareConfig = async ({
     const authHash = currentAuth?.[1];
 
     if (authHash !== lastAuthHash) {
+      return false;
+    }
+
+    const automationHash = currentAutomation?.[1];
+
+    if (automationHash !== lastAutomationHash) {
       return false;
     }
 
