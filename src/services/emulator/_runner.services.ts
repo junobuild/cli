@@ -2,10 +2,9 @@ import {nonNullish} from '@dfinity/utils';
 import {assertAnswerCtrlC, execute, spawn} from '@junobuild/cli-tools';
 import {type EmulatorPorts} from '@junobuild/config';
 import {red, yellow} from 'kleur';
-import {basename, join} from 'node:path';
 import prompts from 'prompts';
 import {readEmulatorConfig} from '../../configs/emulator.config';
-import {junoConfigExist, junoConfigFile} from '../../configs/juno.config';
+import {junoConfigExist} from '../../configs/juno.config';
 import {
   EMULATOR_PORT_ADMIN,
   EMULATOR_PORT_CONSOLE,
@@ -100,9 +99,10 @@ const promptRunnerType = async (): Promise<{runnerType: EmulatorRunnerType}> => 
     choices: [
       {
         title: 'Docker',
-        value: `docker`
+        value: 'docker'
       },
-      {title: `Podman`, value: `podman`}
+      {title: 'Podman', value: 'podman'},
+      {title: 'Apple container', value: 'container'}
     ]
   });
 
@@ -202,12 +202,6 @@ const startEmulator = async ({config: extendedConfig}: {config: CliEmulatorConfi
 
   const volume = config.runner?.volume ?? containerName.replaceAll('-', '_');
 
-  const detectedConfig = junoConfigFile();
-  const configFile = nonNullish(detectedConfig.configPath)
-    ? basename(detectedConfig.configPath)
-    : undefined;
-  const configFilePath = nonNullish(configFile) ? join(process.cwd(), configFile) : undefined;
-
   // Podman does not auto create the path folders.
   await createDeployTargetDir({targetDeploy});
 
@@ -237,9 +231,6 @@ const startEmulator = async ({config: extendedConfig}: {config: CliEmulatorConfi
         : []),
       '-v',
       `${volume}:/juno/.juno`,
-      ...(nonNullish(configFile) && nonNullish(configFilePath)
-        ? ['-v', `${configFilePath}:/juno/${configFile}`]
-        : []),
       '-v',
       `${targetDeploy}:/juno/target/deploy`,
       ...(nonNullish(platform) ? [`--platform=${platform}`] : []),

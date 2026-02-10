@@ -1,3 +1,4 @@
+import {notEmptyString} from '@dfinity/utils';
 import {spawn} from '@junobuild/cli-tools';
 import {green, red, yellow} from 'kleur';
 import {lt} from 'semver';
@@ -35,9 +36,13 @@ export const assertContainerRunnerRunning = async ({
   runner
 }: Pick<CliEmulatorDerivedConfig, 'runner'>) => {
   try {
+    // container does not support ps
+    // Reference: https://github.com/apple/container/pull/299
+    const args = runner === 'container' ? ['ls', '--quiet'] : ['ps', '--quiet'];
+
     await spawn({
       command: runner,
-      args: ['ps', '--quiet'],
+      args,
       silentOut: true
     });
   } catch (_e: unknown) {
@@ -54,12 +59,26 @@ export const hasExistingContainer = async ({
 > => {
   try {
     let output = '';
+
+    const args =
+      runner === 'container' ? ['ls', '-aq'] : ['ps', '-aq', '-f', `name=^/${containerName}$`];
+
     await spawn({
       command: runner,
-      args: ['ps', '-aq', '-f', `name=^/${containerName}$`],
+      args,
       stdout: (o) => (output += o),
       silentOut: true
     });
+
+    if (runner === 'container') {
+      const exist = output
+        .split(/\r?\n/)
+        .map((line) => line.trim())
+        .filter(notEmptyString)
+        .some((name) => name === containerName);
+
+      return {exist};
+    }
 
     return {exist: output.trim().length > 0};
   } catch (err: unknown) {
@@ -75,12 +94,28 @@ export const isContainerRunning = async ({
 > => {
   try {
     let output = '';
+
+    const args =
+      runner === 'container'
+        ? ['ls', '--quiet']
+        : ['ps', '--quiet', '-f', `name=^/${containerName}$`];
+
     await spawn({
       command: runner,
-      args: ['ps', '--quiet', '-f', `name=^/${containerName}$`],
+      args,
       stdout: (o) => (output += o),
       silentOut: true
     });
+
+    if (runner === 'container') {
+      const running = output
+        .split(/\r?\n/)
+        .map((line) => line.trim())
+        .filter(notEmptyString)
+        .some((name) => name === containerName);
+
+      return {running};
+    }
 
     return {running: output.trim().length > 0};
   } catch (err: unknown) {
