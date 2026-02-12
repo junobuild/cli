@@ -43,7 +43,7 @@ export class EnvToken {
     }
   }
 
-  get identity(): JsonnableEd25519KeyIdentity | undefined {
+  get token(): JsonnableEd25519KeyIdentity | undefined {
     return this.#token;
   }
 
