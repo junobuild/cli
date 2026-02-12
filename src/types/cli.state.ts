@@ -15,6 +15,7 @@ export interface CliStateSatelliteAppliedConfigHashes {
   storage: ConfigHash | undefined;
   datastore: ConfigHash | undefined;
   auth: ConfigHash | undefined;
+  automation: ConfigHash | undefined;
   settings: SettingsHash | undefined;
   collections: CliStateSatelliteAppliedCollectionsHashes | undefined;
 }
