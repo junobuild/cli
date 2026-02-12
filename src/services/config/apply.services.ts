@@ -583,7 +583,7 @@ const prepareConfig = async ({
       return filterIdenticalConfig(extendWithVersions());
     }
 
-    if (isHeadless()) {
+    if (await isHeadless()) {
       console.log(
         yellow('Non-interactive mode detected. Re-run with --force to overwrite without checks.')
       );

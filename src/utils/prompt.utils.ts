@@ -50,7 +50,7 @@ export const confirmAndExit = async (message: string) => {
 };
 
 export const confirmAndExitUnlessHeadlessAndDev = async (message: string) => {
-  if (isHeadless() && DEV) {
+  if ((await isHeadless()) && DEV) {
     return;
   }
 

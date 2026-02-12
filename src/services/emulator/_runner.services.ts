@@ -170,7 +170,7 @@ const startEmulator = async ({config: extendedConfig}: {config: CliEmulatorConfi
     // -i: Keep STDIN open even if not attached. Equivalent to `--interactive`.
     await execute({
       command: runner,
-      args: ['start', '-a', ...(isHeadless() ? [] : ['-i']), containerName]
+      args: ['start', '-a', ...((await isHeadless()) ? [] : ['-i']), containerName]
     });
     return;
   }
@@ -219,7 +219,7 @@ const startEmulator = async ({config: extendedConfig}: {config: CliEmulatorConfi
     command: runner,
     args: [
       'run',
-      ...(isHeadless() ? [] : ['-it']),
+      ...((await isHeadless()) ? [] : ['-it']),
       '--name',
       containerName,
       '-p',

@@ -45,7 +45,7 @@ export const assertSatelliteBuildType = async ({
 
   const warning = satelliteType === 'extended' && (wasmType === 'stock' || isNullish(wasmType));
 
-  if (isHeadless() && warning) {
+  if ((await isHeadless()) && warning) {
     throw new Error(
       'Your satellite uses serverless functions. Reverting to the stock version would remove your custom features! '
     );

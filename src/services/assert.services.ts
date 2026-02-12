@@ -48,7 +48,7 @@ export const assertSatelliteMemorySize = async () => {
     heap
   )} MB, which exceeds the asserted limit of ${formatNumber(maxMemorySize)} MB.`;
 
-  if (isHeadless()) {
+  if (await isHeadless()) {
     console.log(yellow(errorText));
     process.exit(1);
   }

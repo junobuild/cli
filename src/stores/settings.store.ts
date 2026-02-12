@@ -18,7 +18,7 @@ class SettingsConfigStore {
   static async init(): Promise<SettingsConfigStore> {
     const store = new SettingsConfigStore(getSettingsConfig());
 
-    if (isHeadless()) {
+    if (await isHeadless()) {
       return store;
     }
 

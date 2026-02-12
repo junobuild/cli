@@ -5,14 +5,15 @@ import {green, red, yellow} from 'kleur';
 import {getToken} from '../configs/cli.config';
 import {readEmulatorConfig} from '../configs/emulator.config';
 import {ENV} from '../env';
+import {EnvIdentity} from '../env.identity';
 import {noConfigFile} from '../utils/cli.config.utils';
-import {getProcessToken, isHeadless} from '../utils/process.utils';
+import {isNotHeadless} from '../utils/process.utils';
 import {initAgent} from './agent.api';
 
 export const actorParameters = async (): Promise<
   Omit<ActorParameters, 'agent'> & Required<Pick<ActorParameters, 'agent'>>
 > => {
-  const configNotFound = !isHeadless() && noConfigFile();
+  const configNotFound = (await isNotHeadless()) && noConfigFile();
 
   if (configNotFound) {
     await missingConfigInfo({errorType: 'not-configured'});
@@ -20,7 +21,7 @@ export const actorParameters = async (): Promise<
     process.exit(1);
   }
 
-  const token = getProcessToken() ?? (await getToken());
+  const token = (await EnvIdentity.getInstance()).token ?? (await getToken());
 
   if (isNullish(token)) {
     await missingConfigInfo({errorType: 'not-logged-in'});
