@@ -1,10 +1,10 @@
 import {hasArgs} from '@junobuild/cli-tools';
-import {EnvIdentity} from '../env.identity';
+import {EnvToken} from '../env.token';
 
 export const isHeadless = async (): Promise<boolean> => {
-  const {hasCredentials} = await EnvIdentity.getInstance();
+  const {isDefined} = await EnvToken.getInstance();
 
-  if (hasCredentials()) {
+  if (isDefined()) {
     return true;
   }
 

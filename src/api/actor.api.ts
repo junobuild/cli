@@ -5,7 +5,7 @@ import {green, red, yellow} from 'kleur';
 import {getToken} from '../configs/cli.config';
 import {readEmulatorConfig} from '../configs/emulator.config';
 import {ENV} from '../env';
-import {EnvIdentity} from '../env.identity';
+import {EnvToken} from '../env.token';
 import {noConfigFile} from '../utils/cli.config.utils';
 import {isNotHeadless} from '../utils/process.utils';
 import {initAgent} from './agent.api';
@@ -21,7 +21,7 @@ export const actorParameters = async (): Promise<
     process.exit(1);
   }
 
-  const token = (await EnvIdentity.getInstance()).token ?? (await getToken());
+  const token = (await EnvToken.getInstance()).token ?? (await getToken());
 
   if (isNullish(token)) {
     await missingConfigInfo({errorType: 'not-logged-in'});

@@ -1,34 +1,34 @@
 import {nonNullish} from '@dfinity/utils';
 import type {JsonnableEd25519KeyIdentity} from '@icp-sdk/core/identity';
 
-export class EnvIdentity {
-  static #instance: EnvIdentity | undefined;
+export class EnvToken {
+  static #instance: EnvToken | undefined;
 
-  readonly #identity: JsonnableEd25519KeyIdentity | undefined;
+  readonly #token: JsonnableEd25519KeyIdentity | undefined;
 
-  private constructor(readonly token: JsonnableEd25519KeyIdentity | undefined) {
-    this.#identity = token;
+  private constructor(readonly keyIdentity: JsonnableEd25519KeyIdentity | undefined) {
+    this.#token = keyIdentity;
   }
 
-  static async getInstance(): Promise<EnvIdentity> {
-    if (EnvIdentity.#instance === undefined) {
+  static async getInstance(): Promise<EnvToken> {
+    if (EnvToken.#instance === undefined) {
       // eslint-disable-next-line require-atomic-updates
-      EnvIdentity.#instance = await EnvIdentity.#init();
+      EnvToken.#instance = await EnvToken.#init();
     }
 
-    return EnvIdentity.#instance;
+    return EnvToken.#instance;
   }
 
   // eslint-disable-next-line @typescript-eslint/require-await
-  static async #init(): Promise<EnvIdentity> {
+  static async #init(): Promise<EnvToken> {
     const envToken = process.env.JUNO_TOKEN;
 
     if (envToken !== undefined) {
       const token = this.#parseToken({envToken});
-      return new EnvIdentity(token);
+      return new EnvToken(token);
     }
 
-    return new EnvIdentity(undefined);
+    return new EnvToken(undefined);
   }
 
   static #parseToken({envToken}: {envToken: string}): JsonnableEd25519KeyIdentity | undefined {
@@ -44,10 +44,10 @@ export class EnvIdentity {
   }
 
   get identity(): JsonnableEd25519KeyIdentity | undefined {
-    return this.#identity;
+    return this.#token;
   }
 
-  hasCredentials = (): boolean => {
-    return nonNullish(this.#identity);
+  isDefined = (): boolean => {
+    return nonNullish(this.#token);
   };
 }
