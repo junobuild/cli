@@ -507,7 +507,7 @@ const prepareConfig = async ({
 
   // We want to spare updates if there is no changes to apply
   const filterIdenticalConfig = (editConfig: EditConfig): EditConfig => {
-    const {storage, datastore, authentication, settings, collections} = editConfig;
+    const {storage, datastore, authentication, automation, settings, collections} = editConfig;
 
     const storageHash = currentStorage?.[1];
     const datastoreHash = currentDatastore?.[1];
