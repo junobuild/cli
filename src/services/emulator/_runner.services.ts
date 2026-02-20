@@ -31,27 +31,24 @@ import {createDeployTargetDir} from './_fs.services';
 export const startContainer = async () => {
   await assertAndInitConfig();
 
-  const parsedResult = await readEmulatorConfig();
+  const fn: RunWithConfigFn = async (args) => {
+    await startEmulator(args);
+  };
 
-  if (!parsedResult.success) {
-    return;
-  }
-
-  const {config} = parsedResult;
-
-  const {valid} =
-    config.derivedConfig.runner === 'docker' ? await checkDockerVersion() : {valid: true};
-
-  if (valid === 'error' || !valid) {
-    return;
-  }
-
-  await assertContainerRunnerRunning({runner: config.derivedConfig.runner});
-
-  await startEmulator({config});
+  await runWithConfig({fn});
 };
 
 export const stopContainer = async () => {
+  const fn: RunWithConfigFn = async (args) => {
+    await stopEmulator(args);
+  };
+
+  await runWithConfig({fn});
+};
+
+type RunWithConfigFn = (params: {config: CliEmulatorConfig}) => Promise<void>;
+
+const runWithConfig = async ({fn}: {fn: RunWithConfigFn}) => {
   const parsedResult = await readEmulatorConfig();
 
   if (!parsedResult.success) {
@@ -69,7 +66,7 @@ export const stopContainer = async () => {
 
   await assertContainerRunnerRunning({runner: config.derivedConfig.runner});
 
-  await stopEmulator({config});
+  await fn({config});
 };
 
 const promptEmulatorType = async (): Promise<{emulatorType: Exclude<EmulatorType, 'console'>}> => {
