@@ -72,6 +72,10 @@ export const stopContainer = async () => {
   await stopEmulator({config});
 };
 
+export const clearContainerAndVolume = async () => {
+  // TODO
+};
+
 const promptEmulatorType = async (): Promise<{emulatorType: Exclude<EmulatorType, 'console'>}> => {
   const {emulatorType}: {emulatorType: Exclude<EmulatorType, 'console'> | undefined} =
     await prompts({

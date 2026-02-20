@@ -1,5 +1,6 @@
 import {cyan, green, magenta, yellow} from 'kleur';
 import {
+  EMULATOR_CLEAR_DESCRIPTION,
   EMULATOR_DESCRIPTION,
   EMULATOR_START_DESCRIPTION,
   EMULATOR_WAIT_DESCRIPTION
@@ -10,6 +11,7 @@ import {TITLE} from './help';
 const usage = `Usage: ${green('juno')} ${cyan('emulator')} ${magenta('<subcommand>')} ${yellow('[options]')}
 
 Subcommands:
+  ${magenta('clear')}               ${EMULATOR_CLEAR_DESCRIPTION}
   ${magenta('start')}               ${EMULATOR_START_DESCRIPTION}
   ${magenta('stop')}                Stop the local network.
   ${magenta('wait')}                ${EMULATOR_WAIT_DESCRIPTION}`;
