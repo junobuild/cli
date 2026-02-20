@@ -19,6 +19,7 @@ import {
   type EmulatorType
 } from '../../types/emulator';
 import {isHeadless} from '../../utils/process.utils';
+import {confirmAndExit} from '../../utils/prompt.utils';
 import {
   assertContainerRunnerRunning,
   checkDockerVersion,
@@ -41,6 +42,14 @@ export const startContainer = async () => {
 export const stopContainer = async () => {
   const fn: RunWithConfigFn = async (args) => {
     await stopEmulator(args);
+  };
+
+  await runWithConfig({fn});
+};
+
+export const clearContainerAndVolume = async () => {
+  const fn: RunWithConfigFn = async (args) => {
+    await clearEmulator(args);
   };
 
   await runWithConfig({fn});
@@ -258,6 +267,35 @@ const stopEmulator = async ({config: {derivedConfig}}: {config: CliEmulatorConfi
   await spawn({
     command: runner,
     args: ['stop', containerName],
+    silentOut: true
+  });
+};
+
+const clearEmulator = async ({config: {config, derivedConfig}}: {config: CliEmulatorConfig}) => {
+  const {containerName, runner} = derivedConfig;
+
+  const {running} = await assertContainerRunning({containerName, runner});
+
+  if (running) {
+    console.log(yellow(`The ${runner} container ${containerName} must be stopped first.`));
+    return;
+  }
+
+  const volume = config.runner?.volume ?? containerName.replaceAll('-', '_');
+
+  await confirmAndExit(
+    `Are you sure you want to clear the emulator container "${containerName}" and volume "${volume}"?`
+  );
+
+  await spawn({
+    command: runner,
+    args: ['container', 'rm', containerName],
+    silentOut: true
+  });
+
+  await spawn({
+    command: runner,
+    args: ['volume', 'rm', volume],
     silentOut: true
   });
 };

@@ -31,6 +31,7 @@ export const HOSTING_CLEAR_DESCRIPTION =
 
 export const EMULATOR_START_DESCRIPTION = 'Start the emulator for local development.';
 export const EMULATOR_WAIT_DESCRIPTION = 'Wait until the emulator is ready.';
+export const EMULATOR_CLEAR_DESCRIPTION = 'Clear the local emulator state (volume and container).';
 
 export const FUNCTIONS_PUBLISH_DESCRIPTION = 'Publish a new version of your serverless functions.';
 export const FUNCTIONS_UPGRADE_DESCRIPTION = 'Upgrade your serverless functions.';

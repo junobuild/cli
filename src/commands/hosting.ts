@@ -1,5 +1,5 @@
 import {red} from 'kleur';
-import {logHelpEmulatorClear} from '../help/hosting.clear.help';
+import {logHelpHostingClear} from '../help/hosting.clear.help';
 import {logHelpHostingDeploy} from '../help/hosting.deploy.help';
 import {logHelpHosting} from '../help/hosting.help';
 import {clear} from '../services/assets/clear.services';
@@ -29,7 +29,7 @@ export const helpHosting = (args?: string[]) => {
       logHelpHostingDeploy(args);
       break;
     case 'clear':
-      logHelpEmulatorClear(args);
+      logHelpHostingClear(args);
       break;
     default:
       logHelpHosting(args);
