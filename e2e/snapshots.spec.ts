@@ -1,11 +1,14 @@
+import {initEmulatorSuite} from '@junobuild/emulator-playwright';
 import {expect, test} from '@playwright/test';
-import {initTestSuite} from './utils/init.utils';
+
+const DEV = (process.env.NODE_ENV ?? 'production') === 'development';
+const COMMAND = DEV ? {command: 'node', args: ['dist/index.js']} : {command: 'juno', args: []};
 
 test.describe.configure({mode: 'serial'});
 
 const snapshotTests = ({satelliteKind}: {satelliteKind: 'website' | 'application'}) => {
   test.describe(`satellite ${satelliteKind}`, () => {
-    const getTestPages = initTestSuite({satelliteKind});
+    const getTestPages = initEmulatorSuite({satelliteKind, cli: {command: COMMAND}});
 
     const SNAPSHOT_TARGET = {target: 'satellite' as const};
 
