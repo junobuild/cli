@@ -39,7 +39,7 @@
     "@junobuild/config": "^2.11.0",
     "@junobuild/config-loader": "^0.4.8",
     "@junobuild/core": "^5.2.0",
-    "@junobuild/did-tools": "^0.3.9",
+    "@junobuild/did-tools": "^0.3.10",
     "@junobuild/ic-client": "^8.0.0",
     "@junobuild/storage": "^2.3.0",
     "@junobuild/utils": "^0.2.6",
