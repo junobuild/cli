@@ -1,10 +1,10 @@
 import {notEmptyString} from '@dfinity/utils';
-import {buildFunctions, formatBytes} from '@junobuild/cli-tools';
-import type {Metafile} from 'esbuild';
+import {formatBytes, generateFunctions, type GenerateResultData} from '@junobuild/cli-tools';
 import {green, red, yellow} from 'kleur';
 import {join} from 'node:path';
 import {
-  DEPLOY_SPUTNIK_PATH,
+  DEPLOY_SPUTNIK_FUNCTIONS_PATH,
+  DEPLOY_SPUTNIK_SCRIPT_PATH,
   DEVELOPER_PROJECT_SATELLITE_PATH,
   INDEX_MJS,
   INDEX_TS
@@ -39,7 +39,7 @@ const build = async ({exitOnError, ...params}: BuildArgsTsJs) => {
   try {
     const metadata = await prepareJavaScriptBuildMetadata();
 
-    const buildResult = await buildWithEsbuild({params, metadata});
+    const buildResult = await generate({params, metadata});
 
     printResults({metadata, buildResult});
   } catch (_error: unknown) {
@@ -49,18 +49,13 @@ const build = async ({exitOnError, ...params}: BuildArgsTsJs) => {
   }
 };
 
-interface BuildResult {
-  version: string;
-  output: [string, Metafile['outputs'][0]];
-}
-
-const buildWithEsbuild = async ({
+const generate = async ({
   params: {lang, paths},
   metadata
 }: {
   params: Omit<BuildArgsTsJs, 'exitOnError'>;
   metadata: BuildMetadata;
-}): Promise<BuildResult> => {
+}): Promise<GenerateResultData> => {
   const infile =
     paths?.source ?? join(DEVELOPER_PROJECT_SATELLITE_PATH, lang === 'mjs' ? INDEX_MJS : INDEX_TS);
 
@@ -69,35 +64,28 @@ const buildWithEsbuild = async ({
     js: `// @juno:package ${JSON.stringify(metadata)};`
   };
 
-  const {metafile, errors, warnings, version} = await buildFunctions({
+  const result = await generateFunctions({
     infile,
-    outfile: DEPLOY_SPUTNIK_PATH,
-    banner
+    banner,
+    outfileJs: DEPLOY_SPUTNIK_SCRIPT_PATH,
+    outfileRs: DEPLOY_SPUTNIK_FUNCTIONS_PATH
   });
 
-  for (const {text} of warnings) {
+  if (result.status === 'success') {
+    return result.result;
+  }
+
+  const {warnings, errors} = result;
+
+  for (const text of warnings ?? []) {
     console.log(`${yellow('[Warn]')} ${text}`);
   }
 
-  for (const {text} of errors) {
+  for (const text of errors) {
     console.log(`${red('[Error]')} ${text}`);
   }
 
-  if (errors.length > 0) {
-    throw new Error();
-  }
-
-  const entry = Object.entries(metafile.outputs);
-
-  if (entry.length === 0) {
-    console.log(red('Unexpected: No metafile resulting from the build was found.'));
-    throw new Error();
-  }
-
-  return {
-    output: entry[0],
-    version
-  };
+  throw new Error();
 };
 
 const printResults = ({
@@ -105,7 +93,7 @@ const printResults = ({
   buildResult
 }: {
   metadata: BuildMetadata;
-  buildResult: BuildResult;
+  buildResult: GenerateResultData;
 }) => {
   const {output, version: esbuildVersion} = buildResult;
   const [key, {bytes}] = output;

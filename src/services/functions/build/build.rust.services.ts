@@ -13,7 +13,7 @@ import {
   SATELLITE_DID_FILE
 } from '../../../constants/build.constants';
 import {
-  DEPLOY_SPUTNIK_PATH,
+  DEPLOY_SPUTNIK_SCRIPT_PATH,
   JUNO_PACKAGE_JSON_PATH,
   SATELLITE_OUTPUT,
   SATELLITE_PROJECT_NAME,
@@ -85,7 +85,7 @@ export const buildRust = async ({
   const env = {
     ...process.env,
     RUSTFLAGS: '--cfg getrandom_backend="custom" -A deprecated',
-    ...(target === 'wasm32-wasip1' && {DEV_SCRIPT_PATH: DEPLOY_SPUTNIK_PATH})
+    ...(target === 'wasm32-wasip1' && {DEV_SCRIPT_PATH: DEPLOY_SPUTNIK_SCRIPT_PATH})
   };
 
   await execute({
