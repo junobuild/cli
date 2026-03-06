@@ -49,6 +49,7 @@ const build = async ({exitOnError, ...params}: BuildArgsTsJs) => {
   }
 };
 
+
 const generate = async ({
   params: {lang, paths},
   metadata
