@@ -4,7 +4,7 @@ import type {Metafile} from 'esbuild';
 import {green, red, yellow} from 'kleur';
 import {join} from 'node:path';
 import {
-  DEPLOY_SPUTNIK_PATH,
+  DEPLOY_SPUTNIK_SCRIPT_PATH,
   DEVELOPER_PROJECT_SATELLITE_PATH,
   INDEX_MJS,
   INDEX_TS
@@ -71,7 +71,7 @@ const buildWithEsbuild = async ({
 
   const {metafile, errors, warnings, version} = await buildFunctions({
     infile,
-    outfile: DEPLOY_SPUTNIK_PATH,
+    outfile: DEPLOY_SPUTNIK_SCRIPT_PATH,
     banner
   });
 
