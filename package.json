@@ -30,7 +30,7 @@
   },
   "dependencies": {
     "@dfinity/utils": "^4.1.0",
-    "@dfinity/zod-schemas": "^3.0.2",
+    "@dfinity/zod-schemas": "^3.1.0",
     "@icp-sdk/canisters": "^3.3.0",
     "@icp-sdk/core": "^5.0.0",
     "@junobuild/admin": "^4.1.0",
@@ -39,7 +39,7 @@
     "@junobuild/config": "^2.11.0",
     "@junobuild/config-loader": "^0.4.8",
     "@junobuild/core": "^5.2.0",
-    "@junobuild/did-tools": "^0.3.10",
+    "@junobuild/did-tools": "file:../juno-js/packages/did-tools",
     "@junobuild/ic-client": "^8.0.0",
     "@junobuild/storage": "^2.3.0",
     "@junobuild/utils": "^0.2.6",
