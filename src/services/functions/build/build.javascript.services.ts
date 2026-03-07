@@ -1,5 +1,9 @@
 import {notEmptyString} from '@dfinity/utils';
-import {formatBytes, generateFunctions, type GenerateResultData} from '@junobuild/cli-tools';
+import {
+  buildAndGenerateFunctions,
+  formatBytes,
+  type GenerateResultData
+} from '@junobuild/cli-tools';
 import {green, red, yellow} from 'kleur';
 import {join} from 'node:path';
 import {
@@ -64,7 +68,7 @@ const generate = async ({
     js: `// @juno:package ${JSON.stringify(metadata)};`
   };
 
-  const result = await generateFunctions({
+  const result = await buildAndGenerateFunctions({
     infile,
     banner,
     outfileJs: DEPLOY_SPUTNIK_SCRIPT_PATH,
