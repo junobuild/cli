@@ -57,7 +57,7 @@
     "@eslint/eslintrc": "^3.3.3",
     "@eslint/js": "^9.39.2",
     "@junobuild/emulator-playwright": "^0.0.3",
-    "@junobuild/functions": "^0.5.6",
+    "@junobuild/functions": "file:../juno-js/packages/functions",
     "@playwright/test": "^1.58.1",
     "@types/node": "24.10.9",
     "@types/prompts": "^2.4.9",
