@@ -1,4 +1,4 @@
-import {notEmptyString} from '@dfinity/utils';
+import {nonNullish, notEmptyString} from '@dfinity/utils';
 import {
   buildAndGenerateFunctions,
   formatBytes,
@@ -45,7 +45,7 @@ const build = async ({exitOnError, ...params}: BuildArgsTsJs) => {
 
     const buildResult = await generate({params, metadata});
 
-    printResults({metadata, buildResult});
+    printResults({metadata, generateResult: buildResult});
   } catch (_error: unknown) {
     if (exitOnError !== false) {
       process.exit(1);
@@ -94,13 +94,13 @@ const generate = async ({
 
 const printResults = ({
   metadata,
-  buildResult
+  generateResult: {generate, build}
 }: {
   metadata: BuildMetadata;
-  buildResult: GenerateResultData;
+  generateResult: GenerateResultData;
 }) => {
-  const {output, version: esbuildVersion} = buildResult;
-  const [key, {bytes}] = output;
+  const {output, version: esbuildVersion, outputPath} = build;
+  const [_key, {bytes}] = output;
 
   // The version defined by the developer for their serverless functions - not the version of the Satellite provided by Juno.
   const extendedVersion = metadata?.juno?.functions?.version ?? metadata?.version;
@@ -109,5 +109,14 @@ const printResults = ({
   console.log(
     `${green('✔')} Build complete at ${formatTime()} (${version}esbuild ${esbuildVersion})`
   );
-  console.log(`→ ${yellow(key)} (${formatBytes(bytes)})`);
+
+  console.log(`→ ${yellow(outputPath)} (${formatBytes(bytes)})`);
+
+  if (nonNullish(generate)) {
+    const {totalQueries, totalUpdates, outputPath} = generate;
+
+    console.log(
+      `${green('⬡')} ${totalQueries} queries and ${totalUpdates} updates generated to ${yellow(outputPath)}`
+    );
+  }
 };
