@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
-npm rm @junobuild/{admin,cdn,cli-tools,config,config-loader,core,functions-tools,ic-client,storage,utils,zod}
 npm rm @junobuild/functions
+npm rm @junobuild/{admin,cdn,cli-tools,config,config-loader,core,functions-tools,ic-client,storage,utils,zod}
 
 npm i @junobuild/{admin,cdn,cli-tools,config,config-loader,core,functions-tools,ic-client,storage,utils,zod}@next
 npm i @junobuild/functions@next -D
