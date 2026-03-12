@@ -1,6 +1,6 @@
 import {isNullish} from '@dfinity/utils';
 import {spawn} from '@junobuild/cli-tools';
-import {generateApi as generateApiLib} from '@junobuild/did-tools';
+import {generateApi as generateApiLib} from '@junobuild/functions-tools';
 import {existsSync} from 'node:fs';
 import {readFile, rename, rm} from 'node:fs/promises';
 import {join} from 'node:path';
