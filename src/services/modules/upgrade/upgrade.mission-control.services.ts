@@ -1,11 +1,11 @@
 import {isNullish} from '@dfinity/utils';
-import type {PrincipalText} from '@dfinity/zod-schemas';
 import {
   missionControlVersion,
   upgradeMissionControl as upgradeMissionControlAdmin
 } from '@junobuild/admin';
 import {hasArgs, nextArg} from '@junobuild/cli-tools';
 import type {MissionControlParameters} from '@junobuild/ic-client/actor';
+import type {PrincipalText} from '@junobuild/zod';
 import {cyan, red} from 'kleur';
 import {actorParameters} from '../../../api/actor.api';
 import {getCliMissionControl} from '../../../configs/cli.config';

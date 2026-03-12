@@ -1,7 +1,7 @@
 import {nonNullish} from '@dfinity/utils';
-import type {PrincipalText} from '@dfinity/zod-schemas';
 import type {JsonnableEd25519KeyIdentity} from '@icp-sdk/core/identity';
 import {Ed25519KeyIdentity} from '@icp-sdk/core/identity';
+import type {PrincipalText} from '@junobuild/zod';
 import {REDIRECT_URL} from '../constants/constants';
 import {ENV} from '../env';
 

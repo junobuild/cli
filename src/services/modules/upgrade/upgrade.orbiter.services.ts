@@ -1,8 +1,8 @@
 import {isNullish} from '@dfinity/utils';
-import type {PrincipalText} from '@dfinity/zod-schemas';
 import {orbiterVersion, upgradeOrbiter as upgradeOrbiterAdmin} from '@junobuild/admin';
 import {hasArgs, nextArg} from '@junobuild/cli-tools';
 import type {OrbiterParameters} from '@junobuild/ic-client/actor';
+import type {PrincipalText} from '@junobuild/zod';
 import {cyan, red} from 'kleur';
 import {actorParameters} from '../../../api/actor.api';
 import {ORBITER_WASM_NAME} from '../../../constants/constants';

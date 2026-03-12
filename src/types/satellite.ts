@@ -1,5 +1,5 @@
-import type {PrincipalText} from '@dfinity/zod-schemas';
 import type {OrbiterParameters, SatelliteParameters} from '@junobuild/ic-client/actor';
+import type {PrincipalText} from '@junobuild/zod';
 
 export type SatelliteParametersWithId = Omit<SatelliteParameters, 'satelliteId'> & {
   satelliteId: PrincipalText;
