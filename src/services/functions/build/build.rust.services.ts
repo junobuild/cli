@@ -27,7 +27,8 @@ import {readSatelliteDid} from '../../../utils/did.utils';
 import {checkRustVersion} from '../../../utils/env.utils';
 import {formatTime} from '../../../utils/format.utils';
 import {readEmulatorConfigAndCreateDeployTargetDir} from '../../emulator/_fs.services';
-import {generateApi, generateDid} from './build.did.services';
+import {generateIdlApi} from './build.api.services';
+import {generateIdl} from './build.idl.services';
 import {prepareJunoPkgForSatellite, prepareJunoPkgForSputnik} from './build.metadata.services';
 import {dispatchEmulatorTouchSatellite} from './touch.services';
 
@@ -138,9 +139,9 @@ export const buildRust = async ({
     await did({cargoOutputWasm});
 
     if (target !== 'wasm32-wasip1') {
-      // TODO: support binding files for serverless functions in JS/TS
-      await generateDid();
-      await generateApi();
+      // TS/JS Did and Api are generated after build and not based on the extracted did files
+      await generateIdl();
+      await generateIdlApi();
     }
 
     spinner.text = 'Binding metadata...';

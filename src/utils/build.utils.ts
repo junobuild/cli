@@ -1,5 +1,6 @@
 import {notEmptyString} from '@dfinity/utils';
 import {hasArgs, nextArg} from '@junobuild/cli-tools';
+import {DEVELOPER_PROJECT_SATELLITE_DECLARATIONS_PATH} from '../constants/dev.constants';
 import type {BuildArgs} from '../types/build';
 
 export const buildArgs = (args?: string[]): BuildArgs => {
@@ -39,3 +40,6 @@ const buildLang = (args?: string[]): Pick<BuildArgs, 'lang'> => {
       return {};
   }
 };
+
+export const satellitedIdl = (type: 'js' | 'ts'): string =>
+  `${DEVELOPER_PROJECT_SATELLITE_DECLARATIONS_PATH}/satellite.${type === 'ts' ? 'did.d.ts' : 'factory.did.js'}`;

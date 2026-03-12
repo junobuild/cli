@@ -1,4 +1,4 @@
-import {nonNullish, notEmptyString} from '@dfinity/utils';
+import {isNullish, nonNullish, notEmptyString} from '@dfinity/utils';
 import {
   buildAndGenerateFunctions,
   formatBytes,
@@ -6,6 +6,7 @@ import {
 } from '@junobuild/cli-tools';
 import {green, red, yellow} from 'kleur';
 import {join} from 'node:path';
+import ora from 'ora';
 import {
   DEPLOY_SPUTNIK_FUNCTIONS_PATH,
   DEPLOY_SPUTNIK_SCRIPT_PATH,
@@ -14,29 +15,70 @@ import {
   INDEX_TS
 } from '../../../constants/dev.constants';
 import type {BuildArgs, BuildLang, BuildMetadata} from '../../../types/build';
+import {checkIcpBindgen} from '../../../utils/build.bindgen.utils';
 import {installEsbuild} from '../../../utils/esbuild.utils';
 import {formatTime} from '../../../utils/format.utils';
 import {readEmulatorConfigAndCreateDeployTargetDir} from '../../emulator/_fs.services';
+import {generateZodApi} from './build.api.services';
+import {generateJsTsDid} from './build.did.services';
+import {generateIdl} from './build.idl.services';
 import {prepareJavaScriptBuildMetadata} from './build.metadata.services';
 
 export const buildTypeScript = async ({
   paths,
   exitOnError
 }: Pick<BuildArgs, 'paths' | 'exitOnError'> = {}) => {
-  await build({lang: 'ts', paths, exitOnError});
+  await generateAndBuild({lang: 'ts', paths, exitOnError});
 };
 
 export const buildJavaScript = async ({
   paths,
   exitOnError
 }: Pick<BuildArgs, 'paths' | 'exitOnError'> = {}) => {
-  await build({lang: 'mjs', paths, exitOnError});
+  await generateAndBuild({lang: 'mjs', paths, exitOnError});
 };
 
 type BuildArgsTsJs = {lang: Omit<BuildLang, 'rs'>} & Pick<BuildArgs, 'paths' | 'exitOnError'>;
 
-const build = async ({exitOnError, ...params}: BuildArgsTsJs) => {
+const generateAndBuild = async ({lang, ...rest}: BuildArgsTsJs) => {
+  const result = await build({lang, ...rest});
+
+  if (result.status === 'error') {
+    return;
+  }
+
+  const {result: generatedData} = result;
+
+  const spinner = ora('Generating API...').start();
+
+  try {
+    await generateJsTsDid({generatedData});
+
+    await generateIdl();
+    await generateZodApi({generatedData, lang});
+
+    if (isNullish(generatedData.generate)) {
+      spinner.stop();
+      return;
+    }
+
+    spinner.succeed('API generated');
+  } catch {
+    spinner.fail('Error generating API');
+  }
+};
+
+const build = async ({
+  exitOnError,
+  ...params
+}: BuildArgsTsJs): Promise<{status: 'success'; result: GenerateResultData} | {status: 'error'}> => {
   await installEsbuild();
+
+  const {valid: validBindgen} = await checkIcpBindgen();
+
+  if (!validBindgen) {
+    return {status: 'error'};
+  }
 
   await readEmulatorConfigAndCreateDeployTargetDir();
 
@@ -46,10 +88,14 @@ const build = async ({exitOnError, ...params}: BuildArgsTsJs) => {
     const buildResult = await generate({params, metadata});
 
     printResults({metadata, generateResult: buildResult});
+
+    return {status: 'success', result: buildResult};
   } catch (_error: unknown) {
     if (exitOnError !== false) {
       process.exit(1);
     }
+
+    return {status: 'error'};
   }
 };
 
@@ -113,10 +159,10 @@ const printResults = ({
   console.log(`→ ${yellow(outputPath)} (${formatBytes(bytes)})`);
 
   if (nonNullish(generate)) {
-    const {totalQueries, totalUpdates, outputPath} = generate;
+    const {queries, updates, outputPath} = generate;
 
     console.log(
-      `${green('⬡')} ${totalQueries} queries and ${totalUpdates} updates generated to ${yellow(outputPath)}`
+      `${green('⬡')} ${queries.length} queries and ${updates.length} updates generated to ${yellow(outputPath)}`
     );
   }
 };
