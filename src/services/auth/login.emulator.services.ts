@@ -1,5 +1,5 @@
 import {notEmptyString} from '@dfinity/utils';
-import {type PrincipalText} from '@dfinity/zod-schemas';
+import {type PrincipalText} from '@junobuild/zod';
 import {green, red} from 'kleur';
 import ora from 'ora';
 import {saveCliConfig} from '../../configs/cli.config';

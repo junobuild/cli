@@ -1,11 +1,11 @@
 import {nonNullish} from '@dfinity/utils';
-import {type PrincipalText} from '@dfinity/zod-schemas';
 import {findJunoPackageDependency, getJunoPackage} from '@junobuild/admin';
 import {
   JUNO_PACKAGE_MISSION_CONTROL_ID,
   JUNO_PACKAGE_ORBITER_ID,
   JUNO_PACKAGE_SATELLITE_ID
 } from '@junobuild/config';
+import {type PrincipalText} from '@junobuild/zod';
 import {actorParameters} from '../../../api/actor.api';
 import type {AssetKey} from '../../../types/asset-key';
 import {displaySegment} from '../../../utils/display.utils';

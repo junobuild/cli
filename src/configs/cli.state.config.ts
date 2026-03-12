@@ -1,4 +1,4 @@
-import {type PrincipalText} from '@dfinity/zod-schemas';
+import {type PrincipalText} from '@junobuild/zod';
 import Conf from 'conf';
 import {ENV} from '../env';
 import {

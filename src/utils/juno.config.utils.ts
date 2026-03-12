@@ -1,6 +1,6 @@
 import {assertNonNullish, isNullish, nonNullish} from '@dfinity/utils';
-import type {PrincipalText} from '@dfinity/zod-schemas';
 import type {JunoConfig, JunoConfigEnv, OrbiterConfig, SatelliteConfig} from '@junobuild/config';
+import type {PrincipalText} from '@junobuild/zod';
 import {red} from 'kleur';
 import {actorParameters} from '../api/actor.api';
 import {noJunoConfig, readJunoConfig} from '../configs/juno.config';

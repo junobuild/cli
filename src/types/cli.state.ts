@@ -1,4 +1,4 @@
-import {type PrincipalText} from '@dfinity/zod-schemas';
+import {type PrincipalText} from '@junobuild/zod';
 
 export type ConfigHash = string;
 export type RuleHash = ConfigHash;

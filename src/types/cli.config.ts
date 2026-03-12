@@ -1,5 +1,5 @@
-import type {PrincipalText} from '@dfinity/zod-schemas';
 import type {JsonnableEd25519KeyIdentity} from '@icp-sdk/core/identity';
+import type {PrincipalText} from '@junobuild/zod';
 
 export interface CliConfig {
   token: JsonnableEd25519KeyIdentity;
