@@ -12,7 +12,6 @@ import {DEVELOPER_PROJECT_SATELLITE_DECLARATIONS_PATH} from '../../../constants/
 import type {BuildLang} from '../../../types/build';
 import {satellitedIdl} from '../../../utils/build.utils';
 import {readPackageJson} from '../../../utils/pkg.utils';
-import {SATELLITE_DID_FILE} from '../../../constants/build.constants';
 
 export const generateIdlApi = async () => {
   const inputFile = satellitedIdl('ts');

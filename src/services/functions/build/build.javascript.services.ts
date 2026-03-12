@@ -21,6 +21,7 @@ import {formatTime} from '../../../utils/format.utils';
 import {readEmulatorConfigAndCreateDeployTargetDir} from '../../emulator/_fs.services';
 import {generateZodApi} from './build.api.services';
 import {generateJsTsDid} from './build.did.services';
+import {generateIdl} from './build.idl.services';
 import {prepareJavaScriptBuildMetadata} from './build.metadata.services';
 
 export const buildTypeScript = async ({
@@ -52,6 +53,8 @@ const generateAndBuild = async ({lang, ...rest}: BuildArgsTsJs) => {
 
   try {
     await generateJsTsDid({generatedData});
+
+    await generateIdl();
     await generateZodApi({generatedData, lang});
 
     if (isNullish(generatedData.generate)) {
