@@ -6,12 +6,13 @@ import {
   type TransformerOptions
 } from '@junobuild/functions-tools';
 import {existsSync} from 'node:fs';
-import {mkdir} from 'node:fs/promises';
+import {mkdir, rm} from 'node:fs/promises';
 import {detectJunoConfigType} from '../../../configs/juno.config';
 import {DEVELOPER_PROJECT_SATELLITE_DECLARATIONS_PATH} from '../../../constants/dev.constants';
 import type {BuildLang} from '../../../types/build';
 import {satellitedIdl} from '../../../utils/build.utils';
 import {readPackageJson} from '../../../utils/pkg.utils';
+import {SATELLITE_DID_FILE} from '../../../constants/build.constants';
 
 export const generateIdlApi = async () => {
   const inputFile = satellitedIdl('ts');
@@ -40,6 +41,8 @@ export const generateZodApi = async ({
   const {generate} = generatedData;
 
   if (isNullish(generate)) {
+    const {outputFile} = buildOutput({lang});
+    await rm(outputFile, {force: true});
     return;
   }
 
@@ -86,9 +89,7 @@ const generateApi = async ({
   // are parsed for the first time
   await mkdir(DEVELOPER_PROJECT_SATELLITE_DECLARATIONS_PATH, {recursive: true});
 
-  const outputLanguage = lang === 'mjs' ? 'js' : 'ts';
-
-  const outputFile = `${DEVELOPER_PROJECT_SATELLITE_DECLARATIONS_PATH}/satellite.api.${outputLanguage}`;
+  const {outputFile, outputLanguage} = buildOutput({lang});
 
   await generateFn({
     outputFile,
@@ -97,4 +98,15 @@ const generateApi = async ({
       coreLib
     }
   });
+};
+
+const buildOutput = ({
+  lang
+}: {
+  lang: Omit<BuildLang, 'rs'>;
+}): Pick<TransformerOptions, 'outputLanguage'> & {outputFile: string} => {
+  const outputLanguage = lang === 'mjs' ? 'js' : 'ts';
+  const outputFile = `${DEVELOPER_PROJECT_SATELLITE_DECLARATIONS_PATH}/satellite.api.${outputLanguage}`;
+
+  return {outputFile, outputLanguage};
 };

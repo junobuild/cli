@@ -1,4 +1,4 @@
-import {nonNullish, notEmptyString} from '@dfinity/utils';
+import {isNullish, nonNullish, notEmptyString} from '@dfinity/utils';
 import {
   buildAndGenerateFunctions,
   formatBytes,
@@ -6,6 +6,7 @@ import {
 } from '@junobuild/cli-tools';
 import {green, red, yellow} from 'kleur';
 import {join} from 'node:path';
+import ora from 'ora';
 import {
   DEPLOY_SPUTNIK_FUNCTIONS_PATH,
   DEPLOY_SPUTNIK_SCRIPT_PATH,
@@ -47,8 +48,21 @@ const generateAndBuild = async ({lang, ...rest}: BuildArgsTsJs) => {
 
   const {result: generatedData} = result;
 
-  await generateJsTsDid({generatedData});
-  await generateZodApi({generatedData, lang});
+  const spinner = ora('Generating API...').start();
+
+  try {
+    await generateJsTsDid({generatedData});
+    await generateZodApi({generatedData, lang});
+
+    if (isNullish(generatedData.generate)) {
+      spinner.stop();
+      return;
+    }
+
+    spinner.succeed('API generated');
+  } catch {
+    spinner.fail('Error generating API');
+  }
 };
 
 const build = async ({
