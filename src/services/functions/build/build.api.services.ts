@@ -23,7 +23,9 @@ export const generateIdlApi = async () => {
   const detectedConfig = detectJunoConfigType();
   const lang = detectedConfig?.configType === 'ts' ? 'ts' : 'mjs';
 
-  const generateFn: GenerateFn = async (params) => { await generateIdlApiLib({inputFile, ...params}); };
+  const generateFn: GenerateFn = async (params) => {
+    await generateIdlApiLib({inputFile, ...params});
+  };
 
   await generateApi({generateFn, lang});
 };
@@ -44,11 +46,12 @@ export const generateZodApi = async ({
   const {updates, queries} = generate;
   const functions = [...queries, ...updates];
 
-  const generateFn: GenerateFn = async (params) =>
-    { await generateZodApiLib({
+  const generateFn: GenerateFn = async (params) => {
+    await generateZodApiLib({
       ...params,
       functions
-    }); };
+    });
+  };
 
   await generateApi({generateFn, lang});
 };
