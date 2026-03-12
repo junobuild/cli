@@ -14,45 +14,54 @@ import {
   INDEX_TS
 } from '../../../constants/dev.constants';
 import type {BuildArgs, BuildLang, BuildMetadata} from '../../../types/build';
+import {checkIcpBindgen} from '../../../utils/build.bindgen.utils';
 import {installEsbuild} from '../../../utils/esbuild.utils';
 import {formatTime} from '../../../utils/format.utils';
 import {readEmulatorConfigAndCreateDeployTargetDir} from '../../emulator/_fs.services';
 import {generateZodApi} from './build.api.services';
+import {generateJsTsDid} from './build.did.services';
 import {prepareJavaScriptBuildMetadata} from './build.metadata.services';
 
 export const buildTypeScript = async ({
   paths,
   exitOnError
 }: Pick<BuildArgs, 'paths' | 'exitOnError'> = {}) => {
-  const result = await build({lang: 'ts', paths, exitOnError});
-
-  if (result.status === 'error') {
-    return;
-  }
-
-  await generateZodApi({generatedData: result.result, lang: 'ts'});
+  await generateAndBuild({lang: 'ts', paths, exitOnError});
 };
 
 export const buildJavaScript = async ({
   paths,
   exitOnError
 }: Pick<BuildArgs, 'paths' | 'exitOnError'> = {}) => {
-  const result = await build({lang: 'mjs', paths, exitOnError});
+  await generateAndBuild({lang: 'mjs', paths, exitOnError});
+};
+
+type BuildArgsTsJs = {lang: Omit<BuildLang, 'rs'>} & Pick<BuildArgs, 'paths' | 'exitOnError'>;
+
+const generateAndBuild = async ({lang, ...rest}: BuildArgsTsJs) => {
+  const result = await build({lang, ...rest});
 
   if (result.status === 'error') {
     return;
   }
 
-  await generateZodApi({generatedData: result.result, lang: 'mjs'});
-};
+  const {result: generatedData} = result;
 
-type BuildArgsTsJs = {lang: Omit<BuildLang, 'rs'>} & Pick<BuildArgs, 'paths' | 'exitOnError'>;
+  await generateJsTsDid({generatedData});
+  await generateZodApi({generatedData, lang});
+};
 
 const build = async ({
   exitOnError,
   ...params
 }: BuildArgsTsJs): Promise<{status: 'success'; result: GenerateResultData} | {status: 'error'}> => {
   await installEsbuild();
+
+  const {valid: validBindgen} = await checkIcpBindgen();
+
+  if (!validBindgen) {
+    return {status: 'error'};
+  }
 
   await readEmulatorConfigAndCreateDeployTargetDir();
 

@@ -1,18 +1,40 @@
 import {isNullish} from '@dfinity/utils';
-import {spawn} from '@junobuild/cli-tools';
+import {type GenerateResultData, spawn} from '@junobuild/cli-tools';
+import {generateDid as generateDidLib} from '@junobuild/functions-tools';
 import {existsSync} from 'node:fs';
 import {readFile, rename, rm} from 'node:fs/promises';
 import {join} from 'node:path';
 import {
   EXTENSION_DID_FILE_NAME,
-  SATELLITE_CUSTOM_DID_FILE
+  SATELLITE_CUSTOM_DID_FILE,
+  SATELLITE_DID_FILE
 } from '../../../constants/build.constants';
 import {DEVELOPER_PROJECT_SATELLITE_DECLARATIONS_PATH} from '../../../constants/dev.constants';
 import {checkLocalIcpBindgen} from '../../../utils/build.bindgen.utils';
 import {satellitedIdl} from '../../../utils/build.utils';
 import {detectPackageManager} from '../../../utils/pm.utils';
 
-export const generateDid = async () => {
+export const generateRustDid = async () => {
+  await generateDid();
+};
+
+export const generateJsTsDid = async ({generatedData}: {generatedData: GenerateResultData}) => {
+  const {generate} = generatedData;
+
+  if (isNullish(generate)) {
+    await rm(SATELLITE_CUSTOM_DID_FILE, {force: true});
+    await rm(SATELLITE_DID_FILE, {force: true});
+    return;
+  }
+
+  const {updates, queries} = generate;
+
+  await generateDidLib({updates, queries, outputFile: SATELLITE_CUSTOM_DID_FILE});
+
+  await generateDid();
+};
+
+const generateDid = async () => {
   // No satellite_extension.did and therefore no services to generate to JS and TS.
   if (!existsSync(SATELLITE_CUSTOM_DID_FILE)) {
     return;

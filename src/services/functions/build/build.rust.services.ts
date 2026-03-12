@@ -28,7 +28,7 @@ import {checkRustVersion} from '../../../utils/env.utils';
 import {formatTime} from '../../../utils/format.utils';
 import {readEmulatorConfigAndCreateDeployTargetDir} from '../../emulator/_fs.services';
 import {generateIdlApi} from './build.api.services';
-import {generateDid} from './build.did.services';
+import {generateRustDid} from './build.did.services';
 import {prepareJunoPkgForSatellite, prepareJunoPkgForSputnik} from './build.metadata.services';
 import {dispatchEmulatorTouchSatellite} from './touch.services';
 
@@ -138,10 +138,9 @@ export const buildRust = async ({
 
     await did({cargoOutputWasm});
 
-    await generateDid();
-
     if (target !== 'wasm32-wasip1') {
-      // TS/JS Api are generated after build and not based on the extracted did files
+      // TS/JS Did and Api are generated after build and not based on the extracted did files
+      await generateRustDid();
       await generateIdlApi();
     }
 
