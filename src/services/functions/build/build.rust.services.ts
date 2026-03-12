@@ -28,9 +28,9 @@ import {checkRustVersion} from '../../../utils/env.utils';
 import {formatTime} from '../../../utils/format.utils';
 import {readEmulatorConfigAndCreateDeployTargetDir} from '../../emulator/_fs.services';
 import {generateIdlApi} from './build.api.services';
+import {generateIdl} from './build.idl.services';
 import {prepareJunoPkgForSatellite, prepareJunoPkgForSputnik} from './build.metadata.services';
 import {dispatchEmulatorTouchSatellite} from './touch.services';
-import {generateIdl} from './build.idl.services';
 
 export const buildRust = async ({
   paths,
