@@ -1,21 +1,16 @@
 import {isNullish} from '@dfinity/utils';
 import {spawn} from '@junobuild/cli-tools';
-import {generateApi as generateApiLib} from '@junobuild/functions-tools';
 import {existsSync} from 'node:fs';
 import {readFile, rename, rm} from 'node:fs/promises';
 import {join} from 'node:path';
-import {detectJunoConfigType} from '../../../configs/juno.config';
 import {
   EXTENSION_DID_FILE_NAME,
   SATELLITE_CUSTOM_DID_FILE
 } from '../../../constants/build.constants';
 import {DEVELOPER_PROJECT_SATELLITE_DECLARATIONS_PATH} from '../../../constants/dev.constants';
 import {checkLocalIcpBindgen} from '../../../utils/build.bindgen.utils';
-import {readPackageJson} from '../../../utils/pkg.utils';
+import {satellitedIdl} from '../../../utils/build.utils';
 import {detectPackageManager} from '../../../utils/pm.utils';
-
-const satellitedIdl = (type: 'js' | 'ts'): string =>
-  `${DEVELOPER_PROJECT_SATELLITE_DECLARATIONS_PATH}/satellite.${type === 'ts' ? 'did.d.ts' : 'factory.did.js'}`;
 
 export const generateDid = async () => {
   // No satellite_extension.did and therefore no services to generate to JS and TS.
@@ -70,41 +65,5 @@ const executeIcpBindgen = async () => {
       '--force'
     ],
     silentOut: true
-  });
-};
-
-export const generateApi = async () => {
-  const inputFile = satellitedIdl('ts');
-
-  if (!existsSync(inputFile)) {
-    return;
-  }
-
-  const detectedConfig = detectJunoConfigType();
-  const outputLanguage = detectedConfig?.configType === 'ts' ? 'ts' : 'js';
-
-  const outputFile = `${DEVELOPER_PROJECT_SATELLITE_DECLARATIONS_PATH}/satellite.api.${outputLanguage}`;
-
-  const readCoreLib = async (): Promise<'core' | 'core-standalone'> => {
-    try {
-      const {dependencies} = await readPackageJson();
-      return Object.keys(dependencies ?? {}).includes('@junobuild/core-standalone')
-        ? 'core-standalone'
-        : 'core';
-    } catch (_err: unknown) {
-      // This should not block the developer therefore we fallback to core which is the common way of using the library
-      return 'core';
-    }
-  };
-
-  const coreLib = await readCoreLib();
-
-  await generateApiLib({
-    inputFile,
-    outputFile,
-    transformerOptions: {
-      outputLanguage,
-      coreLib
-    }
   });
 };

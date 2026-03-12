@@ -17,25 +17,41 @@ import type {BuildArgs, BuildLang, BuildMetadata} from '../../../types/build';
 import {installEsbuild} from '../../../utils/esbuild.utils';
 import {formatTime} from '../../../utils/format.utils';
 import {readEmulatorConfigAndCreateDeployTargetDir} from '../../emulator/_fs.services';
+import {generateZodApi} from './build.api.services';
 import {prepareJavaScriptBuildMetadata} from './build.metadata.services';
 
 export const buildTypeScript = async ({
   paths,
   exitOnError
 }: Pick<BuildArgs, 'paths' | 'exitOnError'> = {}) => {
-  await build({lang: 'ts', paths, exitOnError});
+  const result = await build({lang: 'ts', paths, exitOnError});
+
+  if (result.status === 'error') {
+    return;
+  }
+
+  await generateZodApi({generatedData: result.result, lang: 'ts'});
 };
 
 export const buildJavaScript = async ({
   paths,
   exitOnError
 }: Pick<BuildArgs, 'paths' | 'exitOnError'> = {}) => {
-  await build({lang: 'mjs', paths, exitOnError});
+  const result = await build({lang: 'mjs', paths, exitOnError});
+
+  if (result.status === 'error') {
+    return;
+  }
+
+  await generateZodApi({generatedData: result.result, lang: 'mjs'});
 };
 
 type BuildArgsTsJs = {lang: Omit<BuildLang, 'rs'>} & Pick<BuildArgs, 'paths' | 'exitOnError'>;
 
-const build = async ({exitOnError, ...params}: BuildArgsTsJs) => {
+const build = async ({
+  exitOnError,
+  ...params
+}: BuildArgsTsJs): Promise<{status: 'success'; result: GenerateResultData} | {status: 'error'}> => {
   await installEsbuild();
 
   await readEmulatorConfigAndCreateDeployTargetDir();
@@ -46,10 +62,14 @@ const build = async ({exitOnError, ...params}: BuildArgsTsJs) => {
     const buildResult = await generate({params, metadata});
 
     printResults({metadata, generateResult: buildResult});
+
+    return {status: 'success', result: buildResult};
   } catch (_error: unknown) {
     if (exitOnError !== false) {
       process.exit(1);
     }
+
+    return {status: 'error'};
   }
 };
 
@@ -113,10 +133,10 @@ const printResults = ({
   console.log(`→ ${yellow(outputPath)} (${formatBytes(bytes)})`);
 
   if (nonNullish(generate)) {
-    const {totalQueries, totalUpdates, outputPath} = generate;
+    const {queries, updates, outputPath} = generate;
 
     console.log(
-      `${green('⬡')} ${totalQueries} queries and ${totalUpdates} updates generated to ${yellow(outputPath)}`
+      `${green('⬡')} ${queries.length} queries and ${updates.length} updates generated to ${yellow(outputPath)}`
     );
   }
 };
