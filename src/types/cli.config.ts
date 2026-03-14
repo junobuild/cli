@@ -1,5 +1,5 @@
 import type {JsonnableEd25519KeyIdentity} from '@icp-sdk/core/identity';
-import type {PrincipalText} from '@junobuild/zod';
+import type {PrincipalText} from '@junobuild/schema';
 
 export interface CliConfig {
   token: JsonnableEd25519KeyIdentity;

@@ -1,4 +1,4 @@
-import {type PrincipalText} from '@junobuild/zod';
+import {type PrincipalText} from '@junobuild/schema';
 
 export type ConfigHash = string;
 export type RuleHash = ConfigHash;

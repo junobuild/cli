@@ -5,7 +5,7 @@ import {
   JUNO_PACKAGE_ORBITER_ID,
   JUNO_PACKAGE_SATELLITE_ID
 } from '@junobuild/config';
-import {type PrincipalText} from '@junobuild/zod';
+import {type PrincipalText} from '@junobuild/schema';
 import {actorParameters} from '../../../api/actor.api';
 import type {AssetKey} from '../../../types/asset-key';
 import {displaySegment} from '../../../utils/display.utils';
