@@ -28,6 +28,8 @@ export const CONFIG_INIT_DESCRIPTION = 'Set up your project by creating a config
 export const HOSTING_DEPLOY_DESCRIPTION = 'Deploy your app to your satellite.';
 export const HOSTING_CLEAR_DESCRIPTION =
   'Remove frontend files (JS, HTML, CSS, etc.) from your satellite.';
+export const HOSTING_PRUNE_DESCRIPTION =
+  'Remove stale frontend files from your satellite that are no longer in your build output.';
 
 export const EMULATOR_START_DESCRIPTION = 'Start the emulator for local development.';
 export const EMULATOR_WAIT_DESCRIPTION = 'Wait until the emulator is ready.';

@@ -2,7 +2,8 @@ import {cyan, green, magenta, yellow} from 'kleur';
 import {
   HOSTING_CLEAR_DESCRIPTION,
   HOSTING_DEPLOY_DESCRIPTION,
-  HOSTING_DESCRIPTION
+  HOSTING_DESCRIPTION,
+  HOSTING_PRUNE_DESCRIPTION
 } from '../constants/help.constants';
 import {helpOutput} from './common.help';
 import {TITLE} from './help';
@@ -11,7 +12,8 @@ const usage = `Usage: ${green('juno')} ${cyan('hosting')} ${magenta('<subcommand
 
 Subcommands:
   ${magenta('clear')}               ${HOSTING_CLEAR_DESCRIPTION}
-  ${magenta('deploy')}              ${HOSTING_DEPLOY_DESCRIPTION}`;
+  ${magenta('deploy')}              ${HOSTING_DEPLOY_DESCRIPTION}
+  ${magenta('prune')}               ${HOSTING_PRUNE_DESCRIPTION}`;
 
 const doc = `${HOSTING_DESCRIPTION}
 
