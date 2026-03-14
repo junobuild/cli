@@ -2,7 +2,7 @@ import {isNullish} from '@dfinity/utils';
 import type {GenerateResultData} from '@junobuild/cli-tools';
 import {
   generateIdlApi as generateIdlApiLib,
-  generateZodApi as generateZodApiLib,
+  generateSchemaApi as generateSchemaApiLib,
   type TransformerOptions
 } from '@junobuild/functions-tools';
 import {existsSync} from 'node:fs';
@@ -30,7 +30,7 @@ export const generateIdlApi = async () => {
   await generateApi({generateFn, lang});
 };
 
-export const generateZodApi = async ({
+export const generateSchemaApi = async ({
   generatedData,
   lang
 }: {
@@ -49,7 +49,7 @@ export const generateZodApi = async ({
   const functions = [...queries, ...updates];
 
   const generateFn: GenerateFn = async (params) => {
-    await generateZodApiLib({
+    await generateSchemaApiLib({
       ...params,
       functions
     });
