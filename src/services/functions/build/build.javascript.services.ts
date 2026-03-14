@@ -19,7 +19,7 @@ import {checkIcpBindgen} from '../../../utils/build.bindgen.utils';
 import {installEsbuild} from '../../../utils/esbuild.utils';
 import {formatTime} from '../../../utils/format.utils';
 import {readEmulatorConfigAndCreateDeployTargetDir} from '../../emulator/_fs.services';
-import {generateZodApi} from './build.api.services';
+import {generateSchemaApi} from './build.api.services';
 import {generateJsTsDid} from './build.did.services';
 import {generateIdl} from './build.idl.services';
 import {prepareJavaScriptBuildMetadata} from './build.metadata.services';
@@ -55,7 +55,7 @@ const generateAndBuild = async ({lang, ...rest}: BuildArgsTsJs) => {
     await generateJsTsDid({generatedData});
 
     await generateIdl();
-    await generateZodApi({generatedData, lang});
+    await generateSchemaApi({generatedData, lang});
 
     if (isNullish(generatedData.generate)) {
       spinner.stop();
