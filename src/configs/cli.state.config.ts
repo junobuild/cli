@@ -1,4 +1,4 @@
-import {type PrincipalText} from '@junobuild/zod';
+import {type PrincipalText} from '@junobuild/schema';
 import Conf from 'conf';
 import {ENV} from '../env';
 import {
