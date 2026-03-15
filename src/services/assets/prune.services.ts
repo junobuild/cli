@@ -12,6 +12,7 @@ import {noJunoConfig} from '../../configs/juno.config';
 import type {SatelliteParametersWithId} from '../../types/satellite';
 import {assertConfigAndLoadSatelliteContext} from '../../utils/juno.config.utils';
 import {consoleNoConfigFound} from '../../utils/msg.utils';
+import {parseBatchSize} from './_args.services';
 import {listAssets} from './_assets.list.services';
 
 export const prune = async (args?: string[]) => {
@@ -25,6 +26,8 @@ export const prune = async (args?: string[]) => {
 
 const executePrune = async (args?: string[]) => {
   const dryRun = hasArgs({args, options: ['--dry-run']});
+
+  const {value: pruneBatchSize} = parseBatchSize(args);
 
   const {satellite, satelliteConfig} = await assertConfigAndLoadSatelliteContext();
 
@@ -43,7 +46,8 @@ const executePrune = async (args?: string[]) => {
       config: satelliteConfig,
       listAssets: listExistingAssets,
       assertSourceDirExists,
-      dryRun
+      dryRun,
+      batchSize: pruneBatchSize
     },
     pruneFn
   });

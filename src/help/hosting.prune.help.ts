@@ -6,6 +6,7 @@ import {TITLE} from './help';
 const usage = `Usage: ${green('juno')} ${cyan('hosting')} ${magenta('prune')} ${yellow('[options]')}
 
 Options:
+  ${yellow('--batch')}               Number of files to prune in parallel per batch (default: 100).
   ${yellow('--dry-run')}             List stale files that would be deleted without actually deleting them.
   ${OPTIONS_ENV}
   ${OPTION_HELP}`;
