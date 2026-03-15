@@ -21,7 +21,7 @@ import {
 import type {SatelliteParametersWithId} from '../../../types/satellite';
 import {assertConfigAndLoadSatelliteContext} from '../../../utils/juno.config.utils';
 import {assertSatelliteMemorySize} from '../../assert.services';
-import {listAssets} from './deploy.list.services';
+import {listAssets} from '../_assets.list.services';
 
 export const executeDeployWithProposal = async ({
   options,
