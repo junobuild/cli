@@ -34,7 +34,7 @@
     "@icp-sdk/core": "^5.0.0",
     "@junobuild/admin": "^4.2.0",
     "@junobuild/cdn": "^2.3.0",
-    "@junobuild/cli-tools": "^0.12.2",
+    "@junobuild/cli-tools": "^0.12.2-next-2026-03-15.1",
     "@junobuild/config": "^2.14.1",
     "@junobuild/config-loader": "^0.4.8",
     "@junobuild/core": "^5.2.1",
