@@ -1,9 +1,5 @@
 import {cyan, green, magenta, yellow} from 'kleur';
-import {
-  HOSTING_PRUNE_DESCRIPTION,
-  OPTION_HELP,
-  OPTIONS_ENV
-} from '../constants/help.constants';
+import {HOSTING_PRUNE_DESCRIPTION, OPTION_HELP, OPTIONS_ENV} from '../constants/help.constants';
 import {helpOutput} from './common.help';
 import {TITLE} from './help';
 
