@@ -1,5 +1,4 @@
-import {isEmptyString} from '@dfinity/utils';
-import {hasArgs, nextArg} from '@junobuild/cli-tools';
+import {hasArgs} from '@junobuild/cli-tools';
 import {yellow} from 'kleur';
 import {compare} from 'semver';
 import {noJunoConfig} from '../../configs/juno.config';
@@ -9,6 +8,7 @@ import {applyConfig} from '../config/apply.services';
 import {init} from '../config/init.services';
 import {links} from '../links.services';
 import {getSatelliteVersion} from '../version.services';
+import {parseBatchSize} from './_args.services';
 import {deployImmediate} from './_deploy/deploy.individual.services';
 import {deployWithProposal as executeDeployWithProposal} from './_deploy/deploy.with-proposal.services';
 
@@ -42,7 +42,7 @@ const executeDeploy = async (args?: string[]) => {
   // wouldn't harm usage, it might prevent crawlers from properly fetching content.
   const deprecatedGzip = compare(result.version, '0.1.1') < 0 ? '**/*.+(css|js|mjs)' : undefined;
 
-  const {value: uploadBatchSize} = parseUploadBatchSize(args);
+  const {value: uploadBatchSize} = parseBatchSize(args);
 
   const clearOption = hasArgs({args, options: ['--clear']});
   const immediate = hasArgs({args, options: ['-i', '--immediate']});
@@ -95,24 +95,4 @@ const deployWithProposal = async ({
     args,
     proposalId
   });
-};
-
-const parseUploadBatchSize = (args?: string[]): {valid: boolean; value?: number} => {
-  const batchArg = nextArg({args, option: '--batch'});
-
-  if (isEmptyString(batchArg)) {
-    return {valid: true};
-  }
-
-  const batch = parseInt(batchArg);
-
-  if (isNaN(batch)) {
-    return {valid: false};
-  }
-
-  if (batch <= 0) {
-    return {valid: false};
-  }
-
-  return {valid: true, value: batch};
 };
