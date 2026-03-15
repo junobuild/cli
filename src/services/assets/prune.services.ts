@@ -6,7 +6,7 @@ import {
   type PruneFileStorage
 } from '@junobuild/cli-tools';
 import {deleteManyAssets, type Asset} from '@junobuild/core';
-import {red} from 'kleur';
+import {red, yellow} from 'kleur';
 import {lstatSync} from 'node:fs';
 import {noJunoConfig} from '../../configs/juno.config';
 import type {SatelliteParametersWithId} from '../../types/satellite';
@@ -38,7 +38,7 @@ const executePrune = async (args?: string[]) => {
     await pruneStaleAssets({satellite, ...params});
   };
 
-  await pruneServices({
+  const result = await pruneServices({
     params: {
       config: satelliteConfig,
       listAssets: listExistingAssets,
@@ -47,6 +47,10 @@ const executePrune = async (args?: string[]) => {
     },
     pruneFn
   });
+
+  if (result.result === 'simulated') {
+    console.log(`\n${yellow('[dry-run]')} No files have been deleted.`);
+  }
 };
 
 const pruneStaleAssets = async ({
