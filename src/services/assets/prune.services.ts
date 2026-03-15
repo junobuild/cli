@@ -12,7 +12,7 @@ import {noJunoConfig} from '../../configs/juno.config';
 import type {SatelliteParametersWithId} from '../../types/satellite';
 import {assertConfigAndLoadSatelliteContext} from '../../utils/juno.config.utils';
 import {consoleNoConfigFound} from '../../utils/msg.utils';
-import {listAssets} from './_deploy/deploy.list.services';
+import {listAssets} from './_assets.list.services';
 
 export const prune = async (args?: string[]) => {
   if (await noJunoConfig()) {
