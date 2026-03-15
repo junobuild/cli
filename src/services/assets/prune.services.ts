@@ -1,8 +1,13 @@
-import {COLLECTION_DAPP, hasArgs, prune as pruneServices} from '@junobuild/cli-tools';
+import {
+  COLLECTION_DAPP,
+  hasArgs,
+  PruneFilesFn,
+  PruneFileStorage,
+  prune as pruneServices
+} from '@junobuild/cli-tools';
 import {deleteManyAssets, type Asset} from '@junobuild/core';
 import {red} from 'kleur';
 import {lstatSync} from 'node:fs';
-import {PruneFilesFn, PruneFileStorage} from '../../../../juno-js/packages/cli-tools/src';
 import {noJunoConfig} from '../../configs/juno.config';
 import type {SatelliteParametersWithId} from '../../types/satellite';
 import {assertConfigAndLoadSatelliteContext} from '../../utils/juno.config.utils';
