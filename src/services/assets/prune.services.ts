@@ -34,7 +34,9 @@ const executePrune = async (args?: string[]) => {
       satellite
     });
 
-  const pruneFn: PruneFilesFn = async (params) => await pruneStaleAssets({satellite, ...params});
+  const pruneFn: PruneFilesFn = async (params) => {
+    await pruneStaleAssets({satellite, ...params});
+  };
 
   await pruneServices({
     params: {
