@@ -21,14 +21,13 @@ export const prune = async (args?: string[]) => {
     return;
   }
 
-  await executePrune(args);
-};
-
-const executePrune = async (args?: string[]) => {
   const dryRun = hasArgs({args, options: ['--dry-run']});
-
   const {value: pruneBatchSize} = parseBatchSize(args);
 
+  await executePrune({dryRun, batchSize: pruneBatchSize});
+};
+
+export const executePrune = async (params: {dryRun?: boolean; batchSize?: number}) => {
   const {satellite, satelliteConfig} = await assertConfigAndLoadSatelliteContext();
 
   const listExistingAssets = async ({startAfter}: {startAfter?: string}): Promise<Asset[]> =>
@@ -46,8 +45,7 @@ const executePrune = async (args?: string[]) => {
       config: satelliteConfig,
       listAssets: listExistingAssets,
       assertSourceDirExists,
-      dryRun,
-      batchSize: pruneBatchSize
+      ...params
     },
     pruneFn
   });
