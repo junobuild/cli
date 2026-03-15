@@ -1,9 +1,9 @@
 import {
   COLLECTION_DAPP,
   hasArgs,
-  PruneFilesFn,
-  PruneFileStorage,
-  prune as pruneServices
+  prune as pruneServices,
+  type PruneFilesFn,
+  type PruneFileStorage
 } from '@junobuild/cli-tools';
 import {deleteManyAssets, type Asset} from '@junobuild/core';
 import {red} from 'kleur';
