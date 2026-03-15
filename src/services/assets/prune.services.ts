@@ -11,6 +11,7 @@ import {minimatch} from 'minimatch';
 import {join} from 'node:path';
 import ora from 'ora';
 import {noJunoConfig} from '../../configs/juno.config';
+import type {SatelliteParametersWithId} from '../../types/satellite';
 import {assertConfigAndLoadSatelliteContext} from '../../utils/juno.config.utils';
 import {consoleNoConfigFound} from '../../utils/msg.utils';
 import {listAssets} from './_deploy/deploy.list.services';
@@ -34,6 +35,11 @@ const isIgnored = ({file, ignore}: {file: string; ignore: string[]}): boolean =>
   ignore.some((pattern) => minimatch(file, pattern, {matchBase: true}));
 
 /**
+ * Returns true if the file should be included for deletion.
+ */
+const shouldBeIncluded = (params: {file: string; ignore: string[]}): boolean => !isIgnored(params);
+
+/**
  * Scans the local source directory and returns a Set of fullPaths that are present.
  * Throws if the directory cannot be read.
  */
@@ -45,7 +51,7 @@ const buildLocalPaths = ({
   ignore: string[];
 }): Set<string> => {
   const allFiles = listFiles(sourceAbsolutePath);
-  const filteredFiles = allFiles.filter((file) => !isIgnored({file, ignore}));
+  const filteredFiles = allFiles.filter((file) => shouldBeIncluded({file, ignore}));
   return new Set(filteredFiles.map((file) => toFullPath({file, sourceAbsolutePath})));
 };
 
@@ -63,18 +69,25 @@ const executePrune = async (args?: string[]) => {
 
   const {satellite, satelliteConfig} = await assertConfigAndLoadSatelliteContext();
 
-  const source: string = satelliteConfig.source ?? DEPLOY_DEFAULT_SOURCE;
-  const ignore: string[] = satelliteConfig.ignore ?? DEPLOY_DEFAULT_IGNORE;
+  const source = satelliteConfig.source ?? DEPLOY_DEFAULT_SOURCE;
+  const ignore = satelliteConfig.ignore ?? DEPLOY_DEFAULT_IGNORE;
 
   const sourceAbsolutePath = join(process.cwd(), source);
 
   // 1. Scan local build output
-  const scanSpinner = ora('Scanning local build output...').start();
-  const localPaths = scanLocalFiles({scanSpinner, sourceAbsolutePath, ignore, source});
+  const localPathsResult = scanLocalFiles({sourceAbsolutePath, ignore});
+
+  if (localPathsResult.status === 'error') {
+    console.log(
+      `${red('Cannot scan source directory.')} Is "${source}" built and configured in juno.config?`
+    );
+    return;
+  }
+
+  const {paths: localPaths} = localPathsResult;
 
   // 2. Fetch all live assets (paginated)
-  const fetchSpinner = ora('Fetching live assets from satellite...').start();
-  const liveAssets = await fetchLiveAssets({fetchSpinner, satellite});
+  const liveAssets = await fetchLiveAssets({satellite});
 
   // 3. Compute stale = live_assets − local_files
   const stale = liveAssets.filter(({fullPath}) => !localPaths.has(fullPath));
@@ -87,7 +100,7 @@ const executePrune = async (args?: string[]) => {
   // 4. Report
   console.log(`\nFound ${yellow(String(stale.length))} stale asset(s):`);
   for (const {fullPath} of stale) {
-    console.log(`  ${red('−')} ${fullPath}`);
+    console.log(`  ${yellow('−')} ${fullPath}`);
   }
 
   if (dryRun) {
@@ -100,43 +113,35 @@ const executePrune = async (args?: string[]) => {
 };
 
 const scanLocalFiles = ({
-  scanSpinner,
   sourceAbsolutePath,
-  ignore,
-  source
+  ignore
 }: {
-  scanSpinner: ReturnType<typeof ora>;
   sourceAbsolutePath: string;
   ignore: string[];
-  source: string;
-}): Set<string> => {
+}): {status: 'success'; paths: Set<string>} | {status: 'error'; err: unknown} => {
+  const scanSpinner = ora('Scanning local build output...').start();
+
   try {
     const paths = buildLocalPaths({sourceAbsolutePath, ignore});
-    scanSpinner.stop();
-    return paths;
+    return {status: 'success', paths};
   } catch (err: unknown) {
+    return {status: 'error', err};
+  } finally {
     scanSpinner.stop();
-    console.log(
-      `${red('Cannot scan source directory.')} Is "${source}" built and configured in juno.config?`
-    );
-    throw err;
   }
 };
 
 const fetchLiveAssets = async ({
-  fetchSpinner,
   satellite
 }: {
-  fetchSpinner: ReturnType<typeof ora>;
-  satellite: Parameters<typeof listAssets>[0]['satellite'];
+  satellite: SatelliteParametersWithId;
 }): Promise<Asset[]> => {
+  const fetchSpinner = ora('Fetching live assets from satellite...').start();
+
   try {
-    const assets = await listAssets({satellite});
+    return await listAssets({satellite});
+  } finally {
     fetchSpinner.stop();
-    return assets;
-  } catch (err: unknown) {
-    fetchSpinner.stop();
-    throw err;
   }
 };
 
@@ -156,10 +161,9 @@ const pruneStaleAssets = async ({
       })),
       satellite
     });
+  } finally {
     deleteSpinner.stop();
-    console.log(`\n${green('✔')} Pruned ${stale.length} stale asset(s).`);
-  } catch (err: unknown) {
-    deleteSpinner.stop();
-    throw err;
   }
+
+  console.log(`\n${green('✔')} Pruned ${stale.length} stale asset(s).`);
 };
