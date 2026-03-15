@@ -18,6 +18,7 @@ Options:
   ${yellow('--no-apply')}            Submit the deployment as a change but do not apply it yet.
   ${OPTION_KEEP_STAGED}
   ${yellow('-i, --immediate')}       Deploy files instantly (bypasses the change workflow).
+  ${yellow('--prune')}               Prune stale app files after successful deployment.
   ${OPTIONS_ENV}
   ${OPTION_HELP}
     
