@@ -2,12 +2,12 @@ import {
   COLLECTION_DAPP,
   DEPLOY_DEFAULT_IGNORE,
   DEPLOY_DEFAULT_SOURCE,
-  files as listFiles,
-  hasArgs
+  hasArgs,
+  files as listFiles
 } from '@junobuild/cli-tools';
 import {deleteManyAssets, type Asset} from '@junobuild/core';
-import {minimatch} from 'minimatch';
 import {green, red, yellow} from 'kleur';
+import {minimatch} from 'minimatch';
 import {join} from 'node:path';
 import ora from 'ora';
 import {noJunoConfig} from '../../configs/juno.config';
@@ -19,23 +19,34 @@ import {listAssets} from './_deploy/deploy.list.services';
  * Converts an absolute file path to its fullPath form.
  * e.g. "/path/to/build/index.html" -> "/index.html"
  */
-const toFullPath = (file: string, sourceAbsolutePath: string): string =>
-  file.replace(sourceAbsolutePath, '').replace(/\\/g, '/');
+const toFullPath = ({
+  file,
+  sourceAbsolutePath
+}: {
+  file: string;
+  sourceAbsolutePath: string;
+}): string => file.replace(sourceAbsolutePath, '').replace(/\\/g, '/');
 
 /**
  * Returns true if the file should be excluded based on the ignore patterns.
  */
-const isIgnored = (file: string, ignore: string[]): boolean =>
+const isIgnored = ({file, ignore}: {file: string; ignore: string[]}): boolean =>
   ignore.some((pattern) => minimatch(file, pattern, {matchBase: true}));
 
 /**
  * Scans the local source directory and returns a Set of fullPaths that are present.
  * Throws if the directory cannot be read.
  */
-const buildLocalPaths = (sourceAbsolutePath: string, ignore: string[]): Set<string> => {
+const buildLocalPaths = ({
+  sourceAbsolutePath,
+  ignore
+}: {
+  sourceAbsolutePath: string;
+  ignore: string[];
+}): Set<string> => {
   const allFiles = listFiles(sourceAbsolutePath);
-  const filteredFiles = allFiles.filter((file) => !isIgnored(file, ignore));
-  return new Set(filteredFiles.map((file) => toFullPath(file, sourceAbsolutePath)));
+  const filteredFiles = allFiles.filter((file) => !isIgnored({file, ignore}));
+  return new Set(filteredFiles.map((file) => toFullPath({file, sourceAbsolutePath})));
 };
 
 export const prune = async (args?: string[]) => {
@@ -100,7 +111,7 @@ const scanLocalFiles = ({
   source: string;
 }): Set<string> => {
   try {
-    const paths = buildLocalPaths(sourceAbsolutePath, ignore);
+    const paths = buildLocalPaths({sourceAbsolutePath, ignore});
     scanSpinner.stop();
     return paths;
   } catch (err: unknown) {
