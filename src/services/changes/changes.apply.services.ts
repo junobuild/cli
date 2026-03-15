@@ -49,7 +49,7 @@ const executeApplyChanges = async ({
         spinner.text = 'Applying update...';
         break;
       case ApplyProposalProgressStep.ClearingProposalAssets:
-        spinner.text = 'Clearing staged assets...';
+        spinner.text = 'Clearing proposed staged assets...';
         break;
       case ApplyProposalProgressStep.PostApply:
         spinner.text = 'Reloading...';
