@@ -53,7 +53,7 @@ export const CHANGES_REJECT_DESCRIPTION = 'Reject a change.';
 
 export const SNAPSHOT_UPLOAD_DESCRIPTION = 'Upload a snapshot from offline files.';
 
-export const OPTION_KEEP_STAGED = `${yellow('-k, --keep-staged')}     Keep staged assets in memory after applying the change.`;
+export const OPTION_KEEP_STAGED = `${yellow('-k, --keep-staged')}     Keep proposed staged assets in memory after applying the change.`;
 export const OPTION_HASH = `${yellow('--hash')}                The expected hash of all included changes (for verification).`;
 export const OPTION_HELP = `${yellow('-h, --help')}            Output usage information.`;
 export const OPTION_MODE = `${yellow('-m, --mode')}            Choose which environment to use (production, staging, development). Defaults to production if omitted.`;
