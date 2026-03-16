@@ -6,7 +6,14 @@ const getVersionConfig = (): Conf<CachedVersions> =>
 
 export const getCachedVersions = (): Conf<CachedVersions> => getVersionConfig();
 
-export const updateLastCheckToNow = ({key}: {key: keyof CachedVersions}) => {
+export const isWeeklyCheckDisabled = (): boolean =>
+  getCachedVersions().get('weeklyCheckEnabled') === false;
+
+export const updateLastCheckToNow = ({
+  key
+}: {
+  key: keyof Omit<CachedVersions, 'weeklyCheckEnabled'>;
+}) => {
   const config = getVersionConfig();
 
   const currentVersions = config.get(key);

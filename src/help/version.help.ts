@@ -1,9 +1,12 @@
-import {cyan, green, yellow} from 'kleur';
+import {cyan, green, magenta, yellow} from 'kleur';
 import {OPTION_HELP, VERSION_DESCRIPTION} from '../constants/help.constants';
 import {helpOutput} from './common.help';
 import {TITLE} from './help';
 
-const usage = `Usage: ${green('juno')} ${cyan('version')} ${yellow('[options]')}
+const usage = `Usage: ${green('juno')} ${cyan('version')} ${magenta('<subcommand>')}
+
+Subcommands:
+  ${magenta('check')}               Configure the weekly version check.
 
 Options:
   ${OPTION_HELP}`;
