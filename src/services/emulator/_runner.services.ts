@@ -151,7 +151,7 @@ const initConfigFile = async () => {
 const startEmulator = async ({config: extendedConfig}: {config: CliEmulatorConfig}) => {
   const {
     config,
-    derivedConfig: {emulatorType, containerName, runner, targetDeploy, extraHosts}
+    derivedConfig: {emulatorType, containerName, runner, targetDeploy, extraHosts, image}
   } = extendedConfig;
 
   const {running} = await assertContainerRunning({containerName, runner});
@@ -216,8 +216,6 @@ const startEmulator = async ({config: extendedConfig}: {config: CliEmulatorConfi
 
   // Podman does not auto create the path folders.
   await createDeployTargetDir({targetDeploy});
-
-  const image = config.runner?.image ?? `junobuild/${emulatorType}:latest`;
 
   const platform = config.runner?.platform;
 
