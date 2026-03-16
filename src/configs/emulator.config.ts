@@ -4,7 +4,7 @@ import * as z from 'zod';
 import {DEPLOY_LOCAL_REPLICA_PATH} from '../constants/dev.constants';
 import {EMULATOR_SKYLAB} from '../constants/emulator.constants';
 import {ENV} from '../env';
-import type {CliEmulatorConfig} from '../types/emulator';
+import {type CliEmulatorConfig} from '../types/emulator';
 import {readPackageJson} from '../utils/pkg.utils';
 import {junoConfigExist, readJunoConfig} from './juno.config';
 
@@ -45,6 +45,8 @@ export const readEmulatorConfig = async (): Promise<
       `${hostname}:${destination}`
   );
 
+  const image = config.runner?.image ?? `junobuild/${emulatorType}:latest`;
+
   return {
     success: true,
     config: {
@@ -54,7 +56,8 @@ export const readEmulatorConfig = async (): Promise<
         emulatorType,
         runner,
         targetDeploy,
-        extraHosts
+        extraHosts,
+        image
       }
     }
   };
