@@ -20,5 +20,6 @@ export const enableDisableVersionCheck = async () => {
     return;
   }
 
+
   toggleWeeklyCheck(enabled);
 };
