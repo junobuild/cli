@@ -194,6 +194,7 @@ export const run = async () => {
     case 'help':
       console.log(help);
       process.exit(0);
+      break;
     default:
       console.log(red('Unknown command.'));
       console.log(help);

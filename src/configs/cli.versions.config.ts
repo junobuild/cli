@@ -1,5 +1,5 @@
 import Conf from 'conf';
-import {CachedVersion, CachedVersions} from '../types/cli/cli.versions';
+import {type CachedVersion, type CachedVersions} from '../types/cli/cli.versions';
 
 const getVersionConfig = (): Conf<CachedVersions> =>
   new Conf<CachedVersions>({projectName: 'juno-cli-versions'});

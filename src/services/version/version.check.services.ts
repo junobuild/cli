@@ -10,14 +10,14 @@ import {
 import {
   githubCliLastRelease,
   githubJunoDockerLastRelease,
-  GithubLastReleaseResult
+  type GithubLastReleaseResult
 } from '../../rest/github.rest';
-import {CachedVersions} from '../../types/cli/cli.versions';
+import {type CachedVersions} from '../../types/cli/cli.versions';
 import {pmInstallHint} from '../../utils/pm.utils';
 import {findEmulatorVersion} from '../emulator/version.services';
 import {
   buildVersionFromGitHub,
-  BuildVersionFromGitHubResult,
+  type BuildVersionFromGitHubResult,
   checkVersion
 } from './version.services';
 

@@ -35,4 +35,4 @@ export const pmInstallHint = (): string => {
     default:
       return 'npm i -g @junobuild/cli';
   }
-}
+};

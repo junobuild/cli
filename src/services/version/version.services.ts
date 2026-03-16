@@ -8,7 +8,7 @@ import {JUNO_PACKAGE_SATELLITE_ID} from '@junobuild/config';
 import {cyan, green, red, yellow} from 'kleur';
 import ora from 'ora';
 import {clean, compare} from 'semver';
-import {GithubLastReleaseResult} from '../../rest/github.rest';
+import {type GithubLastReleaseResult} from '../../rest/github.rest';
 import type {SatelliteParametersWithId} from '../../types/satellite';
 import {assertConfigAndLoadSatelliteContext} from '../../utils/juno.config.utils';
 
