@@ -1,6 +1,6 @@
 import Conf, {type Schema} from 'conf';
 import {ENV} from '../env';
-import {type CliSettings} from '../types/cli.settings';
+import {type CliSettings} from '../types/cli/cli.settings';
 
 const schema: Schema<CliSettings> = {
   encryption: {

@@ -42,7 +42,7 @@ import {
   type ConfigHash,
   type RuleHash,
   type SettingsHash
-} from '../../types/cli.state';
+} from '../../types/cli/cli.state';
 import type {SatelliteParametersWithId} from '../../types/satellite';
 import {assertConfigAndLoadSatelliteContext} from '../../utils/juno.config.utils';
 import {objHash} from '../../utils/obj.utils';
