@@ -6,7 +6,7 @@ import {TITLE} from './help';
 const usage = `Usage: ${green('juno')} ${cyan('version')} ${magenta('<subcommand>')}
 
 Subcommands:
-  ${magenta('check')}               Configure the weekly version check.
+  ${magenta('check')}                 Configure the weekly version check.
 
 Options:
   ${OPTION_HELP}`;
