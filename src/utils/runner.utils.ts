@@ -87,3 +87,30 @@ export const isContainerRunning = async ({
     return {err};
   }
 };
+
+export const inspectImageVersion = async ({
+  runner,
+  image
+}: Pick<CliEmulatorDerivedConfig, 'runner' | 'image'>): Promise<
+  {version: string} | {err: unknown}
+> => {
+  try {
+    let output = '';
+
+    await spawn({
+      command: runner,
+      args: [
+        'inspect',
+        '--format',
+        '{{ index .Config.Labels "org.opencontainers.image.version"}}',
+        image
+      ],
+      stdout: (o) => (output += o),
+      silentOut: true
+    });
+
+    return {version: output.trim()};
+  } catch (err: unknown) {
+    return {err};
+  }
+};

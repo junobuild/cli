@@ -6,6 +6,7 @@ export const ORBITER_WASM_NAME = 'orbiter';
 export const NODE_VERSION = 20;
 export const JUNO_CDN_URL = 'https://cdn.juno.build';
 export const GITHUB_API_CLI_URL = 'https://api.github.com/repos/junobuild/cli';
+export const GITHUB_API_JUNO_DOCKER_URL = 'https://api.github.com/repos/junobuild/juno-docker';
 
 /**
  * Revoked principals that must not be used.

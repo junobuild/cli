@@ -77,6 +77,10 @@ const loadSatelliteVersion = async ({
   return {result: 'success', version: legacyVersion};
 };
 
+export interface CheckVersionResult {
+  diff: 'up-to-date' | 'outdated' | 'error';
+}
+
 export const checkVersion = ({
   currentVersion,
   latestVersion,
@@ -86,23 +90,25 @@ export const checkVersion = ({
   currentVersion: string;
   latestVersion: string;
   displayHint: string;
-  commandLineHint: string;
-}) => {
+  commandLineHint?: string;
+}): CheckVersionResult => {
   const diff = compare(currentVersion, latestVersion);
 
   if (diff === 0) {
     console.log(`Your ${displayHint} (${green(`v${currentVersion}`)}) is up-to-date.`);
-    return;
+    return {diff: 'up-to-date'};
   }
 
   if (diff === 1) {
     console.log(yellow(`Your ${displayHint} version is more recent than the latest available 🤔.`));
-    return;
+    return {diff: 'error'};
   }
 
   console.log(
     `Your ${displayHint} (${yellow(`v${currentVersion}`)}) is behind the latest version (${green(
       `v${latestVersion}`
-    )}) available. Run ${cyan(commandLineHint)} to update it.`
+    )}).${nonNullish(commandLineHint) ? ` Run ${cyan(commandLineHint)} to update it.` : ''}`
   );
+
+  return {diff: 'outdated'};
 };
