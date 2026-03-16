@@ -86,17 +86,22 @@ export const checkVersion = ({
   currentVersion,
   latestVersion,
   displayHint,
-  commandLineHint
+  commandLineHint,
+  logUpToDate = true
 }: {
   currentVersion: string;
   latestVersion: string;
   displayHint: string;
   commandLineHint?: string;
+  logUpToDate?: boolean;
 }): CheckVersionResult => {
   const diff = compare(currentVersion, latestVersion);
 
   if (diff === 0) {
-    console.log(`Your ${displayHint} (${green(`v${currentVersion}`)}) is up-to-date.`);
+    if (logUpToDate) {
+      console.log(`Your ${displayHint} (${green(`v${currentVersion}`)}) is up-to-date.`);
+    }
+
     return {diff: 'up-to-date'};
   }
 

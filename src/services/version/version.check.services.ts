@@ -39,7 +39,8 @@ export const checkVersions = async () => {
     return;
   }
 
-  const checkIsDue = new Date(lastCheck.getTime() + ONE_WEEK_MS).getTime() <= new Date().getTime();
+  const checkIsDue =
+    new Date(new Date(lastCheck).getTime() + ONE_WEEK_MS).getTime() <= new Date().getTime();
 
   const cachedCliRemoteVersion = cachedVersions.get('cli')?.remote;
 
@@ -70,10 +71,19 @@ export const checkVersions = async () => {
     }
   });
 
+  console.log(
+    '\n────────────────────────────────────────────────────────────────────────────────────────────────────'
+  );
+
   checkVersion({
     currentVersion: cliCurrentVersion,
     latestVersion: remoteCliVersion,
     displayHint: 'CLI',
-    commandLineHint: pmInstallHint()
+    commandLineHint: pmInstallHint(),
+    logUpToDate: false
   });
+
+  console.log(
+    '────────────────────────────────────────────────────────────────────────────────────────────────────'
+  );
 };

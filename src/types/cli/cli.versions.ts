@@ -6,7 +6,7 @@ const CachedVersionSchema = j.strictObject({
 });
 
 const CachedVersionsSchema = j.strictObject({
-  lastCheck: j.date().optional(),
+  lastCheck: j.iso.datetime(),
   cli: CachedVersionSchema.optional(),
   emulator: CachedVersionSchema.optional()
 });
