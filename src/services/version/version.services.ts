@@ -7,9 +7,10 @@ import {
 import {JUNO_PACKAGE_SATELLITE_ID} from '@junobuild/config';
 import {cyan, green, red, yellow} from 'kleur';
 import ora from 'ora';
-import {compare} from 'semver';
-import type {SatelliteParametersWithId} from '../types/satellite';
-import {assertConfigAndLoadSatelliteContext} from '../utils/juno.config.utils';
+import {clean, compare} from 'semver';
+import {type GithubLastReleaseResult} from '../../rest/github.rest';
+import type {SatelliteParametersWithId} from '../../types/satellite';
+import {assertConfigAndLoadSatelliteContext} from '../../utils/juno.config.utils';
 
 export const getSatelliteVersion = async (): Promise<
   {result: 'success'; version: string} | {result: 'error'}
@@ -85,23 +86,42 @@ export const checkVersion = ({
   currentVersion,
   latestVersion,
   displayHint,
-  commandLineHint
+  commandLineHint,
+  logUpToDate = true,
+  logSpacer = false
 }: {
   currentVersion: string;
   latestVersion: string;
   displayHint: string;
   commandLineHint?: string;
+  logUpToDate?: boolean;
+  logSpacer?: boolean;
 }): CheckVersionResult => {
   const diff = compare(currentVersion, latestVersion);
 
   if (diff === 0) {
-    console.log(`Your ${displayHint} (${green(`v${currentVersion}`)}) is up-to-date.`);
+    if (logSpacer) {
+      console.log('');
+    }
+
+    if (logUpToDate) {
+      console.log(`Your ${displayHint} (${green(`v${currentVersion}`)}) is up-to-date.`);
+    }
+
     return {diff: 'up-to-date'};
   }
 
   if (diff === 1) {
+    if (logSpacer) {
+      console.log('');
+    }
+
     console.log(yellow(`Your ${displayHint} version is more recent than the latest available 🤔.`));
     return {diff: 'error'};
+  }
+
+  if (logSpacer) {
+    console.log('');
   }
 
   console.log(
@@ -111,4 +131,44 @@ export const checkVersion = ({
   );
 
   return {diff: 'outdated'};
+};
+
+export type BuildVersionFromGitHubResult =
+  | {result: 'success'; latestVersion: string}
+  | {result: 'error'};
+
+export const buildVersionFromGitHub = async ({
+  releaseFn,
+  logReleaseOnError
+}: {
+  releaseFn: () => Promise<GithubLastReleaseResult>;
+  logReleaseOnError?: () => 'CLI' | 'Juno Docker';
+}): Promise<BuildVersionFromGitHubResult> => {
+  const githubRelease = await releaseFn();
+
+  if (githubRelease.status === 'error') {
+    if (nonNullish(logReleaseOnError)) {
+      console.log(red(`Cannot fetch the last version of ${logReleaseOnError()} on GitHub 😢.`));
+    }
+
+    return {result: 'error'};
+  }
+
+  const {
+    release: {tag_name}
+  } = githubRelease;
+
+  const latestVersion = clean(tag_name);
+
+  if (isNullish(latestVersion)) {
+    if (nonNullish(logReleaseOnError)) {
+      console.log(
+        red(`Cannot extract version from the ${logReleaseOnError()} release. Reach out Juno❗️`)
+      );
+    }
+
+    return {result: 'error'};
+  }
+
+  return {result: 'success', latestVersion};
 };

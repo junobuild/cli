@@ -31,6 +31,7 @@ import {logHelpUpgrade} from './help/upgrade.help';
 import {logHelpVersion} from './help/version.help';
 import {logHelpWhoAmI} from './help/whoami.help';
 import {checkNodeVersion} from './utils/env.utils';
+import {checkWeeklyVersions} from './version';
 
 export const run = async () => {
   const {valid} = checkNodeVersion();
@@ -192,11 +193,15 @@ export const run = async () => {
       break;
     case 'help':
       console.log(help);
+      process.exit(0);
       break;
     default:
       console.log(red('Unknown command.'));
       console.log(help);
+      process.exit(-1);
   }
+
+  await checkWeeklyVersions({cmd});
 };
 
 // eslint-disable-next-line @typescript-eslint/no-floating-promises
