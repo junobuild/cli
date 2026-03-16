@@ -90,7 +90,7 @@ export const checkVersion = ({
   currentVersion: string;
   latestVersion: string;
   displayHint: string;
-  commandLineHint: string;
+  commandLineHint?: string;
 }): CheckVersionResult => {
   const diff = compare(currentVersion, latestVersion);
 
@@ -107,7 +107,7 @@ export const checkVersion = ({
   console.log(
     `Your ${displayHint} (${yellow(`v${currentVersion}`)}) is behind the latest version (${green(
       `v${latestVersion}`
-    )}) available. Run ${cyan(commandLineHint)} to update it.`
+    )}).${nonNullish(commandLineHint) ? ` Run ${cyan(commandLineHint)} to update it.` : ''}`
   );
 
   return {diff: 'outdated'};

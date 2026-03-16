@@ -88,17 +88,29 @@ export const isContainerRunning = async ({
   }
 };
 
-export const inspectImage = async ({
-  runner
-}: Pick<CliEmulatorDerivedConfig, 'runner'>) => {
+export const inspectImageVersion = async ({
+  runner,
+  image
+}: Pick<CliEmulatorDerivedConfig, 'runner' | 'image'>): Promise<
+  {version: string} | {err: unknown}
+> => {
   try {
+    let output = '';
+
     await spawn({
       command: runner,
-      args: ['ps', '--quiet'],
+      args: [
+        'inspect',
+        '--format',
+        '{{ index .Config.Labels "org.opencontainers.image.version"}}',
+        image
+      ],
+      stdout: (o) => (output += o),
       silentOut: true
     });
-  } catch (_e: unknown) {
-    console.log(red(`It looks like ${runner} does not appear to be running.`));
-    process.exit(1);
+
+    return {version: output.trim()};
+  } catch (err: unknown) {
+    return {err};
   }
 };
