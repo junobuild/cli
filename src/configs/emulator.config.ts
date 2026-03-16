@@ -5,6 +5,7 @@ import {DEPLOY_LOCAL_REPLICA_PATH} from '../constants/dev.constants';
 import {EMULATOR_SKYLAB} from '../constants/emulator.constants';
 import {ENV} from '../env';
 import type {CliEmulatorConfig} from '../types/emulator';
+import {mapExtraHosts} from '../utils/emulator.utils';
 import {readPackageJson} from '../utils/pkg.utils';
 import {junoConfigExist, readJunoConfig} from './juno.config';
 
@@ -40,6 +41,8 @@ export const readEmulatorConfig = async (): Promise<
 
   const targetDeploy = config.runner?.target ?? DEPLOY_LOCAL_REPLICA_PATH;
 
+  const extraHosts = mapExtraHosts(config.runner?.extraHosts);
+
   return {
     success: true,
     config: {
@@ -48,7 +51,8 @@ export const readEmulatorConfig = async (): Promise<
         containerName,
         emulatorType,
         runner,
-        targetDeploy
+        targetDeploy,
+        extraHosts
       }
     }
   };
