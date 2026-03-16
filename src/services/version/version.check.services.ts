@@ -124,7 +124,7 @@ const check = async ({
 
   // The weekly check is not due and we got a remote version in cache
   if (!checkIsDue && nonNullish(cachedRemoteVersion)) {
-    // The current version is newer, we assume the dev use the latest
+    // The current version is newer or equals, we assume the dev use the latest
     if (compare(currentVersion, cachedRemoteVersion) >= 0) {
       return;
     }
