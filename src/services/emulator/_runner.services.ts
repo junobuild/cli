@@ -151,7 +151,7 @@ const initConfigFile = async () => {
 const startEmulator = async ({config: extendedConfig}: {config: CliEmulatorConfig}) => {
   const {
     config,
-    derivedConfig: {emulatorType, containerName, runner, targetDeploy}
+    derivedConfig: {emulatorType, containerName, runner, targetDeploy, extraHosts}
   } = extendedConfig;
 
   const {running} = await assertContainerRunning({containerName, runner});
@@ -249,6 +249,7 @@ const startEmulator = async ({config: extendedConfig}: {config: CliEmulatorConfi
       '-v',
       `${targetDeploy}:/juno/target/deploy`,
       ...(nonNullish(platform) ? [`--platform=${platform}`] : []),
+      ...extraHosts.flatMap((host) => ['--add-host', host]),
       image
     ]
   });

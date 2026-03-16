@@ -1,4 +1,4 @@
-import {type EmulatorConfig, EmulatorConfigSchema} from '@junobuild/config';
+import {type EmulatorConfig, type EmulatorRunner, EmulatorConfigSchema} from '@junobuild/config';
 import {red} from 'kleur';
 import * as z from 'zod';
 import {DEPLOY_LOCAL_REPLICA_PATH} from '../constants/dev.constants';
@@ -40,6 +40,11 @@ export const readEmulatorConfig = async (): Promise<
 
   const targetDeploy = config.runner?.target ?? DEPLOY_LOCAL_REPLICA_PATH;
 
+  const extraHosts = (config.runner?.extraHosts ?? []).map(
+    ([hostname, destination]: NonNullable<EmulatorRunner['extraHosts']>[number]) =>
+      `${hostname}:${destination}`
+  );
+
   return {
     success: true,
     config: {
@@ -48,7 +53,8 @@ export const readEmulatorConfig = async (): Promise<
         containerName,
         emulatorType,
         runner,
-        targetDeploy
+        targetDeploy,
+        extraHosts
       }
     }
   };

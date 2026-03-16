@@ -11,6 +11,7 @@ export interface CliEmulatorDerivedConfig {
   runner: EmulatorRunnerType;
   emulatorType: EmulatorType;
   targetDeploy: string;
+  extraHosts: string[];
 }
 
 export interface CliEmulatorConfig {
