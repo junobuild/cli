@@ -1,4 +1,7 @@
-import {checkCliVersion, checkEmulatorVersion} from './services/version/version.check.services';
+import {
+  checkCliVersion,
+  checkEmulatorVersion
+} from './services/version/version.check.weekly.services';
 import {isHeadless} from './utils/process.utils';
 
 export const checkWeeklyVersions = async ({cmd, args}: {cmd: string; args?: string[]}) => {
