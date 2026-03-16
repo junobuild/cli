@@ -7,5 +7,6 @@ export const checkWeeklyVersions = async ({cmd}: {cmd: string}) => {
     return;
   }
 
+  // {withEmulator: ["functions", "fn"].includes(cmd)}
   await checkVersions();
 };

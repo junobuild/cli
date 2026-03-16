@@ -3,8 +3,8 @@ import {compare} from 'semver';
 import {version as cliCurrentVersion} from '../../../package.json';
 import {
   getCachedVersions,
-  saveCachedVersions,
-  updateLastCheckToNow
+  saveCliCachedVersions,
+  updateCliLastCheckToNow
 } from '../../configs/cli.versions.config';
 import {githubCliLastRelease} from '../../rest/github.rest';
 import {pmInstallHint} from '../../utils/pm.utils';
@@ -15,26 +15,24 @@ const ONE_WEEK_MS = 7 * 24 * 60 * 60 * 1000;
 export const checkVersions = async () => {
   const cachedVersions = getCachedVersions();
 
-  const lastCheck = cachedVersions.get('lastCheck');
+  const cachedCli = cachedVersions.get('cli');
+
+  const lastCheck = cachedCli?.lastCheck;
 
   if (isNullish(lastCheck)) {
-    saveCachedVersions({
-      cli: {
-        local: cliCurrentVersion
-      }
+    saveCliCachedVersions({
+      local: cliCurrentVersion
     });
     return;
   }
 
-  const cachedCliLocalVersion = cachedVersions.get('cli')?.local;
+  const cachedCliLocalVersion = cachedCli?.local;
 
   // The version was never cached or the developer upgraded since the last check.
   // We assume they are on the latest version. If not, the next weekly check will catch it.
   if (isNullish(cachedCliLocalVersion) || compare(cliCurrentVersion, cachedCliLocalVersion) > 0) {
-    saveCachedVersions({
-      cli: {
-        local: cliCurrentVersion
-      }
+    saveCliCachedVersions({
+      local: cliCurrentVersion
     });
     return;
   }
@@ -42,7 +40,7 @@ export const checkVersions = async () => {
   const checkIsDue =
     new Date(new Date(lastCheck).getTime() + ONE_WEEK_MS).getTime() <= new Date().getTime();
 
-  const cachedCliRemoteVersion = cachedVersions.get('cli')?.remote;
+  const cachedCliRemoteVersion = cachedCli?.remote;
 
   // The weekly check is not due and the current version of the CLI is up to date
   if (
@@ -58,17 +56,15 @@ export const checkVersions = async () => {
   });
 
   if (result.result === 'error') {
-    updateLastCheckToNow();
+    updateCliLastCheckToNow();
     return;
   }
 
   const {latestVersion: remoteCliVersion} = result;
 
-  saveCachedVersions({
-    cli: {
-      local: cliCurrentVersion,
-      remote: remoteCliVersion
-    }
+  saveCliCachedVersions({
+    local: cliCurrentVersion,
+    remote: remoteCliVersion
   });
 
   console.log(

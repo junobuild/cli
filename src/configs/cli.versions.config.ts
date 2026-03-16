@@ -1,19 +1,25 @@
 import Conf from 'conf';
-import {CachedVersions} from '../types/cli/cli.versions';
+import {CachedVersion, CachedVersions} from '../types/cli/cli.versions';
 
 const getVersionConfig = (): Conf<CachedVersions> =>
   new Conf<CachedVersions>({projectName: 'juno-cli-versions'});
 
 export const getCachedVersions = (): Conf<CachedVersions> => getVersionConfig();
 
-export const updateLastCheckToNow = () => {
+export const updateCliLastCheckToNow = () => {
   const config = getVersionConfig();
-  config.set('lastCheck', new Date().toISOString());
+
+  const currentCli = config.get('cli');
+
+  config.set('cli', {
+    lastCheck: new Date().toISOString(),
+    ...(currentCli ?? {})
+  });
 };
 
-export const saveCachedVersions = (versions: Omit<CachedVersions, 'lastCheck'>) => {
+export const saveCliCachedVersions = (versions: Omit<CachedVersion, 'lastCheck'>) => {
   const config = getVersionConfig();
-  config.set({
+  config.set('cli', {
     lastCheck: new Date().toISOString(),
     ...versions
   });
