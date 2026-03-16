@@ -1,3 +1,4 @@
+import {isWeeklyCheckDisabled} from './configs/cli.versions.config';
 import {
   checkCliVersion,
   checkEmulatorVersion
@@ -7,6 +8,14 @@ import {isHeadless} from './utils/process.utils';
 export const checkWeeklyVersions = async ({cmd, args}: {cmd: string; args?: string[]}) => {
   // No check if used in headless mode
   if (isHeadless()) {
+    return;
+  }
+
+  if (isWeeklyCheckDisabled()) {
+    return;
+  }
+
+  if (cmd === 'version') {
     return;
   }
 

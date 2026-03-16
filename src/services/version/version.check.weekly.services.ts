@@ -82,7 +82,7 @@ const check = async ({
   releaseFn,
   checkVersionFn
 }: {
-  key: keyof CachedVersions;
+  key: keyof Omit<CachedVersions, 'weeklyCheckEnabled'>;
   currentVersion: string;
   releaseFn: () => Promise<GithubLastReleaseResult>;
   checkVersionFn: (params: {latestVersion: string}) => void;

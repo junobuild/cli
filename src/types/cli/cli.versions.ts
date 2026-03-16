@@ -7,6 +7,7 @@ export const CachedVersionSchema = j.strictObject({
 });
 
 export const CachedVersionsSchema = j.strictObject({
+  weeklyCheckEnabled: j.boolean().optional(),
   cli: CachedVersionSchema.optional(),
   emulator: CachedVersionSchema.optional()
 });

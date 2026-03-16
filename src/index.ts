@@ -18,7 +18,7 @@ import {helpSnapshot, snapshot} from './commands/snapshot';
 import {startStop} from './commands/start-stop';
 import {status} from './commands/status';
 import {upgrade} from './commands/upgrade';
-import {logVersion} from './commands/version';
+import {logVersion, version as versionCommand} from './commands/version';
 import {whoami} from './commands/whoami';
 import {help} from './help/help';
 import {logHelpLogin} from './help/login.help';
@@ -149,7 +149,7 @@ export const run = async () => {
       await clear();
       break;
     case 'version':
-      await logVersion();
+      await versionCommand(args);
       break;
     case 'status':
       await status();
