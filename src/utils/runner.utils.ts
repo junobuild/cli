@@ -87,3 +87,18 @@ export const isContainerRunning = async ({
     return {err};
   }
 };
+
+export const inspectImage = async ({
+  runner
+}: Pick<CliEmulatorDerivedConfig, 'runner'>) => {
+  try {
+    await spawn({
+      command: runner,
+      args: ['ps', '--quiet'],
+      silentOut: true
+    });
+  } catch (_e: unknown) {
+    console.log(red(`It looks like ${runner} does not appear to be running.`));
+    process.exit(1);
+  }
+};

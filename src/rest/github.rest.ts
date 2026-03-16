@@ -1,4 +1,4 @@
-import {GITHUB_API_CLI_URL} from '../constants/constants';
+import {GITHUB_API_CLI_URL, GITHUB_API_JUNO_DOCKER_URL} from '../constants/constants';
 
 export interface GitHubAsset {
   url: string; // 'https://api.github.com/repos/peterpeterparker/dummy/releases/assets/91555492'
@@ -38,16 +38,29 @@ const GITHUB_API_HEADERS: RequestInit = {
   }
 };
 
-const githubLastRelease = async (apiUrl: string): Promise<GitHubRelease | undefined> => {
-  const response = await fetch(`${apiUrl}/releases/latest`, GITHUB_API_HEADERS);
+export type GithubLastReleaseResult =
+  | {status: 'success'; release: GitHubRelease}
+  | {status: 'error'; err?: unknown};
 
-  if (!response.ok) {
-    return undefined;
+const githubLastRelease = async (
+  apiUrl: string
+): Promise<{status: 'success'; release: GitHubRelease} | {status: 'error'; err?: unknown}> => {
+  try {
+    const response = await fetch(`${apiUrl}/releases/latest`, GITHUB_API_HEADERS);
+
+    if (!response.ok) {
+      return {status: 'error'};
+    }
+
+    const release = await response.json();
+    return {status: 'success', release};
+  } catch (err: unknown) {
+    return {status: 'error', err};
   }
-
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-return
-  return await response.json();
 };
 
-export const githubCliLastRelease = async (): Promise<GitHubRelease | undefined> =>
+export const githubCliLastRelease = async (): Promise<GithubLastReleaseResult> =>
   await githubLastRelease(GITHUB_API_CLI_URL);
+
+export const githubJunoDockerLastRelease = async (): Promise<GithubLastReleaseResult> =>
+  await githubLastRelease(GITHUB_API_JUNO_DOCKER_URL);

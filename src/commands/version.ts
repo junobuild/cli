@@ -2,31 +2,38 @@ import {isNullish} from '@dfinity/utils';
 import {red} from 'kleur';
 import {clean} from 'semver';
 import {version as cliCurrentVersion} from '../../package.json';
-import {githubCliLastRelease} from '../rest/github.rest';
-import {checkVersion} from '../services/version.services';
+import {
+  githubCliLastRelease,
+  githubJunoDockerLastRelease,
+  GithubLastReleaseResult
+} from '../rest/github.rest';
+import {checkVersion, CheckVersionResult} from '../services/version.services';
 import {detectPackageManager} from '../utils/pm.utils';
+import {readEmulatorConfig} from '../configs/emulator.config';
+
 export const version = async () => {
-  await cliVersion();
+  const check = await cliVersion();
+
+  if (check.diff === 'error') {
+    return;
+  }
+
+  await emulatorVersion();
 };
 
-const cliVersion = async () => {
-  const githubRelease = await githubCliLastRelease();
+const cliVersion = async (): Promise<CheckVersionResult> => {
+  const result = await buildVersionFromGitHub({
+    release: 'CLI',
+    releaseFn: githubCliLastRelease
+  });
 
-  if (githubRelease === undefined) {
-    console.log(red('Cannot fetch last release version of Juno on GitHub 😢.'));
-    return;
+  if (result.result === 'error') {
+    return {diff: 'error'};
   }
 
-  const {tag_name} = githubRelease;
+  const {latestVersion} = result;
 
-  const latestVersion = clean(tag_name);
-
-  if (isNullish(latestVersion)) {
-    console.log(red(`Cannot extract version from release. Reach out Juno❗️`));
-    return;
-  }
-
-  checkVersion({
+  return checkVersion({
     currentVersion: cliCurrentVersion,
     latestVersion,
     displayHint: 'CLI',
@@ -45,4 +52,55 @@ const installHint = (): string => {
     default:
       return 'npm i -g @junobuild/cli';
   }
+};
+
+const emulatorVersion = async (): Promise<CheckVersionResult> => {
+  const parsedResult = await readEmulatorConfig();
+
+  if (!parsedResult.success) {
+    return {diff: "error"};
+  }
+
+
+
+  const result = await buildVersionFromGitHub({
+    release: 'Juno Docker',
+    releaseFn: githubJunoDockerLastRelease
+  });
+
+  if (result.result === 'error') {
+    return {diff: 'error'};
+  }
+
+  const {latestVersion} = result;
+
+
+};
+
+const buildVersionFromGitHub = async ({
+  releaseFn,
+  release
+}: {
+  releaseFn: () => Promise<GithubLastReleaseResult>;
+  release: 'CLI' | 'Juno Docker';
+}): Promise<{result: 'success'; latestVersion: string} | {result: 'error'}> => {
+  const githubRelease = await releaseFn();
+
+  if (githubRelease.status === 'error') {
+    console.log(red(`Cannot fetch the last version of ${release} on GitHub 😢.`));
+    return {result: 'error'};
+  }
+
+  const {
+    release: {tag_name}
+  } = githubRelease;
+
+  const latestVersion = clean(tag_name);
+
+  if (isNullish(latestVersion)) {
+    console.log(red(`Cannot extract version from the ${release} release. Reach out Juno❗️`));
+    return {result: 'error'};
+  }
+
+  return {result: 'success', latestVersion};
 };
