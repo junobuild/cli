@@ -7,7 +7,7 @@ import {clearProposalStagedAssets} from '../changes/changes.clear.services';
 import {applyConfig} from '../config/apply.services';
 import {init} from '../config/init.services';
 import {links} from '../links.services';
-import {getSatelliteVersion} from '../version.services';
+import {getSatelliteVersion} from '../version/version.services';
 import {parseBatchSize} from './_args.services';
 import {deployImmediate} from './_deploy/deploy.individual.services';
 import {deployWithProposal as executeDeployWithProposal} from './_deploy/deploy.with-proposal.services';

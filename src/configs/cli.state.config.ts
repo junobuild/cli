@@ -7,7 +7,7 @@ import {
   type CliStateSatelliteAppliedConfigHashes
 } from '../types/cli/cli.state';
 
-export const getStateConfig = (): Conf<CliState> =>
+const getStateConfig = (): Conf<CliState> =>
   new Conf<CliState>({projectName: ENV.config.projectStateName});
 
 export const getLatestAppliedConfig = ({

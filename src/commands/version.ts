@@ -1,15 +1,14 @@
-import {isEmptyString, isNullish} from '@dfinity/utils';
-import {green, red} from 'kleur';
-import {clean} from 'semver';
+import {isEmptyString} from '@dfinity/utils';
+import {green} from 'kleur';
 import {version as cliCurrentVersion} from '../../package.json';
-import {
-  githubCliLastRelease,
-  githubJunoDockerLastRelease,
-  type GithubLastReleaseResult
-} from '../rest/github.rest';
+import {githubCliLastRelease, githubJunoDockerLastRelease} from '../rest/github.rest';
 import {findEmulatorVersion} from '../services/emulator/version.services';
-import {checkVersion, type CheckVersionResult} from '../services/version.services';
-import {detectPackageManager} from '../utils/pm.utils';
+import {
+  buildVersionFromGitHub,
+  checkVersion,
+  type CheckVersionResult
+} from '../services/version/version.services';
+import {pmInstallHint} from '../utils/pm.utils';
 
 export const version = async () => {
   const check = await cliVersion();
@@ -23,7 +22,7 @@ export const version = async () => {
 
 const cliVersion = async (): Promise<CheckVersionResult> => {
   const result = await buildVersionFromGitHub({
-    release: 'CLI',
+    logReleaseOnError: () => 'CLI',
     releaseFn: githubCliLastRelease
   });
 
@@ -37,21 +36,8 @@ const cliVersion = async (): Promise<CheckVersionResult> => {
     currentVersion: cliCurrentVersion,
     latestVersion,
     displayHint: 'CLI',
-    commandLineHint: installHint()
+    commandLineHint: pmInstallHint()
   });
-};
-
-const installHint = (): string => {
-  const pm = detectPackageManager();
-
-  switch (pm) {
-    case 'yarn':
-      return 'yarn global add @junobuild/cli';
-    case 'pnpm':
-      return 'pnpm add -g @junobuild/cli';
-    default:
-      return 'npm i -g @junobuild/cli';
-  }
 };
 
 const emulatorVersion = async () => {
@@ -64,7 +50,7 @@ const emulatorVersion = async () => {
   const {version: emulatorCurrentVersion} = emulatorResult;
 
   const result = await buildVersionFromGitHub({
-    release: 'Juno Docker',
+    logReleaseOnError: () => 'Juno Docker',
     releaseFn: githubJunoDockerLastRelease
   });
 
@@ -87,32 +73,4 @@ const emulatorVersion = async () => {
     latestVersion,
     displayHint: 'Emulator'
   });
-};
-
-const buildVersionFromGitHub = async ({
-  releaseFn,
-  release
-}: {
-  releaseFn: () => Promise<GithubLastReleaseResult>;
-  release: 'CLI' | 'Juno Docker';
-}): Promise<{result: 'success'; latestVersion: string} | {result: 'error'}> => {
-  const githubRelease = await releaseFn();
-
-  if (githubRelease.status === 'error') {
-    console.log(red(`Cannot fetch the last version of ${release} on GitHub 😢.`));
-    return {result: 'error'};
-  }
-
-  const {
-    release: {tag_name}
-  } = githubRelease;
-
-  const latestVersion = clean(tag_name);
-
-  if (isNullish(latestVersion)) {
-    console.log(red(`Cannot extract version from the ${release} release. Reach out Juno❗️`));
-    return {result: 'error'};
-  }
-
-  return {result: 'success', latestVersion};
 };

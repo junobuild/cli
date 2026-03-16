@@ -23,3 +23,16 @@ export const detectPackageManager = (): PackageManager | undefined => {
 
   return undefined;
 };
+
+export const pmInstallHint = (): string => {
+  const pm = detectPackageManager();
+
+  switch (pm) {
+    case 'yarn':
+      return 'yarn global add @junobuild/cli';
+    case 'pnpm':
+      return 'pnpm add -g @junobuild/cli';
+    default:
+      return 'npm i -g @junobuild/cli';
+  }
+}
