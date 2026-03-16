@@ -5,10 +5,10 @@ import {version as cliCurrentVersion} from '../../package.json';
 import {
   githubCliLastRelease,
   githubJunoDockerLastRelease,
-  GithubLastReleaseResult
+  type GithubLastReleaseResult
 } from '../rest/github.rest';
 import {findEmulatorVersion} from '../services/emulator/version.services';
-import {checkVersion, CheckVersionResult} from '../services/version.services';
+import {checkVersion, type CheckVersionResult} from '../services/version.services';
 import {detectPackageManager} from '../utils/pm.utils';
 
 export const version = async () => {
