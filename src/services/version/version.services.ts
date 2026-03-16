@@ -87,17 +87,23 @@ export const checkVersion = ({
   latestVersion,
   displayHint,
   commandLineHint,
-  logUpToDate = true
+  logUpToDate = true,
+  logSpacer = false
 }: {
   currentVersion: string;
   latestVersion: string;
   displayHint: string;
   commandLineHint?: string;
   logUpToDate?: boolean;
+  logSpacer?: boolean;
 }): CheckVersionResult => {
   const diff = compare(currentVersion, latestVersion);
 
   if (diff === 0) {
+    if (logSpacer) {
+      console.log('');
+    }
+
     if (logUpToDate) {
       console.log(`Your ${displayHint} (${green(`v${currentVersion}`)}) is up-to-date.`);
     }
@@ -106,8 +112,16 @@ export const checkVersion = ({
   }
 
   if (diff === 1) {
+    if (logSpacer) {
+      console.log('');
+    }
+
     console.log(yellow(`Your ${displayHint} version is more recent than the latest available 🤔.`));
     return {diff: 'error'};
+  }
+
+  if (logSpacer) {
+    console.log('');
   }
 
   console.log(
@@ -119,13 +133,17 @@ export const checkVersion = ({
   return {diff: 'outdated'};
 };
 
+export type BuildVersionFromGitHubResult =
+  | {result: 'success'; latestVersion: string}
+  | {result: 'error'};
+
 export const buildVersionFromGitHub = async ({
   releaseFn,
   logReleaseOnError
 }: {
   releaseFn: () => Promise<GithubLastReleaseResult>;
   logReleaseOnError?: () => 'CLI' | 'Juno Docker';
-}): Promise<{result: 'success'; latestVersion: string} | {result: 'error'}> => {
+}): Promise<BuildVersionFromGitHubResult> => {
   const githubRelease = await releaseFn();
 
   if (githubRelease.status === 'error') {
