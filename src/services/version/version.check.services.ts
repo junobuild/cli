@@ -122,12 +122,15 @@ const check = async ({
 
   const cachedRemoteVersion = cachedInfo?.remote;
 
-  // The weekly check is not due and the current version of the CLI is up to date
-  if (
-    !checkIsDue &&
-    nonNullish(cachedRemoteVersion) &&
-    compare(currentVersion, cachedRemoteVersion) >= 0
-  ) {
+  // The weekly check is not due and we got a remote version in cache
+  if (!checkIsDue && nonNullish(cachedRemoteVersion)) {
+    // The current version is newer, we assume the dev use the latest
+    if (compare(currentVersion, cachedRemoteVersion) >= 0) {
+      return;
+    }
+
+    // Behind but check not due, compare cached remote version
+    checkVersionFn({latestVersion: cachedRemoteVersion});
     return;
   }
 
