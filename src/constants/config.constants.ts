@@ -1,7 +1,7 @@
 import type {Schema} from 'conf';
 import {ENV} from '../env';
-import {type CliConfig} from '../types/cli.config';
-import {type CliDefaultOptions, type CliOptions} from '../types/cli.options';
+import {type CliConfig} from '../types/cli/cli.config';
+import {type CliDefaultOptions, type CliOptions} from '../types/cli/cli.options';
 
 const schema: Schema<CliConfig> = {
   token: {

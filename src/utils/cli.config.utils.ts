@@ -5,7 +5,7 @@ import {existsSync} from 'node:fs';
 import {resolve} from 'node:path';
 import {getCliOrbiters, getCliSatellites} from '../configs/cli.config';
 import {CONFIG_OPTIONS} from '../constants/config.constants';
-import type {CliConfig} from '../types/cli.config';
+import type {CliConfig} from '../types/cli/cli.config';
 
 export const loadConfig = (encryptionKey: string | undefined): Conf<CliConfig> => {
   return new Conf<CliConfig>({

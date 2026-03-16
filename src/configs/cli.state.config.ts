@@ -5,7 +5,7 @@ import {
   type CliState,
   type CliStateSatellite,
   type CliStateSatelliteAppliedConfigHashes
-} from '../types/cli.state';
+} from '../types/cli/cli.state';
 
 export const getStateConfig = (): Conf<CliState> =>
   new Conf<CliState>({projectName: ENV.config.projectStateName});

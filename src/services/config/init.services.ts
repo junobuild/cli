@@ -14,7 +14,7 @@ import {
   writeJunoConfig,
   writeJunoConfigPlaceholder
 } from '../../configs/juno.config';
-import type {CliOrbiterConfig, CliSatelliteConfig} from '../../types/cli.config';
+import type {CliOrbiterConfig, CliSatelliteConfig} from '../../types/cli/cli.config';
 import {type EmulatorConfigWithoutConsole} from '../../types/emulator';
 import type {PackageManager} from '../../types/pm';
 import {detectPackageManager} from '../../utils/pm.utils';

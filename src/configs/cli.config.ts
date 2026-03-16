@@ -4,7 +4,7 @@ import type Conf from 'conf';
 import {red, yellow} from 'kleur';
 import {askForPassword} from '../services/cli.settings.services';
 import {getSettingsStore} from '../stores/settings.store';
-import type {CliConfig, CliOrbiterConfig, CliSatelliteConfig} from '../types/cli.config';
+import type {CliConfig, CliOrbiterConfig, CliSatelliteConfig} from '../types/cli/cli.config';
 import {loadConfig} from '../utils/cli.config.utils';
 
 // Save in https://github.com/sindresorhus/env-paths#pathsconfig
