@@ -18,7 +18,7 @@ import {helpSnapshot, snapshot} from './commands/snapshot';
 import {startStop} from './commands/start-stop';
 import {status} from './commands/status';
 import {upgrade} from './commands/upgrade';
-import {version as versionCommand} from './commands/version';
+import {logVersion} from './commands/version';
 import {whoami} from './commands/whoami';
 import {help} from './help/help';
 import {logHelpLogin} from './help/login.help';
@@ -55,7 +55,7 @@ export const run = async () => {
 
   // Special use case if dev runs "juno --version"
   if (['-v', '--version'].includes(cmd)) {
-    await versionCommand();
+    await logVersion();
     return;
   }
 
@@ -149,7 +149,7 @@ export const run = async () => {
       await clear();
       break;
     case 'version':
-      await versionCommand();
+      await logVersion();
       break;
     case 'status':
       await status();
