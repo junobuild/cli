@@ -1,4 +1,4 @@
-import {cyan, green, magenta, yellow} from 'kleur';
+import {cyan, green, magenta} from 'kleur';
 import {OPTION_HELP, VERSION_DESCRIPTION} from '../constants/help.constants';
 import {helpOutput} from './common.help';
 import {TITLE} from './help';

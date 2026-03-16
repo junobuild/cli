@@ -14,7 +14,7 @@ export const isWeeklyCheckDisabled = (): boolean => !isWeeklyCheckEnabled();
 export const toggleWeeklyCheck = (enabled: boolean) => {
   const config = getVersionConfig();
   config.set('weeklyCheckEnabled', enabled);
-}
+};
 
 export const updateLastCheckToNow = ({
   key
