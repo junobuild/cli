@@ -3,16 +3,16 @@ import ora from 'ora';
 import {compare} from 'semver';
 import {version as cliCurrentVersion} from '../../../package.json';
 import {
-  getCachedVersions,
-  saveCachedVersions,
-  updateLastCheckToNow
-} from '../../configs/cli.versions.config';
-import {
   githubCliLastRelease,
   githubJunoDockerLastRelease,
   type GithubLastReleaseResult
 } from '../../rest/github.rest';
-import {type CachedVersions} from '../../types/cli/cli.versions';
+import {
+  getCachedVersions,
+  saveCachedVersions,
+  updateLastCheckToNow
+} from '../../stores/versions.store';
+import {type CachedVersions} from '../../types/stores/versions';
 import {pmInstallHint} from '../../utils/pm.utils';
 import {findEmulatorVersion} from '../emulator/version.services';
 import {

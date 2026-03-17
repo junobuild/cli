@@ -1,5 +1,5 @@
 import type {Options as ConfOptions} from 'conf';
-import {type CliConfig} from './cli.config';
+import {type CliConfig} from './config';
 
 type CliConfigRequiredOptions = Required<ConfOptions<CliConfig>>;
 

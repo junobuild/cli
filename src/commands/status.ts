@@ -6,13 +6,13 @@ import {
 } from '@junobuild/admin';
 import {red, yellow} from 'kleur';
 import {actorParameters} from '../api/actor.api';
-import {getCliMissionControl} from '../configs/cli.config';
 import {
   MISSION_CONTROL_WASM_NAME,
   ORBITER_WASM_NAME,
   SATELLITE_WASM_NAME
 } from '../constants/constants';
 import {checkVersion, getSatelliteVersion} from '../services/version/version.services';
+import {getCliMissionControl} from '../stores/config.store';
 import type {AssetKey} from '../types/asset-key';
 import {toAssetKeys} from '../utils/asset-key.utils';
 import {orbiterKey, satelliteKey} from '../utils/cli.config.utils';

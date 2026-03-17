@@ -3,11 +3,11 @@ import {Ed25519KeyIdentity} from '@icp-sdk/core/identity';
 import {assertAnswerCtrlC, hasArgs} from '@junobuild/cli-tools';
 import {green, red} from 'kleur';
 import prompts from 'prompts';
-import {clearCliConfig, getToken} from '../configs/cli.config';
 import {DEV} from '../env';
 import {loginEmulatorOnly} from '../services/auth/login.emulator.services';
 import {login as loginServices} from '../services/auth/login.services';
 import {reuseController} from '../services/controllers.services';
+import {clearCliConfig, getToken} from '../stores/config.store';
 import {confirmAndExitUnlessHeadlessAndDev} from '../utils/prompt.utils';
 
 export const logout = async () => {

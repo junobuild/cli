@@ -1,6 +1,6 @@
 import {isNullish} from '@dfinity/utils';
 import prompts from 'prompts';
-import {isWeeklyCheckEnabled, toggleWeeklyCheck} from '../../configs/cli.versions.config';
+import {isWeeklyCheckEnabled, toggleWeeklyCheck} from '../../stores/versions.store';
 
 export const enableDisableVersionCheck = async () => {
   const current = isWeeklyCheckEnabled();

@@ -1,9 +1,9 @@
 import {isNullish, nonNullish} from '@dfinity/utils';
 import {Ed25519KeyIdentity} from '@icp-sdk/core/identity';
 import {green} from 'kleur';
-import {getToken} from '../configs/cli.config';
 import {ENV} from '../env';
 import {links} from '../services/links.services';
+import {getToken} from '../stores/config.store';
 
 export const whoami = async () => {
   const {success} = await info();

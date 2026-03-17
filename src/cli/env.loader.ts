@@ -1,6 +1,6 @@
 import {notEmptyString} from '@dfinity/utils';
 import {nextArg} from '@junobuild/cli-tools';
-import {type JunoCliConfig, type JunoCliEnv, type JunoConsole} from '../types/cli/cli.env';
+import {type JunoCliConfig, type JunoCliEnv, type JunoConsole} from '../types/env';
 
 export const loadEnv = (): JunoCliEnv => {
   const [_, ...args] = process.argv.slice(2);

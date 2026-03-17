@@ -5,7 +5,6 @@ import {cyan, yellow} from 'kleur';
 import {unlink} from 'node:fs/promises';
 import {basename} from 'node:path';
 import prompts from 'prompts';
-import {getCliOrbiters, getCliSatellites, getToken} from '../../configs/cli.config';
 import {
   detectJunoConfigType,
   junoConfigExist,
@@ -14,9 +13,10 @@ import {
   writeJunoConfig,
   writeJunoConfigPlaceholder
 } from '../../configs/juno.config';
-import type {CliOrbiterConfig, CliSatelliteConfig} from '../../types/cli/cli.config';
+import {getCliOrbiters, getCliSatellites, getToken} from '../../stores/config.store';
 import {type EmulatorConfigWithoutConsole} from '../../types/emulator';
 import type {PackageManager} from '../../types/pm';
+import type {CliOrbiterConfig, CliSatelliteConfig} from '../../types/stores/config';
 import {detectPackageManager} from '../../utils/pm.utils';
 import {confirm, confirmAndExit, NEW_CMD_LINE} from '../../utils/prompt.utils';
 import {login as consoleLogin} from '../auth/login.services';

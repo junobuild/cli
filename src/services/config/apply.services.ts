@@ -27,7 +27,6 @@ import type {
 } from '@junobuild/config';
 import {red, yellow} from 'kleur';
 import ora from 'ora';
-import {getLatestAppliedConfig, saveLastAppliedConfig} from '../../configs/cli.state.config';
 import {
   DEFAULT_COMPUTE_ALLOCATION,
   DEFAULT_LOG_VISIBILITY,
@@ -36,14 +35,15 @@ import {
   DEFAULT_SATELLITE_FREEZING_THRESHOLD,
   DEFAULT_SATELLITE_HEAP_WASM_MEMORY_LIMIT
 } from '../../constants/settings.constants';
+import {getLatestAppliedConfig, saveLastAppliedConfig} from '../../stores/state.store';
+import type {SatelliteParametersWithId} from '../../types/satellite';
 import {
   type CliStateSatelliteAppliedCollection,
   type CliStateSatelliteAppliedConfigHashes,
   type ConfigHash,
   type RuleHash,
   type SettingsHash
-} from '../../types/cli/cli.state';
-import type {SatelliteParametersWithId} from '../../types/satellite';
+} from '../../types/stores/state';
 import {assertConfigAndLoadSatelliteContext} from '../../utils/juno.config.utils';
 import {objHash} from '../../utils/obj.utils';
 import {isHeadless} from '../../utils/process.utils';
