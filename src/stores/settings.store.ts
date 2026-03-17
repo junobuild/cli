@@ -1,12 +1,25 @@
 import {isNullish, nonNullish} from '@dfinity/utils';
-import type Conf from 'conf';
+import Conf, {type Schema} from 'conf';
 import {yellow} from 'kleur';
-import {getSettingsConfig, saveEncryption} from '../configs/cli.settings.config';
+import {ENV} from '../env';
 import {askForPassword} from '../services/cli.settings.services';
-import type {CliSettings} from '../types/cli/cli.settings';
+import type {CliSettings} from '../types/stores/settings';
 import {configFileExists, loadConfig} from '../utils/cli.config.utils';
 import {isHeadless} from '../utils/process.utils';
 import {confirm} from '../utils/prompt.utils';
+
+const schema: Schema<CliSettings> = {
+  encryption: {
+    type: 'boolean'
+  }
+} as const;
+
+const getStore = (): Conf<CliSettings> =>
+  new Conf<CliSettings>({projectName: ENV.config.projectSettingsName, schema});
+
+const saveEncryption = (encryption: boolean) => {
+  getStore().set('encryption', encryption);
+};
 
 class SettingsConfigStore {
   readonly #config: Conf<CliSettings>;
@@ -16,7 +29,7 @@ class SettingsConfigStore {
   }
 
   static async init(): Promise<SettingsConfigStore> {
-    const store = new SettingsConfigStore(getSettingsConfig());
+    const store = new SettingsConfigStore(getStore());
 
     if (isHeadless()) {
       return store;

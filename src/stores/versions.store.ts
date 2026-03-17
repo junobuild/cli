@@ -1,10 +1,10 @@
 import Conf from 'conf';
-import {type CachedVersion, type CachedVersions} from '../types/cli/cli.versions';
+import {type CachedVersion, type CachedVersions} from '../types/stores/versions';
 
-const getVersionConfig = (): Conf<CachedVersions> =>
+const getStore = (): Conf<CachedVersions> =>
   new Conf<CachedVersions>({projectName: 'juno-cli-versions'});
 
-export const getCachedVersions = (): Conf<CachedVersions> => getVersionConfig();
+export const getCachedVersions = (): Conf<CachedVersions> => getStore();
 
 export const isWeeklyCheckEnabled = (): boolean =>
   getCachedVersions().get('weeklyCheckEnabled') !== false;
@@ -12,7 +12,7 @@ export const isWeeklyCheckEnabled = (): boolean =>
 export const isWeeklyCheckDisabled = (): boolean => !isWeeklyCheckEnabled();
 
 export const toggleWeeklyCheck = (enabled: boolean) => {
-  const config = getVersionConfig();
+  const config = getStore();
   config.set('weeklyCheckEnabled', enabled);
 };
 
@@ -21,7 +21,7 @@ export const updateLastCheckToNow = ({
 }: {
   key: keyof Omit<CachedVersions, 'weeklyCheckEnabled'>;
 }) => {
-  const config = getVersionConfig();
+  const config = getStore();
 
   const currentVersions = config.get(key);
 
@@ -38,7 +38,7 @@ export const saveCachedVersions = ({
   key: keyof CachedVersions;
   versions: Omit<CachedVersion, 'lastCheck'>;
 }) => {
-  const config = getVersionConfig();
+  const config = getStore();
   config.set(key, {
     lastCheck: new Date().toISOString(),
     ...versions

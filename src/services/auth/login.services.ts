@@ -8,7 +8,7 @@ import {createServer} from 'node:http';
 import path, {dirname} from 'node:path';
 import {fileURLToPath} from 'node:url';
 import util from 'node:util';
-import {saveCliConfig} from '../../configs/cli.config';
+import {saveCliConfig} from '../../stores/config.store';
 import {authUrl, generateToken, requestUrl} from '../../utils/auth.utils';
 import {openUrl} from '../../utils/open.utils';
 import {getPort} from '../../utils/port.utils';

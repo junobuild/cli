@@ -3,9 +3,9 @@ import type {JsonnableEd25519KeyIdentity} from '@icp-sdk/core/identity';
 import type Conf from 'conf';
 import {red, yellow} from 'kleur';
 import {askForPassword} from '../services/cli.settings.services';
-import {getSettingsStore} from '../stores/settings.store';
-import type {CliConfig, CliOrbiterConfig, CliSatelliteConfig} from '../types/cli/cli.config';
+import type {CliConfig, CliOrbiterConfig, CliSatelliteConfig} from '../types/stores/config';
 import {loadConfig} from '../utils/cli.config.utils';
+import {getSettingsStore} from './settings.store';
 
 // Save in https://github.com/sindresorhus/env-paths#pathsconfig
 
