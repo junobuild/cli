@@ -12,6 +12,7 @@ import {
   START_DESCRIPTION,
   STATUS_DESCRIPTION,
   STOP_DESCRIPTION,
+  STORAGE_DESCRIPTION,
   UPGRADE_DESCRIPTION,
   VERSION_DESCRIPTION,
   WHOAMI_DESCRIPTION
@@ -44,6 +45,7 @@ Commands:
   ${cyan('start')}               ${START_DESCRIPTION}
   ${cyan('stop')}                ${STOP_DESCRIPTION}
   ${cyan('status')}              ${STATUS_DESCRIPTION}
+  ${cyan('storage')}             ${STORAGE_DESCRIPTION}
   ${cyan('upgrade')}             ${UPGRADE_DESCRIPTION}
   ${cyan('version')}             ${VERSION_DESCRIPTION}
   ${cyan('whoami')}              ${WHOAMI_DESCRIPTION}

@@ -31,6 +31,13 @@ export const HOSTING_CLEAR_DESCRIPTION =
 export const HOSTING_PRUNE_DESCRIPTION =
   'Remove stale frontend files from your satellite that are no longer in your build output.';
 
+export const STORAGE_DESCRIPTION =
+  'Deploy and manage assets in your satellite storage collections.';
+export const STORAGE_DEPLOY_DESCRIPTION = 'Deploy files to your satellite storage collections.';
+export const STORAGE_CLEAR_DESCRIPTION = 'Remove assets from your satellite storage collections.';
+export const STORAGE_PRUNE_DESCRIPTION =
+  'Remove stale assets from your satellite storage collections that are no longer in your local source.';
+
 export const EMULATOR_START_DESCRIPTION = 'Start the emulator for local development.';
 export const EMULATOR_WAIT_DESCRIPTION = 'Wait until the emulator is ready.';
 export const EMULATOR_CLEAR_DESCRIPTION = 'Clear the local emulator state (volume and container).';

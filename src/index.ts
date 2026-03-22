@@ -15,6 +15,7 @@ import {helpHosting, hosting} from './commands/hosting';
 import {open} from './commands/open';
 import {helpRun, run as runCmd} from './commands/run';
 import {helpSnapshot, snapshot} from './commands/snapshot';
+import {helpStorage, storage} from './commands/storage';
 import {startStop} from './commands/start-stop';
 import {status} from './commands/status';
 import {upgrade} from './commands/upgrade';
@@ -97,6 +98,9 @@ export const run = async () => {
         break;
       case 'snapshot':
         helpSnapshot(args);
+        break;
+      case 'storage':
+        helpStorage(args);
         break;
       case 'init':
         helpInit(args);
@@ -187,6 +191,9 @@ export const run = async () => {
       break;
     case 'snapshot':
       await snapshot(args);
+      break;
+    case 'storage':
+      await storage(args);
       break;
     case 'changes':
       await changes(args);
