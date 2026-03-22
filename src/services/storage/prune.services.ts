@@ -1,6 +1,6 @@
 import {isNullish} from '@dfinity/utils';
 import {deleteAsset} from '@junobuild/core';
-import {green, yellow, cyan} from 'kleur';
+import {cyan, green, yellow} from 'kleur';
 import ora from 'ora';
 import {existsSync, readdirSync} from 'node:fs';
 import {join, relative} from 'node:path';

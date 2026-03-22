@@ -2,7 +2,7 @@ import {isNullish} from '@dfinity/utils';
 import {deleteAssets} from '@junobuild/admin';
 import {hasArgs, nextArg} from '@junobuild/cli-tools';
 import {deleteAsset} from '@junobuild/core';
-import {green, yellow, cyan} from 'kleur';
+import {cyan, green, yellow} from 'kleur';
 import ora from 'ora';
 import {noJunoConfig} from '../../configs/juno.config';
 import {assertConfigAndLoadSatelliteContext} from '../../utils/juno.config.utils';
@@ -53,7 +53,6 @@ export const clearStorage = async (args?: string[]) => {
     return;
   }
 
-  // Clear all assets from all deploy collections
   for (const {collection} of deployMappings) {
     const spinner = ora(`Clearing collection "${collection}"...`).start();
 

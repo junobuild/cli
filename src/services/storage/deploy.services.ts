@@ -2,10 +2,9 @@ import {isNullish} from '@dfinity/utils';
 import {listRules} from '@junobuild/admin';
 import {deployToCollection} from '@junobuild/cli-tools';
 import type {EncodingType} from '@junobuild/config';
-import {uploadBlob} from '@junobuild/core';
-import {red, yellow, green, cyan} from 'kleur';
+import {type Asset, uploadBlob} from '@junobuild/core';
+import {cyan, green, red, yellow} from 'kleur';
 import {lstatSync} from 'node:fs';
-import type {Asset} from '@junobuild/core';
 import {noJunoConfig} from '../../configs/juno.config';
 import type {SatelliteParametersWithId} from '../../types/satellite';
 import {assertConfigAndLoadSatelliteContext} from '../../utils/juno.config.utils';
@@ -36,7 +35,6 @@ export const deployStorage = async (args?: string[]) => {
     return;
   }
 
-  // Verify all target collections exist before uploading
   const existingRules = await listRules({type: 'storage', satellite});
   const existingCollections = new Set(existingRules.items.map((r) => r.collection));
 
