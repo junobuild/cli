@@ -33,9 +33,9 @@ export const pruneStorage = async (_args?: string[]) => {
 
   console.log('');
   if (totalPruned === 0) {
-    console.log(`${green('✔')} No stale assets found. Nothing to prune.`);
+    console.log(`${green('✔')} No stale storage assets found. Nothing to prune.`);
   } else {
-    console.log(`${green('✔')} Pruned ${totalPruned} stale asset${totalPruned > 1 ? 's' : ''}.`);
+    console.log(`${green('✔')} Pruned ${totalPruned} stale storage asset${totalPruned > 1 ? 's' : ''}.`);
   }
 };
 
@@ -46,7 +46,7 @@ const pruneCollection = async ({
   mapping: {source: string; collection: string};
   satellite: SatelliteParametersWithId;
 }): Promise<number> => {
-  const spinner = ora(`Checking collection "${collection}" for stale assets...`).start();
+  const spinner = ora(`Checking collection "${collection}" for stale storage assets...`).start();
 
   try {
     const remoteAssets = await listAssetsForCollection({satellite, collection});
@@ -68,7 +68,7 @@ const pruneCollection = async ({
       return 0;
     }
 
-    spinner.text = `Pruning ${staleAssets.length} stale asset${staleAssets.length > 1 ? 's' : ''} from "${collection}"...`;
+    spinner.text = `Pruning ${staleAssets.length} stale storage asset${staleAssets.length > 1 ? 's' : ''} from "${collection}"...`;
 
     for (const asset of staleAssets) {
       await deleteAsset({
@@ -80,7 +80,7 @@ const pruneCollection = async ({
 
     spinner.stop();
     console.log(
-      `${green('✔')} Pruned ${staleAssets.length} asset${staleAssets.length > 1 ? 's' : ''} from ${cyan(`"${collection}"`)}.`
+      `${green('✔')} Pruned ${staleAssets.length} storage asset${staleAssets.length > 1 ? 's' : ''} from ${cyan(`"${collection}"`)}.`
     );
 
     return staleAssets.length;
