@@ -1,7 +1,7 @@
 import type {Options as ConfOptions} from 'conf';
 import {type CliConfig} from './config';
 
-type CliConfigRequiredOptions = Required<ConfOptions<CliConfig>>;
+type CliConfigRequiredOptions = Required<ConfOptions<CliConfig & Record<string, unknown>>>;
 
 export type CliDefaultOptions = Pick<
   CliConfigRequiredOptions,

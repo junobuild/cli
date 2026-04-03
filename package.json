@@ -43,13 +43,13 @@
     "@junobuild/schema": "^1.2.1",
     "@junobuild/storage": "^2.4.1",
     "@junobuild/utils": "^1.0.2",
-    "chokidar": "^4.0.3",
-    "conf": "^14.0.0",
+    "chokidar": "^5.0.0",
+    "conf": "^15.1.0",
     "open": "^11.0.0",
-    "ora": "^9.0.0",
+    "ora": "^9.3.0",
     "portfinder": "^1.0.38",
     "prompts": "^2.4.2",
-    "semver": "^7.7.3",
+    "semver": "^7.7.4",
     "terminal-link": "^5.0.0"
   },
   "devDependencies": {
