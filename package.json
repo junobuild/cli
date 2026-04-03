@@ -29,9 +29,9 @@
     "e2e:playwright:install": "playwright install chromium --with-deps"
   },
   "dependencies": {
-    "@dfinity/utils": "^4.1.0",
-    "@icp-sdk/canisters": "^3.3.0",
-    "@icp-sdk/core": "^5.0.0",
+    "@dfinity/utils": "^4.2.1",
+    "@icp-sdk/canisters": "^3.5.2",
+    "@icp-sdk/core": "^5.2.1",
     "@junobuild/admin": "^4.3.2",
     "@junobuild/cdn": "^2.4.2",
     "@junobuild/cli-tools": "^0.13.3",
