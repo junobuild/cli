@@ -38,7 +38,7 @@
     "@junobuild/config": "^2.15.1",
     "@junobuild/config-loader": "^0.4.10",
     "@junobuild/core": "^5.3.1",
-    "@junobuild/functions-tools": "^0.6.2",
+    "@junobuild/functions-tools": "^0.6.3",
     "@junobuild/ic-client": "^8.1.2",
     "@junobuild/schema": "^1.2.1",
     "@junobuild/storage": "^2.4.1",
