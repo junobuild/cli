@@ -14,12 +14,14 @@ import {
 } from '../../../constants/build.constants';
 import {
   DEPLOY_SPUTNIK_SCRIPT_PATH,
+  JUNO_ACTION_PROJECT_PATH,
   JUNO_PACKAGE_JSON_PATH,
   SATELLITE_OUTPUT,
   SATELLITE_PROJECT_NAME,
   SPUTNIK_PROJECT_NAME,
   TARGET_PATH
 } from '../../../constants/dev.constants';
+import {ENV} from '../../../env';
 import type {BuildArgs, BuildType} from '../../../types/build';
 import {checkIcpBindgen} from '../../../utils/build.bindgen.utils';
 import {checkCandidExtractor, checkIcWasm, checkWasi2ic} from '../../../utils/build.cargo.utils';
@@ -69,8 +71,10 @@ export const buildRust = async ({
   const defaultProjectArgs = ['-p', SATELLITE_PROJECT_NAME];
 
   const cargoTarget = target ?? 'wasm32-unknown-unknown';
-  const cargoReleaseDir = join(process.cwd(), 'target');
-  const cargoOutputWasm = join(cargoReleaseDir, cargoTarget, 'release', 'satellite.wasm');
+  const cargoReleaseDir = join(ENV.ci ? JUNO_ACTION_PROJECT_PATH : process.cwd(), 'target');
+
+  const cargoOutputPath = join(process.cwd(), 'target', cargoTarget, 'release');
+  const cargoOutputWasm = join(cargoOutputPath, `${SATELLITE_PROJECT_NAME}.wasm`);
 
   const args = [
     'build',
@@ -108,6 +112,10 @@ export const buildRust = async ({
       return;
     }
 
+    if (ENV.ci) {
+      await mkdir(cargoOutputPath, {recursive: true});
+    }
+
     switch (target) {
       case 'wasm32-wasip1': {
         spinner.text = 'Converting WASI to IC...';
@@ -130,6 +138,15 @@ export const buildRust = async ({
         break;
       }
       default: {
+        if (ENV.ci) {
+          // When build in the CI the satellite.wasm needs to be copied as if had been buildin the projects target
+          // to comply with the next steps of the tooling
+          await copyFile(
+            join(cargoReleaseDir, cargoTarget, 'release', `${SATELLITE_PROJECT_NAME}.wasm`),
+            cargoOutputWasm
+          );
+        }
+
         await prepareJunoPkgForSatellite({buildType});
       }
     }
