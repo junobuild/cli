@@ -89,12 +89,12 @@ export const buildRust = async ({
 
   const REMAP_PATH_PREFIX = '{REMAP_PATH_PREFIX}';
 
+  // ⚠️ To get the same fingerprints for the Cargo build, the order of the flags must be similar between the CLI and the Docker scripts.
   const baseRustFlags = `-A deprecated ${REMAP_PATH_PREFIX} -C link-args=-zstack-size=3000000 --cfg getrandom_backend="custom"`;
 
   // In CI, RUSTFLAGS must exactly match those used during the pre-build step in the Docker image
   // (see ./docker/build-canister in the Juno repo). Any difference invalidates Cargo's fingerprints
   // and causes a full recompile of all dependencies. In other words, it would slow down the build.
-  // ⚠️ To get the same fingerprints the order of the flags must be similar as well.
   const rustFlags = baseRustFlags.replace(
     REMAP_PATH_PREFIX,
     ENV.ci ? ' --remap-path-prefix /home/apprunner/.cargo=/cargo' : ''
