@@ -14,12 +14,14 @@ import {
 } from '../../../constants/build.constants';
 import {
   DEPLOY_SPUTNIK_SCRIPT_PATH,
+  JUNO_ACTION_PROJECT_PATH,
   JUNO_PACKAGE_JSON_PATH,
   SATELLITE_OUTPUT,
   SATELLITE_PROJECT_NAME,
   SPUTNIK_PROJECT_NAME,
   TARGET_PATH
 } from '../../../constants/dev.constants';
+import {ENV} from '../../../env';
 import type {BuildArgs, BuildType} from '../../../types/build';
 import {checkIcpBindgen} from '../../../utils/build.bindgen.utils';
 import {checkCandidExtractor, checkIcWasm, checkWasi2ic} from '../../../utils/build.cargo.utils';
@@ -69,8 +71,10 @@ export const buildRust = async ({
   const defaultProjectArgs = ['-p', SATELLITE_PROJECT_NAME];
 
   const cargoTarget = target ?? 'wasm32-unknown-unknown';
-  const cargoReleaseDir = join(process.cwd(), 'target');
-  const cargoOutputWasm = join(cargoReleaseDir, cargoTarget, 'release', 'satellite.wasm');
+  const cargoReleaseDir = join(ENV.ci ? JUNO_ACTION_PROJECT_PATH : process.cwd(), 'target');
+
+  const cargoOutputPath = join(process.cwd(), 'target', cargoTarget, 'release');
+  const cargoOutputWasm = join(cargoOutputPath, `${SATELLITE_PROJECT_NAME}.wasm`);
 
   const args = [
     'build',
@@ -83,9 +87,22 @@ export const buildRust = async ({
     cargoReleaseDir
   ];
 
+  const REMAP_PATH_PREFIX = '{REMAP_PATH_PREFIX}';
+
+  // ⚠️ To get the same fingerprints for the Cargo build, the order of the flags must be similar between the CLI and the Docker scripts.
+  const baseRustFlags = `-A deprecated ${REMAP_PATH_PREFIX} -C link-args=-zstack-size=3000000 --cfg getrandom_backend="custom"`;
+
+  // In CI, RUSTFLAGS must exactly match those used during the pre-build step in the Docker image
+  // (see ./docker/build-canister in the Juno repo). Any difference invalidates Cargo's fingerprints
+  // and causes a full recompile of all dependencies. In other words, it would slow down the build.
+  const rustFlags = baseRustFlags.replace(
+    REMAP_PATH_PREFIX,
+    ENV.ci ? ' --remap-path-prefix /home/apprunner/.cargo=/cargo' : ''
+  );
+
   const env = {
     ...process.env,
-    RUSTFLAGS: '--cfg getrandom_backend="custom" -A deprecated',
+    RUSTFLAGS: rustFlags,
     ...(target === 'wasm32-wasip1' && {DEV_SCRIPT_PATH: DEPLOY_SPUTNIK_SCRIPT_PATH})
   };
 
@@ -106,6 +123,10 @@ export const buildRust = async ({
     if ('error' in buildType) {
       console.log(red(buildType.error));
       return;
+    }
+
+    if (ENV.ci) {
+      await mkdir(cargoOutputPath, {recursive: true});
     }
 
     switch (target) {
@@ -130,6 +151,15 @@ export const buildRust = async ({
         break;
       }
       default: {
+        if (ENV.ci) {
+          // When build in the CI the satellite.wasm needs to be copied as if had been buildin the projects target
+          // to comply with the next steps of the tooling
+          await copyFile(
+            join(cargoReleaseDir, cargoTarget, 'release', `${SATELLITE_PROJECT_NAME}.wasm`),
+            cargoOutputWasm
+          );
+        }
+
         await prepareJunoPkgForSatellite({buildType});
       }
     }
