@@ -87,9 +87,17 @@ export const buildRust = async ({
     cargoReleaseDir
   ];
 
+  const baseRustFlags =
+    '--cfg getrandom_backend="custom" -A deprecated -C link-args=-zstack-size=3000000';
+
+  // In CI, RUSTFLAGS must exactly match those used during the pre-build step in the Docker image
+  // (see ./docker/build-canister in the Juno repo). Any difference invalidates Cargo's fingerprints
+  // and causes a full recompile of all dependencies. In other words, it would slow down the build.
+  const rustFlags = `${baseRustFlags}${ENV.ci ? ' --remap-path-prefix /home/apprunner/.cargo=/cargo' : ''}`;
+
   const env = {
     ...process.env,
-    RUSTFLAGS: '--cfg getrandom_backend="custom" -A deprecated',
+    RUSTFLAGS: rustFlags,
     ...(target === 'wasm32-wasip1' && {DEV_SCRIPT_PATH: DEPLOY_SPUTNIK_SCRIPT_PATH})
   };
 
