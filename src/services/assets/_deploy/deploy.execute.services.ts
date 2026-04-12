@@ -64,6 +64,7 @@ const executeDeploy = async <
   const {satellite, satelliteConfig: satelliteConfigRead} =
     await assertConfigAndLoadSatelliteContext();
 
+  /** @deprecated */
   const precompress =
     satelliteConfigRead.precompress ??
     (nonNullish(deprecatedGzip)
@@ -77,7 +78,7 @@ const executeDeploy = async <
     ...(nonNullish(precompress) && {precompress})
   };
 
-  await cliPreDeploy({config: satelliteConfig});
+  await cliPreDeploy({config: satelliteConfig.hosting ?? satelliteConfig});
 
   const result = await deployWithMethod<P, R>({
     ...rest,
@@ -90,7 +91,7 @@ const executeDeploy = async <
     process.exit(0);
   }
 
-  await cliPostDeploy({config: satelliteConfig});
+  await cliPostDeploy({config: satelliteConfig.hosting ?? satelliteConfig});
 
   return result;
 };
@@ -121,7 +122,7 @@ const deployWithMethod = async <
     });
 
   const deployParams: DeployParams = {
-    config: satelliteConfig,
+    config: satelliteConfig.hosting ?? satelliteConfig,
     listAssets: listExistingAssets,
     assertSourceDirExists,
     assertMemory,
@@ -170,7 +171,7 @@ const assertSourceDirExists = (source: string) => {
     console.log(
       `${red(
         'Cannot proceed deployment.'
-      )}\nAre you sure the folder containing your built app (the "source" tag in the configuration file for Juno) files is correctly configured, or have you built your app?`
+      )}\nAre you sure the folder containing your built app files is correctly configured (in your juno.config "hosting > source"), or have you built your app?`
     );
     process.exit(1);
   }

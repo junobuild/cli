@@ -42,7 +42,7 @@ export const executePrune = async (params: {dryRun?: boolean; batchSize?: number
 
   const result = await pruneServices({
     params: {
-      config: satelliteConfig,
+      config: satelliteConfig.hosting ?? satelliteConfig,
       listAssets: listExistingAssets,
       assertSourceDirExists,
       ...params

@@ -6,8 +6,10 @@ export default defineConfig({
       development: '<DEV_SATELLITE_ID>',
       production: '<PROD_SATELLITE_ID>'
     },
-    source: 'e2e/fixtures',
-    precompress: false,
+    hosting: {
+      source: 'e2e/fixtures',
+      precompress: false
+    },
     collections: {
       datastore: [
         {

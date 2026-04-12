@@ -94,7 +94,9 @@ export const initConfigNoneInteractive = async ({
     await writeJunoConfigPlaceholder({
       ...rest,
       config: {
-        satellite: {source}
+        satellite: {
+          hosting: {source}
+        }
       },
       emulatorConfig
     });

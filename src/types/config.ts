@@ -1,4 +1,4 @@
-import type {JunoConfig, OrbiterConfig, SatelliteConfig} from '@junobuild/config';
+import type {HostingConfig, JunoConfig, OrbiterConfig, SatelliteConfig} from '@junobuild/config';
 
 export type JunoConfigWithSatelliteId = Omit<JunoConfig, 'satellite' | 'orbiter'> & {
   satellite: Omit<SatelliteConfig, 'id' | 'satellitesIds'> & Required<Pick<SatelliteConfig, 'id'>>;
@@ -6,5 +6,7 @@ export type JunoConfigWithSatelliteId = Omit<JunoConfig, 'satellite' | 'orbiter'
 };
 
 export type JunoConfigWithPlaceholder = Omit<JunoConfig, 'satellite' | 'orbiter'> & {
-  satellite: Pick<SatelliteConfig, 'source'>;
+  satellite: {
+    hosting: Pick<HostingConfig, 'source'>;
+  };
 };
