@@ -171,7 +171,7 @@ const assertSourceDirExists = (source: string) => {
     console.log(
       `${red(
         'Cannot proceed deployment.'
-      )}\nAre you sure the folder containing your built app (the "source" tag in the configuration file for Juno) files is correctly configured, or have you built your app?`
+      )}\nAre you sure the folder containing your built app files is correctly configured (in your juno.config under "hosting > source"), or have you built your app?`
     );
     process.exit(1);
   }
