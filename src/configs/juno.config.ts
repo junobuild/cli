@@ -55,7 +55,9 @@ export const writeJunoConfigPlaceholder = async ({
     case 'ts':
     case 'js': {
       const {
-        satellite: {source}
+        satellite: {
+          hosting: {source}
+        }
       } = config;
 
       const withPredeploy = nonNullish(pm);
@@ -74,7 +76,7 @@ export const writeJunoConfigPlaceholder = async ({
       });
 
       let content = template
-        .replace('<SOURCE>', source ?? DEPLOY_DEFAULT_SOURCE)
+        .replace('<SOURCE>', source)
         .replace('<COMMAND>', pm === 'npm' ? 'npm run' : (pm ?? ''));
 
       if (nonNullish(emulatorConfig)) {
