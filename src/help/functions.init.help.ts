@@ -27,6 +27,6 @@ ${FUNCTIONS_INIT_DESCRIPTION}
 ${usage}
 `;
 
-export const logHelpFunctionsEject = (args?: string[]) => {
+export const logHelpFunctionsInit = (args?: string[]) => {
   console.log(helpOutput(args) === 'doc' ? doc : help);
 };
