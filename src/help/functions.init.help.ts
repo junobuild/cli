@@ -1,9 +1,9 @@
 import {cyan, green, magenta, yellow} from 'kleur';
-import {FUNCTIONS_EJECT_DESCRIPTION, OPTION_HELP} from '../constants/help.constants';
+import {FUNCTIONS_INIT_DESCRIPTION, OPTION_HELP} from '../constants/help.constants';
 import {helpOutput} from './common.help';
 import {TITLE} from './help';
 
-const usage = `Usage: ${green('juno')} ${cyan('functions')} ${magenta('eject')} ${yellow('[options]')}
+const usage = `Usage: ${green('juno')} ${cyan('functions')} ${magenta('init')} ${yellow('[options]')}
 
 Options:
   ${yellow('-l, --lang')}            Specify the language for building the serverless functions: ${magenta('rust')}, ${magenta('typescript')} or ${magenta('javascript')}.
@@ -13,7 +13,7 @@ Notes:
 
 - Language can be shortened to ${magenta('rs')} for Rust, ${magenta('ts')} for TypeScript and ${magenta('mjs')} for JavaScript.`;
 
-const doc = `${FUNCTIONS_EJECT_DESCRIPTION}
+const doc = `${FUNCTIONS_INIT_DESCRIPTION}
 
 \`\`\`
 ${usage}
@@ -22,7 +22,7 @@ ${usage}
 
 const help = `${TITLE}
 
-${FUNCTIONS_EJECT_DESCRIPTION}
+${FUNCTIONS_INIT_DESCRIPTION}
 
 ${usage}
 `;

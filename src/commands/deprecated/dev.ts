@@ -3,7 +3,7 @@ import {logHelpDev} from '../../help/deprecated/dev.help';
 import {logHelpEmulatorStart} from '../../help/emulator.start.help';
 import {logHelpEmulatorWait} from '../../help/emulator.wait.help';
 import {logHelpFunctionsBuild} from '../../help/functions.build.help';
-import {logHelpFunctionsEject} from '../../help/functions.eject.help';
+import {logHelpFunctionsEject} from '../../help/functions.init.help';
 import {start} from '../../services/emulator/start.services';
 import {stop} from '../../services/emulator/stop.services';
 import {wait} from '../../services/emulator/wait.services';
@@ -27,6 +27,7 @@ export const dev = async (args?: string[]) => {
       await wait(args);
       break;
     case 'eject':
+    case 'init':
       await eject(args);
       break;
     case 'build':

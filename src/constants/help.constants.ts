@@ -38,7 +38,7 @@ export const EMULATOR_CLEAR_DESCRIPTION = 'Clear the local emulator state (volum
 export const FUNCTIONS_PUBLISH_DESCRIPTION = 'Publish a new version of your serverless functions.';
 export const FUNCTIONS_UPGRADE_DESCRIPTION = 'Upgrade your serverless functions.';
 export const FUNCTIONS_BUILD_DESCRIPTION = 'Build your serverless functions.';
-export const FUNCTIONS_EJECT_DESCRIPTION =
+export const FUNCTIONS_INIT_DESCRIPTION =
   'Generate the required files to begin developing serverless functions in your project.';
 
 export const FUNCTIONS_BUILD_NOTES = `- If no language is provided, the CLI attempts to determine the appropriate build.
