@@ -308,7 +308,7 @@ const clearEmulator = async ({config: {config, derivedConfig}}: {config: CliEmul
   });
 };
 
-const pullEmulator = async ({config: {config, derivedConfig}}: {config: CliEmulatorConfig}) => {
+const pullEmulator = async ({config: {derivedConfig}}: {config: CliEmulatorConfig}) => {
   const {runner, image} = derivedConfig;
 
   await confirmAndExit(
