@@ -318,18 +318,19 @@ const pullEmulator = async ({config: {config, derivedConfig}}: {config: CliEmula
   const spinner = ora('Pulling...').start();
 
   try {
-    let output = '';
     await spawn({
       command: runner,
       args: ['pull', image],
-      stdout: (o) => (output += o),
+      stdout: (o) => {
+        // We print out to display some sort of progression
+        console.log(o);
+      },
       silentOut: true
     });
 
     spinner.stop();
 
     console.log('\nDone ✅\n');
-    console.log(output);
 
     console.log(
       `Run ${yellow('juno emulator clear')} to reset the state, then ${green('juno emulator start')} to use the updated image.`
