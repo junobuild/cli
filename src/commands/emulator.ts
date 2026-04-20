@@ -6,6 +6,7 @@ import {clear} from '../services/emulator/clear.services';
 import {start} from '../services/emulator/start.services';
 import {stop} from '../services/emulator/stop.services';
 import {wait} from '../services/emulator/wait.services';
+import {pull} from '../services/emulator/pull.services';
 
 export const emulator = async (args?: string[]) => {
   const [subCommand] = args ?? [];
@@ -22,6 +23,9 @@ export const emulator = async (args?: string[]) => {
       break;
     case 'clear':
       await clear();
+      break;
+    case 'pull':
+      await pull();
       break;
     default:
       console.log(red('Unknown subcommand.'));
