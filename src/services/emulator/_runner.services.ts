@@ -1,8 +1,9 @@
 import {nonNullish} from '@dfinity/utils';
 import {assertAnswerCtrlC, execute, spawn} from '@junobuild/cli-tools';
 import {type EmulatorPorts} from '@junobuild/config';
-import {red, yellow} from 'kleur';
+import {green, red, yellow} from 'kleur';
 import {basename, join} from 'node:path';
+import ora from 'ora';
 import prompts from 'prompts';
 import {readEmulatorConfig} from '../../configs/emulator.config';
 import {junoConfigExist, junoConfigFile} from '../../configs/juno.config';
@@ -50,6 +51,14 @@ export const stopContainer = async () => {
 export const clearContainerAndVolume = async () => {
   const fn: RunWithConfigFn = async (args) => {
     await clearEmulator(args);
+  };
+
+  await runWithConfig({fn});
+};
+
+export const pullImage = async () => {
+  const fn: RunWithConfigFn = async (args) => {
+    await pullEmulator(args);
   };
 
   await runWithConfig({fn});
@@ -297,6 +306,39 @@ const clearEmulator = async ({config: {config, derivedConfig}}: {config: CliEmul
     args: ['volume', 'rm', volume],
     silentOut: true
   });
+};
+
+const pullEmulator = async ({config: {derivedConfig}}: {config: CliEmulatorConfig}) => {
+  const {runner, image} = derivedConfig;
+
+  await confirmAndExit(
+    `Are you sure you want to pull the emulator image "${image}"? You will need to ${yellow('clear')} the emulator afterward to apply the update.`
+  );
+
+  const spinner = ora('Pulling...').start();
+
+  try {
+    await spawn({
+      command: runner,
+      args: ['pull', image],
+      stdout: (o) => {
+        // We print out to display some sort of progression
+        console.log(o);
+      },
+      silentOut: true
+    });
+
+    spinner.stop();
+
+    console.log('\nDone ✅\n');
+
+    console.log(
+      `Run ${yellow('juno emulator clear')} to reset the state, then ${green('juno emulator start')} to use the updated image.`
+    );
+  } catch (error: unknown) {
+    spinner.stop();
+    throw error;
+  }
 };
 
 const assertContainerRunning = async ({
