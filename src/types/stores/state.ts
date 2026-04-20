@@ -1,4 +1,4 @@
-import {type PrincipalText} from '@dfinity/zod-schemas';
+import {type PrincipalText} from '@junobuild/schema';
 
 export type ConfigHash = string;
 export type RuleHash = ConfigHash;
@@ -15,6 +15,7 @@ export interface CliStateSatelliteAppliedConfigHashes {
   storage: ConfigHash | undefined;
   datastore: ConfigHash | undefined;
   auth: ConfigHash | undefined;
+  automation: ConfigHash | undefined;
   settings: SettingsHash | undefined;
   collections: CliStateSatelliteAppliedCollectionsHashes | undefined;
 }

@@ -16,7 +16,7 @@ export const SNAPSHOT_DESCRIPTION = 'Handle snapshot-related tasks.';
 export const START_DESCRIPTION = 'Start a module.';
 export const STOP_DESCRIPTION = 'Stop a module.';
 export const UPGRADE_DESCRIPTION = 'Upgrade a module to a new version.';
-export const VERSION_DESCRIPTION = 'Check the version of the CLI.';
+export const VERSION_DESCRIPTION = 'Manage version related tasks.';
 export const STATUS_DESCRIPTION = 'Check the status of the modules.';
 export const WHOAMI_DESCRIPTION =
   'Display your current profile, access key, and links to your satellite.';
@@ -28,14 +28,18 @@ export const CONFIG_INIT_DESCRIPTION = 'Set up your project by creating a config
 export const HOSTING_DEPLOY_DESCRIPTION = 'Deploy your app to your satellite.';
 export const HOSTING_CLEAR_DESCRIPTION =
   'Remove frontend files (JS, HTML, CSS, etc.) from your satellite.';
+export const HOSTING_PRUNE_DESCRIPTION =
+  'Remove stale frontend files from your satellite that are no longer in your build output.';
 
 export const EMULATOR_START_DESCRIPTION = 'Start the emulator for local development.';
 export const EMULATOR_WAIT_DESCRIPTION = 'Wait until the emulator is ready.';
+export const EMULATOR_CLEAR_DESCRIPTION = 'Clear the local emulator state (volume and container).';
+export const EMULATOR_PULL_DESCRIPTION = 'Pull the latest emulator image.';
 
 export const FUNCTIONS_PUBLISH_DESCRIPTION = 'Publish a new version of your serverless functions.';
 export const FUNCTIONS_UPGRADE_DESCRIPTION = 'Upgrade your serverless functions.';
 export const FUNCTIONS_BUILD_DESCRIPTION = 'Build your serverless functions.';
-export const FUNCTIONS_EJECT_DESCRIPTION =
+export const FUNCTIONS_INIT_DESCRIPTION =
   'Generate the required files to begin developing serverless functions in your project.';
 
 export const FUNCTIONS_BUILD_NOTES = `- If no language is provided, the CLI attempts to determine the appropriate build.
@@ -50,7 +54,7 @@ export const CHANGES_REJECT_DESCRIPTION = 'Reject a change.';
 
 export const SNAPSHOT_UPLOAD_DESCRIPTION = 'Upload a snapshot from offline files.';
 
-export const OPTION_KEEP_STAGED = `${yellow('-k, --keep-staged')}     Keep staged assets in memory after applying the change.`;
+export const OPTION_KEEP_STAGED = `${yellow('-k, --keep-staged')}     Keep proposed staged assets in memory after applying the change.`;
 export const OPTION_HASH = `${yellow('--hash')}                The expected hash of all included changes (for verification).`;
 export const OPTION_HELP = `${yellow('-h, --help')}            Output usage information.`;
 export const OPTION_MODE = `${yellow('-m, --mode')}            Choose which environment to use (production, staging, development). Defaults to production if omitted.`;

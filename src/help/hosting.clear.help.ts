@@ -24,6 +24,6 @@ ${HOSTING_CLEAR_DESCRIPTION}
 ${usage}
 `;
 
-export const logHelpEmulatorClear = (args?: string[]) => {
+export const logHelpHostingClear = (args?: string[]) => {
   console.log(helpOutput(args) === 'doc' ? doc : help);
 };

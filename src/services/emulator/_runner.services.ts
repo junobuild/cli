@@ -1,10 +1,12 @@
 import {nonNullish} from '@dfinity/utils';
 import {assertAnswerCtrlC, execute, spawn} from '@junobuild/cli-tools';
 import {type EmulatorPorts} from '@junobuild/config';
-import {red, yellow} from 'kleur';
+import {green, red, yellow} from 'kleur';
+import {basename, join} from 'node:path';
+import ora from 'ora';
 import prompts from 'prompts';
 import {readEmulatorConfig} from '../../configs/emulator.config';
-import {junoConfigExist} from '../../configs/juno.config';
+import {junoConfigExist, junoConfigFile} from '../../configs/juno.config';
 import {
   EMULATOR_PORT_ADMIN,
   EMULATOR_PORT_CONSOLE,
@@ -18,6 +20,7 @@ import {
   type EmulatorType
 } from '../../types/emulator';
 import {isHeadless} from '../../utils/process.utils';
+import {confirmAndExit} from '../../utils/prompt.utils';
 import {
   assertContainerRunnerRunning,
   checkDockerVersion,
@@ -30,27 +33,40 @@ import {createDeployTargetDir} from './_fs.services';
 export const startContainer = async () => {
   await assertAndInitConfig();
 
-  const parsedResult = await readEmulatorConfig();
+  const fn: RunWithConfigFn = async (args) => {
+    await startEmulator(args);
+  };
 
-  if (!parsedResult.success) {
-    return;
-  }
-
-  const {config} = parsedResult;
-
-  const {valid} =
-    config.derivedConfig.runner === 'docker' ? await checkDockerVersion() : {valid: true};
-
-  if (valid === 'error' || !valid) {
-    return;
-  }
-
-  await assertContainerRunnerRunning({runner: config.derivedConfig.runner});
-
-  await startEmulator({config});
+  await runWithConfig({fn});
 };
 
 export const stopContainer = async () => {
+  const fn: RunWithConfigFn = async (args) => {
+    await stopEmulator(args);
+  };
+
+  await runWithConfig({fn});
+};
+
+export const clearContainerAndVolume = async () => {
+  const fn: RunWithConfigFn = async (args) => {
+    await clearEmulator(args);
+  };
+
+  await runWithConfig({fn});
+};
+
+export const pullImage = async () => {
+  const fn: RunWithConfigFn = async (args) => {
+    await pullEmulator(args);
+  };
+
+  await runWithConfig({fn});
+};
+
+type RunWithConfigFn = (params: {config: CliEmulatorConfig}) => Promise<void>;
+
+const runWithConfig = async ({fn}: {fn: RunWithConfigFn}) => {
   const parsedResult = await readEmulatorConfig();
 
   if (!parsedResult.success) {
@@ -68,7 +84,7 @@ export const stopContainer = async () => {
 
   await assertContainerRunnerRunning({runner: config.derivedConfig.runner});
 
-  await stopEmulator({config});
+  await fn({config});
 };
 
 const promptEmulatorType = async (): Promise<{emulatorType: Exclude<EmulatorType, 'console'>}> => {
@@ -145,7 +161,7 @@ const initConfigFile = async () => {
 const startEmulator = async ({config: extendedConfig}: {config: CliEmulatorConfig}) => {
   const {
     config,
-    derivedConfig: {emulatorType, containerName, runner, targetDeploy}
+    derivedConfig: {emulatorType, containerName, runner, targetDeploy, extraHosts, image}
   } = extendedConfig;
 
   const {running} = await assertContainerRunning({containerName, runner});
@@ -202,10 +218,14 @@ const startEmulator = async ({config: extendedConfig}: {config: CliEmulatorConfi
 
   const volume = config.runner?.volume ?? containerName.replaceAll('-', '_');
 
+  const detectedConfig = junoConfigFile();
+  const configFile = nonNullish(detectedConfig.configPath)
+    ? basename(detectedConfig.configPath)
+    : undefined;
+  const configFilePath = nonNullish(configFile) ? join(process.cwd(), configFile) : undefined;
+
   // Podman does not auto create the path folders.
   await createDeployTargetDir({targetDeploy});
-
-  const image = config.runner?.image ?? `junobuild/${emulatorType}:latest`;
 
   const platform = config.runner?.platform;
 
@@ -231,9 +251,13 @@ const startEmulator = async ({config: extendedConfig}: {config: CliEmulatorConfi
         : []),
       '-v',
       `${volume}:/juno/.juno`,
+      ...(nonNullish(configFile) && nonNullish(configFilePath)
+        ? ['-v', `${configFilePath}:/juno/${configFile}`]
+        : []),
       '-v',
       `${targetDeploy}:/juno/target/deploy`,
       ...(nonNullish(platform) ? [`--platform=${platform}`] : []),
+      ...extraHosts.flatMap((host) => ['--add-host', host]),
       image
     ]
   });
@@ -254,6 +278,68 @@ const stopEmulator = async ({config: {derivedConfig}}: {config: CliEmulatorConfi
     args: ['stop', containerName],
     silentOut: true
   });
+};
+
+const clearEmulator = async ({config: {config, derivedConfig}}: {config: CliEmulatorConfig}) => {
+  const {containerName, runner} = derivedConfig;
+
+  const {running} = await assertContainerRunning({containerName, runner});
+
+  if (running) {
+    console.log(yellow(`The ${runner} container ${containerName} must be stopped first.`));
+    return;
+  }
+
+  const volume = config.runner?.volume ?? containerName.replaceAll('-', '_');
+
+  await confirmAndExit(
+    `Are you sure you want to clear the emulator container "${containerName}" and volume "${volume}"?`
+  );
+
+  await spawn({
+    command: runner,
+    args: ['container', 'rm', containerName],
+    silentOut: true
+  });
+
+  await spawn({
+    command: runner,
+    args: ['volume', 'rm', volume],
+    silentOut: true
+  });
+};
+
+const pullEmulator = async ({config: {derivedConfig}}: {config: CliEmulatorConfig}) => {
+  const {runner, image} = derivedConfig;
+
+  await confirmAndExit(
+    `Are you sure you want to pull the emulator image "${image}"? You will need to ${yellow('clear')} the emulator afterward to apply the update.`
+  );
+
+  const spinner = ora('Pulling...').start();
+
+  try {
+    await spawn({
+      command: runner,
+      args: ['pull', image],
+      stdout: (o) => {
+        // We print out to display some sort of progression
+        console.log(o);
+      },
+      silentOut: true
+    });
+
+    spinner.stop();
+
+    console.log('\nDone ✅\n');
+
+    console.log(
+      `Run ${yellow('juno emulator clear')} to reset the state, then ${green('juno emulator start')} to use the updated image.`
+    );
+  } catch (error: unknown) {
+    spinner.stop();
+    throw error;
+  }
 };
 
 const assertContainerRunning = async ({

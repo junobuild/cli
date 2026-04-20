@@ -1,13 +1,13 @@
-import {type PrincipalText} from '@dfinity/zod-schemas';
+import {type PrincipalText} from '@junobuild/schema';
 import Conf from 'conf';
 import {ENV} from '../env';
 import {
   type CliState,
   type CliStateSatellite,
   type CliStateSatelliteAppliedConfigHashes
-} from '../types/cli.state';
+} from '../types/stores/state';
 
-export const getStateConfig = (): Conf<CliState> =>
+const getStore = (): Conf<CliState> =>
   new Conf<CliState>({projectName: ENV.config.projectStateName});
 
 export const getLatestAppliedConfig = ({
@@ -15,13 +15,13 @@ export const getLatestAppliedConfig = ({
 }: {
   satelliteId: PrincipalText;
 }): CliStateSatelliteAppliedConfigHashes | undefined =>
-  getStateConfig().get('satellites')?.[satelliteId]?.lastAppliedConfig;
+  getStore().get('satellites')?.[satelliteId]?.lastAppliedConfig;
 
 export const saveLastAppliedConfig = ({
   satelliteId,
   lastAppliedConfig: {storage, datastore, auth, settings, collections}
 }: {satelliteId: PrincipalText} & Pick<CliStateSatellite, 'lastAppliedConfig'>) => {
-  const config = getStateConfig();
+  const config = getStore();
 
   const satellites = config.get('satellites');
 

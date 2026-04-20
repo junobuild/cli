@@ -1,10 +1,10 @@
-import {type EmulatorConfig, EmulatorConfigSchema} from '@junobuild/config';
+import {type EmulatorConfig, type EmulatorRunner, EmulatorConfigSchema} from '@junobuild/config';
 import {red} from 'kleur';
 import * as z from 'zod';
 import {DEPLOY_LOCAL_REPLICA_PATH} from '../constants/dev.constants';
 import {EMULATOR_SKYLAB} from '../constants/emulator.constants';
 import {ENV} from '../env';
-import type {CliEmulatorConfig} from '../types/emulator';
+import {type CliEmulatorConfig} from '../types/emulator';
 import {readPackageJson} from '../utils/pkg.utils';
 import {junoConfigExist, readJunoConfig} from './juno.config';
 
@@ -40,6 +40,13 @@ export const readEmulatorConfig = async (): Promise<
 
   const targetDeploy = config.runner?.target ?? DEPLOY_LOCAL_REPLICA_PATH;
 
+  const extraHosts = (config.runner?.extraHosts ?? []).map(
+    ([hostname, destination]: NonNullable<EmulatorRunner['extraHosts']>[number]) =>
+      `${hostname}:${destination}`
+  );
+
+  const image = config.runner?.image ?? `junobuild/${emulatorType}:latest`;
+
   return {
     success: true,
     config: {
@@ -48,7 +55,9 @@ export const readEmulatorConfig = async (): Promise<
         containerName,
         emulatorType,
         runner,
-        targetDeploy
+        targetDeploy,
+        extraHosts,
+        image
       }
     }
   };

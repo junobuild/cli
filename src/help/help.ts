@@ -8,6 +8,7 @@ import {
   LOGIN_DESCRIPTION,
   LOGOUT_DESCRIPTION,
   OPEN_DESCRIPTION,
+  RUN_DESCRIPTION,
   SNAPSHOT_DESCRIPTION,
   START_DESCRIPTION,
   STATUS_DESCRIPTION,
@@ -40,6 +41,7 @@ Commands:
   ${cyan('login')}               ${LOGIN_DESCRIPTION}
   ${cyan('logout')}              ${LOGOUT_DESCRIPTION}
   ${cyan('open')}                ${OPEN_DESCRIPTION}
+  ${cyan('run')}                 ${RUN_DESCRIPTION}
   ${cyan('snapshot')}            ${SNAPSHOT_DESCRIPTION}
   ${cyan('start')}               ${START_DESCRIPTION}
   ${cyan('stop')}                ${STOP_DESCRIPTION}

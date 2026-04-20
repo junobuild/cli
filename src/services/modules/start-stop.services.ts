@@ -3,7 +3,7 @@ import {Principal} from '@icp-sdk/core/principal';
 import {cyan, red} from 'kleur';
 import ora from 'ora';
 import {canisterStart, canisterStop} from '../../api/ic.api';
-import {getCliMissionControl} from '../../configs/cli.config';
+import {getCliMissionControl} from '../../stores/config.store';
 import type {AssetKey} from '../../types/asset-key';
 import type {StartStopAction} from '../../types/start-stop';
 import {

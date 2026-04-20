@@ -39,7 +39,7 @@ const executeRejectChanges = async ({
         spinner.text = 'Rejecting...';
         break;
       case RejectProposalProgressStep.ClearingProposalAssets:
-        spinner.text = 'Clearing staged assets...';
+        spinner.text = 'Clearing proposed staged assets...';
         break;
       case RejectProposalProgressStep.PostReject:
         spinner.text = 'Reloading...';

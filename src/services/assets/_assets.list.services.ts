@@ -1,9 +1,9 @@
 import {COLLECTION_DAPP} from '@junobuild/cli-tools';
 import type {Asset} from '@junobuild/core';
 import {listAssets as listAssetsLib} from '@junobuild/core';
-import {DEPLOY_LIST_ASSETS_PAGINATION} from '../../../constants/deploy.constants';
-import type {SatelliteParametersWithId} from '../../../types/satellite';
-import {last} from '../../../utils/array.utils';
+import {DEPLOY_LIST_ASSETS_PAGINATION} from '../../constants/deploy.constants';
+import type {SatelliteParametersWithId} from '../../types/satellite';
+import {last} from '../../utils/array.utils';
 
 export const listAssets = async ({
   startAfter,

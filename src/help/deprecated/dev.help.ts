@@ -10,7 +10,7 @@ Subcommands:
   ${magenta('stop')}                Alias for ${green('juno')} ${cyan('emulator')} ${magenta('stop')}.
   ${magenta('wait')}                Alias for ${green('juno')} ${cyan('emulator')} ${magenta('wait')}.
   ${magenta('build')}               Alias for ${green('juno')} ${cyan('functions')} ${magenta('build')}.
-  ${magenta('eject')}               Alias for ${green('juno')} ${cyan('functions')} ${magenta('eject')}.`;
+  ${magenta('init')}                Alias for ${green('juno')} ${cyan('functions')} ${magenta('init')}.`;
 
 const doc = `${EMULATOR_DESCRIPTION}
 

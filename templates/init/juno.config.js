@@ -7,7 +7,9 @@ export default defineConfig({
       development: '<DEV_SATELLITE_ID>',
       production: '<PROD_SATELLITE_ID>'
     },
-    source: '<SOURCE>'
+    hosting: {
+      source: '<SOURCE>'
+    }
   },
   orbiter: {
     id: '<ORBITER_ID>'

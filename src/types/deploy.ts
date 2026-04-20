@@ -9,6 +9,7 @@ import type {OnUploadProgress} from '@junobuild/storage';
 import type {SatelliteParametersWithId} from './satellite';
 
 export interface DeployOptions {
+  /** @deprecated */
   deprecatedGzip?: string;
   uploadBatchSize: number | undefined;
 }

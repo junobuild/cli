@@ -1,48 +1,21 @@
-import {isNullish} from '@dfinity/utils';
 import {red} from 'kleur';
-import {clean} from 'semver';
-import {version as cliCurrentVersion} from '../../package.json';
-import {githubCliLastRelease} from '../rest/github.rest';
-import {checkVersion} from '../services/version.services';
-import {detectPackageManager} from '../utils/pm.utils';
-export const version = async () => {
-  await cliVersion();
+import {logHelpVersion} from '../help/version.help';
+import {enableDisableVersionCheck} from '../services/version/version.check.services';
+import {printVersion} from '../services/version/version.print.services';
+
+export const logVersion = async () => {
+  await printVersion();
 };
 
-const cliVersion = async () => {
-  const githubRelease = await githubCliLastRelease();
+export const version = async (args?: string[]) => {
+  const [subCommand] = args ?? [];
 
-  if (githubRelease === undefined) {
-    console.log(red('Cannot fetch last release version of Juno on GitHub 😢.'));
-    return;
-  }
-
-  const {tag_name} = githubRelease;
-
-  const latestVersion = clean(tag_name);
-
-  if (isNullish(latestVersion)) {
-    console.log(red(`Cannot extract version from release. Reach out Juno❗️`));
-    return;
-  }
-
-  checkVersion({
-    currentVersion: cliCurrentVersion,
-    latestVersion,
-    displayHint: 'CLI',
-    commandLineHint: installHint()
-  });
-};
-
-const installHint = (): string => {
-  const pm = detectPackageManager();
-
-  switch (pm) {
-    case 'yarn':
-      return 'yarn global add @junobuild/cli';
-    case 'pnpm':
-      return 'pnpm add -g @junobuild/cli';
+  switch (subCommand) {
+    case 'check':
+      await enableDisableVersionCheck();
+      break;
     default:
-      return 'npm i -g @junobuild/cli';
+      console.log(red('Unknown subcommand.'));
+      logHelpVersion(args);
   }
 };
