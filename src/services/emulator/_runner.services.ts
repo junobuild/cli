@@ -115,9 +115,10 @@ const promptRunnerType = async (): Promise<{runnerType: EmulatorRunnerType}> => 
     choices: [
       {
         title: 'Docker',
-        value: `docker`
+        value: 'docker'
       },
-      {title: `Podman`, value: `podman`}
+      {title: 'Podman', value: 'podman'},
+      {title: 'Apple container', value: 'container'}
     ]
   });
 
