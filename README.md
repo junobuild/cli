@@ -13,3 +13,5 @@ Detailed installation instructions can be found in the [CLI documentation](https
 ## License
 
 MIT © [David Dal Busco](mailto:david.dalbusco@outlook.com)
+
+[juno]: https://juno.build
